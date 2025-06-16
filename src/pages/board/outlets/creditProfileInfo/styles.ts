@@ -61,7 +61,7 @@ interface IStyledGrid {
 
 export const StyledGridPrint = styled.div<IStyledGrid>`
   & > div {
-    max-width: 480px;
+  max-width: 500px;
   }
 
   @media print {
@@ -70,9 +70,11 @@ export const StyledGridPrint = styled.div<IStyledGrid>`
       zoom: 1.5;
     }
   }
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: ${({ $isMobile }) =>
+    $isMobile ? "1fr" : "repeat(3, 1fr)"};
   gap: 20px;
+  grid-auto-rows: minmax(auto, max-content);
   margin: ${({ $isMobile }) => ($isMobile ? "20px 40px" : "20px")};
 `;
 

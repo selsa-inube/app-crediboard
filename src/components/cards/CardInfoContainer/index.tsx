@@ -20,14 +20,19 @@ export const CardInfoContainer = (props: CardInfoContainerProps) => {
   } = props;
 
   return (
-    <Stack direction="column" width="100%">
+    <Stack direction="column" width="-webkit-fill-available">
       <Stack gap="8px" alignItems="center">
         <Icon
           icon={icon}
           appearance="primary"
           size={isMobile ? "35px" : "40px"}
         />
-        <Text type="title" size={"large"} appearance="primary" ellipsis>
+        <Text
+          type="title"
+          size={"large"}
+          appearance="primary"
+          ellipsis
+        >
           {title}
         </Text>
       </Stack>

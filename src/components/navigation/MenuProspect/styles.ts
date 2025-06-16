@@ -14,7 +14,6 @@ const StyledMenu = styled.div`
   position: absolute;
   right: 1px;
   width: 227px;
-  top: 30px;
 `;
 
 const StyledContainerLabel = styled.div<IContainerLabel>`

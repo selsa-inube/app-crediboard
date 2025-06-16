@@ -190,7 +190,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
   const handleCollapse = () => {
     setCollapse(!collapse);
-    setShowMenu(false);
   };
 
   const currentModal = modalHistory[modalHistory.length - 1];
@@ -510,6 +509,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                                 (product) => product.extraordinaryInstallments
                               )
                             )}
+                            onMouseLeave={() => setShowMenu(false)}
                           />
                         )}
                       </StyledContainerIcon>
