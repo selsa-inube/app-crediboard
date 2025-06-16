@@ -1,6 +1,6 @@
 export const dataCreditLimitModal = {
-  title: "Cupo por línea de crédito",
-  creditText:
+  warningTitle: "Cupo por línea de crédito",
+  warningDescription:
     "A continuación encontrará el cupo disponible por línea de crédito.",
   import: "Importante:",
   textImport:

@@ -2,13 +2,12 @@ import { useEffect } from "react";
 import { Stack, Text } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-
+import { CreditLimitCard } from "@components/cards/CreditLimitCard";
 import { IPaymentChannel } from "@services/types";
 import { mockCreditLimit } from "@mocks/add-prospect/modals-amount/modalsAmount.mock";
 import { get } from "@mocks/utils/dataMock.service";
 
 import { dataCreditLimitModal } from "./config";
-import { CreditLimitCard } from "@components/cards/CreditLimitCard";
 
 export interface ICreditLimitModalProps {
   handleClose: () => void;
@@ -37,7 +36,7 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
   }, []);
   return (
     <BaseModal
-      title={dataCreditLimitModal.title}
+      title={dataCreditLimitModal.warningTitle}
       nextButton={dataCreditLimitModal.close}
       handleNext={handleClose}
       handleClose={handleClose}
@@ -47,7 +46,7 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
     >
       <Stack direction="column" gap="26px">
         <Text appearance="gray" type="body" size="medium" weight="normal">
-          {dataCreditLimitModal.creditText}
+          {dataCreditLimitModal.warningDescription}
         </Text>
 
         <Stack

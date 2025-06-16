@@ -24,7 +24,7 @@ import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getC
 
 import { StyledBoardSection, StyledCollapseIcon } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
-import { configOption } from "./config";
+import { configOption, totalsKeyBySection } from "./config";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -100,7 +100,9 @@ function BoardSection({
     pinnedRequests: ICreditRequestPinned[]
   ) =>
     pinnedRequests.some(
-      (p) => p.creditRequestId === creditRequestId && p.isPinned === "Y"
+      (pinnedRequest) =>
+        pinnedRequest.creditRequestId === creditRequestId &&
+        pinnedRequest.isPinned === "Y"
     );
 
   const handleCardClick = async (creditRequestId: string | undefined) => {
@@ -111,10 +113,19 @@ function BoardSection({
         creditRequestId,
         businessUnitPublicCode
       );
-    } catch {
+    } catch (error: unknown) {
+      const message = (() => {
+        if (error instanceof Error) return error.message;
+        try {
+          return JSON.stringify(error);
+        } catch {
+          return String(error);
+        }
+      })();
+
       addFlag({
         title: textFlagsUsers.titleError,
-        description: textFlagsUsers.descriptionError,
+        description: message,
         appearance: "danger",
         duration: 5000,
       });
@@ -182,20 +193,30 @@ function BoardSection({
           businessUnitPublicCode
         );
         if (result) setTotalsData(result);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (error: unknown) {
+        const message = (() => {
+          if (error instanceof Error) return error.message;
+          try {
+            return JSON.stringify(error);
+          } catch {
+            return String(error);
+          }
+        })();
+
+        addFlag({
+          title: textFlagsUsers.titleError,
+          description: message,
+          appearance: "danger",
+          duration: 5000,
+        });
+
+        console.error("Error fetching totals:", error);
       }
     };
+
     fetchTotals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode]);
-  const totalsKeyBySection: Record<string, keyof ICreditRequestTotalsByStage> =
-    {
-      "Gestión Comercial": "commercialManagement",
-      "Verificación y Aprobación": "verificationAndApproval",
-      "Formalización Garantías": "guaranteeFormalization",
-      "Trámite Desembolso": "disbursementProcessing",
-      "Cumplimiento Requisitos": "requirementsFulfillment",
-    };
 
   return (
     <StyledBoardSection
