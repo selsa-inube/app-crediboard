@@ -384,7 +384,6 @@ export const SummaryProspectCredit = [
         id: "totalRegularInstallment",
         title: "Cuota ordinaria",
         miniIcon: true,
-        icon: <MdOutlineRemoveRedEye />,
         operation: "",
       },
     ],
