@@ -10,7 +10,7 @@ export const ScrollableContainer = styled.div<IStyledModal>`
   padding: 10px;
   overflow: auto;
   display: flex;
-
+  max-height: 500px;
   &::-webkit-scrollbar {
     width: 8px;
     border-radius: 8px;
