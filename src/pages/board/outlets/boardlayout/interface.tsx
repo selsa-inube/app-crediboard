@@ -154,7 +154,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           businessUnitPublicCode
         );
         if (result) setTotalsData(normalizedTotalData(result));
-      } catch (error: unknown) {
+      } catch (error) {
         addFlag({
           title: textFlagsUsers.titleError,
           description: JSON.stringify(error),
