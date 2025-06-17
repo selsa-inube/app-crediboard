@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MdOutlinePushPin, MdSearch } from "react-icons/md";
 import { RxDragHandleVertical, RxDragHandleHorizontal } from "react-icons/rx";
 
@@ -9,6 +9,7 @@ import {
   Divider,
   Textfield,
   Toggle,
+  useFlag,
 } from "@inubekit/inubekit";
 
 import { SectionOrientation } from "@components/layout/BoardSection/types";
@@ -26,6 +27,11 @@ import {
   StyledSearch,
 } from "./styles";
 import { boardColumns, selectConfig, seePinned } from "./config/board";
+import { getCreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage";
+import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage/types";
+import { AppContext } from "@context/AppContext";
+import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
+import { totalsKeyBySection } from "@components/layout/BoardSection/config";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -68,6 +74,11 @@ function BoardLayoutUI(props: BoardLayoutProps) {
 
   const selectProps = selectConfig(selectOptions, handleSelectCheckChange);
   const [showErrorAlert, setShowErrorAlert] = useState(true);
+  const { businessUnitSigla } = useContext(AppContext);
+  const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
+  const { addFlag } = useFlag();
+  const businessUnitPublicCode: string =
+    JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const [isExpanded, setIsExpanded] = useState(false);
   const stackRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -125,6 +136,44 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     return () => clearTimeout(timeout);
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const normalizedTotalData = (result: ICreditRequestTotalsByStage) => {
+    return result
+      ? Object.entries(result).map(([key, value]) => ({
+          id: key,
+          name: totalsKeyBySection[key as keyof typeof totalsKeyBySection],
+          counter: value,
+        }))
+      : [];
+  };
+
+  useEffect(() => {
+    const fetchTotals = async () => {
+      try {
+        const result = await getCreditRequestTotalsByStage(
+          businessUnitPublicCode
+        );
+        if (result) setTotalsData(normalizedTotalData(result));
+      } catch (error) {
+        addFlag({
+          title: textFlagsUsers.titleError,
+          description: JSON.stringify(error),
+          appearance: "danger",
+          duration: 5000,
+        });
+
+        console.error("Error fetching totals:", error);
+      }
+    };
+
+    fetchTotals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode]);
+  const counterTotalsData = (value: string) => {
+    if (totalsData) {
+      return totalsData.find((item) => item.name === value)?.counter;
+    }
+  };
 
   return (
     <StyledContainerToCenter>
@@ -264,6 +313,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             <BoardSection
               key={column.id}
               sectionTitle={column.value}
+              sectionCounter={counterTotalsData(column.value) || 0}
               sectionBackground={column.sectionBackground}
               orientation={boardOrientation}
               sectionInformation={BoardRequests.filter(
