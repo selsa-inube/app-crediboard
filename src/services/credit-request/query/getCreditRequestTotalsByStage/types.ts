@@ -1,7 +1,5 @@
 export interface ICreditRequestTotalsByStage {
-  commercialManagement: number;
-  verificationAndApproval: number;
-  disbursementProcessing: number;
-  guaranteeFormalization: number;
-  requirementsFulfillment: number;
+  id: string;
+  name: string;
+  counter: number;
 }

@@ -19,12 +19,10 @@ import { getCanUnpin } from "@utils/configRules/permissions";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules";
-import { getCreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage";
-import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage/types";
 
 import { StyledBoardSection, StyledCollapseIcon } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
-import { configOption, totalsKeyBySection } from "./config";
+import { configOption } from "./config";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -34,6 +32,7 @@ interface BoardSectionProps {
   pinnedRequests: ICreditRequestPinned[];
   errorLoadingPins: boolean;
   searchRequestValue: string;
+  sectionCounter?: number;
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
@@ -44,6 +43,7 @@ interface BoardSectionProps {
 
 function BoardSection({
   sectionTitle,
+  sectionCounter,
   sectionBackground = "light",
   orientation = "vertical",
   sectionInformation,
@@ -58,7 +58,6 @@ function BoardSection({
 
   const disabledCollapse = sectionInformation.length === 0;
   const [collapse, setCollapse] = useState(false);
-  const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage>();
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
   const flagMessage = useRef(false);
 
@@ -186,38 +185,6 @@ function BoardSection({
     if (businessUnitPublicCode) fetchValidationRulesData();
   }, [businessUnitPublicCode, fetchValidationRulesData]);
 
-  useEffect(() => {
-    const fetchTotals = async () => {
-      try {
-        const result = await getCreditRequestTotalsByStage(
-          businessUnitPublicCode
-        );
-        if (result) setTotalsData(result);
-      } catch (error: unknown) {
-        const message = (() => {
-          if (error instanceof Error) return error.message;
-          try {
-            return JSON.stringify(error);
-          } catch {
-            return String(error);
-          }
-        })();
-
-        addFlag({
-          title: textFlagsUsers.titleError,
-          description: message,
-          appearance: "danger",
-          duration: 5000,
-        });
-
-        console.error("Error fetching totals:", error);
-      }
-    };
-
-    fetchTotals();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode]);
-
   return (
     <StyledBoardSection
       $sectionBackground={sectionBackground}
@@ -259,12 +226,9 @@ function BoardSection({
             {sectionTitle}
           </Text>
         </Stack>
-
-        {totalsKeyBySection[sectionTitle] && totalsData && (
-          <Text type="title" size="medium">
-            {totalsData[totalsKeyBySection[sectionTitle]]}
-          </Text>
-        )}
+        <Text type="title" size="medium">
+          {sectionCounter}
+        </Text>
       </Stack>
 
       {(collapse || orientation === "vertical") && (
