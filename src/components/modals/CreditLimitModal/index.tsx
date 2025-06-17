@@ -6,9 +6,9 @@ import { CreditLimitCard } from "@components/cards/CreditLimitCard";
 import { IPaymentChannel } from "@services/types";
 
 import { get } from "@mocks/utils/dataMock.service";
+import { mockCreditLimit } from "@mocks/add-prospect/modals-amount/modalsAmount.mock";
 
 import { dataCreditLimitModal } from "./config";
-import { mockCreditLimit } from "@mocks/add-prospect/modals-amount/modalsAmount.mock";
 
 export interface ICreditLimitModalProps {
   handleClose: () => void;
