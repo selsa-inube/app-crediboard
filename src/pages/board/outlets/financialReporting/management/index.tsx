@@ -168,7 +168,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     traces.map((trace, index) => (
       <Message
         key={index}
-        type="sent"
+        type={trace.traceType === "Message" ? "received" : "sent"}
         timestamp={trace.executionDate || ""}
         message={trace.traceValue}
         icon={<MdInfoOutline size={14} />}
