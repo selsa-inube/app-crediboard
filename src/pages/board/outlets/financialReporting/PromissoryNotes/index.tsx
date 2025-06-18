@@ -46,15 +46,22 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   );
   const [showRetry, setShowRetry] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
-        const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+        const data = await getCreditRequestByCode(
+          businessUnitPublicCode,
+          id,
+          userAccount
+        );
         setCreditRequests(data[0] as ICreditRequest);
       } catch (error) {
         errorObserver.notify({
@@ -64,7 +71,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       }
     };
     if (id) fetchCreditRequest();
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, userAccount]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);

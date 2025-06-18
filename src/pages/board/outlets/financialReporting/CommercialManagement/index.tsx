@@ -102,11 +102,14 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width: 720px)");
 
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   const handleOpenModal = (modalName: string) => {
     setModalHistory((prevHistory) => [...prevHistory, modalName]);
@@ -121,7 +124,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
-        const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+        const data = await getCreditRequestByCode(
+          businessUnitPublicCode,
+          id,
+          userAccount
+        );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
         console.error(error);
@@ -131,7 +138,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     if (id) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, userAccount]);
 
   const handleDisbursement = async () => {
     if (requests?.creditRequestId) {

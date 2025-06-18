@@ -80,6 +80,7 @@ function BoardLayout() {
           getCreditRequestInProgress(
             businessUnitPublicCode,
             limit,
+            userAccount,
             searchParam
           ),
           getCreditRequestPinned(businessUnitPublicCode),

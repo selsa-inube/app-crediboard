@@ -35,6 +35,7 @@ export interface StaffModalProps {
       analyst: string;
     }>
   >;
+  handleRetry?: () => void;
 }
 
 export function StaffModal(props: StaffModalProps) {
@@ -46,6 +47,7 @@ export function StaffModal(props: StaffModalProps) {
     setAssignedStaff,
     title,
     buttonText,
+    handleRetry,
   } = props;
   const [analystList, setAnalystList] = useState<
     ICommercialManagerAndAnalyst[]
@@ -197,6 +199,9 @@ export function StaffModal(props: StaffModalProps) {
     }
   };
   const handleToggleModal = () => {
+    if (handleRetry) {
+      handleRetry();
+    }
     setShowModal(!showModal);
   };
   const options = {

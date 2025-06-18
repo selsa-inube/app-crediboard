@@ -97,16 +97,18 @@ export const FinancialReporting = () => {
   const [showModal, setShowModal] = useState(false);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   useEffect(() => {
-    getCreditRequestByCode(businessUnitPublicCode, id!)
+    getCreditRequestByCode(businessUnitPublicCode, id!, userAccount)
       .then((data) => {
         setData(data[0]);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [id, businessUnitPublicCode]);
+  }, [id, businessUnitPublicCode, userAccount]);
 
   const fetchAndShowDocuments = async () => {
     if (!data?.creditRequestId || !user?.email || !businessUnitPublicCode)
