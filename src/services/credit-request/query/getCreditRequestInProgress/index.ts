@@ -8,7 +8,8 @@ import { mapCreditRequestToEntities } from "./mapper";
 
 export const getCreditRequestInProgress = async (
   businessUnitPublicCode: string,
-  maxDataBoardServices: number
+  maxDataBoardServices: number,
+  searchParam?: { filter?: string; text?: string }
 ): Promise<ICreditRequest[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -21,12 +22,21 @@ export const getCreditRequestInProgress = async (
         page: "1",
         per_page: maxDataBoard.toString(),
       });
+      if (searchParam?.filter) {
+        const customParams = new URLSearchParams(searchParam.filter);
+        for (const [key, value] of customParams.entries()) {
+          queryParams.set(key, value);
+        }
+      } else if (searchParam?.text) {
+        queryParams.set("textInSearch", searchParam.text);
+      }
       queryParams.set("sort", "desc.isPinned,asc.creditRequestDateOfCreation");
 
       const options: RequestInit = {
         method: "GET",
         headers: {
           "X-Action": "SearchAllCreditRequestsInProgress",
+          "X-User-Name": "ca.rincon97@gm",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -34,7 +44,9 @@ export const getCreditRequestInProgress = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests?${queryParams.toString()}`,
+        decodeURIComponent(
+          `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests?${queryParams.toString()}`
+        ),
         options
       );
 
@@ -43,7 +55,6 @@ export const getCreditRequestInProgress = async (
       if (res.status === 204) {
         return [];
       }
-
       const data = await res.json();
 
       if (!res.ok) {

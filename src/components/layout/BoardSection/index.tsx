@@ -1,5 +1,9 @@
 import { useContext, useEffect, useRef, useState, useCallback } from "react";
-import { MdOutlineChevronRight } from "react-icons/md";
+import {
+  MdOutlineChevronRight,
+  MdOutlineFilterAlt,
+  MdOutlineFilterAltOff,
+} from "react-icons/md";
 import {
   Stack,
   Icon,
@@ -39,26 +43,33 @@ interface BoardSectionProps {
     isPinned: string
   ) => void;
   handleLoadMoreData: () => void;
+  dragIcon?: React.ReactElement;
+  onOrientationChange: (orientation: SectionOrientation) => void;
 }
 
-function BoardSection({
-  sectionTitle,
-  sectionCounter,
-  sectionBackground = "light",
-  orientation = "vertical",
-  sectionInformation,
-  pinnedRequests,
-  errorLoadingPins,
-  searchRequestValue,
-  handlePinRequest,
-  handleLoadMoreData,
-}: BoardSectionProps) {
+
+function BoardSection(props: BoardSectionProps) {
+  const {
+    sectionTitle,
+    sectionCounter,
+    sectionBackground = "light",
+    orientation = "vertical",
+    sectionInformation,
+    pinnedRequests,
+    errorLoadingPins,
+    searchRequestValue,
+    handlePinRequest,
+    handleLoadMoreData,
+    onOrientationChange,
+  } = props;
+  const disabledCollapse = sectionInformation.length === 0;
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
     useMediaQueries(["(max-width: 1024px)", "(max-width: 595px)"]);
-
-  const disabledCollapse = sectionInformation.length === 0;
   const [collapse, setCollapse] = useState(false);
+  const [currentOrientation, setCurrentOrientation] =
+    useState<SectionOrientation>(orientation);
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
+
   const flagMessage = useRef(false);
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -92,6 +103,16 @@ function BoardSection({
         : configOption.textNodata;
     }
     return "";
+  };
+  const handleToggleOrientation = () => {
+    const newOrientation =
+      currentOrientation === "vertical" ? "horizontal" : "vertical";
+    if (newOrientation === "horizontal") {
+      setCollapse(true);
+    }
+
+    setCurrentOrientation(newOrientation);
+    onOrientationChange(newOrientation);
   };
 
   const isRequestPinned = (
@@ -190,7 +211,7 @@ function BoardSection({
         gap="24px"
       >
         <Stack
-          alignItems="end"
+          alignItems="center"
           gap="8px"
           width={orientation === "vertical" ? "180px" : "auto"}
           height={orientation === "vertical" ? "56px" : "auto"}
@@ -210,6 +231,20 @@ function BoardSection({
               />
             </StyledCollapseIcon>
           )}
+
+          <Icon
+            icon={
+              currentOrientation === "vertical" ? (
+                <MdOutlineFilterAlt />
+              ) : (
+                <MdOutlineFilterAltOff />
+              )
+            }
+            appearance="primary"
+            size="24px"
+            onClick={handleToggleOrientation}
+          />
+
           <Text
             type={orientation === "vertical" || isMobile ? "title" : "headline"}
             size={orientation === "vertical" || isMobile ? "large" : "medium"}
@@ -217,6 +252,7 @@ function BoardSection({
             {sectionTitle}
           </Text>
         </Stack>
+
         <Text type="title" size="medium">
           {sectionCounter}
         </Text>

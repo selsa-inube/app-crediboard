@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { SectionOrientation } from "@components/layout/BoardSection/types";
+import { inube } from "@inubekit/inubekit";
 
 interface IStyledBoardContainer {
   $orientation: SectionOrientation;
@@ -38,7 +39,7 @@ const StyledSearch = styled.div<IStyledSearch>`
   cursor: pointer;
   width: ${({ $isMobile, $isExpanded }) => getWidth($isMobile, $isExpanded)};
 
-  & > div > div > div{
+  & > div > div > div {
     padding-left: ${({ $isMobile }) => ($isMobile ? "9px" : "16px")};
   }
 `;
@@ -63,6 +64,22 @@ export const StyledContainerToCenter = styled.div`
   align-items: center;
 `;
 
+export const StyledRequestsContainer = styled.div<IStyledInputsContainer>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 688px;
+
+  ${({ $isMobile, theme }) =>
+    !$isMobile &&
+    `
+      padding: 12px ;
+      gap:  16px ;
+      border-radius: 8px;
+      border: 1px solid ${theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};
+    `}
+`;
+
 interface IStyledError {
   $isMobile: boolean;
 }
@@ -84,4 +101,9 @@ const StyledError = styled.div<IStyledError>`
   }
 `;
 
-export { StyledInputsContainer, StyledBoardContainer, StyledError, StyledSearch };
+export {
+  StyledInputsContainer,
+  StyledBoardContainer,
+  StyledError,
+  StyledSearch,
+};
