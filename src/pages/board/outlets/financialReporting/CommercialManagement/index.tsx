@@ -9,6 +9,7 @@ import {
   MdOutlineShare,
   MdOutlineVideocam,
   MdOutlinePayments,
+  MdOutlineInfo,
 } from "react-icons/md";
 import {
   Stack,
@@ -41,10 +42,12 @@ import { getModeOfDisbursement } from "@services/credit-request/query/getModeOfD
 import { AppContext } from "@context/AppContext";
 import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
+import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
 
-import { menuOptions, tittleOptions } from "./config/config";
+import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
+import { menuOptions, tittleOptions } from "./config/config";
 import {
   StyledCollapseIcon,
   StyledFieldset,
@@ -62,6 +65,7 @@ interface ComercialManagementProps {
   id: string;
   isPrint?: boolean;
   hideContactIcons?: boolean;
+  hasPermitRejection?: boolean;
 }
 
 export const ComercialManagement = (props: ComercialManagementProps) => {
@@ -74,8 +78,10 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     id,
     hideContactIcons,
     prospectData,
+    hasPermitRejection,
   } = props;
   const [showMenu, setShowMenu] = useState(false);
+  const [infoModal, setInfoModal] = useState(false);
   const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     []
@@ -184,6 +190,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
   const handleCollapse = () => {
     setCollapse(!collapse);
+    setShowMenu(false);
   };
 
   const currentModal = modalHistory[modalHistory.length - 1];
@@ -301,17 +308,29 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           >
                             {tittleOptions.titleProfile}
                           </Button>
-                          <Button
-                            type="button"
-                            spacing="compact"
-                            variant="outlined"
-                            onClick={() => {
-                              handleDisbursement();
-                              handleOpenModal("disbursementModal");
-                            }}
-                          >
-                            {tittleOptions.titleDisbursement}
-                          </Button>
+                          <Stack gap="2px" alignItems="center">
+                            <Button
+                              type="button"
+                              spacing="compact"
+                              variant="outlined"
+                              disabled={hasPermitRejection ? false : true}
+                              onClick={() => {
+                                handleDisbursement();
+                                handleOpenModal("disbursementModal");
+                              }}
+                            >
+                              {tittleOptions.titleDisbursement}
+                            </Button>
+                            {!hasPermitRejection && (
+                              <Icon
+                                icon={<MdOutlineInfo />}
+                                appearance="primary"
+                                size="16px"
+                                cursorHover
+                                onClick={() => setInfoModal(true)}
+                              />
+                            )}
+                          </Stack>
                         </Stack>
                       </StyledPrint>
                       {!hideContactIcons && (
@@ -491,7 +510,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                                 (product) => product.extraordinaryInstallments
                               )
                             )}
-                            onMouseLeave={() => setShowMenu(false)}
                           />
                         )}
                       </StyledContainerIcon>
@@ -530,6 +548,26 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 }}
                 handleDisbursement={handleDisbursement}
               />
+            )}
+            {infoModal && (
+              <>
+                <BaseModal
+                  title={titlesModal.title}
+                  nextButton={titlesModal.textButtonNext}
+                  handleNext={() => setInfoModal(false)}
+                  handleClose={() => setInfoModal(false)}
+                  width={isMobile ? "290px" : "400px"}
+                >
+                  <Stack gap="16px" direction="column">
+                    <Text weight="bold" size="large">
+                      {titlesModal.subTitle}
+                    </Text>
+                    <Text weight="normal" size="medium" appearance="gray">
+                      {titlesModal.description}
+                    </Text>
+                  </Stack>
+                </BaseModal>
+              </>
             )}
           </StyledFieldset>
         )}

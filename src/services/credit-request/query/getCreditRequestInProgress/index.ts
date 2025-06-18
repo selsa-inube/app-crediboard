@@ -28,6 +28,7 @@ export const getCreditRequestInProgress = async (
         headers: {
           "X-Action": "SearchAllCreditRequestsInProgress",
           "X-Business-Unit": businessUnitPublicCode,
+          "X-User-Name": "ca.rincon97@gm",
           "Content-type": "application/json; charset=UTF-8",
         },
         signal: controller.signal,

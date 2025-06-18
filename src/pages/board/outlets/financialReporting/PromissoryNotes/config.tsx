@@ -1,13 +1,10 @@
-import { isValidElement } from "react";
-import {
-  MdOutlineShare,
-  MdOutlineRemoveRedEye,
-  MdCheck,
-  MdRemove,
-  MdClose,
-} from "react-icons/md";
-import { Icon } from "@inubekit/inubekit";
+import { MdOutlineShare, MdOutlineRemoveRedEye } from "react-icons/md";
+import { Icon, Stack } from "@inubekit/inubekit";
+
 import { IEntries } from "@components/data/TableBoard/types";
+import check from "@assets/images/check.svg";
+import close from "@assets/images/close.svg";
+import remove from "@assets/images/remove.svg";
 
 const entrySelection = (data: IEntries) => {
   console.log(data);
@@ -69,25 +66,6 @@ export const actionsFinanacialReporting = [
   },
 ];
 
-const iconActionsMobile = (tag: string) => {
-  if (tag === "Aprobado") {
-    return <MdCheck />;
-  } else if (tag === "Pendiente") {
-    return <MdRemove />;
-  } else {
-    return <MdClose />;
-  }
-};
-
-interface TagProps {
-  appearance?: string;
-  label?: string;
-}
-
-interface TagElement {
-  props: TagProps;
-}
-
 export const infoItems = [
   { icon: <MdOutlineShare />, text: "Reenviar", appearance: "primary" },
   {
@@ -97,33 +75,7 @@ export const infoItems = [
   },
 ];
 
-const isValidTagElement = (element: unknown): element is TagElement => {
-  return isValidElement(element) && element.props !== undefined;
-};
-
 export const actionMobile = [
-  {
-    id: "tags",
-    actionName: "",
-    content: (data: IEntries) => (
-      <Icon
-        icon={
-          isValidElement(data?.tag) &&
-          iconActionsMobile(data?.tag?.props?.label)
-        }
-        appearance={
-          isValidTagElement(data?.tag)
-            ? data?.tag?.props?.appearance
-            : undefined
-        }
-        spacing="narrow"
-        cursorHover
-        variant="filled"
-        shape="circle"
-        size="16px"
-      />
-    ),
-  },
   {
     id: "Reenviar",
     actionName: "Reenviar",
@@ -205,3 +157,39 @@ export const getTableBoardActionMobile = (
       />
     ),
   }));
+
+const getIconByTagStatus = (tagElement: React.ReactElement) => {
+  const label = tagElement.props.label;
+
+  if (label === "Firmado") {
+    return <img src={check} alt="Cumple" width={14} height={14} />;
+  } else if (label === "En tramite") {
+    return <img src={remove} alt="Sin Evaluar" width={14} height={14} />;
+  } else if (label === "Con error") {
+    return <img src={close} alt="No Cumple" width={14} height={14} />;
+  } else {
+    return null;
+  }
+};
+
+export const getActionsMobileIcon = () => {
+  return [
+    {
+      id: "estado",
+      actionName: "",
+      content: (entry: IEntries) => {
+        const tagElement = entry.tag as React.ReactElement;
+        return (
+          <Stack>
+            <Icon
+              icon={getIconByTagStatus(tagElement)}
+              appearance={tagElement.props.appearance}
+              cursorHover
+              size="20px"
+            />
+          </Stack>
+        );
+      },
+    },
+  ];
+};

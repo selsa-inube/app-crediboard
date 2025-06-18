@@ -6,7 +6,11 @@ import {
   MdRemove,
   MdWarningAmber,
 } from "react-icons/md";
-import { Icon, Tag } from "@inubekit/inubekit";
+import { Icon, Stack, Tag } from "@inubekit/inubekit";
+
+import check from "@assets/images/check.svg";
+import close from "@assets/images/close.svg";
+import remove from "@assets/images/remove.svg";
 
 import { IEntries } from "@components/data/TableBoard/types";
 import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";
@@ -64,25 +68,6 @@ export const actionsApprovals = [
   },
 ];
 
-const iconActionsMobile = (tag: string) => {
-  if (tag === "Aprobado") {
-    return <MdCheck />;
-  } else if (tag === "Pendiente") {
-    return <MdRemove />;
-  } else {
-    return <MdClose />;
-  }
-};
-
-interface TagProps {
-  appearance?: string;
-  label?: string;
-}
-
-interface TagElement {
-  props: TagProps;
-}
-
 export const infoItems = [
   { icon: <MdCheck />, text: "Aprobado", appearance: "success" },
   { icon: <MdClose />, text: "Rechazado", appearance: "danger" },
@@ -97,32 +82,7 @@ export const infoItems = [
   },
 ];
 
-const isValidTagElement = (element: unknown): element is TagElement => {
-  return isValidElement(element) && element.props !== undefined;
-};
-
 export const actionMobileApprovals = [
-  {
-    id: "tags",
-    actionName: "",
-    content: (data: IEntries) => (
-      <Icon
-        icon={
-          isValidElement(data?.tag) &&
-          iconActionsMobile(data?.tag?.props?.label)
-        }
-        appearance={
-          isValidTagElement(data?.tag)
-            ? data?.tag?.props?.appearance
-            : undefined
-        }
-        cursorHover
-        variant="filled"
-        shape="circle"
-        size="20px"
-      />
-    ),
-  },
   {
     id: "Error",
     actionName: "",
@@ -244,6 +204,42 @@ const appearanceTag = (label: string) => {
     return "dark";
   }
   return "danger";
+};
+
+const getIconByTagStatus = (tagElement: React.ReactElement) => {
+  const label = tagElement.props.label;
+
+  if (label === "Aprobado") {
+    return <img src={check} alt="Cumple" width={14} height={14} />;
+  } else if (label === "Pendiente") {
+    return <img src={remove} alt="Sin Evaluar" width={14} height={14} />;
+  } else if (label === "Rechazado") {
+    return <img src={close} alt="No Cumple" width={14} height={14} />;
+  } else {
+    return null;
+  }
+};
+
+export const getActionsMobileIcon = () => {
+  return [
+    {
+      id: "estado",
+      actionName: "",
+      content: (entry: IEntries) => {
+        const tagElement = entry.tag as React.ReactElement;
+        return (
+          <Stack>
+            <Icon
+              icon={getIconByTagStatus(tagElement)}
+              appearance={tagElement.props.appearance}
+              cursorHover
+              size="20px"
+            />
+          </Stack>
+        );
+      },
+    },
+  ];
 };
 
 export const entriesApprovals = (data: IApprovals[]) => {

@@ -1,5 +1,5 @@
 export const aprovalsConfig = {
-  title: "Evaluacón del requisito",
+  title: "Evaluación del requisito",
   meets: "Cumple el requisito",
   doesNotComply: "No cumple el requisito",
   observations: "Observaciones",

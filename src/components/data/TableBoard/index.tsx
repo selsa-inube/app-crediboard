@@ -13,6 +13,7 @@ export interface ITableBoardProps extends IInfoItems {
   titles: ITitle[];
   actions?: IAction[];
   actionMobile?: IAction[];
+  actionMobileIcon?: IAction[];
   borderTable?: boolean;
   loading?: boolean;
   portalId?: string;
@@ -26,6 +27,7 @@ export const TableBoard = (props: ITableBoardProps) => {
     titles,
     actions,
     actionMobile,
+    actionMobileIcon,
     loading = false,
     borderTable = false,
     portalId,
@@ -48,6 +50,7 @@ export const TableBoard = (props: ITableBoardProps) => {
       actions={actions}
       entries={entries}
       actionMobile={actionMobile}
+      actionMobileIcon={actionMobileIcon}
       borderTable={borderTable}
       loading={loading}
       portalId={portalId}

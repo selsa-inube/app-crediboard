@@ -2,6 +2,7 @@ import { MdInfoOutline } from "react-icons/md";
 import { Stack, Icon, Text } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
+import { currencyFormat } from "@utils/formatData/currency";
 
 import { dataBail } from "./config";
 
@@ -24,14 +25,14 @@ export function Bail(props: IBailProps) {
       >
         {data ? (
           <>
-            <Stack direction="column" gap="8px">
+            <Stack direction="column" gap="8px" alignItems="center">
               <Text
                 type="headline"
                 weight="bold"
                 size="large"
                 appearance="primary"
               >
-                $ {data}
+                {currencyFormat(data)}
               </Text>
               <Text type="body" size="small" appearance="gray">
                 {dataBail.bail}

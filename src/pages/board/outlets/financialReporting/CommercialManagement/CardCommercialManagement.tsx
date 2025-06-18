@@ -1,19 +1,26 @@
-import { useEffect, useState } from "react";
-import { Stack, Divider, useMediaQuery } from "@inubekit/inubekit";
+import { useContext, useEffect, useState } from "react";
+import { Stack, Divider, useMediaQuery, useFlag } from "@inubekit/inubekit";
 
 import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
 import { CardValues } from "@components/cards/cardValues";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { ConsolidatedCredits } from "@components/modals/ConsolidatedCreditModal";
-import { SummaryProspectCredit } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
+import {
+  SummaryProspectCredit,
+  tittleOptions,
+} from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
-import { mockCommercialManagement } from "@mocks/financialReporting/commercialmanagement.mock";
+import { getSearchProspectSummaryById } from "@services/prospects/ProspectSummaryById";
+import { AppContext } from "@context/AppContext";
 import { IProspect, ICreditProduct } from "@services/prospects/types";
 import { Schedule } from "@services/enums";
 import { DeductibleExpensesModal } from "@components/modals/DeductibleExpensesModal";
+import { IProspectSummaryById } from "@services/prospects/ProspectSummaryById/types";
+import { getAllDeductibleExpensesById } from "@services/iProspect/deductibleExpenses";
 
 import { StyledCardsCredit, StyledPrint } from "./styles";
+import { EditProductModal } from "@components/modals/ProspectProductModal";
 
 interface CardCommercialManagementProps {
   id: string;
@@ -30,12 +37,26 @@ export const CardCommercialManagement = (
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     []
   );
+  const { addFlag } = useFlag();
+  const { businessUnitSigla } = useContext(AppContext);
+  const businessUnitPublicCode: string =
+    JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ICreditProduct | null>(
+    null
+  );
+  const currentModal = modalHistory[modalHistory.length - 1];
   const [selectedProductId, setSelectedProductId] = useState("");
-
+  const [prospectSummaryData, setProspectSummaryData] =
+    useState<IProspectSummaryById>();
   const [showConsolidatedModal, setShowConsolidatedModal] = useState(false);
   const [showDeductibleExpensesModal, setDeductibleExpensesModal] =
     useState(false);
+  const [deductibleExpenses, setDeductibleExpenses] = useState<
+    { expenseName: string; expenseValue: number }[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (prospectData?.creditProducts) {
@@ -59,6 +80,54 @@ export const CardCommercialManagement = (
     setSelectedProductId(creditProductId);
     setShowDeleteModal(true);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await getSearchProspectSummaryById(
+          businessUnitPublicCode,
+          id!
+        );
+        if (result) {
+          setProspectSummaryData(result);
+        }
+      } catch (error) {
+        addFlag({
+          title: tittleOptions.titleError,
+          description: tittleOptions.descriptionError,
+          appearance: "danger",
+          duration: 5000,
+        });
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, id]);
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const data = await getAllDeductibleExpensesById(
+          businessUnitPublicCode,
+          prospectData?.prospectId || ""
+        );
+        setDeductibleExpenses(data);
+      } catch (error) {
+        addFlag({
+          title: tittleOptions.deductibleExpensesErrorTitle,
+          description: `${error}`,
+          appearance: "danger",
+          duration: 5000,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchExpenses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, prospectData?.prospectId]);
 
   return (
     <div ref={dataRef}>
@@ -84,7 +153,10 @@ export const CardCommercialManagement = (
                 entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
               }
               schedule={entry.schedule as Schedule}
-              onEdit={() => {}}
+              onEdit={() => {
+                setSelectedProduct(entry);
+                setModalHistory((prev) => [...prev, "editProductModal"]);
+              }}
               onDelete={() => handleDeleteClick(entry.creditProductCode)}
             />
           ))}
@@ -103,9 +175,9 @@ export const CardCommercialManagement = (
         {SummaryProspectCredit.map((entry, index) => (
           <CardValues
             key={index}
-            items={entry.item.map((item, index) => ({
+            items={entry.item.map((item) => ({
               ...item,
-              amount: mockCommercialManagement[index]?.amount,
+              amount: String(prospectSummaryData?.[item.id] ?? 0),
             }))}
             showIcon={entry.iconEdit}
             isMobile={isMobile}
@@ -120,6 +192,27 @@ export const CardCommercialManagement = (
           handleDelete={handleDelete}
         />
       )}
+      {currentModal === "editProductModal" && selectedProduct && (
+        <EditProductModal
+          onCloseModal={() => setModalHistory((prev) => prev.slice(0, -1))}
+          onConfirm={() => setModalHistory((prev) => prev.slice(0, -1))}
+          title={`Editar producto`}
+          confirmButtonText="Guardar"
+          initialValues={{
+            creditLine: selectedProduct.lineOfCreditAbbreviatedName || "",
+            creditAmount: selectedProduct.loanAmount || 0,
+            paymentMethod:
+              selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
+                ?.paymentChannelAbbreviatedName || "",
+            paymentCycle: selectedProduct.schedule || "",
+            firstPaymentCycle: "",
+            termInMonths: selectedProduct.loanTerm || 0,
+            amortizationType: "",
+            interestRate: selectedProduct.interestRate || 0,
+            rateType: "",
+          }}
+        />
+      )}
       {showConsolidatedModal && (
         <ConsolidatedCredits
           handleClose={() => setShowConsolidatedModal(false)}
@@ -129,6 +222,9 @@ export const CardCommercialManagement = (
       {showDeductibleExpensesModal && (
         <DeductibleExpensesModal
           handleClose={() => setDeductibleExpensesModal(false)}
+          initialValues={deductibleExpenses}
+          loading={isLoading}
+          isMobile={isMobile}
         />
       )}
     </div>

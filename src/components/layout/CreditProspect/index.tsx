@@ -18,9 +18,8 @@ import { IncomeModal } from "@components/modals/IncomeModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { BaseModal } from "@components/modals/baseModal";
-import { CreditLimit } from "@components/modals/CreditLimit";
 import { ShareCreditModal } from "@components/modals/ShareCreditModal";
-import { ICreditProductProspect } from "@services/types";
+import { ICreditProductProspect, IPaymentChannel } from "@services/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { addCreditProduct } from "@mocks/utils/addCreditProductMock.service";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
@@ -35,6 +34,7 @@ import {
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { getPropertyValue } from "@utils/mappingData/mappings";
 import { IProspect } from "@services/prospects/types";
+import { CreditLimitModal } from "@components/modals/CreditLimitModal";
 
 import { IncomeDebtor } from "./incomeDebtor";
 import { dataCreditProspect } from "./config";
@@ -60,6 +60,7 @@ export function CreditProspect(props: ICreditProspectProps) {
 
   const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [openModal, setOpenModal] = useState<string | null>(null);
+  const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showShareModal, setShowShareModal] = useState(false);
   const [dataProspect, setDataProspect] = useState<IProspect[]>([]);
   const [incomeData, setIncomeData] = useState<Record<string, IIncomeSources>>(
@@ -429,19 +430,11 @@ export function CreditProspect(props: ICreditProspectProps) {
         />
       </Stack>
       {currentModal === "creditLimit" && (
-        <CreditLimit
+        <CreditLimitModal
           handleClose={handleCloseModal}
-          title="Origen de cupo"
-          onOpenPaymentCapacityModal={() => setOpenModal("paymentCapacity")}
-          onOpenReciprocityModal={() => setOpenModal("reciprocityModal")}
-          onOpenFrcModal={() => setOpenModal("scoreModal")}
-          maxPaymentCapacity={50000000}
-          maxReciprocity={40000000}
-          maxDebtFRC={45000000}
-          assignedLimit={0}
-          currentPortfolio={10000000}
-          maxUsableLimit={20000000}
-          availableLimitWithoutGuarantee={15000000}
+          isMobile={isMobile}
+          setRequestValue={setRequestValue || (() => {})}
+          requestValue={requestValue}
         />
       )}
       {openModal === "paymentCapacity" && (
@@ -551,12 +544,10 @@ export function CreditProspect(props: ICreditProspectProps) {
       {currentModal === "reportCreditsModal" && (
         <ReportCreditsModal
           handleClose={handleCloseModal}
-          totalBalance={87000000}
-          totalFee={3300000}
           options={incomeOptions}
           onChange={onChanges}
           debtor={form.borrower}
-          dataProspect={dataProspect}
+          prospectData={prospectData ? [prospectData] : undefined}
         />
       )}
       {currentModal === "extraPayments" && (

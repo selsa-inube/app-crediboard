@@ -78,6 +78,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         title={errorMessages.Postingvouchers.titleCard}
         heightFieldset={isMobile ? "100%" : "162px"}
         hasTable
+        hasOverflow={isMobile}
       >
         {error || (!loading && positionsAccountingVouchers.length === 0) ? (
           <UnfoundData

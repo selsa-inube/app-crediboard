@@ -98,10 +98,6 @@ export const FinancialReporting = () => {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
-  const hasPermitRejection = eventData.user.staff.useCases.canReject
-    ? true
-    : false;
-
   useEffect(() => {
     getCreditRequestByCode(businessUnitPublicCode, id!)
       .then((data) => {
@@ -345,7 +341,7 @@ export const FinancialReporting = () => {
               isMobile={isMobile}
               actionButtons={handleActions}
               navigation={() => navigation("/")}
-              hasPermitRejection={hasPermitRejection}
+              eventData={eventData}
             />
           }
         >
@@ -361,6 +357,9 @@ export const FinancialReporting = () => {
                     id={id!}
                     hideContactIcons={true}
                     prospectData={dataProspect!}
+                    hasPermitRejection={
+                      eventData.user.staff.useCases.canSendDecision
+                    }
                   />
                 </Stack>
               </Stack>
@@ -384,6 +383,9 @@ export const FinancialReporting = () => {
                     user={user!.nickname!}
                     businessUnitPublicCode={businessUnitPublicCode}
                     creditRequestCode={data.creditRequestCode!}
+                    hasPermitRejection={
+                      eventData.user.staff.useCases.canAddRequirements
+                    }
                   />
                 </Stack>
                 <Stack direction="column">

@@ -1,14 +1,15 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdOutlineChevronLeft } from "react-icons/md";
-import { Stack, Text, Grid, useMediaQueries, Button } from "@inubekit/inubekit";
+import { Stack, Text, Button, useMediaQuery } from "@inubekit/inubekit";
+
 import { get, getById } from "@mocks/utils/dataMock.service";
 import { ICreditRequest, IRiskScoring } from "@services/types";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { currencyFormat } from "@utils/formatData/currency";
-import { generatePDF } from "@utils/pdf/generetePDF";
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { AppContext } from "@context/AppContext";
+
 import { CreditBehavior } from "./CreditBehaviorCard";
 import { Guarantees } from "./Guarantees";
 import { JobStabilityCard } from "./JobStabilityCard";
@@ -16,19 +17,14 @@ import { PaymentCapacity } from "./PaymentCapacity";
 import { OpenWallet } from "./OpenWallet";
 import { RiskScoring } from "./RiskScoring";
 import {
-  StyledDivider,
   StyledContainerToCenter,
   StyledUl,
   StyledLi,
+  StyledPrint,
+  StyledNoPrint,
+  StyledGridPrint,
 } from "./styles";
 import { fieldLabels } from "./config";
-
-const margins = {
-  top: 20,
-  bottom: 0,
-  left: 25.4,
-  right: 25.4,
-};
 
 export const CreditProfileInfo = () => {
   const [requests, setRequests] = useState({} as ICreditRequest);
@@ -78,9 +74,6 @@ export const CreditProfileInfo = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const dataPrint = useRef<HTMLDivElement>(null);
-
   const [dataWereObtained, setWataWereObtained] = useState(false);
   const [dataBehaviorError, setBehaviorError] = useState(false);
   const [dataCreditProfile, setCreditProfile] = useState(false);
@@ -95,8 +88,7 @@ export const CreditProfileInfo = () => {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
-  const { "(max-width: 1200px)": isTablet, "(max-width: 751px)": isMobile } =
-    useMediaQueries(["(max-width: 1200px)", "(max-width: 751px)"]);
+  const isMobile = useMediaQuery("(max-width:880px)");
 
   useEffect(() => {
     (async () => {
@@ -213,36 +205,42 @@ export const CreditProfileInfo = () => {
     dataUncoveredWallet,
   ]);
 
-  const handlePrint = () => {
-    setIsGeneratingPdf(true);
-    generatePDF(dataPrint, "", "Perfil crediticio del cliente", margins);
-    setIsGeneratingPdf(false);
-  };
-
   return (
-    <StyledContainerToCenter ref={dataPrint}>
-      <Stack direction="column">
-        <Stack
-          justifyContent="space-between"
-          alignItems="center"
-          margin={isTablet ? "16px" : "20px 40px"}
-          gap="16px"
-        >
-          <Button
-            spacing="compact"
-            variant="outlined"
-            iconBefore={<MdOutlineChevronLeft />}
-            onClick={() => navigate(-1)}
+    <StyledPrint>
+      <StyledContainerToCenter>
+        <Stack direction="column">
+          <Stack
+            justifyContent="space-between"
+            alignItems="center"
+            margin={!isMobile ? "16px" : "20px 40px"}
+            gap="16px"
           >
-            Volver
-          </Button>
-          {!isTablet && (
-            <>
-              <Text type="title" size="medium" appearance="gray" weight="bold">
-                Perfil crediticio
-              </Text>
-              <StyledUl>
-                <StyledLi>
+            {isMobile ? (
+              <Stack direction="column" gap="16px" width="100%">
+                <StyledNoPrint>
+                  <Stack justifyContent="space-between">
+                    <Button
+                      spacing="compact"
+                      variant="outlined"
+                      iconBefore={<MdOutlineChevronLeft />}
+                      onClick={() => navigate(-1)}
+                    >
+                      {fieldLabels.back}
+                    </Button>
+                    <Button spacing="compact" variant="filled">
+                      {fieldLabels.print}
+                    </Button>
+                  </Stack>
+                </StyledNoPrint>
+                <Stack direction="column" alignItems="center">
+                  <Text
+                    type="title"
+                    size="medium"
+                    appearance="gray"
+                    weight="bold"
+                  >
+                    {fieldLabels.creditProfile}
+                  </Text>
                   <Text
                     type="title"
                     size="medium"
@@ -253,8 +251,6 @@ export const CreditProfileInfo = () => {
                       ? capitalizeFirstLetterEachWord(requests.clientName)
                       : ""}
                   </Text>
-                </StyledLi>
-                <StyledLi>
                   <Text
                     type="title"
                     size="medium"
@@ -263,140 +259,148 @@ export const CreditProfileInfo = () => {
                   >
                     {`CC: ${requests.clientIdentificationNumber}`}
                   </Text>
-                </StyledLi>
-              </StyledUl>
-              <Text type="title" size="medium" appearance="gray" weight="bold">
-                {currencyFormat(requests.loanAmount)}
-              </Text>
-            </>
-          )}
-          <Button
-            onClick={handlePrint}
-            disabled={isGeneratingPdf}
-            spacing="compact"
-            variant="filled"
-          >
-            {fieldLabels.print}
-          </Button>
+                  <Text
+                    type="title"
+                    size="medium"
+                    appearance="gray"
+                    weight="bold"
+                  >
+                    {currencyFormat(requests.loanAmount)}
+                  </Text>
+                </Stack>
+              </Stack>
+            ) : (
+              <>
+                <StyledNoPrint>
+                  <Button
+                    spacing="compact"
+                    variant="outlined"
+                    iconBefore={<MdOutlineChevronLeft />}
+                    onClick={() => navigate(-1)}
+                  >
+                    {fieldLabels.back}
+                  </Button>
+                </StyledNoPrint>
+                <Text
+                  type="title"
+                  size="medium"
+                  appearance="gray"
+                  weight="bold"
+                >
+                  {fieldLabels.creditProfile}
+                </Text>
+                <StyledUl>
+                  <StyledLi>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="normal"
+                    >
+                      {requests.clientName
+                        ? capitalizeFirstLetterEachWord(requests.clientName)
+                        : ""}
+                    </Text>
+                  </StyledLi>
+                  <StyledLi>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="normal"
+                    >
+                      {`CC: ${requests.clientIdentificationNumber}`}
+                    </Text>
+                  </StyledLi>
+                </StyledUl>
+                <Text
+                  type="title"
+                  size="medium"
+                  appearance="gray"
+                  weight="bold"
+                >
+                  {currencyFormat(requests.loanAmount)}
+                </Text>
+                <StyledNoPrint>
+                  <Button
+                    onClick={() => print()}
+                    spacing="compact"
+                    variant="filled"
+                  >
+                    {fieldLabels.print}
+                  </Button>
+                </StyledNoPrint>
+              </>
+            )}
+          </Stack>
         </Stack>
-        {isTablet && (
-          <>
-            <StyledDivider />
-            <Stack
-              direction="column"
-              alignItems="center"
-              padding="20px 0px 0px"
-              gap="4px"
-            >
-              <Text type="title" size="medium" appearance="gray" weight="bold">
-                {fieldLabels.creditProfile}
-              </Text>
-              <StyledUl $isTablet={isTablet}>
-                <StyledLi>
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="normal"
-                  >
-                    {requests.clientName
-                      ? capitalizeFirstLetterEachWord(requests.clientName)
-                      : ""}
-                  </Text>
-                </StyledLi>
-                <StyledLi>
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="normal"
-                  >
-                    {`CC: ${requests.clientIdentificationNumber}`}
-                  </Text>
-                </StyledLi>
-              </StyledUl>
-              <Text type="title" size="medium" appearance="gray" weight="bold">
-                {currencyFormat(requests.loanAmount)}
-              </Text>
-            </Stack>
-          </>
-        )}
-      </Stack>
-      <Grid
-        templateColumns={
-          isTablet
-            ? "repeat(auto-fit, minmax(320px, 1fr))"
-            : "repeat(auto-fit, minmax(350px, 1fr))"
-        }
-        gap="20px"
-        autoRows="minmax(auto, max-content)"
-        margin={isTablet ? "20px" : "20px 40px"}
-      >
-        <JobStabilityCard
-          companySeniority={credit_profileInfo.company_seniority}
-          stabilityIndex={credit_profileInfo.labor_stability_index}
-          estimatedCompensation={credit_profileInfo.estimated_severance}
-          isMobile={isMobile}
-          dataCreditProfile={dataCreditProfile}
-          setCreditProfile={setCreditProfile}
-        />
-        <PaymentCapacity
-          availableValue={payment_capacity.available_value}
-          availablePercentage={100 - payment_capacity.percentage_used}
-          incomeB={payment_capacity.base_income}
-          percentageUsed={payment_capacity.percentage_used}
-          isMobile={isMobile}
-          dataPaymentcapacity={dataPaymentcapacity}
-          setPaymentcapacity={setPaymentcapacity}
-        />
-        <OpenWallet
-          overdraftFactor={uncovered_wallet.overdraft_factor}
-          valueDiscovered={uncovered_wallet.discovered_value}
-          reciprocity={uncovered_wallet.reciprocity}
-          isMobile={isMobile}
-          dataUncoveredWallet={dataUncoveredWallet}
-          setUncoveredWallet={setUncoveredWallet}
-        />
-        <RiskScoring
-          totalScore={riskScoring.total_score}
-          minimumScore={riskScoring.minimum_score}
-          seniority={riskScoring.seniority}
-          seniorityScore={riskScoring.seniority_score}
-          riskCenter={riskScoring.risk_center}
-          riskCenterScore={riskScoring.risk_center_score}
-          jobStabilityIndex={riskScoring.job_stability_index}
-          jobStabilityIndexScore={riskScoring.job_stability_index_score}
-          maritalStatusScore={riskScoring.marital_status_score}
-          economicActivityScore={riskScoring.economic_activity_score}
-          maritalStatus={riskScoring.marital_status}
-          economicActivity={riskScoring.economic_activity}
-          isLoading={loading}
-          isMobile={isMobile}
-          dataWereObtained={Object.keys(riskScoring).length === 0}
-          dataRiskScoringMax={riskScoringMax}
-          setWataWereObtained={setWataWereObtained}
-        />
-        <Guarantees
-          guaranteesRequired="Ninguna garantía real, o fianza o codeudor."
-          guaranteesOffered="Ninguna, casa Bogotá 200 mt2, o fianza o codeudor Pedro Pérez."
-          guaranteesCurrent="Ninguna, apartamento, en Bogotá 80 mt2, o vehículo Mazda 323."
-          isMobile={isMobile}
-          dataWereObtained={dataWereObtained}
-        />
-        <CreditBehavior
-          centralScoreRisky={credit_behavior.core_risk_score}
-          centralScoreDate={String(credit_behavior.central_risk_score_date)}
-          numberInternalBlackberries={
-            credit_behavior.number_of_internal_arrears
-          }
-          maximumNumberInstallmentsArrears={
-            credit_behavior.maximum_number_of_installments_in_arrears
-          }
-          isMobile={isMobile}
-          dataBehaviorError={dataBehaviorError}
-          setBehaviorError={setBehaviorError}
-        />
-      </Grid>
-    </StyledContainerToCenter>
+        <StyledGridPrint $isMobile={isMobile}>
+          <JobStabilityCard
+            companySeniority={credit_profileInfo.company_seniority}
+            stabilityIndex={credit_profileInfo.labor_stability_index}
+            estimatedCompensation={credit_profileInfo.estimated_severance}
+            isMobile={isMobile}
+            dataCreditProfile={dataCreditProfile}
+            setCreditProfile={setCreditProfile}
+          />
+          <PaymentCapacity
+            availableValue={payment_capacity.available_value}
+            availablePercentage={100 - payment_capacity.percentage_used}
+            incomeB={payment_capacity.base_income}
+            percentageUsed={payment_capacity.percentage_used}
+            isMobile={isMobile}
+            dataPaymentcapacity={dataPaymentcapacity}
+            setPaymentcapacity={setPaymentcapacity}
+          />
+          <OpenWallet
+            overdraftFactor={uncovered_wallet.overdraft_factor}
+            valueDiscovered={uncovered_wallet.discovered_value}
+            reciprocity={uncovered_wallet.reciprocity}
+            isMobile={isMobile}
+            dataUncoveredWallet={dataUncoveredWallet}
+            setUncoveredWallet={setUncoveredWallet}
+          />
+          <RiskScoring
+            totalScore={riskScoring.total_score}
+            minimumScore={riskScoring.minimum_score}
+            seniority={riskScoring.seniority}
+            seniorityScore={riskScoring.seniority_score}
+            riskCenter={riskScoring.risk_center}
+            riskCenterScore={riskScoring.risk_center_score}
+            jobStabilityIndex={riskScoring.job_stability_index}
+            jobStabilityIndexScore={riskScoring.job_stability_index_score}
+            maritalStatusScore={riskScoring.marital_status_score}
+            economicActivityScore={riskScoring.economic_activity_score}
+            maritalStatus={riskScoring.marital_status}
+            economicActivity={riskScoring.economic_activity}
+            isLoading={loading}
+            isMobile={isMobile}
+            dataWereObtained={Object.keys(riskScoring).length === 0}
+            dataRiskScoringMax={riskScoringMax}
+            setWataWereObtained={setWataWereObtained}
+          />
+          <Guarantees
+            guaranteesRequired="Ninguna garantía real, o fianza o codeudor."
+            guaranteesOffered="Ninguna, casa Bogotá 200 mt2, o fianza o codeudor Pedro Pérez."
+            guaranteesCurrent="Ninguna, apartamento, en Bogotá 80 mt2, o vehículo Mazda 323."
+            isMobile={isMobile}
+            dataWereObtained={dataWereObtained}
+          />
+          <CreditBehavior
+            centralScoreRisky={credit_behavior.core_risk_score}
+            centralScoreDate={String(credit_behavior.central_risk_score_date)}
+            numberInternalBlackberries={
+              credit_behavior.number_of_internal_arrears
+            }
+            maximumNumberInstallmentsArrears={
+              credit_behavior.maximum_number_of_installments_in_arrears
+            }
+            isMobile={isMobile}
+            dataBehaviorError={dataBehaviorError}
+            setBehaviorError={setBehaviorError}
+          />
+        </StyledGridPrint>
+      </StyledContainerToCenter>
+    </StyledPrint>
   );
 };

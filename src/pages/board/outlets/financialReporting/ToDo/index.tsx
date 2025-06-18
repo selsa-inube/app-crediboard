@@ -6,7 +6,6 @@ import {
   Icon,
   Text,
   SkeletonLine,
-  IOption,
   Select,
   Button,
 } from "@inubekit/inubekit";
@@ -25,6 +24,7 @@ import { AppContext } from "@context/AppContext";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { BaseModal } from "@components/modals/baseModal";
+import { decisions as decisionsEnum } from "@services/enum/icorebanking-vi-crediboard/decisions/decisions";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -34,7 +34,7 @@ import {
   txtTaskQuery,
   titlesModal,
 } from "./config";
-import { IICon, IButton } from "./types";
+import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
 import { StyledHorizontalDivider, StyledTextField } from "../styles";
 import { errorMessages, errorObserver } from "../config";
@@ -55,10 +55,9 @@ function ToDo(props: ToDoProps) {
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [staff, setStaff] = useState<IStaff[]>([]);
-  const [taskDecisions, setTaskDecisions] = useState<IOption[]>([]);
-  const [selectedDecision, setSelectedDecision] = useState<IOption | null>(
-    null
-  );
+  const [taskDecisions, setTaskDecisions] = useState<ITaskDecisionOption[]>([]);
+  const [selectedDecision, setSelectedDecision] =
+    useState<ITaskDecisionOption | null>(null);
   const [loading, setLoading] = useState(true);
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -100,9 +99,6 @@ function ToDo(props: ToDoProps) {
 
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-
-  const hasPermitSend = Boolean(eventData.user.staff.useCases.canSendDecision);
-
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
@@ -237,12 +233,20 @@ function ToDo(props: ToDoProps) {
           requests.creditRequestId
         );
         const formattedDecisions = Array.isArray(decision)
-          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            decision.map((decisions: any, index: number) => ({
-              id: `decision-${index}`,
-              label: decisions.decision + ": " + decisions.value,
-              value: decisions.value,
-            }))
+          ? decision.map((decisions: DecisionItem, index: number) => {
+              const enumDecision = decisionsEnum.find(
+                (d) => d.Code === decisions.decision
+              );
+              return {
+                id: `decision-${index}`,
+                label: enumDecision
+                  ? `${enumDecision.Value}: ${enumDecision.Description}`
+                  : `${decisions.decision}: ${decisions.value}`,
+                value: decisions.value,
+                code: decisions.decision,
+                originalLabel: `${decisions.decision}: ${decisions.value}`,
+              };
+            })
           : [];
         setTaskDecisions(formattedDecisions);
       } catch (error) {
@@ -268,16 +272,18 @@ function ToDo(props: ToDoProps) {
   const data = {
     makeDecision: {
       creditRequestId: requests?.creditRequestId || "",
-      humanDecision: selectedDecision?.label.split(":")[0] || "",
+      humanDecision:
+        selectedDecision?.code || selectedDecision?.label.split(":")[0] || "",
       justification: "",
     },
     businessUnit: businessUnitPublicCode,
     user: userAccount,
     xAction: getXAction(
-      selectedDecision?.label.split(":")[0] || "",
+      selectedDecision?.code || selectedDecision?.label.split(":")[0] || "",
       validationId()
     ),
-    humanDecisionDescription: selectedDecision?.label || "",
+    humanDecisionDescription:
+      selectedDecision?.originalLabel || selectedDecision?.label || "",
   };
 
   const taskRole = taskPrs.find((t) => t.Code === taskData?.taskToBeDone)?.Role;
@@ -290,6 +296,12 @@ function ToDo(props: ToDoProps) {
   const handleInfo = () => {
     setIsModalInfo(true);
   };
+
+  const hasPermitSend = staff.some(
+    (s) =>
+      s.role === taskRole?.substring(0, 20) &&
+      s.userId === eventData?.user?.staff?.staffId
+  );
 
   return (
     <>

@@ -9,6 +9,9 @@ import { getCreditRequestInProgress } from "@services/credit-request/query/getCr
 import { patchChangeAnchorToCreditRequest } from "@services/credit-request/command/anchorCreditRequest";
 import { AppContext } from "@context/AppContext";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
+import { ruleConfig } from "@utils/configRules/configRules";
+import { evaluateRule } from "@utils/configRules/evaluateRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules";
 
 import { dataInformationModal } from "./config/board";
 import { BoardLayoutUI } from "./interface";
@@ -36,7 +39,7 @@ function BoardLayout() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
-  const identificationStaff = eventData.user.staff.identificationDocumentNumber;
+  const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
 
   useEffect(() => {
@@ -55,6 +58,7 @@ function BoardLayout() {
 
   const errorData = mockErrorBoard[0];
 
+  const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
   const [recordsToFetch, setRecordsToFetch] = useState(79);
 
   const fetchBoardData = async (
@@ -92,6 +96,7 @@ function BoardLayout() {
 
   useEffect(() => {
     fetchBoardData(businessUnitPublicCode, recordsToFetch);
+    fetchValidationRulesData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, recordsToFetch]);
 
@@ -203,18 +208,54 @@ function BoardLayout() {
     [addFlag]
   );
 
+  const fetchValidationRulesData = useCallback(async () => {
+    const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
+    await Promise.all(
+      rulesValidate.map(async (ruleName) => {
+        const rule = ruleConfig[ruleName]?.({});
+        if (!rule) return;
+
+        try {
+          const values = await evaluateRule(
+            rule,
+            postBusinessUnitRules,
+            "value",
+            businessUnitPublicCode
+          );
+
+          const extractedValues = Array.isArray(values)
+            ? values
+                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+                .filter((val): val is string => val !== "")
+            : [];
+
+          setValueRule((prev) => {
+            const current = prev[ruleName] || [];
+            const merged = [...current, ...extractedValues];
+            const unique = Array.from(new Set(merged));
+            return { ...prev, [ruleName]: unique };
+          });
+        } catch (error: unknown) {
+          console.error(`Error evaluando ${ruleName} para este usuario.`);
+        }
+      })
+    );
+  }, [businessUnitPublicCode]);
+
   const handlePinRequest = async (
     creditRequestId: string | undefined,
-    identificationNumber: string[],
     userWhoPinnnedId: string,
     isPinned: string
   ) => {
     try {
-      if (
-        userWhoPinnnedId === staffId ||
-        identificationNumber.includes(identificationStaff) ||
-        isPinned === "Y"
-      ) {
+      const isOwner = userWhoPinnnedId === staffId;
+      const isUnpin = isPinned === "N";
+      const isAuthorizedByRule =
+        valueRule["PositionsAuthorizedToRemoveAnchorsPlacedByOther"]?.includes(
+          missionName
+        );
+
+      if (isOwner || (isUnpin && isAuthorizedByRule) || isPinned === "Y") {
         setBoardData((prevState) => ({
           ...prevState,
           requestsPinned: prevState.requestsPinned.map((card) =>

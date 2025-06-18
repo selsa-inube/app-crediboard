@@ -2,6 +2,11 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { inube } from "@inubekit/inubekit";
 
+interface IStyledContainer {
+  $canUnpin?: boolean;
+  $isPinned?: boolean;
+}
+
 export const StyledLink = styled(Link)`
   display: flex;
   text-decoration: none;
@@ -33,4 +38,13 @@ export const StyledDivider = styled.hr`
   border-top: 2px solid;
   border-top-color: ${({ theme }) =>
     theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+`;
+
+export const StyledPinWrapper = styled.div<IStyledContainer>`
+  opacity: ${(props) => (!props.$canUnpin && props.$isPinned ? 0.5 : 1)};
+  cursor: ${(props) =>
+    !props.$canUnpin && props.$isPinned ? "not-allowed" : "pointer"};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 `;

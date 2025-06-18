@@ -23,6 +23,7 @@ import {
   getTableBoardActions,
   titlesFinanacialReporting,
   infoItems,
+  getActionsMobileIcon,
 } from "./config";
 import { errorObserver, errorMessages } from "../config";
 
@@ -147,6 +148,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       heightFieldset="100%"
       hasTable
       hasError={!creditRequets ? true : false}
+      hasOverflow={isMobile}
     >
       {!creditRequets || showRetry ? (
         <UnfoundData
@@ -166,6 +168,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
             entries={dataPromissoryNotes}
             actions={getTableBoardActions(() => setShowModal(true))}
             actionMobile={getTableBoardActionMobile(() => setShowModal(true))}
+            actionMobileIcon={getActionsMobileIcon()}
             loading={loading}
             appearanceTable={{
               widthTd: isMobile ? "23%" : undefined,

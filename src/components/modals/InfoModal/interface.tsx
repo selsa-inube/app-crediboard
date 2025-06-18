@@ -10,7 +10,7 @@ interface InfoItemComponentProps {
 export const InfoItemComponent: React.FC<InfoItemComponentProps> = ({
   item,
 }) => {
-  const size = item.shape === "circle" ? "20px" : "20px";
+  const size = item.shape === "circle" ? "16px" : "16px";
   const variant = item.shape === "circle" ? "filled" : "empty";
 
   return (

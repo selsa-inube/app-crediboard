@@ -1,6 +1,6 @@
 import { useState, isValidElement, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdAddCircleOutline, MdOutlineCheckCircle } from "react-icons/md";
+import { MdOutlineHowToReg, MdOutlineRemoveRedEye } from "react-icons/md";
 import { Stack, Icon, useFlag } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
@@ -28,6 +28,7 @@ import {
   dataButton,
   textFlagsRequirements,
   dataAddRequirement,
+  getActionsMobileIcon,
 } from "./config";
 import { AprovalsModal } from "./AprovalsModal";
 import { traceObserver, errorMessages } from "../config";
@@ -42,16 +43,23 @@ interface IRequirementsData {
 }
 
 export interface IRequirementsProps {
-  isMobile?: boolean;
   id: string;
   user: string;
   businessUnitPublicCode: string;
   creditRequestCode: string;
+  isMobile?: boolean;
+  hasPermitRejection?: boolean;
 }
 
 export const Requirements = (props: IRequirementsProps) => {
-  const { isMobile, id, user, businessUnitPublicCode, creditRequestCode } =
-    props;
+  const {
+    isMobile,
+    id,
+    user,
+    businessUnitPublicCode,
+    creditRequestCode,
+    hasPermitRejection,
+  } = props;
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [showAprovalsModal, setShowAprovalsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
@@ -181,7 +189,7 @@ export const Requirements = (props: IRequirementsProps) => {
     return (
       <Stack justifyContent="center">
         <Icon
-          icon={<MdAddCircleOutline />}
+          icon={<MdOutlineRemoveRedEye />}
           appearance="primary"
           onClick={() => handleToggleSeeDetailsModal()}
           spacing="compact"
@@ -196,7 +204,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const renderCheckIcon = (entry: IEntries) => (
     <Stack justifyContent="center">
       <Icon
-        icon={<MdOutlineCheckCircle />}
+        icon={<MdOutlineHowToReg />}
         appearance="primary"
         spacing="compact"
         cursorHover
@@ -269,14 +277,17 @@ export const Requirements = (props: IRequirementsProps) => {
   const handleToggleModal = () => {
     setShowModal(!showModal);
   };
+
   return (
     <>
       <Fieldset
         title={errorMessages.Requirements.titleCard}
         activeButton={dataButton(openAddRequirementModal)}
+        disabledButton={hasPermitRejection}
         heightFieldset="100%"
         hasTable={!error}
         hasError={error ? true : false}
+        hasOverflow={isMobile}
       >
         {error ? (
           <ItemNotFound
@@ -295,6 +306,7 @@ export const Requirements = (props: IRequirementsProps) => {
               entries={item.entriesRequirements}
               actions={actionsRequirements}
               actionMobile={renderAccion}
+              actionMobileIcon={getActionsMobileIcon()}
               appearanceTable={{
                 widthTd: !isMobile ? "75%" : "70%",
                 efectzebra: true,

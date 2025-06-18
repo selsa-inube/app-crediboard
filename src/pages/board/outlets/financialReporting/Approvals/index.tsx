@@ -23,6 +23,7 @@ import {
   getMobileActionsConfig,
   infoItems,
   entriesApprovals,
+  getActionsMobileIcon,
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
 import { AppContext } from "@context/AppContext";
 
@@ -160,6 +161,7 @@ export const Approvals = (props: IApprovalsProps) => {
         heightFieldset="100%"
         hasTable
         hasError={!requests ? true : false}
+        hasOverflow={isMobile}
       >
         {!requests || error ? (
           <ItemNotFound
@@ -176,6 +178,7 @@ export const Approvals = (props: IApprovalsProps) => {
             entries={approvalsEntries}
             actions={desktopActionsConfig}
             actionMobile={mobileActions}
+            actionMobileIcon={getActionsMobileIcon()}
             loading={loading}
             appearanceTable={{
               widthTd: isMobile ? "70%" : undefined,
