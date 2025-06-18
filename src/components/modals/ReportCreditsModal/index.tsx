@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { MdAdd, MdCached } from "react-icons/md";
+import { FormikValues } from "formik";
 import { Stack, useMediaQuery, Button, Select } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { TableFinancialObligations } from "@components/data/TableObligationsFinancial";
-import { dataReport } from "@components/data/TableObligationsFinancial/config";
+
 import { IProspect } from "@services/prospects/types";
 import { ListModal } from "../ListModal";
 import { FinancialObligationModal } from "../financialObligationModal";
-import { FormikValues } from "formik";
-
+import { dataReport } from "@components/data/TableObligationsFinancial/config";
+import { TableFinancialObligations } from "@components/data/TableObligationsFinancial";
 export interface ReportCreditsModalProps {
   handleClose: () => void;
   onChange: (name: string, newValue: string) => void;
@@ -20,7 +20,6 @@ export interface ReportCreditsModalProps {
 
 export function ReportCreditsModal(props: ReportCreditsModalProps) {
   const { handleClose, onChange, options, debtor, prospectData } = props;
-
   const [loading, setLoading] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [openModal, setOpenModal] = useState(false);

@@ -4,8 +4,9 @@ import { useMediaQuery } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
 
-import { headers } from "./config";
+import {  convertObligationsToProperties, headers } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
+import { IProperty } from "./types";
 export interface ITableFinancialObligationsProps {
   type?: string;
   id?: string;
@@ -21,7 +22,7 @@ export interface ITableFinancialObligationsProps {
 }
 
 export const TableFinancialObligations = (
-  props: ITableFinancialObligationsProps
+  props: ITableFinancialObligationsProps,
 ) => {
   const { refreshKey, initialValues, showActions, showButtons } = props;
   const [loading, setLoading] = useState(true);
@@ -61,7 +62,7 @@ export const TableFinancialObligations = (
     ? headers.filter(
         (header) =>
           ["type", "balance", "actions"].includes(header.key) &&
-          (showActions || header.key !== "actions")
+          (showActions || header.key !== "actions"),
       )
     : headers.filter((header) => showActions || header.key !== "actions");
 
@@ -73,13 +74,19 @@ export const TableFinancialObligations = (
         ? data[0]?.borrowers
         : data;
 
-      const dataFromInitialValues =
+      const financialObligationsFromProps =
         borrowerList?.[0]?.borrowerProperties?.filter(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (prop: any) => prop.propertyName === "FinancialObligation"
+          (prop: IProperty) => prop.propertyName === "FinancialObligation",
         ) || [];
+      const obligations = data?.[0]?.obligations || [];
+      const obligationsConverted = Array.isArray(obligations)
+        ? convertObligationsToProperties(obligations)
+        : [];
 
-      setExtraDebtors(dataFromInitialValues);
+      setExtraDebtors([
+        ...financialObligationsFromProps,
+        ...obligationsConverted,
+      ]);
     } else {
       setExtraDebtors([]);
     }
@@ -99,11 +106,11 @@ export const TableFinancialObligations = (
   };
 
   const handleUpdate = async (
-    updatedDebtor: ITableFinancialObligationsProps
+    updatedDebtor: ITableFinancialObligationsProps,
   ) => {
     try {
       const updatedDebtors = extraDebtors.map((debtor) =>
-        debtor.id === updatedDebtor.id ? updatedDebtor : debtor
+        debtor.id === updatedDebtor.id ? updatedDebtor : debtor,
       );
       setExtraDebtors(updatedDebtors);
       await localforage.setItem("financial_obligation", updatedDebtors);
@@ -115,8 +122,7 @@ export const TableFinancialObligations = (
 
   const dataInformation =
     (initialValues?.[0]?.borrowers?.[0]?.borrowerProperties?.filter(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (prop: any) => prop.propertyName === "FinancialObligation"
+      (prop: IProperty) => prop.propertyName === "FinancialObligation",
     ) ??
       extraDebtors) ||
     [];
