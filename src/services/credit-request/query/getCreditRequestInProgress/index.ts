@@ -23,9 +23,12 @@ export const getCreditRequestInProgress = async (
         per_page: maxDataBoard.toString(),
       });
       if (searchParam?.filter) {
-        queryParams.set("filter", searchParam.filter);
+        const customParams = new URLSearchParams(searchParam.filter);
+        for (const [key, value] of customParams.entries()) {
+          queryParams.set(key, value);
+        }
       } else if (searchParam?.text) {
-        queryParams.set("textinsearch", searchParam.text);
+        queryParams.set("textInSearch", searchParam.text);
       }
       queryParams.set("sort", "desc.isPinned,asc.creditRequestDateOfCreation");
 
@@ -33,6 +36,7 @@ export const getCreditRequestInProgress = async (
         method: "GET",
         headers: {
           "X-Action": "SearchAllCreditRequestsInProgress",
+          "X-User-Name": "ca.rincon97@gm",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },

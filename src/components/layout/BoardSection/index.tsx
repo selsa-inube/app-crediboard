@@ -1,4 +1,3 @@
-
 import { useContext, useEffect, useRef, useState, useCallback } from "react";
 import {
   MdOutlineChevronRight,
@@ -58,7 +57,6 @@ function BoardSection(props: BoardSectionProps) {
     searchRequestValue,
     handlePinRequest,
     handleLoadMoreData,
-    dragIcon,
     onOrientationChange,
   } = props;
   const disabledCollapse = sectionInformation.length === 0;
@@ -234,20 +232,19 @@ function BoardSection(props: BoardSectionProps) {
               />
             </StyledCollapseIcon>
           )}
-          {dragIcon && (
-            <Icon
-              icon={
-                currentOrientation === "vertical" ? (
-                  <MdOutlineFilterAlt />
-                ) : (
-                  <MdOutlineFilterAltOff />
-                )
-              }
-              appearance="primary"
-              size="24px"
-              onClick={handleToggleOrientation}
-            />
-          )}
+
+          <Icon
+            icon={
+              currentOrientation === "vertical" ? (
+                <MdOutlineFilterAlt />
+              ) : (
+                <MdOutlineFilterAltOff />
+              )
+            }
+            appearance="primary"
+            size="24px"
+            onClick={handleToggleOrientation}
+          />
 
           <Text
             type={orientation === "vertical" || isMobile ? "title" : "headline"}

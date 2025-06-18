@@ -14,7 +14,6 @@ import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules";
 
-
 import { dataInformationModal } from "./config/board";
 import { BoardLayoutUI } from "./interface";
 import { selectCheckOptions } from "./config/select";
@@ -109,11 +108,14 @@ function BoardLayout() {
   };
 
   useEffect(() => {
-    fetchBoardData(businessUnitPublicCode, recordsToFetch);
-    fetchValidationRulesData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, recordsToFetch]);
+    if (activeOptions.length > 0 || filters.searchRequestValue.length >= 3)
+      return;
 
+    fetchBoardData(businessUnitPublicCode, recordsToFetch);
+
+    fetchValidationRulesData();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, recordsToFetch]);
   const handleLoadMoreData = () => {
     setRecordsToFetch((prev) => prev + 50);
   };
@@ -125,19 +127,19 @@ function BoardLayout() {
       .map((option, index) => ({
         id: option.id,
         label: option.label,
-        value: option.value,
+        value: option.value + "=Y",
         type: "assignment",
         count: index + 1,
       }));
 
-    const queryFilterString = activeFilteredValues
-      .map((filter) => filter.value)
-      .join(";");
+    const queryFilterString = activeFilteredValues.map(
+      (filter) => filter.value
+    );
 
     setActiveOptions(activeFilteredValues);
 
     await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
-      filter: `in.${queryFilterString}`,
+      filter: `${queryFilterString}`,
     });
 
     setIsFilterModalOpen(false);
@@ -261,8 +263,7 @@ function BoardLayout() {
     setIsFilterModalOpen(true);
     setIsMenuOpen(false);
   }, []);
-  const handleClearFilters = () => {
-    setFilteredRequests(boardData.boardRequests);
+  const handleClearFilters = async () => {
     setActiveOptions([]);
     setFilters((prev) => ({
       ...prev,
@@ -270,20 +271,33 @@ function BoardLayout() {
       showPinnedOnly: false,
       selectOptions: selectCheckOptions,
     }));
+
+    await fetchBoardData(businessUnitPublicCode, recordsToFetch);
   };
+
   const handleRemoveFilter = async (filterIdToRemove: string) => {
     const updatedActiveOptions = activeOptions.filter(
       (option) => option.id !== filterIdToRemove
     );
     setActiveOptions(updatedActiveOptions);
 
+    if (updatedActiveOptions.length === 0) {
+      setFilters((prev) => ({
+        ...prev,
+        selectOptions: selectCheckOptions,
+      }));
+
+      await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+      return;
+    }
+
     const updatedFilterString = updatedActiveOptions
       .map((filter) => filter.value)
-      .join(";")
+      .join(",")
       .trim();
 
     await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
-      filter: updatedFilterString ? `in.${updatedFilterString}` : undefined,
+      filter: updatedFilterString,
     });
   };
 

@@ -28,7 +28,7 @@ const selectCheckOptions: IOption[] = [
 
   {
     id: "4",
-    label: "Con comentarios sin leer",
+    label: "Comentarios sin leer",
     value: "unreadNovelties",
     checked: false,
   },
@@ -36,7 +36,7 @@ const selectCheckOptions: IOption[] = [
   {
     id: "5",
     label: "Sin asignar responsable",
-    value: "unassignedResponsible",
+    value: "unassigned",
     checked: false,
   },
 ];
