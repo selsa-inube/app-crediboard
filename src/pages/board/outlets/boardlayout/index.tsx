@@ -40,9 +40,9 @@ function BoardLayout() {
     boardOrientation: eventData.user.preferences.boardOrientation || "vertical",
   });
 
-  const [filteredRequests, setFilteredRequests] = useState<ICreditRequest[]>(
-    []
-  );
+  // const [filteredRequests, setFilteredRequests] = useState<ICreditRequest[]>(
+  //   []
+  // );
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1024px)");
@@ -91,7 +91,7 @@ function BoardLayout() {
           ...prevState,
           boardRequests: boardRequestsResult.value,
         }));
-        setFilteredRequests(boardRequestsResult.value);
+        //setFilteredRequests(boardRequestsResult.value);
       }
 
       if (requestsPinnedResult.status === "fulfilled") {
@@ -321,13 +321,37 @@ function BoardLayout() {
   };
 
   const closeFilterModal = useCallback(() => setIsFilterModalOpen(false), []);
+
+  function getFilteredRequests({
+    boardRequests,
+    requestsPinned,
+    showPinnedOnly,
+  }: {
+    boardRequests: ICreditRequest[];
+    requestsPinned: { creditRequestId: string; isPinned: string }[];
+    showPinnedOnly: boolean;
+  }) {
+    if (!showPinnedOnly) return boardRequests;
+
+    const pinnedIds = requestsPinned
+      .filter((r) => r.isPinned === "Y")
+      .map((r) => r.creditRequestId);
+
+    return boardRequests.filter((request) =>
+      pinnedIds.includes(request.creditRequestId as string)
+    );
+  }
   return (
     <>
       <BoardLayoutUI
         isMobile={isMobile}
         openFilterModal={openFilterModal}
         boardOrientation={filters.boardOrientation}
-        BoardRequests={filteredRequests}
+        BoardRequests={getFilteredRequests({
+          boardRequests: boardData.boardRequests,
+          requestsPinned: boardData.requestsPinned,
+          showPinnedOnly: filters.showPinnedOnly,
+        })}
         searchRequestValue={filters.searchRequestValue}
         showPinnedOnly={filters.showPinnedOnly}
         pinnedRequests={boardData.requestsPinned}
