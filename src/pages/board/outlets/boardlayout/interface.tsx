@@ -1,5 +1,10 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { MdOutlinePushPin, MdSearch } from "react-icons/md";
+import {
+  MdOutlineFilterAlt,
+  MdOutlineFilterAltOff,
+  MdOutlinePushPin,
+  MdSearch,
+} from "react-icons/md";
 import { RxDragHandleVertical, RxDragHandleHorizontal } from "react-icons/rx";
 
 import {
@@ -9,15 +14,23 @@ import {
   Divider,
   Textfield,
   Toggle,
+  Button,
   useFlag,
 } from "@inubekit/inubekit";
 
 import { SectionOrientation } from "@components/layout/BoardSection/types";
 import { BoardSection } from "@components/layout/BoardSection";
 import { ICreditRequestPinned, ICreditRequest } from "@services/types";
-import { Selectcheck } from "@components/inputs/SelectCheck";
 import { IOptionItemCheckedProps } from "@components/inputs/SelectCheck/OptionItem";
 import { ErrorAlert } from "@components/ErrorAlert";
+import { Filter } from "@components/cards/SelectedFilters/interface";
+import { SelectedFilters } from "@components/cards/SelectedFilters";
+import { FilterRequestModal } from "@components/modals/FilterRequestModal";
+import { getCreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage";
+import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage/types";
+import { AppContext } from "@context/AppContext";
+import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
+import { totalsKeyBySection } from "@components/layout/BoardSection/config";
 
 import {
   StyledInputsContainer,
@@ -25,13 +38,13 @@ import {
   StyledContainerToCenter,
   StyledError,
   StyledSearch,
+  StyledRequestsContainer,
 } from "./styles";
-import { boardColumns, selectConfig, seePinned } from "./config/board";
-import { getCreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage";
-import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage/types";
-import { AppContext } from "@context/AppContext";
-import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
-import { totalsKeyBySection } from "@components/layout/BoardSection/config";
+
+import { selectCheckOptions } from "./config/select";
+import { IFilterFormValues } from ".";
+import { boardColumns, seePinned } from "./config/board";
+
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -42,38 +55,52 @@ interface BoardLayoutProps {
   showPinnedOnly: boolean;
   pinnedRequests: ICreditRequestPinned[];
   errorLoadingPins: boolean;
+  activeOptions: Filter[];
+  closeFilterModal: () => void;
   handleSelectCheckChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
     isPinned: string
   ) => void;
+
   handleShowPinnedOnly: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchRequestsValue: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onOrientationChange: (orientation: SectionOrientation) => void;
   handleLoadMoreData: () => void;
+  openFilterModal: () => void;
+  isFilterModalOpen: boolean;
+  handleApplyFilters: (values: IFilterFormValues) => void;
+  handleClearFilters: () => void;
+  handleRemoveFilter: (filterIdToRemove: string) => void;
+  isMenuOpen: boolean;
 }
 
 function BoardLayoutUI(props: BoardLayoutProps) {
   const {
     isMobile,
-    selectOptions,
+    openFilterModal,
+    isFilterModalOpen,
+    handleApplyFilters,
     boardOrientation,
     BoardRequests,
     searchRequestValue,
     showPinnedOnly,
     pinnedRequests,
     errorLoadingPins,
+    activeOptions,
+    closeFilterModal,
     handleLoadMoreData,
-    handleSelectCheckChange,
     handlePinRequest,
     handleShowPinnedOnly,
+    handleClearFilters,
+    handleRemoveFilter,
     handleSearchRequestsValue,
     onOrientationChange,
   } = props;
 
-  const selectProps = selectConfig(selectOptions, handleSelectCheckChange);
   const [showErrorAlert, setShowErrorAlert] = useState(true);
+
   const { businessUnitSigla } = useContext(AppContext);
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
   const { addFlag } = useFlag();
@@ -196,28 +223,41 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             margin={isMobile ? "8px 0px" : "auto"}
           >
             {isMobile && (
-              <StyledSearch
-                ref={stackRef}
-                $isMobile={isMobile}
-                $isExpanded={isExpanded}
-                onClick={() => {
-                  if (!isExpanded) setIsExpanded(true);
-                }}
-              >
-                <Stack width="100%">
-                  <Textfield
-                    id="SearchCardsMobile"
-                    name="SearchCardsMobile"
-                    placeholder=""
-                    size="compact"
-                    iconAfter={<MdSearch />}
-                    value={searchRequestValue}
-                    onChange={handleSearchRequestsValue}
-                    fullwidth
-                  />
-                </Stack>
-              </StyledSearch>
+              <>
+                <StyledSearch
+                  ref={stackRef}
+                  $isMobile={isMobile}
+                  $isExpanded={isExpanded}
+                  onClick={() => {
+                    if (!isExpanded) setIsExpanded(true);
+                  }}
+                >
+                  <Stack width="100%" alignItems="center" gap="8px">
+                    <Textfield
+                      id="SearchCardsMobile"
+                      name="SearchCardsMobile"
+                      placeholder=""
+                      size="compact"
+                      iconAfter={<MdSearch />}
+                      value={searchRequestValue}
+                      onChange={handleSearchRequestsValue}
+                      fullwidth
+                    />
+                    <Icon
+                      icon={<MdOutlineFilterAlt />}
+                      appearance="primary"
+                      variant="outlined"
+                      size="36px"
+                      shape="rectangle"
+                      cursorHover
+                      spacing="wide"
+                      onClick={openFilterModal}
+                    />
+                  </Stack>
+                </StyledSearch>
+              </>
             )}
+
             {isMobile && (
               <Stack alignItems="center">
                 <Icon
@@ -240,17 +280,26 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           <Stack
             width="100%"
             justifyContent={isMobile ? "end" : "space-between"}
+            alignItems="center"
             margin={isMobile ? "16px 0px" : "auto"}
+            gap="10px"
           >
-            <Stack width={isMobile ? "100%" : "400px"}>
-              <Selectcheck size="compact" {...selectProps} />
-            </Stack>
+            {isFilterModalOpen && (
+              <FilterRequestModal
+                assignmentOptions={selectCheckOptions}
+                onSubmit={handleApplyFilters}
+                selectedFilters={activeOptions}
+                onCloseModal={closeFilterModal}
+                onRemoveFilter={handleRemoveFilter}
+              />
+            )}
+
             {!isMobile && (
-              <Stack width="400px" alignItems="end">
+              <Stack width="280px" alignItems="end">
                 <Textfield
                   id="SearchCardsDesktop"
                   name="SearchCardsDesktop"
-                  placeholder="Buscar..."
+                  placeholder="Palabra clave"
                   size="compact"
                   iconAfter={<MdSearch />}
                   value={searchRequestValue}
@@ -259,7 +308,38 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 />
               </Stack>
             )}
-            <Stack alignItems="center" margin="25px 0px 0px">
+
+            {!isMobile && (
+              <StyledRequestsContainer $isMobile={isMobile}>
+                <SelectedFilters
+                  filters={activeOptions}
+                  onRemove={handleRemoveFilter}
+                />
+                <Button
+                  appearance="primary"
+                  iconBefore={<MdOutlineFilterAltOff />}
+                  type="button"
+                  spacing="compact"
+                  variant="outlined"
+                  disabled={!activeOptions.length}
+                  onClick={handleClearFilters}
+                >
+                  Quitar
+                </Button>
+                <Button
+                  appearance="primary"
+                  iconBefore={<MdOutlineFilterAlt />}
+                  type="button"
+                  spacing="compact"
+                  variant="outlined"
+                  onClick={openFilterModal}
+                >
+                  Filtrar
+                </Button>
+              </StyledRequestsContainer>
+            )}
+
+            <Stack alignItems="center">
               <Stack gap="16px">
                 {!isMobile && (
                   <Stack gap="8px">
@@ -305,28 +385,43 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             </Stack>
           </Stack>
         </StyledInputsContainer>
+
+ 
         <StyledBoardContainer
           $orientation={boardOrientation}
           $isMobile={isMobile}
         >
-          {boardColumns.map((column) => (
-            <BoardSection
-              key={column.id}
-              sectionTitle={column.value}
-              sectionCounter={counterTotalsData(column.value) || 0}
-              sectionBackground={column.sectionBackground}
-              orientation={boardOrientation}
-              sectionInformation={BoardRequests.filter(
-                (request) => request.stage === column.id
-              )}
-              pinnedRequests={pinnedRequests}
-              errorLoadingPins={errorLoadingPins}
-              searchRequestValue={searchRequestValue}
-              handlePinRequest={handlePinRequest}
-              handleLoadMoreData={handleLoadMoreData}
-            />
-          ))}
+          {boardColumns.map((column) => {
+            const hasFilterForColumn = activeOptions.some(
+              (filter) => filter.value === column.id
+            );
+
+            const dragIcon = hasFilterForColumn ? (
+              <MdOutlineFilterAlt />
+            ) : undefined;
+
+            return (
+              <BoardSection
+                key={column.id}
+                sectionTitle={column.value}
+                sectionCounter={counterTotalsData(column.value) || 0}
+                sectionBackground={column.sectionBackground}
+                orientation={boardOrientation}
+                sectionInformation={BoardRequests.filter(
+                  (request) => request.stage === column.id
+                )}
+                pinnedRequests={pinnedRequests}
+                errorLoadingPins={errorLoadingPins}
+                searchRequestValue={searchRequestValue}
+                handlePinRequest={handlePinRequest}
+                handleLoadMoreData={handleLoadMoreData}
+                dragIcon={dragIcon}
+                onOrientationChange={onOrientationChange}
+              />
+            );
+          })}
         </StyledBoardContainer>
+
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
     </StyledContainerToCenter>
