@@ -62,6 +62,7 @@ function ToDo(props: ToDoProps) {
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
+  const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
 
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
@@ -99,10 +100,15 @@ function ToDo(props: ToDoProps) {
 
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
-        const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+        const data = await getCreditRequestByCode(
+          businessUnitPublicCode,
+          id,
+          userAccount
+        );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
         console.error(error);
@@ -116,7 +122,7 @@ function ToDo(props: ToDoProps) {
     if (id) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, userAccount]);
 
   useEffect(() => {
     const fetchToDoData = async () => {
@@ -297,11 +303,15 @@ function ToDo(props: ToDoProps) {
     setIsModalInfo(true);
   };
 
-  const hasPermitSend = staff.some(
-    (s) =>
-      s.role === taskRole?.substring(0, 20) &&
-      s.userId === eventData?.user?.staff?.staffId
-  );
+  useEffect(() => {
+    setHasPermitSend(
+      staff.some(
+        (s) =>
+          s.role === taskRole?.substring(0, 20) &&
+          s.userId === eventData?.user?.staff?.staffId
+      )
+    );
+  }, [staff, eventData, taskData, taskRole]);
 
   return (
     <>
@@ -507,6 +517,7 @@ function ToDo(props: ToDoProps) {
           setAssignedStaff={setAssignedStaff}
           buttonText={staffConfig.confirm}
           title={staffConfig.title}
+          handleRetry={handleRetry}
         />
       )}
       {isModalInfo && (

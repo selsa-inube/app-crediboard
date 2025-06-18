@@ -83,10 +83,13 @@ export const CreditProfileInfo = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
@@ -188,7 +191,7 @@ export const CreditProfileInfo = () => {
       }
     })();
 
-    getCreditRequestByCode(businessUnitPublicCode, id!)
+    getCreditRequestByCode(businessUnitPublicCode, id!, userAccount)
       .then((data) => {
         setRequests(data[0] as ICreditRequest);
       })
@@ -203,6 +206,7 @@ export const CreditProfileInfo = () => {
     dataCreditProfile,
     dataPaymentcapacity,
     dataUncoveredWallet,
+    userAccount,
   ]);
 
   return (

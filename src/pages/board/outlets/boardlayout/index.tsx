@@ -9,6 +9,7 @@ import { getCreditRequestInProgress } from "@services/credit-request/query/getCr
 import { patchChangeAnchorToCreditRequest } from "@services/credit-request/command/anchorCreditRequest";
 import { AppContext } from "@context/AppContext";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
+import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules";
@@ -18,13 +19,20 @@ import { BoardLayoutUI } from "./interface";
 import { selectCheckOptions } from "./config/select";
 import { IBoardData } from "./types";
 
+export interface IFilterFormValues {
+  assignment: string;
+  status?: string;
+}
+
 function BoardLayout() {
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { businessUnitSigla, eventData, setEventData } = useContext(AppContext);
   const [boardData, setBoardData] = useState<IBoardData>({
     boardRequests: [],
     requestsPinned: [],
   });
-
+  const [activeOptions, setActiveOptions] = useState<Filter[]>([]);
   const [filters, setFilters] = useState({
     searchRequestValue: "",
     showPinnedOnly: eventData.user.preferences.showPinnedOnly || false,
@@ -63,12 +71,18 @@ function BoardLayout() {
 
   const fetchBoardData = async (
     businessUnitPublicCode: string,
-    limit: number
+    limit: number,
+    searchParam?: { filter?: string; text?: string }
   ) => {
     try {
       const [boardRequestsResult, requestsPinnedResult] =
         await Promise.allSettled([
-          getCreditRequestInProgress(businessUnitPublicCode, limit),
+          getCreditRequestInProgress(
+            businessUnitPublicCode,
+            limit,
+            userAccount,
+            searchParam
+          ),
           getCreditRequestPinned(businessUnitPublicCode),
         ]);
 
@@ -95,76 +109,42 @@ function BoardLayout() {
   };
 
   useEffect(() => {
-    fetchBoardData(businessUnitPublicCode, recordsToFetch);
-    fetchValidationRulesData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, recordsToFetch]);
+    if (activeOptions.length > 0 || filters.searchRequestValue.length >= 3)
+      return;
 
+    fetchBoardData(businessUnitPublicCode, recordsToFetch);
+
+    fetchValidationRulesData();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, recordsToFetch]);
   const handleLoadMoreData = () => {
     setRecordsToFetch((prev) => prev + 50);
   };
 
-  useEffect(() => {
-    const filteredRequests = boardData.boardRequests.filter((request) => {
-      const isSearchMatch =
-        request.clientName
-          .toLowerCase()
-          .includes(filters.searchRequestValue.toLowerCase()) ||
-        request.creditRequestCode
-          .toString()
-          .includes(filters.searchRequestValue);
-      request.creditRequestCode.toString().includes(filters.searchRequestValue);
+  const handleApplyFilters = async (values: IFilterFormValues) => {
+    const assignmentIds = values.assignment.split(",");
+    const activeFilteredValues: Filter[] = selectCheckOptions
+      .filter((option) => assignmentIds.includes(option.id))
+      .map((option, index) => ({
+        id: option.id,
+        label: option.label,
+        value: option.value + "=Y",
+        type: "assignment",
+        count: index + 1,
+      }));
 
-      const isPinned =
-        !filters.showPinnedOnly ||
-        boardData.requestsPinned
-          .filter((req) => req.isPinned === "Y")
-          .map((req) => req.creditRequestId)
-          .includes(request.creditRequestId as string);
+    const queryFilterString = activeFilteredValues.map(
+      (filter) => filter.value
+    );
 
-      return isSearchMatch && isPinned;
+    setActiveOptions(activeFilteredValues);
+
+    await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+      filter: `${queryFilterString}`,
     });
 
-    const activeFilterIds = filters.selectOptions
-      .filter((option) => option.checked)
-      .map((option) => option.id);
-
-    const finalFilteredRequests = filteredRequests.filter((request) => {
-      if (activeFilterIds.length === 0) return true;
-
-      return activeFilterIds.some((filterId) => {
-        switch (filterId) {
-          case "1":
-            return request.userWhoPinnnedId === staffId;
-          case "2":
-            return [
-              "GESTION_COMERCIAL",
-              "VERIFICACION_APROBACION",
-              "FORMALIZACION_GARANTIAS",
-              "TRAMITE_DESEMBOLSO",
-            ].includes(request.stage);
-          case "3":
-            return request.stage === "GESTION_COMERCIAL";
-          case "4":
-            return request.stage === "VERIFICACION_APROBACION";
-          case "5":
-            return request.stage === "FORMALIZACION_GARANTIAS";
-          case "6":
-            return request.stage === "TRAMITE_DESEMBOLSO";
-          case "7":
-            return request.stage === "CUMPLIMIENTO_REQUISITOS";
-          case "9":
-            return request.stage === "GESTION_COMERCIAL";
-          case "10":
-            return request.unreadNovelties === "Y";
-          default:
-            return false;
-        }
-      });
-    });
-    setFilteredRequests(finalFilteredRequests);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, boardData]);
+    setIsFilterModalOpen(false);
+  };
 
   const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
     setFilters((prevFilters) => ({
@@ -280,12 +260,72 @@ function BoardLayout() {
       handleFlag(errorData.anchor[0], errorData.anchor[1]);
     }
   };
+  const openFilterModal = useCallback(() => {
+    setIsFilterModalOpen(true);
+    setIsMenuOpen(false);
+  }, []);
+  const handleClearFilters = async () => {
+    setActiveOptions([]);
+    setFilters((prev) => ({
+      ...prev,
+      searchRequestValue: "",
+      showPinnedOnly: false,
+      selectOptions: selectCheckOptions,
+    }));
 
+    await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+  };
+
+  const handleRemoveFilter = async (filterIdToRemove: string) => {
+    const updatedActiveOptions = activeOptions.filter(
+      (option) => option.id !== filterIdToRemove
+    );
+    setActiveOptions(updatedActiveOptions);
+
+    if (updatedActiveOptions.length === 0) {
+      setFilters((prev) => ({
+        ...prev,
+        selectOptions: selectCheckOptions,
+      }));
+
+      await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+      return;
+    }
+
+    const updatedFilterString = updatedActiveOptions
+      .map((filter) => filter.value)
+      .join(",")
+      .trim();
+
+    await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+      filter: updatedFilterString,
+    });
+  };
+
+  const handleSearchRequestsValue = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+
+    handleFiltersChange({ searchRequestValue: value });
+
+    if (value.trim().length >= 3) {
+      fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+        text: value.trim(),
+      });
+    }
+
+    if (value.trim().length === 0) {
+      fetchBoardData(businessUnitPublicCode, recordsToFetch);
+    }
+  };
+
+  const closeFilterModal = useCallback(() => setIsFilterModalOpen(false), []);
   return (
     <>
       <BoardLayoutUI
         isMobile={isMobile}
-        selectOptions={filters.selectOptions}
+        openFilterModal={openFilterModal}
         boardOrientation={filters.boardOrientation}
         BoardRequests={filteredRequests}
         searchRequestValue={filters.searchRequestValue}
@@ -293,25 +333,23 @@ function BoardLayout() {
         pinnedRequests={boardData.requestsPinned}
         errorLoadingPins={errorLoadingPins}
         handleLoadMoreData={handleLoadMoreData}
-        handleSelectCheckChange={(e) =>
-          handleFiltersChange({
-            selectOptions: filters.selectOptions.map((option) =>
-              option.id === e.target.name
-                ? { ...option, checked: e.target.checked }
-                : option
-            ),
-          })
-        }
+        activeOptions={activeOptions}
         handlePinRequest={handlePinRequest}
         handleShowPinnedOnly={(e) =>
           handleFiltersChange({ showPinnedOnly: e.target.checked })
         }
-        handleSearchRequestsValue={(e) =>
-          handleFiltersChange({ searchRequestValue: e.target.value })
-        }
+        handleSearchRequestsValue={handleSearchRequestsValue}
         onOrientationChange={(orientation) =>
           handleFiltersChange({ boardOrientation: orientation })
         }
+        isFilterModalOpen={isFilterModalOpen}
+        handleApplyFilters={handleApplyFilters}
+        handleClearFilters={handleClearFilters}
+        handleRemoveFilter={handleRemoveFilter}
+        isMenuOpen={isMenuOpen}
+        selectOptions={[]}
+        handleSelectCheckChange={() => {}}
+        closeFilterModal={closeFilterModal}
       />
       {isOpenModal && (
         <BaseModal
