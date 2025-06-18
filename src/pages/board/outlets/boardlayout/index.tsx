@@ -68,7 +68,11 @@ function BoardLayout() {
     try {
       const [boardRequestsResult, requestsPinnedResult] =
         await Promise.allSettled([
-          getCreditRequestInProgress(businessUnitPublicCode, limit),
+          getCreditRequestInProgress(
+            businessUnitPublicCode,
+            limit,
+            userAccount
+          ),
           getCreditRequestPinned(businessUnitPublicCode),
         ]);
 

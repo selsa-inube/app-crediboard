@@ -8,7 +8,8 @@ import { mapCreditRequestToEntities } from "./mapper";
 
 export const getCreditRequestInProgress = async (
   businessUnitPublicCode: string,
-  maxDataBoardServices: number
+  maxDataBoardServices: number,
+  userAccount: string
 ): Promise<ICreditRequest[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -28,6 +29,7 @@ export const getCreditRequestInProgress = async (
         headers: {
           "X-Action": "SearchAllCreditRequestsInProgress",
           "X-Business-Unit": businessUnitPublicCode,
+          "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
         },
         signal: controller.signal,

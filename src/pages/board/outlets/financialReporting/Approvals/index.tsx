@@ -46,14 +46,21 @@ export const Approvals = (props: IApprovalsProps) => {
   const [selectedData, setSelectedData] = useState<IEntries | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { addFlag } = useFlag();
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
   const fetchCreditRequest = useCallback(async () => {
     try {
-      const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+      const data = await getCreditRequestByCode(
+        businessUnitPublicCode,
+        id,
+        userAccount
+      );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
       console.error(error);
@@ -62,7 +69,7 @@ export const Approvals = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, userAccount]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();

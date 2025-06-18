@@ -60,13 +60,17 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
 
   const fetchCreditRequest = useCallback(async () => {
     try {
-      const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+      const data = await getCreditRequestByCode(
+        businessUnitPublicCode,
+        id,
+        userAccount
+      );
       setCreditRequest(data[0] as ICreditRequest);
     } catch (error) {
       console.error(error);
       notifyError((error as Error).message);
     }
-  }, [businessUnitPublicCode, id, notifyError]);
+  }, [businessUnitPublicCode, id, userAccount, notifyError]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();
