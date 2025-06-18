@@ -384,7 +384,6 @@ export const SummaryProspectCredit = [
         id: "totalRegularInstallment",
         title: "Cuota ordinaria",
         miniIcon: true,
-        icon: <MdOutlineRemoveRedEye />,
         operation: "",
       },
     ],
@@ -450,4 +449,5 @@ export const tittleOptions = {
   titleExtraPayments: "Pagos extras",
   titleError: "¡Uy, algo ha salido mal!",
   descriptionError: "No se han podido guardar los cambios.",
+  deductibleExpensesErrorTitle: "Error al cargar gastos descontables",
 };

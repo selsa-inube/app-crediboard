@@ -36,6 +36,7 @@ interface BoardSectionProps {
   pinnedRequests: ICreditRequestPinned[];
   errorLoadingPins: boolean;
   searchRequestValue: string;
+  sectionCounter?: number;
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
@@ -46,9 +47,11 @@ interface BoardSectionProps {
   onOrientationChange: (orientation: SectionOrientation) => void;
 }
 
+
 function BoardSection(props: BoardSectionProps) {
   const {
     sectionTitle,
+    sectionCounter,
     sectionBackground = "light",
     orientation = "vertical",
     sectionInformation,
@@ -60,52 +63,44 @@ function BoardSection(props: BoardSectionProps) {
     onOrientationChange,
   } = props;
   const disabledCollapse = sectionInformation.length === 0;
-
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
     useMediaQueries(["(max-width: 1024px)", "(max-width: 595px)"]);
-
   const [collapse, setCollapse] = useState(false);
   const [currentOrientation, setCurrentOrientation] =
     useState<SectionOrientation>(orientation);
+  const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
 
   const flagMessage = useRef(false);
-  const { businessUnitSigla, eventData } = useContext(AppContext);
 
+  const { businessUnitSigla, eventData } = useContext(AppContext);
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
-  const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
+
+  const { addFlag } = useFlag();
+
+  const businessUnitPublicCode: string =
+    JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
   const handleCollapse = () => {
     if (!disabledCollapse) {
-      setCollapse(!collapse);
+      setCollapse((prev) => !prev);
     }
   };
 
-  function isRequestPinned(
-    creditRequestId: string | undefined,
-    pinnedRequests: ICreditRequestPinned[]
-  ) {
-    const pinnedRequest = pinnedRequests.find(
-      (pinnedRequest) => pinnedRequest.creditRequestId === creditRequestId
-    );
-    return pinnedRequest && pinnedRequest.isPinned === "Y" ? true : false;
-  }
-  const { addFlag } = useFlag();
-
   const handleFlag = (title: string, description: string) => {
     addFlag({
-      title: title,
-      description: description,
+      title,
+      description,
       appearance: "danger",
       duration: 5000,
     });
   };
 
   const getNoDataMessage = () => {
-    if (!sectionInformation || sectionInformation.length === 0) {
+    if (sectionInformation.length === 0) {
       return searchRequestValue
         ? `${configOption.noMatches} "${searchRequestValue}"`
-        : `${configOption.textNodata}`;
+        : configOption.textNodata;
     }
     return "";
   };
@@ -120,25 +115,15 @@ function BoardSection(props: BoardSectionProps) {
     onOrientationChange(newOrientation);
   };
 
-  const errorData = mockErrorBoard[0];
-  const businessUnitPublicCode: string =
-    JSON.parse(businessUnitSigla).businessUnitPublicCode;
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const hasUnreadNoveltiesError = sectionInformation.some(
-        (request) => request.unreadNovelties === undefined
-      );
-
-      if (!flagMessage.current && hasUnreadNoveltiesError) {
-        handleFlag(errorData.messages[0], errorData.Summary[1]);
-        flagMessage.current = true;
-      }
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sectionInformation]);
+  const isRequestPinned = (
+    creditRequestId: string | undefined,
+    pinnedRequests: ICreditRequestPinned[]
+  ) =>
+    pinnedRequests.some(
+      (pinnedRequest) =>
+        pinnedRequest.creditRequestId === creditRequestId &&
+        pinnedRequest.isPinned === "Y"
+    );
 
   const handleCardClick = async (creditRequestId: string | undefined) => {
     if (!businessUnitPublicCode || !creditRequestId) return;
@@ -151,7 +136,7 @@ function BoardSection(props: BoardSectionProps) {
     } catch (error) {
       addFlag({
         title: textFlagsUsers.titleError,
-        description: textFlagsUsers.descriptionError,
+        description: JSON.stringify(error),
         appearance: "danger",
         duration: 5000,
       });
@@ -160,6 +145,7 @@ function BoardSection(props: BoardSectionProps) {
 
   const fetchValidationRulesData = useCallback(async () => {
     const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
+
     await Promise.all(
       rulesValidate.map(async (ruleName) => {
         const rule = ruleConfig[ruleName]?.({});
@@ -180,12 +166,11 @@ function BoardSection(props: BoardSectionProps) {
             : [];
 
           setValueRule((prev) => {
-            const current = prev[ruleName] || [];
-            const merged = [...current, ...extractedValues];
+            const merged = [...(prev[ruleName] || []), ...extractedValues];
             const unique = Array.from(new Set(merged));
             return { ...prev, [ruleName]: unique };
           });
-        } catch (error: unknown) {
+        } catch {
           console.error(`Error evaluando ${ruleName} para este usuario.`);
         }
       })
@@ -193,9 +178,23 @@ function BoardSection(props: BoardSectionProps) {
   }, [businessUnitPublicCode]);
 
   useEffect(() => {
-    if (businessUnitPublicCode) {
-      fetchValidationRulesData();
-    }
+    const timeout = setTimeout(() => {
+      const hasUnread = sectionInformation.some(
+        (request) => request.unreadNovelties === undefined
+      );
+      if (!flagMessage.current && hasUnread) {
+        const errorData = mockErrorBoard[0];
+        handleFlag(errorData.messages[0], errorData.Summary[1]);
+        flagMessage.current = true;
+      }
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionInformation]);
+
+  useEffect(() => {
+    if (businessUnitPublicCode) fetchValidationRulesData();
   }, [businessUnitPublicCode, fetchValidationRulesData]);
 
   return (
@@ -255,9 +254,10 @@ function BoardSection(props: BoardSectionProps) {
         </Stack>
 
         <Text type="title" size="medium">
-          {sectionInformation.length}
+          {sectionCounter}
         </Text>
       </Stack>
+
       {(collapse || orientation === "vertical") && (
         <Stack
           wrap="wrap"
@@ -310,6 +310,7 @@ function BoardSection(props: BoardSectionProps) {
               </Text>
             </Stack>
           )}
+
           {orientation === "horizontal" && (
             <Stack justifyContent="center" width="100%">
               <Button
