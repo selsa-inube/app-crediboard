@@ -7,7 +7,7 @@ import { dataTrace } from "./config";
 
 export interface ITraceDetailsModalProps {
   handleClose: () => void;
-  data: { evaluation: string; description: string };
+  data: { answer: string; observations: string };
   isMobile?: boolean;
 }
 
@@ -24,13 +24,13 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
     >
       <Stack direction="column" gap="16px">
         <CardGray
-          label={dataTrace.evaluation}
-          placeHolder={data.evaluation}
+          label={dataTrace.answer}
+          placeHolder={data.answer}
           apparencePlaceHolder="gray"
         />
         <CardGray
-          label={dataTrace.description}
-          placeHolder={data.description}
+          label={dataTrace.observations}
+          placeHolder={data.observations}
           apparencePlaceHolder="gray"
           height="108px"
         />

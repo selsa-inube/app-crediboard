@@ -57,7 +57,9 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
               }}
             />
             <Text type="label" size="large" weight="bold">
-              {approvalsConfig.meets}
+              {formik.values.toggleChecked
+                ? approvalsConfig.yes
+                : approvalsConfig.no}
             </Text>
           </Stack>
         </Stack>

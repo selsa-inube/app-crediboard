@@ -89,6 +89,8 @@ export const dataAddRequirement = {
   placeHolderDate: "Seleccione un requisito",
   placeHolderTextarea: "Descripción del requisito",
   placeHolderJustification: "Justificación del requisito",
+  yes: "Sí, aprobar requisito.",
+  no: "No, aprobar requisito.",
 };
 
 export const infoItems = [
@@ -369,19 +371,4 @@ export const getActionsMobileIcon = () => {
       },
     },
   ];
-};
-
-export const dataFlags = {
-  requirements: {
-    title: "Error al cargar requisitos",
-    description: "No se encontraron requisitos disponibles.",
-  },
-  documentApproved: {
-    title: "Éxito",
-    description: "Documentación aprobada correctamente.",
-  },
-  documentRejected: {
-    title: "Error",
-    description: "Ocurrió un error al aprobar el documento.",
-  },
 };

@@ -1,12 +1,12 @@
 export const traceDetailsMock = [
   {
-    evaluation: "No cumple",
-    description:
+    answer: "No cumple",
+    observations:
       "Los NFTs son tokens no fungibles únicos en la cadena de bloques. A diferencia de las criptomonedas.",
   },
   {
-    evaluation: "Cumple",
-    description:
+    answer: "Cumple",
+    observations:
       "Los NFTs son tokens no fungibles únicos en la cadena de bloques. A diferencia de las criptomonedas.",
   },
 ];

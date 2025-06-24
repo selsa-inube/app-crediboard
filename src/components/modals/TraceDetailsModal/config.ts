@@ -1,7 +1,7 @@
 export const dataTrace = {
   title: "Más detalles",
   close: "Cerrar",
-  evaluation: "Evaluación",
-  description: "Descripción de la evaluación",
+  answer: "¿Quieres aprobar el requisito aunque no se pudo evaluar?",
+  observations: "Observaciones",
   understood: "Entendido",
 };

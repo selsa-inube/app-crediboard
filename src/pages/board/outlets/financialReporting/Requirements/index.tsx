@@ -14,7 +14,6 @@ import {
   IPatchOfRequirements,
   IRequirement,
 } from "@services/types";
-import { traceDetailsMock } from "@mocks/financialReporting/trace-details/tracedetails.mock";
 import { AddRequirementMock } from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
 
@@ -61,20 +60,37 @@ export const Requirements = (props: IRequirementsProps) => {
   } = props;
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const [showAprovalsModal, setShowAprovalsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
-  const [approvalSystemValues, setApprovalSystemValues] = useState({
-    observations: "",
-    toggleChecked: false,
-  });
-  const [approvalDocumentValues, setApprovalDocumentValues] = useState({
-    answer: "",
-    observations: "",
-  });
-  const [approvalHumanValues, setApprovalHumanValues] = useState({
-    answer: "",
-    observations: "",
-  });
+  const [approvalSystemValues, setApprovalSystemValues] = useState<
+    Record<
+      string,
+      {
+        observations: string;
+        toggleChecked: boolean;
+      }
+    >
+  >({});
+  const [approvalDocumentValues, setApprovalDocumentValues] = useState<
+    Record<
+      string,
+      {
+        answer: string;
+        observations: string;
+      }
+    >
+  >({});
+  const [approvalHumanValues, setApprovalHumanValues] = useState<
+    Record<
+      string,
+      {
+        answer: string;
+        observations: string;
+      }
+    >
+  >({});
+
   const [dataRequirements, setDataRequirements] = useState<IRequirementsData[]>(
     []
   );
@@ -88,6 +104,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
   const navigate = useNavigate();
   const { addFlag } = useFlag();
+
   useEffect(() => {
     const fetchRequirements = async () => {
       try {
@@ -156,6 +173,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const closeAdd = () => {
     setShowAddRequirementModal(false);
   };
+
   const renderAddIcon = () => {
     return (
       <Stack justifyContent="center">
@@ -172,8 +190,9 @@ export const Requirements = (props: IRequirementsProps) => {
     );
   };
 
-  const openApprovalsModal = (tableId: string) => {
+  const openApprovalsModal = (tableId: string, entryId: string) => {
     setSelectedTableId(tableId);
+    setSelectedEntryId(entryId);
     setShowAprovalsModal(true);
   };
 
@@ -185,7 +204,7 @@ export const Requirements = (props: IRequirementsProps) => {
         spacing="compact"
         cursorHover
         size="32px"
-        onClick={() => openApprovalsModal(tableId)}
+        onClick={() => openApprovalsModal(tableId, entry.id)}
         disabled={
           isValidElement(entry?.tag) && entry?.tag?.props?.label === "No Cumple"
         }
@@ -223,6 +242,7 @@ export const Requirements = (props: IRequirementsProps) => {
       navigate(`/extended-card/${id}`);
     }, 6000);
   };
+
   const initialValues: IPatchOfRequirements = {
     packageId: rawRequirements[0]?.packageId,
     uniqueReferenceNumber: creditRequestCode,
@@ -243,6 +263,7 @@ export const Requirements = (props: IRequirementsProps) => {
       },
     ],
   };
+
   const handleToggleModal = () => {
     setShowModal(!showModal);
   };
@@ -294,37 +315,87 @@ export const Requirements = (props: IRequirementsProps) => {
           ))
         )}
       </Fieldset>
-
-      {showSeeDetailsModal && (
-        <TraceDetailsModal
-          isMobile={isMobile}
-          handleClose={() => setShowSeeDetailsModal(false)}
-          data={traceDetailsMock[0]}
-        />
-      )}
-      {showAprovalsModal && selectedTableId === "tabla1" && (
+      {showSeeDetailsModal &&
+        selectedTableId === "tabla1" &&
+        selectedEntryId && (
+          <TraceDetailsModal
+            isMobile={isMobile}
+            handleClose={() => setShowSeeDetailsModal(false)}
+            data={{
+              answer: approvalSystemValues[selectedEntryId]?.toggleChecked
+                ? dataAddRequirement.yes
+                : dataAddRequirement.no,
+              observations:
+                approvalSystemValues[selectedEntryId]?.observations || "",
+            }}
+          />
+        )}
+      {showSeeDetailsModal &&
+        selectedTableId === "tabla3" &&
+        selectedEntryId && (
+          <TraceDetailsModal
+            isMobile={isMobile}
+            handleClose={() => setShowSeeDetailsModal(false)}
+            data={{
+              answer: approvalHumanValues[selectedEntryId]?.answer || "",
+              observations:
+                approvalHumanValues[selectedEntryId]?.observations || "",
+            }}
+          />
+        )}
+      {showAprovalsModal && selectedTableId === "tabla1" && selectedEntryId && (
         <ApprovalsModalSystem
-          initialValues={approvalSystemValues}
+          initialValues={
+            approvalSystemValues[selectedEntryId] || {
+              observations: "",
+              toggleChecked: false,
+            }
+          }
           onCloseModal={() => setShowAprovalsModal(false)}
           isMobile={isMobile}
-          onConfirm={setApprovalSystemValues}
+          onConfirm={(values) =>
+            setApprovalSystemValues((prev) => ({
+              ...prev,
+              [selectedEntryId]: values,
+            }))
+          }
         />
       )}
-      {showAprovalsModal && selectedTableId === "tabla2" && (
+      {showAprovalsModal && selectedTableId === "tabla2" && selectedEntryId && (
         <ApprovalModalDocumentaries
-          initialValues={approvalDocumentValues}
+          initialValues={
+            approvalDocumentValues[selectedEntryId] || {
+              answer: "",
+              observations: "",
+            }
+          }
           title=""
           onCloseModal={toggleAprovalsModal}
           isMobile={isMobile}
-          onConfirm={setApprovalDocumentValues}
+          onConfirm={(values) =>
+            setApprovalDocumentValues((prev) => ({
+              ...prev,
+              [selectedEntryId]: values,
+            }))
+          }
         />
       )}
-      {showAprovalsModal && selectedTableId === "tabla3" && (
+      {showAprovalsModal && selectedTableId === "tabla3" && selectedEntryId && (
         <ApprovalsModalHuman
-          initialValues={approvalHumanValues}
+          initialValues={
+            approvalHumanValues[selectedEntryId] || {
+              answer: "",
+              observations: "",
+            }
+          }
           onCloseModal={toggleAprovalsModal}
           isMobile={isMobile}
-          onConfirm={setApprovalHumanValues}
+          onConfirm={(values) =>
+            setApprovalHumanValues((prev) => ({
+              ...prev,
+              [selectedEntryId]: values,
+            }))
+          }
         />
       )}
       {showAddRequirementModal && (
