@@ -18,9 +18,6 @@ import { environment } from "@config/environment";
 import { initializeDataDB } from "@mocks/utils/initializeDataDB";
 import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
-import { AddProspectRoutes } from "@routes/addProspect";
-import { EditProspectRoutes } from "@routes/editProspect";
-import { SubmitCreditApplicationRoutes } from "@routes/SubmitCreditApplication";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
 
 function LogOut() {
@@ -46,12 +43,6 @@ const router = createBrowserRouter(
       />
       <Route path="login/*" element={<LoginRoutes />} />
       <Route path="/*" element={<BoardRoutes />} />
-      <Route path="add-prospect/*" element={<AddProspectRoutes />} />
-      <Route path="edit-prospect/*" element={<EditProspectRoutes />} />
-      <Route
-        path="submit-credit-application/*"
-        element={<SubmitCreditApplicationRoutes />}
-      />
       <Route path="logout" element={<LogOut />} />
     </>
   )

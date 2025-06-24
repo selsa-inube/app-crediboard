@@ -4,10 +4,15 @@ import {
   MdCheck,
   MdClose,
   MdOutlineCheckCircle,
+  MdOutlineHowToReg,
+  MdOutlineRemoveRedEye,
   MdRemove,
 } from "react-icons/md";
 import { Stack, Icon, Tag } from "@inubekit/inubekit";
 
+import check from "@assets/images/check.svg";
+import close from "@assets/images/close.svg";
+import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
 import { CreditRequest } from "@services/types";
 
@@ -87,9 +92,9 @@ export const dataAddRequirement = {
 };
 
 export const infoItems = [
-  { icon: <MdAddCircleOutline />, text: "Adjuntar", appearance: "help" },
+  { icon: <MdOutlineRemoveRedEye />, text: "Ver Detalles", appearance: "help" },
   {
-    icon: <MdOutlineCheckCircle />,
+    icon: <MdOutlineHowToReg />,
     text: "Forzar Aprobación",
     appearance: "help",
   },
@@ -135,9 +140,9 @@ export const actionsRequirements = [
 ];
 
 const iconActionsMobile = (tag: string) => {
-  if (tag === "Aprobado") {
+  if (tag === "Cumple") {
     return <MdCheck />;
-  } else if (tag === "Pendiente") {
+  } else if (tag === "Sin Evaluar") {
     return <MdRemove />;
   } else {
     return <MdClose />;
@@ -163,36 +168,15 @@ export const getAcctionMobile = (
 ) => {
   const actionsMobile = [
     {
-      id: "tags",
-      actionName: "",
-      content: (data: IEntries) => (
-        <Icon
-          icon={
-            isValidElement(data?.tag) &&
-            iconActionsMobile(data?.tag?.props?.label)
-          }
-          appearance={
-            isValidTagElement(data?.tag)
-              ? data?.tag?.props?.appearance
-              : undefined
-          }
-          cursorHover
-          variant="filled"
-          shape="circle"
-          size="17px"
-        />
-      ),
-    },
-    {
       id: "agregar",
       content: () => (
         <Stack justifyContent="center">
           <Icon
-            icon={<MdAddCircleOutline />}
+            icon={<MdOutlineRemoveRedEye />}
             appearance="primary"
             onClick={() => showModalAdd(true)}
             spacing="narrow"
-            size="22px"
+            size="20px"
             cursorHover
           />
         </Stack>
@@ -203,11 +187,11 @@ export const getAcctionMobile = (
       content: (data: IEntries) => (
         <Stack justifyContent="center">
           <Icon
-            icon={<MdOutlineCheckCircle />}
+            icon={<MdOutlineHowToReg />}
             appearance="primary"
             spacing="narrow"
             cursorHover
-            size="22px"
+            size="20px"
             onClick={() => showAprovalsModal(true)}
             disabled={
               isValidElement(data?.tag) &&
@@ -347,6 +331,42 @@ export const maperDataRequirements = (processedEntries: IEntries[][]) => {
       titlesRequirements: titlesRequirements[2],
       entriesRequirements: processedEntries[2],
       actionsMovile: actionsMobile,
+    },
+  ];
+};
+
+const getIconByTagStatus = (tagElement: React.ReactElement) => {
+  const label = tagElement.props.label;
+
+  if (label === "Cumple") {
+    return <img src={check} alt="Cumple" width={14} height={14} />;
+  } else if (label === "Sin Evaluar") {
+    return <img src={remove} alt="Sin Evaluar" width={14} height={14} />;
+  } else if (label === "No Cumple") {
+    return <img src={close} alt="No Cumple" width={14} height={14} />;
+  } else {
+    return null;
+  }
+};
+
+export const getActionsMobileIcon = () => {
+  return [
+    {
+      id: "estado",
+      actionName: "",
+      content: (entry: IEntries) => {
+        const tagElement = entry.tag as React.ReactElement;
+        return (
+          <Stack>
+            <Icon
+              icon={getIconByTagStatus(tagElement)}
+              appearance={tagElement.props.appearance}
+              cursorHover
+              size="20px"
+            />
+          </Stack>
+        );
+      },
     },
   ];
 };

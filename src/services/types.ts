@@ -55,6 +55,34 @@ export interface ISearchToDo {
   taskToBeDone: string;
   usersByCreditRequestResponse: IStaff[];
 }
+
+export interface ICommercialManagerAndAnalyst {
+  identificationDocumentNumber: string;
+  staffId: string;
+  staffName: string;
+  userAccount: string;
+}
+
+export interface ICreditRequests {
+  creditRequestId: string;
+  creditRequestCode?: string;
+  executed_task?: string;
+  execution_date?: string;
+  identificationNumber?: string;
+  identificationType?: string;
+  justification?: string;
+  role?: string;
+  transactionOperation?: string;
+  userId?: string;
+  userName?: string;
+  staffName?: string;
+}
+
+export interface IEnumerator {
+  code: string;
+  description: string;
+}
+
 export interface ICreditRequest {
   creditRequestId?: string;
   creditRequestCode: string;

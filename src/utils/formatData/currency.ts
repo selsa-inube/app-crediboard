@@ -81,6 +81,21 @@ const getMonthsElapsed = (dateString: string, decimal: number): number => {
   return parseFloat((years + months).toFixed(decimal));
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getTotalFinancialObligations = (properties: any[]) => {
+  return properties
+    .filter((prop) => prop.propertyName === "FinancialObligation")
+    .reduce((total, prop) => {
+      const values = Array.isArray(prop.propertyValue)
+        ? prop.propertyValue
+        : prop.propertyValue.split(",").map((v: string) => v.trim());
+
+      const amount = Number(values[2] || 0);
+
+      return total + amount;
+    }, 0);
+};
+
 export {
   currencyFormat,
   parseCunstomFormat,
@@ -88,4 +103,5 @@ export {
   parseCurrencyString,
   validateCurrencyField,
   getMonthsElapsed,
+  getTotalFinancialObligations,
 };

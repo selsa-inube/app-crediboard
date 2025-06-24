@@ -10,8 +10,8 @@ import {
 
 import { IPatchOfRequirements } from "@services/types";
 import { BaseModal } from "@components/modals/baseModal";
-import { IOptionsSelect } from "@pages/SubmitCreditApplication/types";
 
+import { IOptionsSelect } from "../types";
 import { dataAddRequirement } from "../config";
 
 export interface IRequirement {
@@ -20,7 +20,6 @@ export interface IRequirement {
   title: string;
   setTypeOfRequirementToEvaluated: React.Dispatch<React.SetStateAction<string>>;
   setDescriptionUseValue: React.Dispatch<React.SetStateAction<string>>;
-  setModifyJustification: React.Dispatch<React.SetStateAction<string>>;
   setRequirementName: React.Dispatch<React.SetStateAction<string>>;
   buttonText: string;
   readOnly?: boolean;
@@ -47,7 +46,6 @@ export function AddRequirement(props: IRequirement) {
     optionsRequirement,
     setTypeOfRequirementToEvaluated,
     setDescriptionUseValue,
-    setModifyJustification,
     setRequirementName,
     handleNext,
     secondaryButtonText = "Cancelar",
@@ -60,14 +58,12 @@ export function AddRequirement(props: IRequirement) {
     ),
     requirementCatalogName: Yup.string().required("Este campo es obligatorio"),
     descriptionUse: Yup.string().required("Este campo es obligatorio"),
-    modifyJustification: Yup.string().required("Este campo es obligatorio"),
   });
   const isButtonDisabled = (
     values: {
       typeOfRequirementToEvaluated: string;
       requirementCatalogName: string;
       descriptionUse: string;
-      modifyJustification: string;
     },
     isSubmitting: boolean
   ): boolean => {
@@ -75,7 +71,6 @@ export function AddRequirement(props: IRequirement) {
       !values.typeOfRequirementToEvaluated ||
       !values.requirementCatalogName ||
       !values.descriptionUse ||
-      !values.modifyJustification ||
       isSubmitting
     );
   };
@@ -107,7 +102,6 @@ export function AddRequirement(props: IRequirement) {
         typeOfRequirementToEvaluated: "",
         requirementCatalogName: "",
         descriptionUse: "",
-        modifyJustification: "",
       }}
       validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting }) => {
@@ -169,19 +163,6 @@ export function AddRequirement(props: IRequirement) {
                   setFieldValue("descriptionUse", e.target.value);
                 }}
                 fullwidth
-              />
-              <Textarea
-                id={"modifyJustification"}
-                name={"modifyJustification"}
-                label={dataAddRequirement.labelJustification}
-                placeholder={dataAddRequirement.placeHolderJustification}
-                value={values.modifyJustification}
-                onChange={(e) => {
-                  setModifyJustification(e.target.value);
-                  setFieldValue("modifyJustification", e.target.value);
-                }}
-                fullwidth
-                maxLength={300}
               />
             </Stack>
           </Form>

@@ -8,9 +8,9 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IEntries } from "@components/data/TableBoard/types";
 import { TextAreaModal } from "@components/modals/TextAreaModal";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
-import { getCreditRequestByCode } from "@services/creditRequets/getCreditRequestByCode";
+import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { getNotificationOnApprovals } from "@services/notificationOnApprovals";
-import { getApprovalsById } from "@services/financialReporting/getApprovals";
+import { getApprovalsById } from "@services/credit-request/query/getApprovals";
 import { IApprovals } from "./types";
 import { ICreditRequest } from "@services/types";
 import {
@@ -23,6 +23,7 @@ import {
   getMobileActionsConfig,
   infoItems,
   entriesApprovals,
+  getActionsMobileIcon,
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
 import { AppContext } from "@context/AppContext";
 
@@ -45,14 +46,21 @@ export const Approvals = (props: IApprovalsProps) => {
   const [selectedData, setSelectedData] = useState<IEntries | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { addFlag } = useFlag();
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
   const fetchCreditRequest = useCallback(async () => {
     try {
-      const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+      const data = await getCreditRequestByCode(
+        businessUnitPublicCode,
+        id,
+        userAccount
+      );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
       console.error(error);
@@ -61,7 +69,7 @@ export const Approvals = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, userAccount]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();
@@ -160,6 +168,7 @@ export const Approvals = (props: IApprovalsProps) => {
         heightFieldset="100%"
         hasTable
         hasError={!requests ? true : false}
+        hasOverflow={isMobile}
       >
         {!requests || error ? (
           <ItemNotFound
@@ -176,6 +185,7 @@ export const Approvals = (props: IApprovalsProps) => {
             entries={approvalsEntries}
             actions={desktopActionsConfig}
             actionMobile={mobileActions}
+            actionMobileIcon={getActionsMobileIcon()}
             loading={loading}
             appearanceTable={{
               widthTd: isMobile ? "70%" : undefined,

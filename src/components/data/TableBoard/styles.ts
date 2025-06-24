@@ -24,6 +24,11 @@ export const StyledContainer = styled.div<IStyledContainer>`
   overflow: visible;
 `;
 
+export const StyledDivactions = styled.div<IStyledTdactions>`
+  align-items: center;
+  align-content: center;
+`;
+
 interface IStyledThactions {
   $isTablet?: boolean;
   $isFirst?: boolean;

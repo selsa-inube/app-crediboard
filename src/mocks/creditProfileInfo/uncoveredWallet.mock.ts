@@ -1,6 +1,6 @@
 export const uncovered_wallet = [
   {
-    credit_request_id: "999990",
+    credit_request_id: "SC-122254646",
     uncovered_wallet: {
       overdraft_factor: 10,
       discovered_value: 50000000,
@@ -57,6 +57,14 @@ export const uncovered_wallet = [
   },
   {
     credit_request_id: "999997",
+    uncovered_wallet: {
+      overdraft_factor: 14,
+      discovered_value: 22000000,
+      reciprocity: 2,
+    },
+  },
+   {
+    credit_request_id: "SC-122254646",
     uncovered_wallet: {
       overdraft_factor: 14,
       discovered_value: 22000000,

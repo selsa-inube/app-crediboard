@@ -1,4 +1,4 @@
-import { dataTableExtraDebtors } from "@pages/prospect/components/TableExtraDebtors/config";
+import { dataTableExtraDebtors } from "@components/data/TableExtraDebtors/config";
 
 export const mockExtraDebtors: dataTableExtraDebtors[] = [
   {

@@ -16,13 +16,13 @@ import {
   ICreditRequest,
   IDeleteCreditRequest,
 } from "@services/types";
-import { getCreditRequestByCode } from "@services/creditRequets/getCreditRequestByCode";
-import { getUnreadErrorsById } from "@services/unreadErrors";
-import { getSearchAllDocumentsById } from "@services/documents/SearchAllDocuments";
+import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
+import { getUnreadErrorsById } from "@services/credit-request/command/unreadErrors";
+import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
 import { generatePDF } from "@utils/pdf/generetePDF";
 import { AppContext } from "@context/AppContext";
-import { patchAssignAccountManager } from "@services/creditRequets/patchAssignAccountManager";
-import { lateRejectionOfACreditRequest } from "@services/creditRequets/lateRejectionCreditRequest";
+import { patchAssignAccountManager } from "@services/credit-request/command/patchAssignAccountManager";
+import { lateRejectionOfACreditRequest } from "@services/credit-request/command/lateRejectionCreditRequest";
 import {
   textFlagsCancel,
   textFlagsReject,
@@ -97,20 +97,18 @@ export const FinancialReporting = () => {
   const [showModal, setShowModal] = useState(false);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
-
-  const hasPermitRejection = eventData.user.staff.useCases.canReject
-    ? true
-    : false;
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   useEffect(() => {
-    getCreditRequestByCode(businessUnitPublicCode, id!)
+    getCreditRequestByCode(businessUnitPublicCode, id!, userAccount)
       .then((data) => {
         setData(data[0]);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [id, businessUnitPublicCode]);
+  }, [id, businessUnitPublicCode, userAccount]);
 
   const fetchAndShowDocuments = async () => {
     if (!data?.creditRequestId || !user?.email || !businessUnitPublicCode)
@@ -345,7 +343,7 @@ export const FinancialReporting = () => {
               isMobile={isMobile}
               actionButtons={handleActions}
               navigation={() => navigation("/")}
-              hasPermitRejection={hasPermitRejection}
+              eventData={eventData}
             />
           }
         >
@@ -361,6 +359,9 @@ export const FinancialReporting = () => {
                     id={id!}
                     hideContactIcons={true}
                     prospectData={dataProspect!}
+                    hasPermitRejection={
+                      eventData.user.staff.useCases.canSendDecision
+                    }
                   />
                 </Stack>
               </Stack>
@@ -384,6 +385,9 @@ export const FinancialReporting = () => {
                     user={user!.nickname!}
                     businessUnitPublicCode={businessUnitPublicCode}
                     creditRequestCode={data.creditRequestCode!}
+                    hasPermitRejection={
+                      eventData.user.staff.useCases.canAddRequirements
+                    }
                   />
                 </Stack>
                 <Stack direction="column">

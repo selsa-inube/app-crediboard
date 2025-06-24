@@ -12,7 +12,7 @@ export const rowsActions = [
 
 export const headersTableExtraordinaryInstallment: IHeaders[] = [
   {
-    label: "Fecha de pago",
+    label: "Fecha",
     key: "datePayment",
   },
   {
@@ -27,5 +27,13 @@ export const headersTableExtraordinaryInstallment: IHeaders[] = [
     key: "paymentMethod",
   },
 ];
+
+export const dataTableExtraordinaryInstallment = {
+  noData: "¡Ups! No se encontraron registros.",
+  deletion: "Eliminación",
+  delete: "Eliminar",
+  content: "¿Realmente desea eliminar este pago extra?",
+  cancel: "Cancelar",
+};
 
 export const pageLength = 5;

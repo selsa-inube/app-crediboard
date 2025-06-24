@@ -1,4 +1,4 @@
-import { deleteCreditRequests } from "@services/creditRequets/deleteCreditRequets";
+import { deleteCreditRequests } from "@services/credit-request/command/deleteCreditRequets";
 import { IDeleteCreditRequest } from "@services/types";
 
 export const deleteCreditRequest = async (

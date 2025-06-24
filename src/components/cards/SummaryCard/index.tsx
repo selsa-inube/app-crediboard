@@ -11,7 +11,9 @@ interface SummaryCardProps {
   isPinned?: boolean;
   hasMessage?: boolean;
   onPinChange?: () => void;
+  onCardClick?: () => void;
   errorLoadingPins?: boolean;
+  canUnpin?: boolean;
 }
 
 const SummaryCard = (props: SummaryCardProps) => {
@@ -26,7 +28,9 @@ const SummaryCard = (props: SummaryCardProps) => {
     isPinned = false,
     hasMessage,
     onPinChange,
+    onCardClick,
     errorLoadingPins,
+    canUnpin,
   } = props;
 
   return (
@@ -41,7 +45,9 @@ const SummaryCard = (props: SummaryCardProps) => {
       isPinned={isPinned}
       hasMessage={hasMessage}
       onPinChange={onPinChange}
+      onCardClick={onCardClick}
       errorLoadingPins={errorLoadingPins}
+      canUnpin={canUnpin}
     />
   );
 };

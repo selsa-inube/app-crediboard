@@ -1,11 +1,11 @@
 import { useState, useEffect, ChangeEvent, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { MdOutlineInfo } from "react-icons/md";
 import {
   Stack,
   Icon,
   Text,
   SkeletonLine,
-  IOption,
   Select,
   Button,
 } from "@inubekit/inubekit";
@@ -13,19 +13,28 @@ import {
 import { Fieldset } from "@components/data/Fieldset";
 import { Divider } from "@components/layout/Divider";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
-import { getCreditRequestByCode } from "@services/creditRequets/getCreditRequestByCode";
-import { getSearchDecisionById } from "@services/todo/SearchDecisionById";
+import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
+import { getSearchDecisionById } from "@services/credit-request/query/SearchDecisionById";
 import { IStaff, IToDo, ICreditRequest } from "@services/types";
-import { getToDoByCreditRequestId } from "@services/todo/getToDoByCreditRequestId";
+import { getToDoByCreditRequestId } from "@services/credit-request/query/getToDoByCreditRequestId";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
 import { DecisionModal } from "@pages/board/outlets/financialReporting/ToDo/DecisionModal";
 import { AppContext } from "@context/AppContext";
 import userNotFound from "@assets/images/ItemNotFound.png";
+import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
+import { BaseModal } from "@components/modals/baseModal";
+import { decisions as decisionsEnum } from "@services/enum/icorebanking-vi-crediboard/decisions/decisions";
 
 import { StaffModal } from "./StaffModal";
-import { errorMessagge, staffConfig, txtLabels, txtTaskQuery } from "./config";
-import { IICon, IButton } from "./types";
+import {
+  errorMessagge,
+  staffConfig,
+  txtLabels,
+  txtTaskQuery,
+  titlesModal,
+} from "./config";
+import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
 import { StyledHorizontalDivider, StyledTextField } from "../styles";
 import { errorMessages, errorObserver } from "../config";
@@ -46,13 +55,14 @@ function ToDo(props: ToDoProps) {
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [staff, setStaff] = useState<IStaff[]>([]);
-  const [taskDecisions, setTaskDecisions] = useState<IOption[]>([]);
-  const [selectedDecision, setSelectedDecision] = useState<IOption | null>(
-    null
-  );
+  const [taskDecisions, setTaskDecisions] = useState<ITaskDecisionOption[]>([]);
+  const [selectedDecision, setSelectedDecision] =
+    useState<ITaskDecisionOption | null>(null);
   const [loading, setLoading] = useState(true);
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalInfo, setIsModalInfo] = useState(false);
+  const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
 
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
@@ -94,7 +104,11 @@ function ToDo(props: ToDoProps) {
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
-        const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+        const data = await getCreditRequestByCode(
+          businessUnitPublicCode,
+          id,
+          userAccount
+        );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
         console.error(error);
@@ -108,7 +122,7 @@ function ToDo(props: ToDoProps) {
     if (id) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, userAccount]);
 
   useEffect(() => {
     const fetchToDoData = async () => {
@@ -225,12 +239,20 @@ function ToDo(props: ToDoProps) {
           requests.creditRequestId
         );
         const formattedDecisions = Array.isArray(decision)
-          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            decision.map((decisions: any, index: number) => ({
-              id: `decision-${index}`,
-              label: decisions.decision + ": " + decisions.value,
-              value: decisions.value,
-            }))
+          ? decision.map((decisions: DecisionItem, index: number) => {
+              const enumDecision = decisionsEnum.find(
+                (d) => d.Code === decisions.decision
+              );
+              return {
+                id: `decision-${index}`,
+                label: enumDecision
+                  ? `${enumDecision.Value}: ${enumDecision.Description}`
+                  : `${decisions.decision}: ${decisions.value}`,
+                value: decisions.value,
+                code: decisions.decision,
+                originalLabel: `${decisions.decision}: ${decisions.value}`,
+              };
+            })
           : [];
         setTaskDecisions(formattedDecisions);
       } catch (error) {
@@ -256,23 +278,50 @@ function ToDo(props: ToDoProps) {
   const data = {
     makeDecision: {
       creditRequestId: requests?.creditRequestId || "",
-      humanDecision: selectedDecision?.label.split(":")[0] || "",
+      humanDecision:
+        selectedDecision?.code || selectedDecision?.label.split(":")[0] || "",
       justification: "",
     },
     businessUnit: businessUnitPublicCode,
     user: userAccount,
     xAction: getXAction(
-      selectedDecision?.label.split(":")[0] || "",
+      selectedDecision?.code || selectedDecision?.label.split(":")[0] || "",
       validationId()
     ),
-    humanDecisionDescription: selectedDecision?.label || "",
+    humanDecisionDescription:
+      selectedDecision?.originalLabel || selectedDecision?.label || "",
   };
+
+  const taskRole = taskPrs.find((t) => t.Code === taskData?.taskToBeDone)?.Role;
+
+  const getTaskLabel = (code: string): string => {
+    const task = taskPrs.find((t) => t.Code === code);
+    return task ? `${task.Value}` : code;
+  };
+
+  const handleInfo = () => {
+    setIsModalInfo(true);
+  };
+
+  useEffect(() => {
+    setHasPermitSend(
+      staff.some(
+        (s) =>
+          s.role === taskRole?.substring(0, 20) &&
+          s.userId === eventData?.user?.staff?.staffId
+      )
+    );
+  }, [staff, eventData, taskData, taskRole]);
 
   return (
     <>
       <Fieldset
         title={errorMessages.toDo.titleCard}
-        descriptionTitle={assignedStaff.commercialManager}
+        descriptionTitle={
+          taskRole === "CredicarAccountManager"
+            ? assignedStaff.commercialManager
+            : assignedStaff.analyst
+        }
         heightFieldset="241px"
         hasOverflow
         aspectRatio={isMobile ? "auto" : "1"}
@@ -305,7 +354,9 @@ function ToDo(props: ToDoProps) {
                   size={isMobile ? "medium" : "large"}
                   appearance={taskData?.taskToBeDone ? "dark" : "gray"}
                 >
-                  {taskData?.taskToBeDone ?? errorMessagge}
+                  {taskData?.taskToBeDone
+                    ? getTaskLabel(taskData.taskToBeDone)
+                    : errorMessagge}
                 </Text>
               )}
             </Stack>
@@ -330,16 +381,28 @@ function ToDo(props: ToDoProps) {
                 />
               </Stack>
               <Stack padding="16px 0px 0px 0px" width="100%">
-                <Button
-                  onClick={handleSend}
-                  cursorHover
-                  loading={button?.loading || false}
-                  type="submit"
-                  fullwidth={isMobile}
-                  spacing="compact"
-                >
-                  {button?.label || txtLabels.buttonText}
-                </Button>
+                <Stack gap="2px" alignItems="center">
+                  <Button
+                    onClick={handleSend}
+                    cursorHover
+                    loading={button?.loading || false}
+                    type="submit"
+                    fullwidth={isMobile}
+                    spacing="compact"
+                    disabled={!hasPermitSend ? true : false}
+                  >
+                    {button?.label || txtLabels.buttonText}
+                  </Button>
+                  {!hasPermitSend && (
+                    <Icon
+                      icon={<MdOutlineInfo />}
+                      appearance="primary"
+                      size="16px"
+                      cursorHover
+                      onClick={handleInfo}
+                    />
+                  )}
+                </Stack>
               </Stack>
             </Stack>
             <Divider />
@@ -454,7 +517,30 @@ function ToDo(props: ToDoProps) {
           setAssignedStaff={setAssignedStaff}
           buttonText={staffConfig.confirm}
           title={staffConfig.title}
+          handleRetry={handleRetry}
         />
+      )}
+      {isModalInfo && (
+        <>
+          <BaseModal
+            title={titlesModal.title}
+            nextButton={titlesModal.textButtonNext}
+            handleNext={() => setIsModalInfo(false)}
+            handleClose={() => setIsModalInfo(false)}
+            width={isMobile ? "290px" : "400px"}
+          >
+            <Stack gap="16px" direction="column">
+              <Stack direction="column" gap="8px">
+                <Text weight="bold" size="large">
+                  {titlesModal.subTitle}
+                </Text>
+                <Text weight="normal" size="medium" appearance="gray">
+                  {titlesModal.description}
+                </Text>
+              </Stack>
+            </Stack>
+          </BaseModal>
+        </>
       )}
     </>
   );

@@ -7,9 +7,9 @@ import { TableBoard } from "@components/data/TableBoard";
 import { IEntries } from "@components/data/TableBoard/types";
 import { PromissoryNotesModal } from "@components/modals/PromissoryNotesModal";
 import { UnfoundData } from "@components/layout/UnfoundData";
-import { getCreditRequestByCode } from "@services/creditRequets/getCreditRequestByCode";
-import { getPayrollDiscountAuthorizationsById } from "@services/payroll_discount_authorizations";
-import { getPromissoryNotesById } from "@services/promissory_notes";
+import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
+import { getPayrollDiscountAuthorizationsById } from "@services/credit-request/query/payroll_discount_authorizations";
+import { getPromissoryNotesById } from "@services/credit-request/query/promissory_notes";
 import {
   IPayrollDiscountAuthorization,
   IPromissoryNotes,
@@ -23,6 +23,7 @@ import {
   getTableBoardActions,
   titlesFinanacialReporting,
   infoItems,
+  getActionsMobileIcon,
 } from "./config";
 import { errorObserver, errorMessages } from "../config";
 
@@ -45,15 +46,22 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   );
   const [showRetry, setShowRetry] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
-        const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+        const data = await getCreditRequestByCode(
+          businessUnitPublicCode,
+          id,
+          userAccount
+        );
         setCreditRequests(data[0] as ICreditRequest);
       } catch (error) {
         errorObserver.notify({
@@ -63,7 +71,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       }
     };
     if (id) fetchCreditRequest();
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, userAccount]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -147,6 +155,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       heightFieldset="100%"
       hasTable
       hasError={!creditRequets ? true : false}
+      hasOverflow={isMobile}
     >
       {!creditRequets || showRetry ? (
         <UnfoundData
@@ -166,6 +175,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
             entries={dataPromissoryNotes}
             actions={getTableBoardActions(() => setShowModal(true))}
             actionMobile={getTableBoardActionMobile(() => setShowModal(true))}
+            actionMobileIcon={getActionsMobileIcon()}
             loading={loading}
             appearanceTable={{
               widthTd: isMobile ? "23%" : undefined,

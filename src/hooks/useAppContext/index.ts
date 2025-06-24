@@ -9,8 +9,8 @@ import {
 } from "@context/AppContext/utils";
 import { ICrediboardData } from "@context/AppContext/types";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
+import { getEnumerators } from "@services/enumerators";
 import { getStaff } from "@services/staffs";
-
 import { decrypt } from "@utils/encrypt/encrypt";
 
 interface IBusinessUnits {
@@ -54,17 +54,17 @@ function useAppContext() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getUserPermissions = (IStaff: any) => {
     const isAdmon =
-      IStaff.identificationDocumentNumber === "elyerogo@gmail.com";
+      IStaff.identificationDocumentNumber === "ca.rincon97@gmail.co";
     return {
       canReject: isAdmon,
       canCancel: isAdmon,
       canPrint: isAdmon,
-      canAttach: false,
-      canViewAttachments: false,
+      canAttach: isAdmon,
+      canViewAttachments: isAdmon,
       canManageGuarantees: isAdmon,
-      canViewCreditProfile: false,
+      canViewCreditProfile: isAdmon,
       canManageDisbursementMethods: isAdmon,
-      canAddRequirements: false,
+      canAddRequirements: isAdmon,
       canSendDecision: isAdmon,
       canChangeUsers: isAdmon,
       canApprove: isAdmon,
@@ -239,16 +239,22 @@ function useAppContext() {
         return;
       }
 
-      setEventData((prev) => ({
-        ...prev,
-        businessUnit: {
-          ...prev.businessUnit,
-          abbreviatedName: businessUnit?.abbreviatedName || "",
-          businessUnitPublicCode: businessUnit?.businessUnitPublicCode || "",
-          languageId: businessUnit?.languageId || "",
-          urlLogo: businessUnit?.urlLogo || "",
-        },
-      }));
+      (async () => {
+        const enumRoles = await getEnumerators(
+          businessUnit.businessUnitPublicCode
+        );
+        setEventData((prev) => ({
+          ...prev,
+          businessUnit: {
+            ...prev.businessUnit,
+            abbreviatedName: businessUnit?.abbreviatedName || "",
+            businessUnitPublicCode: businessUnit?.businessUnitPublicCode || "",
+            languageId: businessUnit?.languageId || "",
+            urlLogo: businessUnit?.urlLogo || "",
+          },
+          enumRole: enumRoles,
+        }));
+      })();
     }
   }, [businessUnitSigla, businessUnitsToTheStaff]);
 

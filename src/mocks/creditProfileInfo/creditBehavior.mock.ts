@@ -1,6 +1,6 @@
 export const credit_behavior = [
   {
-    credit_request_id: "999990",
+    credit_request_id: "SC-122254646",
     credit_behavior: {
       core_risk_score: 450,
       central_risk_score_date: "2023-08-31",
@@ -30,7 +30,7 @@ export const credit_behavior = [
     credit_request_id: "999993",
     credit_behavior: {
       core_risk_score: 280,
-      central_risk_score_date: "2023-06-30",  
+      central_risk_score_date: "2023-06-30",
       number_of_internal_arrears: 10,
       maximum_number_of_installments_in_arrears: 5,
     },
@@ -64,6 +64,15 @@ export const credit_behavior = [
   },
   {
     credit_request_id: "999997",
+    credit_behavior: {
+      core_risk_score: 217,
+      central_risk_score_date: "2023-05-31",
+      number_of_internal_arrears: 5,
+      maximum_number_of_installments_in_arrears: 7,
+    },
+  },
+  {
+    credit_request_id: "SC-122254646",
     credit_behavior: {
       core_risk_score: 217,
       central_risk_score_date: "2023-05-31",

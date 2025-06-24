@@ -5,12 +5,13 @@ import * as Yup from "yup";
 import { Stack, useMediaQuery, Select, useFlag } from "@inubekit/inubekit";
 
 import { getCommercialManagerAndAnalyst } from "@services/commercialManagerAndAnalyst";
+
+import { AppContext } from "@context/AppContext";
 import {
   ICommercialManagerAndAnalyst,
   ICreditRequests,
-} from "@pages/SubmitCreditApplication/types";
-import { AppContext } from "@context/AppContext";
-import { IToDo } from "@services/types";
+  IToDo,
+} from "@services/types";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { BaseModal } from "@components/modals/baseModal";
 
@@ -34,6 +35,7 @@ export interface StaffModalProps {
       analyst: string;
     }>
   >;
+  handleRetry?: () => void;
 }
 
 export function StaffModal(props: StaffModalProps) {
@@ -45,6 +47,7 @@ export function StaffModal(props: StaffModalProps) {
     setAssignedStaff,
     title,
     buttonText,
+    handleRetry,
   } = props;
   const [analystList, setAnalystList] = useState<
     ICommercialManagerAndAnalyst[]
@@ -196,6 +199,9 @@ export function StaffModal(props: StaffModalProps) {
     }
   };
   const handleToggleModal = () => {
+    if (handleRetry) {
+      handleRetry();
+    }
     setShowModal(!showModal);
   };
   const options = {

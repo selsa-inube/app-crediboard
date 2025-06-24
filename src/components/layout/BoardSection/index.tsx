@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { MdOutlineChevronRight } from "react-icons/md";
+import { useContext, useEffect, useRef, useState, useCallback } from "react";
+import {
+  MdOutlineChevronRight,
+  MdOutlineFilterAlt,
+  MdOutlineFilterAltOff,
+} from "react-icons/md";
 import {
   Stack,
   Icon,
@@ -12,6 +16,13 @@ import {
 import { SummaryCard } from "@components/cards/SummaryCard";
 import { ICreditRequestPinned, ICreditRequest } from "@services/types";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
+import { patchChangeTracesToReadById } from "@services/credit-request/command/patchChangeTracesToReadById";
+import { AppContext } from "@context/AppContext";
+import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
+import { getCanUnpin } from "@utils/configRules/permissions";
+import { ruleConfig } from "@utils/configRules/configRules";
+import { evaluateRule } from "@utils/configRules/evaluateRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules";
 
 import { StyledBoardSection, StyledCollapseIcon } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
@@ -25,18 +36,22 @@ interface BoardSectionProps {
   pinnedRequests: ICreditRequestPinned[];
   errorLoadingPins: boolean;
   searchRequestValue: string;
+  sectionCounter?: number;
   handlePinRequest: (
     requestId: string,
-    identificationNumber: string[],
     userWhoPinnnedId: string,
     isPinned: string
   ) => void;
   handleLoadMoreData: () => void;
+  dragIcon?: React.ReactElement;
+  onOrientationChange: (orientation: SectionOrientation) => void;
 }
+
 
 function BoardSection(props: BoardSectionProps) {
   const {
     sectionTitle,
+    sectionCounter,
     sectionBackground = "light",
     orientation = "vertical",
     sectionInformation,
@@ -45,61 +60,130 @@ function BoardSection(props: BoardSectionProps) {
     searchRequestValue,
     handlePinRequest,
     handleLoadMoreData,
+    onOrientationChange,
   } = props;
   const disabledCollapse = sectionInformation.length === 0;
-
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
     useMediaQueries(["(max-width: 1024px)", "(max-width: 595px)"]);
-
   const [collapse, setCollapse] = useState(false);
+  const [currentOrientation, setCurrentOrientation] =
+    useState<SectionOrientation>(orientation);
+  const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
 
   const flagMessage = useRef(false);
 
-  const handleCollapse = () => {
-    if (!disabledCollapse) {
-      setCollapse(!collapse);
-    }
-  };
-
-  function isRequestPinned(
-    creditRequestId: string | undefined,
-    pinnedRequests: ICreditRequestPinned[]
-  ) {
-    const pinnedRequest = pinnedRequests.find(
-      (pinnedRequest) => pinnedRequest.creditRequestId === creditRequestId
-    );
-    return pinnedRequest && pinnedRequest.isPinned === "Y" ? true : false;
-  }
+  const { businessUnitSigla, eventData } = useContext(AppContext);
+  const missionName = eventData.user.staff.missionName;
+  const staffId = eventData.user.staff.staffId;
 
   const { addFlag } = useFlag();
 
+  const businessUnitPublicCode: string =
+    JSON.parse(businessUnitSigla).businessUnitPublicCode;
+
+  const handleCollapse = () => {
+    if (!disabledCollapse) {
+      setCollapse((prev) => !prev);
+    }
+  };
+
   const handleFlag = (title: string, description: string) => {
     addFlag({
-      title: title,
-      description: description,
+      title,
+      description,
       appearance: "danger",
       duration: 5000,
     });
   };
 
   const getNoDataMessage = () => {
-    if (!sectionInformation || sectionInformation.length === 0) {
+    if (sectionInformation.length === 0) {
       return searchRequestValue
         ? `${configOption.noMatches} "${searchRequestValue}"`
-        : `${configOption.textNodata}`;
+        : configOption.textNodata;
     }
     return "";
   };
+  const handleToggleOrientation = () => {
+    const newOrientation =
+      currentOrientation === "vertical" ? "horizontal" : "vertical";
+    if (newOrientation === "horizontal") {
+      setCollapse(true);
+    }
 
-  const errorData = mockErrorBoard[0];
+    setCurrentOrientation(newOrientation);
+    onOrientationChange(newOrientation);
+  };
+
+  const isRequestPinned = (
+    creditRequestId: string | undefined,
+    pinnedRequests: ICreditRequestPinned[]
+  ) =>
+    pinnedRequests.some(
+      (pinnedRequest) =>
+        pinnedRequest.creditRequestId === creditRequestId &&
+        pinnedRequest.isPinned === "Y"
+    );
+
+  const handleCardClick = async (creditRequestId: string | undefined) => {
+    if (!businessUnitPublicCode || !creditRequestId) return;
+
+    try {
+      await patchChangeTracesToReadById(
+        creditRequestId,
+        businessUnitPublicCode
+      );
+    } catch (error) {
+      addFlag({
+        title: textFlagsUsers.titleError,
+        description: JSON.stringify(error),
+        appearance: "danger",
+        duration: 5000,
+      });
+    }
+  };
+
+  const fetchValidationRulesData = useCallback(async () => {
+    const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
+
+    await Promise.all(
+      rulesValidate.map(async (ruleName) => {
+        const rule = ruleConfig[ruleName]?.({});
+        if (!rule) return;
+
+        try {
+          const values = await evaluateRule(
+            rule,
+            postBusinessUnitRules,
+            "value",
+            businessUnitPublicCode
+          );
+
+          const extractedValues = Array.isArray(values)
+            ? values
+                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+                .filter((val): val is string => val !== "")
+            : [];
+
+          setValueRule((prev) => {
+            const merged = [...(prev[ruleName] || []), ...extractedValues];
+            const unique = Array.from(new Set(merged));
+            return { ...prev, [ruleName]: unique };
+          });
+        } catch {
+          console.error(`Error evaluando ${ruleName} para este usuario.`);
+        }
+      })
+    );
+  }, [businessUnitPublicCode]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      const hasUnreadNoveltiesError = sectionInformation.some(
+      const hasUnread = sectionInformation.some(
         (request) => request.unreadNovelties === undefined
       );
-
-      if (!flagMessage.current && hasUnreadNoveltiesError) {
+      if (!flagMessage.current && hasUnread) {
+        const errorData = mockErrorBoard[0];
         handleFlag(errorData.messages[0], errorData.Summary[1]);
         flagMessage.current = true;
       }
@@ -108,6 +192,10 @@ function BoardSection(props: BoardSectionProps) {
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectionInformation]);
+
+  useEffect(() => {
+    if (businessUnitPublicCode) fetchValidationRulesData();
+  }, [businessUnitPublicCode, fetchValidationRulesData]);
 
   return (
     <StyledBoardSection
@@ -123,7 +211,7 @@ function BoardSection(props: BoardSectionProps) {
         gap="24px"
       >
         <Stack
-          alignItems="end"
+          alignItems="center"
           gap="8px"
           width={orientation === "vertical" ? "180px" : "auto"}
           height={orientation === "vertical" ? "56px" : "auto"}
@@ -143,6 +231,20 @@ function BoardSection(props: BoardSectionProps) {
               />
             </StyledCollapseIcon>
           )}
+
+          <Icon
+            icon={
+              currentOrientation === "vertical" ? (
+                <MdOutlineFilterAlt />
+              ) : (
+                <MdOutlineFilterAltOff />
+              )
+            }
+            appearance="primary"
+            size="24px"
+            onClick={handleToggleOrientation}
+          />
+
           <Text
             type={orientation === "vertical" || isMobile ? "title" : "headline"}
             size={orientation === "vertical" || isMobile ? "large" : "medium"}
@@ -150,10 +252,12 @@ function BoardSection(props: BoardSectionProps) {
             {sectionTitle}
           </Text>
         </Stack>
+
         <Text type="title" size="medium">
-          {sectionInformation.length}
+          {sectionCounter}
         </Text>
       </Stack>
+
       {(collapse || orientation === "vertical") && (
         <Stack
           wrap="wrap"
@@ -182,10 +286,6 @@ function BoardSection(props: BoardSectionProps) {
                   if (request.creditRequestId) {
                     handlePinRequest(
                       request.creditRequestId,
-                      Object.values(request.usersByCreditRequests || {}).map(
-                        (user: { identificationNumber: string }) =>
-                          user.identificationNumber
-                      ),
                       request.userWhoPinnnedId || "",
                       isRequestPinned(request.creditRequestId, pinnedRequests)
                         ? "N"
@@ -193,6 +293,13 @@ function BoardSection(props: BoardSectionProps) {
                     );
                   }
                 }}
+                canUnpin={getCanUnpin(
+                  staffId,
+                  request.userWhoPinnnedId || "",
+                  missionName || "",
+                  valueRule
+                )}
+                onCardClick={() => handleCardClick(request.creditRequestId)}
                 errorLoadingPins={errorLoadingPins}
               />
             ))
@@ -203,6 +310,7 @@ function BoardSection(props: BoardSectionProps) {
               </Text>
             </Stack>
           )}
+
           {orientation === "horizontal" && (
             <Stack justifyContent="center" width="100%">
               <Button

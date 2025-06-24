@@ -3,8 +3,8 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Stack } from "@inubekit/inubekit";
 
 import { IAccountingVouchers, ICreditRequest } from "@services/types";
-import { getAccountingVouchers } from "@services/accountingVouchers";
-import { getCreditRequestByCode } from "@services/creditRequets/getCreditRequestByCode";
+import { getAccountingVouchers } from "@services/credit-request/query/accountingVouchers";
+import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { AppContext } from "@context/AppContext";
 import { IEntries } from "@components/data/TableBoard/types";
 import { UnfoundData } from "@components/layout/UnfoundData";
@@ -31,14 +31,21 @@ export const Postingvouchers = (props: IApprovalsProps) => {
     useState<IAccountingVouchers[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const { userAccount } =
+    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
   const fetchCreditRequest = useCallback(async () => {
     try {
-      const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+      const data = await getCreditRequestByCode(
+        businessUnitPublicCode,
+        id,
+        userAccount
+      );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
       console.error(error);
@@ -47,7 +54,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, userAccount]);
 
   useEffect(() => {
     fetchCreditRequest();
@@ -78,6 +85,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         title={errorMessages.Postingvouchers.titleCard}
         heightFieldset={isMobile ? "100%" : "162px"}
         hasTable
+        hasOverflow={isMobile}
       >
         {error || (!loading && positionsAccountingVouchers.length === 0) ? (
           <UnfoundData

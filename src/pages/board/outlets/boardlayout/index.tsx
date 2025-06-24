@@ -4,27 +4,35 @@ import { Stack, Icon, Text, useMediaQuery, useFlag } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { ICreditRequest } from "@services/types";
-import { getCreditRequestPinned } from "@services/isPinned";
-import { getCreditRequestInProgress } from "@services/creditRequets/getCreditRequestInProgress";
-import { patchChangeAnchorToCreditRequest } from "@services/anchorCreditRequest";
+import { getCreditRequestPinned } from "@services/credit-request/query/isPinned";
+import { getCreditRequestInProgress } from "@services/credit-request/query/getCreditRequestInProgress";
+import { patchChangeAnchorToCreditRequest } from "@services/credit-request/command/anchorCreditRequest";
 import { AppContext } from "@context/AppContext";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
+import { Filter } from "@components/cards/SelectedFilters/interface";
+import { ruleConfig } from "@utils/configRules/configRules";
+import { evaluateRule } from "@utils/configRules/evaluateRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules";
 
 import { dataInformationModal } from "./config/board";
 import { BoardLayoutUI } from "./interface";
 import { selectCheckOptions } from "./config/select";
 import { IBoardData } from "./types";
-import { getEnumerators } from "@services/enumerators";
-import { IEnumerator } from "@pages/SubmitCreditApplication/types";
+
+export interface IFilterFormValues {
+  assignment: string;
+  status?: string;
+}
 
 function BoardLayout() {
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { businessUnitSigla, eventData, setEventData } = useContext(AppContext);
-  const [enumerators, setEnumerators] = useState<IEnumerator[]>([]);
   const [boardData, setBoardData] = useState<IBoardData>({
     boardRequests: [],
     requestsPinned: [],
   });
-
+  const [activeOptions, setActiveOptions] = useState<Filter[]>([]);
   const [filters, setFilters] = useState({
     searchRequestValue: "",
     showPinnedOnly: eventData.user.preferences.showPinnedOnly || false,
@@ -32,15 +40,14 @@ function BoardLayout() {
     boardOrientation: eventData.user.preferences.boardOrientation || "vertical",
   });
 
-  const [filteredRequests, setFilteredRequests] = useState<ICreditRequest[]>(
-    []
-  );
+  // const [filteredRequests, setFilteredRequests] = useState<ICreditRequest[]>(
+  //   []
+  // );
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
-  const identificationStaff = eventData.user.staff.identificationDocumentNumber;
+  const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
 
   useEffect(() => {
@@ -59,16 +66,23 @@ function BoardLayout() {
 
   const errorData = mockErrorBoard[0];
 
+  const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
   const [recordsToFetch, setRecordsToFetch] = useState(79);
 
   const fetchBoardData = async (
     businessUnitPublicCode: string,
-    limit: number
+    limit: number,
+    searchParam?: { filter?: string; text?: string }
   ) => {
     try {
       const [boardRequestsResult, requestsPinnedResult] =
         await Promise.allSettled([
-          getCreditRequestInProgress(businessUnitPublicCode, limit),
+          getCreditRequestInProgress(
+            businessUnitPublicCode,
+            limit,
+            userAccount,
+            searchParam
+          ),
           getCreditRequestPinned(businessUnitPublicCode),
         ]);
 
@@ -77,7 +91,7 @@ function BoardLayout() {
           ...prevState,
           boardRequests: boardRequestsResult.value,
         }));
-        setFilteredRequests(boardRequestsResult.value);
+        //setFilteredRequests(boardRequestsResult.value);
       }
 
       if (requestsPinnedResult.status === "fulfilled") {
@@ -95,99 +109,42 @@ function BoardLayout() {
   };
 
   useEffect(() => {
-    fetchBoardData(businessUnitPublicCode, recordsToFetch);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, recordsToFetch]);
+    if (activeOptions.length > 0 || filters.searchRequestValue.length >= 3)
+      return;
 
+    fetchBoardData(businessUnitPublicCode, recordsToFetch);
+
+    fetchValidationRulesData();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, recordsToFetch]);
   const handleLoadMoreData = () => {
     setRecordsToFetch((prev) => prev + 50);
   };
 
-  useEffect(() => {
-    const filteredRequests = boardData.boardRequests.filter((request) => {
-      const isSearchMatch =
-        request.clientName
-          .toLowerCase()
-          .includes(filters.searchRequestValue.toLowerCase()) ||
-        request.creditRequestCode
-          .toString()
-          .includes(filters.searchRequestValue);
-      request.creditRequestCode.toString().includes(filters.searchRequestValue);
+  const handleApplyFilters = async (values: IFilterFormValues) => {
+    const assignmentIds = values.assignment.split(",");
+    const activeFilteredValues: Filter[] = selectCheckOptions
+      .filter((option) => assignmentIds.includes(option.id))
+      .map((option, index) => ({
+        id: option.id,
+        label: option.label,
+        value: option.value + "=Y",
+        type: "assignment",
+        count: index + 1,
+      }));
 
-      const isPinned =
-        !filters.showPinnedOnly ||
-        boardData.requestsPinned
-          .filter((req) => req.isPinned === "Y")
-          .map((req) => req.creditRequestId)
-          .includes(request.creditRequestId as string);
+    const queryFilterString = activeFilteredValues.map(
+      (filter) => filter.value
+    );
 
-      return isSearchMatch && isPinned;
+    setActiveOptions(activeFilteredValues);
+
+    await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+      filter: `${queryFilterString}`,
     });
 
-    const activeFilterIds = filters.selectOptions
-      .filter((option) => option.checked)
-      .map((option) => option.id);
-
-    const finalFilteredRequests = filteredRequests.filter((request) => {
-      if (activeFilterIds.length === 0) return true;
-
-      return activeFilterIds.some((filterId) => {
-        switch (filterId) {
-          case "1":
-            return request.userWhoPinnnedId === staffId;
-          case "2":
-            return [
-              "GESTION_COMERCIAL",
-              "VERIFICACION_APROBACION",
-              "FORMALIZACION_GARANTIAS",
-              "TRAMITE_DESEMBOLSO",
-            ].includes(request.stage);
-          case "3":
-            return request.stage === "GESTION_COMERCIAL";
-          case "4":
-            return request.stage === "VERIFICACION_APROBACION";
-          case "5":
-            return request.stage === "FORMALIZACION_GARANTIAS";
-          case "6":
-            return request.stage === "TRAMITE_DESEMBOLSO";
-          case "7":
-            return request.stage === "CUMPLIMIENTO_REQUISITOS";
-          case "9":
-            return request.stage === "GESTION_COMERCIAL";
-          case "10":
-            return request.unreadNovelties === "Y";
-          default:
-            return false;
-        }
-      });
-    });
-    setFilteredRequests(finalFilteredRequests);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, boardData]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const accountManagers = await getEnumerators(businessUnitPublicCode);
-
-        setEnumerators(accountManagers);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [businessUnitPublicCode]);
-
-  useEffect(() => {
-    const updatedEventData = { ...eventData };
-    updatedEventData.enumRole = enumerators;
-
-    setEventData(updatedEventData);
-  }, [enumerators, eventData, setEventData]);
+    setIsFilterModalOpen(false);
+  };
 
   const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
     setFilters((prevFilters) => ({
@@ -231,18 +188,54 @@ function BoardLayout() {
     [addFlag]
   );
 
+  const fetchValidationRulesData = useCallback(async () => {
+    const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
+    await Promise.all(
+      rulesValidate.map(async (ruleName) => {
+        const rule = ruleConfig[ruleName]?.({});
+        if (!rule) return;
+
+        try {
+          const values = await evaluateRule(
+            rule,
+            postBusinessUnitRules,
+            "value",
+            businessUnitPublicCode
+          );
+
+          const extractedValues = Array.isArray(values)
+            ? values
+                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+                .filter((val): val is string => val !== "")
+            : [];
+
+          setValueRule((prev) => {
+            const current = prev[ruleName] || [];
+            const merged = [...current, ...extractedValues];
+            const unique = Array.from(new Set(merged));
+            return { ...prev, [ruleName]: unique };
+          });
+        } catch (error: unknown) {
+          console.error(`Error evaluando ${ruleName} para este usuario.`);
+        }
+      })
+    );
+  }, [businessUnitPublicCode]);
+
   const handlePinRequest = async (
     creditRequestId: string | undefined,
-    identificationNumber: string[],
     userWhoPinnnedId: string,
     isPinned: string
   ) => {
     try {
-      if (
-        userWhoPinnnedId === staffId ||
-        identificationNumber.includes(identificationStaff) ||
-        isPinned === "Y"
-      ) {
+      const isOwner = userWhoPinnnedId === staffId;
+      const isUnpin = isPinned === "N";
+      const isAuthorizedByRule =
+        valueRule["PositionsAuthorizedToRemoveAnchorsPlacedByOther"]?.includes(
+          missionName
+        );
+
+      if (isOwner || (isUnpin && isAuthorizedByRule) || isPinned === "Y") {
         setBoardData((prevState) => ({
           ...prevState,
           requestsPinned: prevState.requestsPinned.map((card) =>
@@ -267,39 +260,120 @@ function BoardLayout() {
       handleFlag(errorData.anchor[0], errorData.anchor[1]);
     }
   };
+  const openFilterModal = useCallback(() => {
+    setIsFilterModalOpen(true);
+    setIsMenuOpen(false);
+  }, []);
+  const handleClearFilters = async () => {
+    setActiveOptions([]);
+    setFilters((prev) => ({
+      ...prev,
+      searchRequestValue: "",
+      showPinnedOnly: false,
+      selectOptions: selectCheckOptions,
+    }));
 
+    await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+  };
+
+  const handleRemoveFilter = async (filterIdToRemove: string) => {
+    const updatedActiveOptions = activeOptions.filter(
+      (option) => option.id !== filterIdToRemove
+    );
+    setActiveOptions(updatedActiveOptions);
+
+    if (updatedActiveOptions.length === 0) {
+      setFilters((prev) => ({
+        ...prev,
+        selectOptions: selectCheckOptions,
+      }));
+
+      await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+      return;
+    }
+
+    const updatedFilterString = updatedActiveOptions
+      .map((filter) => filter.value)
+      .join(",")
+      .trim();
+
+    await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+      filter: updatedFilterString,
+    });
+  };
+
+  const handleSearchRequestsValue = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+
+    handleFiltersChange({ searchRequestValue: value });
+
+    if (value.trim().length >= 3) {
+      fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+        text: value.trim(),
+      });
+    }
+
+    if (value.trim().length === 0) {
+      fetchBoardData(businessUnitPublicCode, recordsToFetch);
+    }
+  };
+
+  const closeFilterModal = useCallback(() => setIsFilterModalOpen(false), []);
+
+  function getFilteredRequests({
+    boardRequests,
+    requestsPinned,
+    showPinnedOnly,
+  }: {
+    boardRequests: ICreditRequest[];
+    requestsPinned: { creditRequestId: string; isPinned: string }[];
+    showPinnedOnly: boolean;
+  }) {
+    if (!showPinnedOnly) return boardRequests;
+
+    const pinnedIds = requestsPinned
+      .filter((r) => r.isPinned === "Y")
+      .map((r) => r.creditRequestId);
+
+    return boardRequests.filter((request) =>
+      pinnedIds.includes(request.creditRequestId as string)
+    );
+  }
   return (
     <>
       <BoardLayoutUI
         isMobile={isMobile}
-        loading={loading}
-        selectOptions={filters.selectOptions}
+        openFilterModal={openFilterModal}
         boardOrientation={filters.boardOrientation}
-        BoardRequests={filteredRequests}
+        BoardRequests={getFilteredRequests({
+          boardRequests: boardData.boardRequests,
+          requestsPinned: boardData.requestsPinned,
+          showPinnedOnly: filters.showPinnedOnly,
+        })}
         searchRequestValue={filters.searchRequestValue}
         showPinnedOnly={filters.showPinnedOnly}
         pinnedRequests={boardData.requestsPinned}
         errorLoadingPins={errorLoadingPins}
         handleLoadMoreData={handleLoadMoreData}
-        handleSelectCheckChange={(e) =>
-          handleFiltersChange({
-            selectOptions: filters.selectOptions.map((option) =>
-              option.id === e.target.name
-                ? { ...option, checked: e.target.checked }
-                : option
-            ),
-          })
-        }
+        activeOptions={activeOptions}
         handlePinRequest={handlePinRequest}
         handleShowPinnedOnly={(e) =>
           handleFiltersChange({ showPinnedOnly: e.target.checked })
         }
-        handleSearchRequestsValue={(e) =>
-          handleFiltersChange({ searchRequestValue: e.target.value })
-        }
+        handleSearchRequestsValue={handleSearchRequestsValue}
         onOrientationChange={(orientation) =>
           handleFiltersChange({ boardOrientation: orientation })
         }
+        isFilterModalOpen={isFilterModalOpen}
+        handleApplyFilters={handleApplyFilters}
+        handleClearFilters={handleClearFilters}
+        handleRemoveFilter={handleRemoveFilter}
+        isMenuOpen={isMenuOpen}
+        selectOptions={[]}
+        handleSelectCheckChange={() => {}}
+        closeFilterModal={closeFilterModal}
       />
       {isOpenModal && (
         <BaseModal

@@ -2,7 +2,7 @@ import { Stack, Text, Grid, Divider } from "@inubekit/inubekit";
 
 import { CardGray } from "@components/cards/CardGray";
 import { Fieldset } from "@components/data/Fieldset";
-import { IMortgages } from "@services/guarantees/types";
+import { IMortgages } from "@services/credit-request/query/guarantees/types";
 
 import { dataMortgage } from "./config";
 

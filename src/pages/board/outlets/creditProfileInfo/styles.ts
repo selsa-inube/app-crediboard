@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { DefaultTheme } from "styled-components";
 import { inube } from "@inubekit/inubekit";
 
-
 interface IStyledDivider {
   theme?: DefaultTheme;
 }
@@ -37,6 +36,44 @@ export const StyledUl = styled.ul<IStyledUl>`
   flex-direction: ${({ $isTablet }) => ($isTablet ? "column" : "row")};
   align-items: center;
   gap: 4px;
+`;
+
+export const StyledPrint = styled.div`
+  @media print {
+    @page {
+      size: landscape;
+    }
+    * {
+      zoom: 0.9;
+    }
+  }
+`;
+
+export const StyledNoPrint = styled.div`
+  @media print {
+    display: none;
+  }
+`;
+
+interface IStyledGrid {
+  $isMobile?: boolean;
+}
+
+export const StyledGridPrint = styled.div<IStyledGrid>`
+  & > div {
+    max-width: 480px;
+  }
+
+  @media print {
+    & > div {
+      width: 250px;
+      zoom: 1.5;
+    }
+  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: ${({ $isMobile }) => ($isMobile ? "20px 40px" : "20px")};
 `;
 
 export const StyledLi = styled.li`

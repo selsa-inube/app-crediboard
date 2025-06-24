@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { MdAdd } from "react-icons/md";
-import { Stack, Text, useMediaQuery, Button } from "@inubekit/inubekit";
+import { MdAdd, MdOutlineInfo } from "react-icons/md";
+import { Stack, Text, useMediaQuery, Button, Icon } from "@inubekit/inubekit";
+
+import { BaseModal } from "@components/modals/baseModal";
 
 import { StyledContainerFieldset, StyledPrint } from "./styles";
+import { titlesModal } from "./config";
 
 interface IOptionsButton {
   title: string;
@@ -17,6 +20,7 @@ interface IFieldsetProps {
   heightFieldset?: string;
   descriptionTitle?: string;
   activeButton?: IOptionsButton;
+  disabledButton?: boolean;
   hasTable?: boolean;
   hasOverflow?: boolean;
   isMobile?: boolean;
@@ -35,6 +39,7 @@ export const Fieldset = (props: IFieldsetProps) => {
     heightFieldset,
     descriptionTitle,
     activeButton,
+    disabledButton,
     hasTable = false,
     hasOverflow = false,
     isClickable = false,
@@ -46,6 +51,7 @@ export const Fieldset = (props: IFieldsetProps) => {
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const [isSelected, setIsSelected] = useState(selectedState || false);
+  const [infoModal, setInfoModal] = useState(false);
 
   const handleOnClick = () => {
     if (isClickable) {
@@ -84,10 +90,20 @@ export const Fieldset = (props: IFieldsetProps) => {
               <Button
                 iconBefore={<MdAdd />}
                 spacing="compact"
+                disabled={!disabledButton}
                 onClick={activeButton.onClick}
               >
                 {activeButton.title}
               </Button>
+              {!disabledButton && (
+                <Icon
+                  icon={<MdOutlineInfo />}
+                  appearance="primary"
+                  size="16px"
+                  cursorHover
+                  onClick={() => setInfoModal(true)}
+                />
+              )}
             </StyledPrint>
           </Stack>
         )}
@@ -106,6 +122,26 @@ export const Fieldset = (props: IFieldsetProps) => {
       >
         {children}
       </StyledContainerFieldset>
+      {infoModal && (
+        <>
+          <BaseModal
+            title={titlesModal.title}
+            nextButton={titlesModal.textButtonNext}
+            handleNext={() => setInfoModal(false)}
+            handleClose={() => setInfoModal(false)}
+            width={isMobile ? "290px" : "400px"}
+          >
+            <Stack gap="16px" direction="column">
+              <Text weight="bold" size="large">
+                {titlesModal.subTitle}
+              </Text>
+              <Text weight="normal" size="medium" appearance="gray">
+                {titlesModal.description}
+              </Text>
+            </Stack>
+          </BaseModal>
+        </>
+      )}
     </Stack>
   );
 };

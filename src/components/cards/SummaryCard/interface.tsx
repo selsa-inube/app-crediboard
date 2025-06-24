@@ -9,7 +9,12 @@ import {
 import { currencyFormat } from "@utils/formatData/currency";
 import { formatPrimaryDate } from "@utils/formatData/date";
 
-import { StyledSummaryCard, StyledDivider, StyledLink } from "./styles";
+import {
+  StyledSummaryCard,
+  StyledDivider,
+  StyledLink,
+  StyledPinWrapper,
+} from "./styles";
 import { SummaryCardProps } from ".";
 
 function SummaryCardUI(props: SummaryCardProps) {
@@ -24,12 +29,13 @@ function SummaryCardUI(props: SummaryCardProps) {
     isPinned,
     hasMessage,
     onPinChange,
+    onCardClick,
     errorLoadingPins,
+    canUnpin,
   } = props;
-
   return (
     <StyledSummaryCard>
-      <StyledLink to={path}>
+      <StyledLink to={path} onClick={onCardClick}>
         <Stack justifyContent="space-between">
           <Text size="small" appearance="gray">
             No. Rad.:{rad}
@@ -68,14 +74,15 @@ function SummaryCardUI(props: SummaryCardProps) {
           {hasMessage && (
             <Icon icon={<MdOutlineMessage />} appearance="dark" size="20px" />
           )}
-          <Icon
-            icon={isPinned ? <MdPushPin /> : <MdOutlinePushPin />}
-            appearance={isPinned ? "dark" : "gray"}
-            size="20px"
-            cursorHover
-            onClick={onPinChange}
-            disabled={errorLoadingPins}
-          />
+          <StyledPinWrapper $canUnpin={canUnpin} $isPinned={isPinned}>
+            <Icon
+              icon={isPinned ? <MdPushPin /> : <MdOutlinePushPin />}
+              appearance={isPinned ? "dark" : "gray"}
+              size="20px"
+              onClick={onPinChange}
+              disabled={errorLoadingPins}
+            />
+          </StyledPinWrapper>
         </Stack>
       </Stack>
     </StyledSummaryCard>

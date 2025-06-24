@@ -1,4 +1,4 @@
-import { IEnumerator } from "@pages/SubmitCreditApplication/types";
+import { IEnumerator } from "@pages/board/outlets/boardlayout/types";
 
 const mapEnumeratorsEntity = (
   data: Record<string, string | number | object>

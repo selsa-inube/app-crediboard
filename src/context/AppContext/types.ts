@@ -1,5 +1,5 @@
 import { SectionOrientation } from "@components/layout/BoardSection/types";
-import { IEnumerator } from "@pages/SubmitCreditApplication/types";
+import { IEnumerator } from "@services/types";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 
 interface IPortal {

@@ -1,5 +1,9 @@
-import { MdCheck, MdClose, MdRemove } from "react-icons/md";
+import { MdClose } from "react-icons/md";
 import { Stack, Icon } from "@inubekit/inubekit";
+
+import check from "@assets/images/check.svg";
+import close from "@assets/images/close.svg";
+import remove from "@assets/images/remove.svg";
 
 import { StyledContainer, StyledUl } from "./styles";
 import { InfoItemComponent } from "./interface";
@@ -25,18 +29,17 @@ interface InfoModalProps {
 }
 
 const defaultItems: InfoItem[] = [
-  { icon: <MdCheck />, text: "Cumple", appearance: "success", shape: "circle" },
   {
-    icon: <MdClose />,
-    text: "No Cumple",
-    appearance: "danger",
-    shape: "circle",
+    icon: <img src={check} alt="check" width={16} height={16} />,
+    text: "Cumple",
   },
   {
-    icon: <MdRemove />,
+    icon: <img src={close} alt="close" width={16} height={16} />,
+    text: "No Cumple",
+  },
+  {
+    icon: <img src={remove} alt="remove" width={16} height={16} />,
     text: "Sin Evaluar",
-    appearance: "warning",
-    shape: "circle",
   },
 ];
 

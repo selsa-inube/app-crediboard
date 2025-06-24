@@ -5,4 +5,9 @@ interface IBoardData {
   requestsPinned: ICreditRequestPinned[];
 }
 
-export type { IBoardData };
+interface IEnumerator {
+  code: string;
+  description: string;
+}
+
+export type { IBoardData, IEnumerator };

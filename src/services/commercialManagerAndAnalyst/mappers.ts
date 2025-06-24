@@ -1,4 +1,4 @@
-import { ICommercialManagerAndAnalyst } from "@pages/SubmitCreditApplication/types";
+import { ICommercialManagerAndAnalyst } from "@services/types";
 
 const mapCommercialManagerAndAnalystEntity = (
   data: Record<string, string | number | object>

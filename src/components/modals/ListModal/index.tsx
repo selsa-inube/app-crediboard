@@ -20,14 +20,14 @@ import {
 import { File } from "@components/inputs/File";
 import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
 import { optionFlags } from "@pages/board/outlets/financialReporting/config";
-import { saveDocument } from "@services/saveDocument";
+import { saveDocument } from "@services/credit-request/command/saveDocument";
 import { validationMessages } from "@validations/validationMessages";
 import { AppContext } from "@context/AppContext";
-import { getSearchDocumentById } from "@services/documents/SearchDocumentById";
-import { IDocumentUpload } from "@pages/SubmitCreditApplication/types";
+import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
 import { IUploadedFile } from "@services/types";
 
+import { DocumentViewer } from "../DocumentViewer";
 import {
   StyledAttachContainer,
   StyledContainerClose,
@@ -35,8 +35,8 @@ import {
   StyledFileBox,
   StyledModal,
 } from "./styles";
-import { DocumentViewer } from "../DocumentViewer";
 import { listModalData } from "./config";
+import { IDocumentUpload } from "./types";
 
 export interface IOptionButtons {
   label: string;

@@ -79,7 +79,7 @@ export const entriesAppliedDiscounts = [
     id: "1",
     obligacion: (
       <Stack gap="20px">
-        <Text type="label">Intereces de Ajuste al Ciclo</Text>
+        <Text type="label">Intereses de Ajuste al Ciclo</Text>
       </Stack>
     ),
     "Compra primera Vivienda": "$150.000",

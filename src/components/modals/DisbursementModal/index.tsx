@@ -4,7 +4,6 @@ import { Stack, Tabs } from "@inubekit/inubekit";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { BaseModal } from "@components/modals/baseModal";
 import { Fieldset } from "@components/data/Fieldset";
-import { errorMessages } from "@pages/board/outlets/financialReporting/config";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 
 import { dataDisbursement, dataTabs } from "./config";
@@ -94,9 +93,9 @@ export function DisbursementModal(
         {error || availableTabs.length === 0 ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessages.Requirements.title}
-            description={errorMessages.Requirements.description}
-            buttonDescription={errorMessages.Requirements.button}
+            title={dataDisbursement.noDataTitle}
+            description={dataDisbursement.noDataDescription}
+            buttonDescription={dataDisbursement.retry}
             onRetry={handleRetry}
           />
         ) : (

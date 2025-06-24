@@ -8,7 +8,7 @@ import { ExtraordinaryPaymentModalProps, ExtraordinaryPaymentModal } from "..";
 import { parameters, props } from "./props";
 
 const meta: Meta<typeof ExtraordinaryPaymentModal> = {
-  title: "pages/propect/components/ExtraordinaryPaymentModal",
+  title: "components/modals/ExtraordinaryPaymentModal",
   component: ExtraordinaryPaymentModal,
   parameters,
   argTypes: props,

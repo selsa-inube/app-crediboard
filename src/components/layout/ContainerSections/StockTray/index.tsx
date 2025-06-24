@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { MdOutlineChevronLeft, MdMenu, MdOutlineInfo } from "react-icons/md";
 import { Stack, Icon, Button, Text } from "@inubekit/inubekit";
-import { BaseModal } from "@components/modals/baseModal";
 
-import { StyledHorizontalDivider, StyledPrint } from "./styled";
+import { BaseModal } from "@components/modals/baseModal";
+import { ICrediboardData } from "@context/AppContext/types";
+
 import { configButtons, titlesModal } from "../config";
+import { StyledHorizontalDivider, StyledPrint } from "./styled";
 
 interface IActionButtons {
   buttons: {
@@ -34,13 +36,13 @@ interface IActionButtons {
 
 interface IStockTrayProps {
   navigation: () => void;
+  eventData?: ICrediboardData;
   isMobile?: boolean;
   actionButtons?: IActionButtons;
-  hasPermitRejection?: boolean;
 }
 
 export const StockTray = (props: IStockTrayProps) => {
-  const { navigation, isMobile, actionButtons, hasPermitRejection } = props;
+  const { navigation, eventData, isMobile, actionButtons } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInfo = () => {
@@ -84,12 +86,14 @@ export const StockTray = (props: IStockTrayProps) => {
               <Stack gap="2px" alignItems="center">
                 <Button
                   spacing="compact"
-                  disabled={hasPermitRejection ? false : true}
+                  disabled={
+                    eventData?.user.staff.useCases.canReject ? false : true
+                  }
                   onClick={actionButtons?.buttons?.buttonReject?.OnClick}
                 >
                   {configButtons.buttons.buttonReject.label}
                 </Button>
-                {!hasPermitRejection && (
+                {!eventData?.user.staff.useCases.canReject && (
                   <Icon
                     icon={<MdOutlineInfo />}
                     appearance="primary"
@@ -99,46 +103,121 @@ export const StockTray = (props: IStockTrayProps) => {
                   />
                 )}
               </Stack>
-              <Button
-                spacing="compact"
-                onClick={actionButtons?.buttons?.buttonCancel.OnClick}
-              >
-                {configButtons.buttons.buttonCancel.label}
-              </Button>
-              <Button
-                spacing="compact"
-                onClick={actionButtons?.buttons.buttonPrint.OnClick}
-              >
-                {configButtons.buttons.buttonPrint.label}
-              </Button>
+              <Stack gap="2px" alignItems="center">
+                <Button
+                  spacing="compact"
+                  disabled={
+                    eventData?.user.staff.useCases.canCancel ? false : true
+                  }
+                  onClick={actionButtons?.buttons?.buttonCancel.OnClick}
+                >
+                  {configButtons.buttons.buttonCancel.label}
+                </Button>
+                {!eventData?.user.staff.useCases.canCancel && (
+                  <Icon
+                    icon={<MdOutlineInfo />}
+                    appearance="primary"
+                    size="16px"
+                    cursorHover
+                    onClick={handleInfo}
+                  />
+                )}
+              </Stack>
+              <Stack gap="2px" alignItems="center">
+                <Button
+                  spacing="compact"
+                  disabled={
+                    eventData?.user.staff.useCases.canPrint ? false : true
+                  }
+                  onClick={actionButtons?.buttons.buttonPrint.OnClick}
+                >
+                  {configButtons.buttons.buttonPrint.label}
+                </Button>
+                {!eventData?.user.staff.useCases.canPrint && (
+                  <Icon
+                    icon={<MdOutlineInfo />}
+                    appearance="primary"
+                    size="16px"
+                    cursorHover
+                    onClick={handleInfo}
+                  />
+                )}
+              </Stack>
             </Stack>
             <StyledHorizontalDivider />
             <Stack gap="16px">
-              <Button
-                spacing="compact"
-                variant="outlined"
-                onClick={actionButtons?.buttonsOutlined?.buttonAttach.OnClick}
-              >
-                {configButtons.buttonsOutlined.buttonAttach.label}
-              </Button>
-
-              <Button
-                spacing="compact"
-                variant="outlined"
-                onClick={
-                  actionButtons?.buttonsOutlined.buttonViewAttachments.OnClick
-                }
-              >
-                {configButtons.buttonsOutlined.buttonViewAttachments.label}
-              </Button>
+              <Stack gap="2px" alignItems="center">
+                <Button
+                  spacing="compact"
+                  variant="outlined"
+                  disabled={
+                    eventData?.user.staff.useCases.canAttach ? false : true
+                  }
+                  onClick={actionButtons?.buttonsOutlined?.buttonAttach.OnClick}
+                >
+                  {configButtons.buttonsOutlined.buttonAttach.label}
+                </Button>
+                {!eventData?.user.staff.useCases.canAttach && (
+                  <Icon
+                    icon={<MdOutlineInfo />}
+                    appearance="primary"
+                    size="16px"
+                    cursorHover
+                    onClick={handleInfo}
+                  />
+                )}
+              </Stack>
+              <Stack gap="2px" alignItems="center">
+                <Button
+                  spacing="compact"
+                  variant="outlined"
+                  disabled={
+                    eventData?.user.staff.useCases.canViewAttachments
+                      ? false
+                      : true
+                  }
+                  onClick={
+                    actionButtons?.buttonsOutlined.buttonViewAttachments.OnClick
+                  }
+                >
+                  {configButtons.buttonsOutlined.buttonViewAttachments.label}
+                </Button>
+                {!eventData?.user.staff.useCases.canViewAttachments && (
+                  <Icon
+                    icon={<MdOutlineInfo />}
+                    appearance="primary"
+                    size="16px"
+                    cursorHover
+                    onClick={handleInfo}
+                  />
+                )}
+              </Stack>
               <StyledHorizontalDivider />
-              <Button
-                spacing="compact"
-                variant="outlined"
-                onClick={actionButtons?.buttonsOutlined.buttonWarranty.OnClick}
-              >
-                {configButtons.buttonsOutlined.buttonWarranty.label}
-              </Button>
+              <Stack gap="2px" alignItems="center">
+                <Button
+                  spacing="compact"
+                  variant="outlined"
+                  disabled={
+                    eventData?.user.staff.useCases.canManageGuarantees
+                      ? false
+                      : true
+                  }
+                  onClick={
+                    actionButtons?.buttonsOutlined.buttonWarranty.OnClick
+                  }
+                >
+                  {configButtons.buttonsOutlined.buttonWarranty.label}
+                </Button>
+                {!eventData?.user.staff.useCases.canManageGuarantees && (
+                  <Icon
+                    icon={<MdOutlineInfo />}
+                    appearance="primary"
+                    size="16px"
+                    cursorHover
+                    onClick={handleInfo}
+                  />
+                )}
+              </Stack>
             </Stack>
           </Stack>
         </StyledPrint>

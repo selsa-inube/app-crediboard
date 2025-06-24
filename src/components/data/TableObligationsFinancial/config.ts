@@ -1,0 +1,71 @@
+export interface RowData {
+  type: string;
+  balance: string;
+  fee: string;
+  entity: string;
+  payment: string;
+  feePaid: string;
+  actions: string;
+  id: string;
+  idUser: string;
+}
+
+export const headers: {
+  label: string;
+  key: keyof RowData;
+  action?: boolean;
+}[] = [
+  { label: "Tipo", key: "type" },
+  { label: "Saldo", key: "balance" },
+  { label: "Cuota", key: "fee" },
+  { label: "Entidad", key: "entity" },
+  { label: "Medio de pago", key: "payment" },
+  { label: "Id", key: "idUser" },
+  { label: "Cuotas pagadas", key: "feePaid" },
+  { label: "Acciones", key: "actions", action: true },
+];
+
+export const dataReport = {
+  title: "Obligaciones financieras",
+  description: "Camilo Alberto Rincon Jaramillo",
+  addObligations: "Agregar obligaciones",
+  noData: "No existen obligaciones financieras",
+  descriptionTotalFee: "Cuota total.",
+  descriptionTotalBalance: "Saldo total.",
+  close: "Cerrar",
+  restore: "Restablecer",
+  descriptionModal:
+    "¿Realmente desea restablecer los valores a su estado inicial?",
+  save: "Guardar",
+  edit: "Editar",
+  deletion: "Eliminación",
+  delete: "Eliminar",
+  content: "¿Realmente desea eliminar esta obligación?",
+  cancel: "Cancelar",
+};
+export function convertObligationsToProperties(
+  obligations: {
+    balanceObligationTotal: number;
+    duesPaid: number;
+    entity: string;
+    nextPaymentValueTotal: number;
+    obligationNumber: string;
+    outstandingDues: number;
+    paymentMethodName: string;
+    productName: string;
+  }[],
+): { propertyName: string; propertyValue: string }[] {
+  return obligations.map((obligation) => ({
+    propertyName: "FinancialObligation",
+    propertyValue: [
+      obligation.productName ?? "",
+      obligation.balanceObligationTotal ?? 0,
+      obligation.nextPaymentValueTotal ?? 0,
+      obligation.entity ?? "",
+      obligation.paymentMethodName ?? "",
+      obligation.obligationNumber ?? "",
+      obligation.duesPaid ?? 0,
+      obligation.outstandingDues ?? 0,
+    ].join(", "),
+  }));
+}

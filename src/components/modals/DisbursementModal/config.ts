@@ -12,6 +12,10 @@ export const dataTabs = [
 export const dataDisbursement = {
   title: "Medio de Desembolso",
   close: "Cerrar",
+  noDataTitle: "No se encontraron medios de desembolso",
+  noDataDescription:
+    "No hay medios de desembolso disponibles para esta solicitud.",
+  retry: "Volver a intentar",
 };
 
 export const disbursementGeneral = {

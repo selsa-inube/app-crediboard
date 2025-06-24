@@ -7,9 +7,9 @@ import { Message } from "@components/data/Message";
 import { ITraceType } from "@services/types";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { getTraceByCreditRequestId } from "@services/trace/getTraceByCreditRequestId";
-import { getCreditRequestByCode } from "@services/creditRequets/getCreditRequestByCode";
-import { registerNewsToCreditRequest } from "@services/trace/registerNewsToCreditRequest";
+import { getTraceByCreditRequestId } from "@services/credit-request/query/getTraceByCreditRequestId";
+import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
+import { registerNewsToCreditRequest } from "@services/credit-request/command/registerNewsToCreditRequest";
 import { ICreditRequest } from "@services/types";
 import { DetailsModal } from "@pages/board/outlets/financialReporting/management/DetailsModal";
 import { AppContext } from "@context/AppContext";
@@ -60,13 +60,17 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
 
   const fetchCreditRequest = useCallback(async () => {
     try {
-      const data = await getCreditRequestByCode(businessUnitPublicCode, id);
+      const data = await getCreditRequestByCode(
+        businessUnitPublicCode,
+        id,
+        userAccount
+      );
       setCreditRequest(data[0] as ICreditRequest);
     } catch (error) {
       console.error(error);
       notifyError((error as Error).message);
     }
-  }, [businessUnitPublicCode, id, notifyError]);
+  }, [businessUnitPublicCode, id, userAccount, notifyError]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();
@@ -164,7 +168,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     traces.map((trace, index) => (
       <Message
         key={index}
-        type="sent"
+        type={trace.traceType === "Message" ? "received" : "sent"}
         timestamp={trace.executionDate || ""}
         message={trace.traceValue}
         icon={<MdInfoOutline size={14} />}

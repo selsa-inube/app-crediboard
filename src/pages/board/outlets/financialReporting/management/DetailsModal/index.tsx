@@ -41,7 +41,11 @@ export function DetailsModal(props: DetailsModalProps) {
         />
         <CardGray
           label={txtLabels.justificationLabel}
-          placeHolder={data.traceValue}
+          placeHolder={
+            data.traceType === "Executed_task"
+              ? data.justification
+              : data.traceValue
+          }
           apparencePlaceHolder="gray"
         />
       </Stack>

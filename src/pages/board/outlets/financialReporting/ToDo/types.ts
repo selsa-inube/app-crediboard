@@ -1,4 +1,5 @@
 import { ChangeEvent } from "react";
+import { IOption } from "@inubekit/inubekit";
 
 interface IICon {
   icon: JSX.Element;
@@ -12,4 +13,14 @@ interface IButton {
   loading?: boolean;
 }
 
-export type { IICon, IButton };
+interface ITaskDecisionOption extends IOption {
+  code?: string;
+  originalLabel?: string;
+}
+
+interface DecisionItem {
+  decision: string;
+  value: string;
+}
+
+export type { IICon, IButton, ITaskDecisionOption, DecisionItem };

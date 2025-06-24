@@ -1,6 +1,6 @@
 import localforage from "localforage";
 import { FormikValues } from "formik";
-import { TableExtraordinaryInstallmentProps } from "@pages/prospect/components/TableExtraordinaryInstallment";
+import { TableExtraordinaryInstallmentProps } from "@components/data/TableExtraordinaryInstallment";
 
 const handleFormSubmit = async (
   values: FormikValues,
