@@ -45,7 +45,6 @@ import { selectCheckOptions } from "./config/select";
 import { IFilterFormValues } from ".";
 import { boardColumns, seePinned } from "./config/board";
 
-
 interface BoardLayoutProps {
   isMobile: boolean;
   selectOptions: IOptionItemCheckedProps[];
@@ -386,7 +385,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           </Stack>
         </StyledInputsContainer>
 
- 
         <StyledBoardContainer
           $orientation={boardOrientation}
           $isMobile={isMobile}

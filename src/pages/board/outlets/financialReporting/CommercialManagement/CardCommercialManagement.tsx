@@ -18,9 +18,9 @@ import { Schedule } from "@services/enums";
 import { DeductibleExpensesModal } from "@components/modals/DeductibleExpensesModal";
 import { IProspectSummaryById } from "@services/prospects/ProspectSummaryById/types";
 import { getAllDeductibleExpensesById } from "@services/iProspect/deductibleExpenses";
+import { EditProductModal } from "@components/modals/ProspectProductModal";
 
 import { StyledCardsCredit, StyledPrint } from "./styles";
-import { EditProductModal } from "@components/modals/ProspectProductModal";
 
 interface CardCommercialManagementProps {
   id: string;

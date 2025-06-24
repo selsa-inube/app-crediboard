@@ -19,7 +19,7 @@ import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { BaseModal } from "@components/modals/baseModal";
 import { ShareCreditModal } from "@components/modals/ShareCreditModal";
-import { ICreditProductProspect, IPaymentChannel } from "@services/types";
+import { IPaymentChannel } from "@services/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { addCreditProduct } from "@mocks/utils/addCreditProductMock.service";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
@@ -66,8 +66,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   const [incomeData, setIncomeData] = useState<Record<string, IIncomeSources>>(
     {}
   );
-  const [prospectProducts, setProspectProducts] =
-    useState<ICreditProductProspect>();
+
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   const handleOpenModal = (modalName: string) => {
@@ -145,7 +144,6 @@ export function CreditProspect(props: ICreditProspectProps) {
   const handleConfirm = async (values: FormikValues) => {
     if (!id) {
       console.error("ID no está definido");
-      setProspectProducts;
       return;
     }
 
@@ -367,8 +365,11 @@ export function CreditProspect(props: ICreditProspectProps) {
             >
               {dataCreditProspect.addProduct}
             </Button>
-
-            {prospectData?.creditProducts && (
+            {prospectData?.creditProducts?.some(
+              (product) =>
+                Array.isArray(product.extraordinaryInstallments) &&
+                product.extraordinaryInstallments.length > 0
+            ) && (
               <Button
                 type="button"
                 appearance="primary"
@@ -413,7 +414,11 @@ export function CreditProspect(props: ICreditProspectProps) {
                 only
                 options={menuOptions(
                   handleOpenModal,
-                  !prospectProducts?.ordinary_installment_for_principal
+                  !prospectData?.creditProducts?.some(
+                    (product) =>
+                      Array.isArray(product.extraordinaryInstallments) &&
+                      product.extraordinaryInstallments.length > 0
+                  )
                 )}
                 onMouseLeave={showMenu}
               />
