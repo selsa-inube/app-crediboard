@@ -257,7 +257,8 @@ export const ListModal = (props: IListModalProps) => {
             businessUnitPublicCode,
             id,
             abbreviatedName,
-            fileData.file
+            fileData.file,
+            user?.email ?? ""
           );
         }
 
@@ -325,6 +326,7 @@ export const ListModal = (props: IListModalProps) => {
       fileInputRef.current.click();
     }
   };
+
   return createPortal(
     <Blanket>
       <StyledModal $smallScreen={isMobile}>
@@ -450,6 +452,7 @@ export const ListModal = (props: IListModalProps) => {
                   <StyledFileBox>
                     {uploadedFiles.map((file: IUploadedFile) => (
                       <File
+                        key={file.id}
                         name={file.name}
                         size={
                           file.file?.size ? formatFileSize(file.file.size) : "-"

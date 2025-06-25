@@ -1,3 +1,7 @@
+import { MdAddCircleOutline } from "react-icons/md";
+
+import { IOptionButtons } from "@components/modals/ListModal";
+
 export const approvalsConfig = {
   title: "Evaluar",
   observations: "Observaciones",
@@ -9,6 +13,7 @@ export const approvalsConfig = {
     "Proporciona detalles acerca de la evaluación del requisito",
   Cancel: "Cancelar",
   confirm: "Confirmar",
+  see: "Ver",
   maxLength: 200,
 };
 
@@ -30,3 +35,11 @@ export const optionsAnswer = [
     value: "No cumple y rechazar solicitud",
   },
 ];
+
+export const optionButtons: IOptionButtons = {
+  label: "Adjuntar archivo",
+  variant: "none",
+  icon: <MdAddCircleOutline />,
+  fullwidth: false,
+  onClick: () => {},
+};

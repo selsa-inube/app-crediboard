@@ -381,7 +381,7 @@ export const FinancialReporting = () => {
                   <StyledPageBreak />
                   <Requirements
                     isMobile={isMobile}
-                    id={id!}
+                    id={data.creditRequestId!}
                     user={user!.nickname!}
                     businessUnitPublicCode={businessUnitPublicCode}
                     creditRequestCode={data.creditRequestCode!}

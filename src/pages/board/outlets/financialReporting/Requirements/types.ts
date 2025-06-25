@@ -12,6 +12,7 @@ export interface IApprovalSystem {
 export interface IApprovalDocumentaries {
   answer: string;
   observations: string;
+  check?: boolean;
 }
 
 export interface IApprovalHuman {

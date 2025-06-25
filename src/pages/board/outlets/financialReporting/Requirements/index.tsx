@@ -28,7 +28,7 @@ import {
   dataAddRequirement,
   getActionsMobileIcon,
 } from "./config";
-import { ApprovalsModalSystem } from "./AprovalsModalSystem";
+import { ApprovalsModalSystem } from "./ApprovalsModalSystem";
 import { AddRequirement } from "./AddRequirement";
 import { saveRequirements } from "./AddRequirement/utils";
 import { ApprovalModalDocumentaries } from "./ApprovalModalDocumentaries";
@@ -369,8 +369,16 @@ export const Requirements = (props: IRequirementsProps) => {
               observations: "",
             }
           }
-          title=""
+          title={
+            dataRequirements
+              .find((table) => table.id === "tabla2")
+              ?.entriesRequirements.find(
+                (entry) => entry.id === selectedEntryId
+              )?.["Requisitos documentales"]?.toString() || ""
+          }
+          id={id}
           onCloseModal={toggleAprovalsModal}
+          businessUnitPublicCode={businessUnitPublicCode}
           isMobile={isMobile}
           onConfirm={(values) =>
             setApprovalDocumentValues((prev) => ({
