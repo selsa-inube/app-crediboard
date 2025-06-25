@@ -57,7 +57,7 @@ export function ApprovalsModalHuman(props: ApprovalsModalHumanProps) {
             value={formik.values.answer}
             onChange={(name, value) => formik.setFieldValue(name, value)}
             onBlur={formik.handleBlur}
-            size="wide"
+            size="compact"
           />
         </Stack>
         <Textarea
@@ -69,7 +69,7 @@ export function ApprovalsModalHuman(props: ApprovalsModalHumanProps) {
           value={formik.values.observations}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          required
+          fullwidth
         />
       </Stack>
     </BaseModal>

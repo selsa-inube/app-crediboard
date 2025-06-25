@@ -69,6 +69,7 @@ export const Requirements = (props: IRequirementsProps) => {
       {
         observations: string;
         toggleChecked: boolean;
+        labelText: string;
       }
     >
   >({});
@@ -174,7 +175,26 @@ export const Requirements = (props: IRequirementsProps) => {
     setShowAddRequirementModal(false);
   };
 
-  const renderAddIcon = () => {
+  const renderAddIcon = (entry: IEntries, tableId: string) => {
+    let isDisabled = false;
+
+    if (tableId === "tabla1") {
+      isDisabled =
+        !approvalSystemValues[entry.id] ||
+        (approvalSystemValues[entry.id].observations === "" &&
+          approvalSystemValues[entry.id].labelText === "");
+    } else if (tableId === "tabla2") {
+      isDisabled =
+        !approvalDocumentValues[entry.id] ||
+        (approvalDocumentValues[entry.id].observations === "" &&
+          approvalDocumentValues[entry.id].answer === "");
+    } else if (tableId === "tabla3") {
+      isDisabled =
+        !approvalHumanValues[entry.id] ||
+        (approvalHumanValues[entry.id].observations === "" &&
+          approvalHumanValues[entry.id].answer === "");
+    }
+
     return (
       <Stack justifyContent="center">
         <Icon
@@ -185,6 +205,7 @@ export const Requirements = (props: IRequirementsProps) => {
           variant="empty"
           size="32px"
           cursorHover
+          disabled={isDisabled}
         />
       </Stack>
     );
@@ -295,7 +316,10 @@ export const Requirements = (props: IRequirementsProps) => {
               titles={item.titlesRequirements}
               entries={item.entriesRequirements}
               actions={[
-                { id: "agregar", content: renderAddIcon },
+                {
+                  id: "agregar",
+                  content: (entry: IEntries) => renderAddIcon(entry, item.id),
+                },
                 {
                   id: "aprobar",
                   content: (entry: IEntries) => renderCheckIcon(entry, item.id),
@@ -322,11 +346,22 @@ export const Requirements = (props: IRequirementsProps) => {
             isMobile={isMobile}
             handleClose={() => setShowSeeDetailsModal(false)}
             data={{
-              answer: approvalSystemValues[selectedEntryId]?.toggleChecked
-                ? dataAddRequirement.yes
-                : dataAddRequirement.no,
+              answer: approvalSystemValues[selectedEntryId]?.labelText || "",
               observations:
                 approvalSystemValues[selectedEntryId]?.observations || "",
+            }}
+          />
+        )}
+      {showSeeDetailsModal &&
+        selectedTableId === "tabla2" &&
+        selectedEntryId && (
+          <TraceDetailsModal
+            isMobile={isMobile}
+            handleClose={() => setShowSeeDetailsModal(false)}
+            data={{
+              answer: approvalDocumentValues[selectedEntryId]?.answer || "",
+              observations:
+                approvalDocumentValues[selectedEntryId]?.observations || "",
             }}
           />
         )}
@@ -349,6 +384,7 @@ export const Requirements = (props: IRequirementsProps) => {
             approvalSystemValues[selectedEntryId] || {
               observations: "",
               toggleChecked: false,
+              labelText: "",
             }
           }
           onCloseModal={() => setShowAprovalsModal(false)}
@@ -374,7 +410,8 @@ export const Requirements = (props: IRequirementsProps) => {
               .find((table) => table.id === "tabla2")
               ?.entriesRequirements.find(
                 (entry) => entry.id === selectedEntryId
-              )?.["Requisitos documentales"]?.toString() || ""
+              )
+              ?.["Requisitos documentales"]?.toString() || ""
           }
           id={id}
           onCloseModal={toggleAprovalsModal}

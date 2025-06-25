@@ -3,9 +3,9 @@ import { useFormik } from "formik";
 import { MdOutlineFileUpload } from "react-icons/md";
 import * as Yup from "yup";
 import {
+  Button,
   Checkbox,
   Divider,
-  Icon,
   Select,
   Stack,
   Text,
@@ -23,7 +23,7 @@ import { getSearchDocumentById } from "@services/credit-request/query/SearchDocu
 
 import { IApprovalDocumentaries } from "../types";
 import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
-import { StyledChange } from "./styles";
+import { StyledScroll } from "./styles";
 
 interface ApprovalModalDocumentariesProps {
   isMobile: boolean;
@@ -90,7 +90,7 @@ export function ApprovalModalDocumentaries(
 
     fetchDocuments();
   }, [id, user?.email, businessUnitPublicCode]);
-  
+
   const handlePreview = async (id: string, name: string) => {
     try {
       const documentData = await getSearchDocumentById(
@@ -124,53 +124,51 @@ export function ApprovalModalDocumentaries(
         <Text type="body" size="large">
           {approvalsConfig.selectDocument}
         </Text>
-        <Fieldset>
-          <Stack direction="column" gap="8px">
-            {documents.map((doc, index) => (
-              <Stack key={doc.documentId} direction="column" gap="8px">
-                <Stack justifyContent="space-between">
-                  <Stack gap="4px">
-                    <Checkbox
-                      id="check"
-                      name="check"
-                      checked={formik.values.check}
-                      onChange={formik.handleChange}
-                      value={"check"}
-                    />
-                    <Text type="label" size="large">
-                      {doc.abbreviatedName}
+        <Fieldset heightFieldset="210px" hasOverflow>
+          <StyledScroll>
+            <Stack direction="column" gap="8px" height="145px">
+              {documents.map((doc, index) => (
+                <Stack key={doc.documentId} direction="column" gap="8px">
+                  <Stack justifyContent="space-between">
+                    <Stack gap="4px">
+                      <Checkbox
+                        id="check"
+                        name="check"
+                        checked={formik.values.check}
+                        onChange={formik.handleChange}
+                        value={"check"}
+                      />
+                      <Text type="label" size="large">
+                        {doc.abbreviatedName}
+                      </Text>
+                    </Stack>
+                    <Text
+                      type="label"
+                      weight="bold"
+                      size="large"
+                      appearance="primary"
+                      cursorHover
+                      onClick={() =>
+                        handlePreview(doc.documentId, doc.abbreviatedName)
+                      }
+                    >
+                      {approvalsConfig.see}
                     </Text>
                   </Stack>
-                  <Text
-                    type="label"
-                    weight="bold"
-                    size="large"
-                    appearance="primary"
-                    cursorHover
-                    onClick={() =>
-                      handlePreview(doc.documentId, doc.abbreviatedName)
-                    }
-                  >
-                    {approvalsConfig.see}
-                  </Text>
+                  {index < documents.length - 1 && <Divider />}
                 </Stack>
-                {index < documents.length - 1 && <Divider />}
-              </Stack>
-            ))}
-          </Stack>
+              ))}
+            </Stack>
+          </StyledScroll>
           <Divider dashed />
-          <StyledChange>
-            <Icon icon={<MdOutlineFileUpload />} appearance="primary" />
-            <Text
-              type="label"
-              weight="bold"
-              size="large"
-              appearance="primary"
-              onClick={() => setIsShowModal(true)}
-            >
-              {approvalsConfig.newDocument}
-            </Text>
-          </StyledChange>
+          <Button
+            iconBefore={<MdOutlineFileUpload />}
+            variant="none"
+            spacing="compact"
+            onClick={() => setIsShowModal(true)}
+          >
+            {approvalsConfig.newDocument}
+          </Button>
         </Fieldset>
         <Select
           name="answer"

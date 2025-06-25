@@ -7,6 +7,7 @@ export interface IOptionsSelect {
 export interface IApprovalSystem {
   observations: string;
   toggleChecked: boolean;
+  labelText: string;
 }
 
 export interface IApprovalDocumentaries {

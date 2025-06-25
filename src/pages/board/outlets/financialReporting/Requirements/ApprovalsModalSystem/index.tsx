@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Stack, Text, Textarea, Toggle } from "@inubekit/inubekit";
@@ -23,6 +24,7 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
     observations: Yup.string()
       .max(approvalsConfig.maxLength, validationMessages.limitedTxt)
       .required(validationMessages.required),
+    labelText: Yup.string(),
   });
 
   const formik = useFormik({
@@ -31,6 +33,15 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
     validateOnMount: true,
     onSubmit: () => {},
   });
+
+  useEffect(() => {
+    const label = formik.values.toggleChecked
+      ? approvalsConfig.yes
+      : approvalsConfig.no;
+
+    formik.setFieldValue("labelText", label);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <BaseModal
@@ -54,12 +65,14 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
               onChange={(e) => {
                 const checked = e.target.checked;
                 formik.setFieldValue("toggleChecked", checked);
+                formik.setFieldValue(
+                  "labelText",
+                  checked ? approvalsConfig.yes : approvalsConfig.no
+                );
               }}
             />
             <Text type="label" size="large" weight="bold">
-              {formik.values.toggleChecked
-                ? approvalsConfig.yes
-                : approvalsConfig.no}
+              {formik.values.labelText}
             </Text>
           </Stack>
         </Stack>
