@@ -17,7 +17,8 @@ import { IEntries } from "@components/data/TableBoard/types";
 import { CreditRequest } from "@services/types";
 
 export const dataButton = (onClick: () => void) => ({
-  title: "Agregar Requisito",
+  title: "Agregar validación del sistema",
+  titleHuman: "Agregar validación humana",
   onClick,
 });
 
@@ -71,7 +72,10 @@ export const textFlagsRequirements = {
 };
 
 export const dataAddRequirement = {
-  title: "Agregar Requisito",
+  title: "Agregar requisito a esta solicitud",
+  titleJustification: "Justificación del requisito",
+  descriptionJustification:
+    "Lorem ipsum dolor sit amet consectetur adipiscing elit, primis turpis a donec dictum ad, urna eu sem malesuada mauris ac.",
   close: "Cerrar",
   cancel: "Cancelar",
   add: "Agregar",

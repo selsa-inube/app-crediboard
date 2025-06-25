@@ -25,7 +25,7 @@ export function CardGray(props: ICardGrayProps) {
     <StyledContainer>
       <Stack justifyContent="space-between" padding="6px 16px" height={height}>
         <Stack direction="column">
-          <Text type="label" weight="bold" size="medium" appearance="dark">
+          <Text type="label" weight="bold" size="large" appearance="dark">
             {label}
           </Text>
           <Text type="body" size="medium" appearance={apparencePlaceHolder}>

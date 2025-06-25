@@ -1,5 +1,4 @@
 import { useState, isValidElement, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { MdOutlineHowToReg, MdOutlineRemoveRedEye } from "react-icons/md";
 import { Stack, Icon, useFlag } from "@inubekit/inubekit";
 
@@ -33,7 +32,6 @@ import {
 import { AprovalsModal } from "./AprovalsModal";
 import { traceObserver, errorMessages } from "../config";
 import { AddRequirement } from "./AddRequirement";
-import { saveRequirements } from "./AddRequirement/utils";
 
 interface IRequirementsData {
   id: string;
@@ -71,11 +69,11 @@ export const Requirements = (props: IRequirementsProps) => {
   const [descriptionUseValue, setDescriptionUseValue] = useState("");
   const [typeOfRequirementToEvaluated, setTypeOfRequirementToEvaluated] =
     useState<string>("");
-  const [showModal, setShowModal] = useState(false);
+
   const [error, setError] = useState(false);
   const [rawRequirements, setRawRequirements] = useState<IRequirement[]>([]);
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
-  const navigate = useNavigate();
+
   const { addFlag } = useFlag();
   useEffect(() => {
     const fetchRequirements = async () => {
@@ -226,56 +224,15 @@ export const Requirements = (props: IRequirementsProps) => {
   ];
   const openAddRequirementModal = () => setShowAddRequirementModal(true);
 
-  const handleAddRequirement = async (creditRequests: IPatchOfRequirements) => {
-    await saveRequirements(businessUnitPublicCode, creditRequests)
-      .then(() => {
-        addFlag({
-          title: textFlagsRequirements.titleSuccess,
-          description: textFlagsRequirements.descriptionSuccess,
-          appearance: "success",
-          duration: 5000,
-        });
-        setSentData(creditRequests);
-      })
-      .catch(() => {
-        addFlag({
-          title: textFlagsRequirements.titleError,
-          description: textFlagsRequirements.descriptionError,
-          appearance: "danger",
-          duration: 5000,
-        });
-      })
-      .finally(() => {
-        if (closeAdd) closeAdd();
-        handleToggleModal();
-      });
+  const handleAddRequirement = async () => {
+    addFlag({
+      title: textFlagsRequirements.titleSuccess,
+      description: textFlagsRequirements.descriptionSuccess,
+      appearance: "success",
+      duration: 5000,
+    });
 
-    setTimeout(() => {
-      navigate(`/extended-card/${id}`);
-    }, 6000);
-  };
-  const initialValues: IPatchOfRequirements = {
-    packageId: rawRequirements[0]?.packageId,
-    uniqueReferenceNumber: creditRequestCode,
-    packageDate: rawRequirements[0]?.packageDate,
-    packageDescription:
-      "Requisitos para la solicitud de crédito SC-12225464610",
-    modifyJustification: "modifyJustification",
-    listsOfRequirementsByPackage: [
-      {
-        packageId: rawRequirements[0]?.packageId,
-        requirementCatalogName: requirementName,
-        requirementDate: rawRequirements[0]?.packageDate,
-        requirementStatus: "UNVALIDATED",
-        descriptionEvaluationRequirement: "Requisitos no evaluados",
-        descriptionUse: descriptionUseValue,
-        typeOfRequirementToEvaluated: typeOfRequirementToEvaluated,
-        transactionOperation: "Insert",
-      },
-    ],
-  };
-  const handleToggleModal = () => {
-    setShowModal(!showModal);
+    if (closeAdd) closeAdd();
   };
 
   return (
@@ -346,9 +303,11 @@ export const Requirements = (props: IRequirementsProps) => {
           setRequirementName={setRequirementName}
           setDescriptionUseValue={setDescriptionUseValue}
           setTypeOfRequirementToEvaluated={setTypeOfRequirementToEvaluated}
-          handleNext={() => {
-            handleAddRequirement(initialValues);
-          }}
+          handleNext={handleAddRequirement}
+          requirementName={requirementName}
+          descriptionUseValue={descriptionUseValue}
+          typeOfRequirementToEvaluated={typeOfRequirementToEvaluated}
+          rawRequirements={rawRequirements}
         />
       )}
     </>
