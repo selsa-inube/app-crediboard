@@ -140,27 +140,28 @@ export function AddRequirement(props: IRequirement) {
                 disabled={options.Requirement.length === 0}
               />
               <Textfield
-                name="requirementCatalogName"
-                id="requirementCatalogName"
+                name="descriptionUse"
+                id="descriptionUse"
                 label={dataAddRequirement.labelName}
                 placeholder={dataAddRequirement.placeHolderDate}
                 onChange={(e) => {
-                  setRequirementName(e.target.value);
-                  setFieldValue("requirementCatalogName", e.target.value);
-                }}
-                value={values.requirementCatalogName}
-                size="wide"
-                fullwidth
-              />
-              <Textarea
-                id={"descriptionUse"}
-                name={"descriptionUse"}
-                label={dataAddRequirement.labelTextarea}
-                placeholder={dataAddRequirement.placeHolderTextarea}
-                value={values.descriptionUse}
-                onChange={(e) => {
                   setDescriptionUseValue(e.target.value);
                   setFieldValue("descriptionUse", e.target.value);
+                }}
+                value={values.descriptionUse}
+                size="wide"
+                fullwidth
+                required
+              />
+              <Textarea
+                id={"requirementCatalogName"}
+                name={"requirementCatalogName"}
+                label={dataAddRequirement.labelTextarea}
+                placeholder={dataAddRequirement.placeHolderTextarea}
+                value={values.requirementCatalogName}
+                onChange={(e) => {
+                  setRequirementName(e.target.value);
+                  setFieldValue("requirementCatalogName", e.target.value);
                 }}
                 fullwidth
               />
