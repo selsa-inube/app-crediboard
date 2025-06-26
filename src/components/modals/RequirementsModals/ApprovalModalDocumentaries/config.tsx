@@ -14,6 +14,7 @@ export const approvalsConfig = {
   Cancel: "Cancelar",
   confirm: "Confirmar",
   see: "Ver",
+  titleError: "Lamentamos los inconvenientes",
   maxLength: 200,
 };
 

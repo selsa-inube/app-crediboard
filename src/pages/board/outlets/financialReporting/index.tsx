@@ -382,7 +382,7 @@ export const FinancialReporting = () => {
                   <Requirements
                     isMobile={isMobile}
                     id={data.creditRequestId!}
-                    user={user!.nickname!}
+                    user={user!.email!}
                     businessUnitPublicCode={businessUnitPublicCode}
                     creditRequestCode={data.creditRequestCode!}
                     hasPermitRejection={

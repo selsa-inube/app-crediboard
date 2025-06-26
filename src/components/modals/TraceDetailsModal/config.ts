@@ -5,4 +5,5 @@ export const dataTrace = {
   observations: "Observaciones",
   understood: "Entendido",
   see: "Ver",
+  titleError: "Lamentamos los inconvenientes",
 };

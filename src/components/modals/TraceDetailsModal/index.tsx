@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { Divider, Stack, Text } from "@inubekit/inubekit";
+import { Divider, Stack, Text, useFlag } from "@inubekit/inubekit";
 
 import { CardGray } from "@components/cards/CardGray";
 import { BaseModal } from "@components/modals/baseModal";
@@ -17,22 +16,23 @@ export interface ITraceDetailsModalProps {
   data: { answer: string; observations: string; documents?: DocumentItem[] };
   businessUnitPublicCode?: string;
   isMobile?: boolean;
+  user?: string;
 }
 
 export function TraceDetailsModal(props: ITraceDetailsModalProps) {
-  const { handleClose, data, businessUnitPublicCode, isMobile } = props;
+  const { handleClose, data, businessUnitPublicCode, isMobile, user } = props;
 
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
 
-  const { user } = useAuth0();
+  const { addFlag } = useFlag();
 
   const handlePreview = async (id: string, name: string) => {
     try {
       const documentData = await getSearchDocumentById(
         id,
-        user?.email ?? "",
+        user ?? "",
         businessUnitPublicCode ?? ""
       );
       const fileUrl = URL.createObjectURL(documentData);
@@ -40,7 +40,19 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
       setFileName(name);
       setOpen(true);
     } catch (error) {
-      console.error("Error obteniendo el documento:", error);
+      const err = error as {
+        message?: string;
+        status: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description = code + err?.message + (err?.data?.description || "");
+      addFlag({
+        title: dataTrace.titleError,
+        description,
+        appearance: "danger",
+        duration: 5000,
+      });
     }
   };
 

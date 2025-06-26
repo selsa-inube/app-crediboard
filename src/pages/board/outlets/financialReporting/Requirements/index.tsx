@@ -4,6 +4,11 @@ import { MdOutlineHowToReg, MdOutlineRemoveRedEye } from "react-icons/md";
 import { Stack, Icon, useFlag } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
+import { ApprovalsModalSystem } from "@components/modals/RequirementsModals/ApprovalsModalSystem";
+import { AddRequirement } from "@components/modals/RequirementsModals/AddRequirement";
+import { saveRequirements } from "@components/modals/RequirementsModals/AddRequirement/utils";
+import { ApprovalModalDocumentaries } from "@components/modals/RequirementsModals/ApprovalModalDocumentaries";
+import { ApprovalsModalHuman } from "@components/modals/RequirementsModals/ApprovalModalHuman";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
@@ -27,11 +32,6 @@ import {
   dataAddRequirement,
   getActionsMobileIcon,
 } from "./config";
-import { ApprovalsModalSystem } from "./ApprovalsModalSystem";
-import { AddRequirement } from "./AddRequirement";
-import { saveRequirements } from "./AddRequirement/utils";
-import { ApprovalModalDocumentaries } from "./ApprovalModalDocumentaries";
-import { ApprovalsModalHuman } from "./ApprovalModalHuman";
 import { DocumentItem } from "./types";
 
 interface IRequirementsData {
@@ -54,6 +54,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const {
     isMobile,
     id,
+    user,
     businessUnitPublicCode,
     creditRequestCode,
     hasPermitRejection,
@@ -367,6 +368,7 @@ export const Requirements = (props: IRequirementsProps) => {
           <TraceDetailsModal
             isMobile={isMobile}
             handleClose={() => setShowSeeDetailsModal(false)}
+            user={user}
             data={{
               documents:
                 approvalDocumentValues[selectedEntryId]?.selectedDocuments,
@@ -428,6 +430,7 @@ export const Requirements = (props: IRequirementsProps) => {
           id={id}
           onCloseModal={toggleAprovalsModal}
           businessUnitPublicCode={businessUnitPublicCode}
+          user={user}
           isMobile={isMobile}
           onConfirm={(values) =>
             setApprovalDocumentValues((prev) => ({

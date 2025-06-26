@@ -10,8 +10,8 @@ import {
   Stack,
   Text,
   Textarea,
+  useFlag,
 } from "@inubekit/inubekit";
-import { useAuth0 } from "@auth0/auth0-react";
 
 import { validationMessages } from "@validations/validationMessages";
 import { Fieldset } from "@components/data/Fieldset";
@@ -31,6 +31,7 @@ interface ApprovalModalDocumentariesProps {
   title: string;
   id: string;
   businessUnitPublicCode: string;
+  user: string;
   onConfirm?: (values: IApprovalDocumentaries) => void;
   onCloseModal?: () => void;
 }
@@ -44,6 +45,7 @@ export function ApprovalModalDocumentaries(
     title,
     id,
     businessUnitPublicCode,
+    user,
     onConfirm,
     onCloseModal,
   } = props;
@@ -56,8 +58,6 @@ export function ApprovalModalDocumentaries(
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-
-  const { user } = useAuth0();
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
@@ -76,28 +76,44 @@ export function ApprovalModalDocumentaries(
     onSubmit: () => {},
   });
 
+  const { addFlag } = useFlag();
+
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const response = await getSearchAllDocumentsById(
           id,
-          user?.email ?? "",
+          user,
           businessUnitPublicCode
         );
         setDocuments(response);
       } catch (error) {
-        console.error("Error fetching documents:", error);
+        const err = error as {
+          message?: string;
+          status: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + err?.message + (err?.data?.description || "");
+        addFlag({
+          title: approvalsConfig.titleError,
+          description,
+          appearance: "danger",
+          duration: 5000,
+        });
       }
     };
 
     fetchDocuments();
-  }, [id, user?.email, businessUnitPublicCode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, user, businessUnitPublicCode]);
 
   const handlePreview = async (id: string, name: string) => {
     try {
       const documentData = await getSearchDocumentById(
         id,
-        user?.email ?? "",
+        user,
         businessUnitPublicCode
       );
       const fileUrl = URL.createObjectURL(documentData);
@@ -105,7 +121,19 @@ export function ApprovalModalDocumentaries(
       setFileName(name);
       setOpen(true);
     } catch (error) {
-      console.error("Error obteniendo el documento:", error);
+      const err = error as {
+        message?: string;
+        status: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description = code + err?.message + (err?.data?.description || "");
+      addFlag({
+        title: approvalsConfig.titleError,
+        description,
+        appearance: "danger",
+        duration: 5000,
+      });
     }
   };
 
