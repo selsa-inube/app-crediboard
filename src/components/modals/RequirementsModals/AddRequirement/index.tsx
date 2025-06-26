@@ -10,9 +10,9 @@ import {
 
 import { IPatchOfRequirements } from "@services/types";
 import { BaseModal } from "@components/modals/baseModal";
+import { dataAddRequirement } from "@pages/board/outlets/financialReporting/Requirements/config";
 
 import { IOptionsSelect } from "../types";
-import { dataAddRequirement } from "../config";
 
 export interface IRequirement {
   optionsRequirement: IOptionsSelect[];
@@ -53,11 +53,9 @@ export function AddRequirement(props: IRequirement) {
 
   const isMobile = useMediaQuery("(max-width: 700px)");
   const validationSchema = Yup.object().shape({
-    typeOfRequirementToEvaluated: Yup.string().required(
-      "Este campo es obligatorio"
-    ),
-    requirementCatalogName: Yup.string().required("Este campo es obligatorio"),
-    descriptionUse: Yup.string().required("Este campo es obligatorio"),
+    typeOfRequirementToEvaluated: Yup.string().required(""),
+    requirementCatalogName: Yup.string().required(""),
+    descriptionUse: Yup.string().required(""),
   });
   const isButtonDisabled = (
     values: {

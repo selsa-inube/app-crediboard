@@ -31,7 +31,6 @@ function SelectedFilters({ filters, onRemove }: SelectedFiltersProps) {
               label={`${filter.label} (${filter.count})`}
               removable={onRemove !== undefined}
               onClose={() => handleRemoveFilter(filter.id)}
-              displayIcon={false}
             />
           ))}
 
@@ -39,12 +38,7 @@ function SelectedFilters({ filters, onRemove }: SelectedFiltersProps) {
             <MoreFiltersWrapper
               onClick={() => setShowHiddenFilters((prev) => !prev)}
             >
-              <Tag
-                appearance="primary"
-                label="..."
-                removable={false}
-                displayIcon={false}
-              />
+              <Tag appearance="primary" label="..." removable={false} />
               {showHiddenFilters && (
                 <StyledHiddenFiltersMenu $isMobile={isMobile}>
                   {hiddenFilters.map((filter, index) => (

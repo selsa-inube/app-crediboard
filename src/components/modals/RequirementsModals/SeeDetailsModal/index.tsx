@@ -12,8 +12,10 @@ import {
 } from "@inubekit/inubekit";
 
 import { formatPrimaryDate } from "@utils/formatData/date";
+import { validationMessages } from "@validations/validationMessages";
 
 import { StyledModal, StyledTextarea, StyledContainerClose } from "./styles";
+import { dataSeeDetails } from "./config";
 
 export interface SeeDetailsModalProps {
   date: Date;
@@ -31,12 +33,9 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
-  const node = document.getElementById(portalId);
-
+  const node = document.getElementById(portalId ?? "portal");
   if (!node) {
-    throw new Error(
-      "The portal node is not defined. This can occur when the specific node used to render the portal has not been defined correctly."
-    );
+    throw new Error(validationMessages.errorNodo);
   }
 
   return createPortal(
@@ -44,11 +43,11 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
       <StyledModal $smallScreen={isMobile}>
         <Stack alignItems="center" justifyContent="space-between">
           <Text type="headline" size="small">
-            Más detalles
+            {dataSeeDetails.more}
           </Text>
           <StyledContainerClose onClick={onCloseModal}>
             <Stack alignItems="center" gap="8px">
-              <Text>Cerrar</Text>
+              <Text>{dataSeeDetails.close}</Text>
               <Icon
                 icon={<MdClear />}
                 size="24px"
@@ -78,7 +77,7 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
           </StyledTextarea>
         </Stack>
         <Stack justifyContent="flex-end" margin="16px 0">
-          <Button onClick={onCloseModal}>Cerrar</Button>
+          <Button onClick={onCloseModal}>{dataSeeDetails.close}</Button>
         </Stack>
       </StyledModal>
     </Blanket>,

@@ -1,5 +1,7 @@
-export interface IOptionsSelect {
-  id: string;
-  label: string;
-  value: string;
+export interface DocumentItem {
+  creditRequestId: string;
+  documentId: string;
+  documentManagmentReference: string;
+  abbreviatedName: string;
+  fileName: string;
 }
