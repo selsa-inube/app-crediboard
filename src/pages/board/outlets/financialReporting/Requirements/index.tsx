@@ -33,6 +33,7 @@ import { AddRequirement } from "./AddRequirement";
 import { saveRequirements } from "./AddRequirement/utils";
 import { ApprovalModalDocumentaries } from "./ApprovalModalDocumentaries";
 import { ApprovalsModalHuman } from "./ApprovalModalHuman";
+import { DocumentItem } from "./types";
 
 interface IRequirementsData {
   id: string;
@@ -79,6 +80,7 @@ export const Requirements = (props: IRequirementsProps) => {
       {
         answer: string;
         observations: string;
+        selectedDocuments?: DocumentItem[];
       }
     >
   >({});
@@ -359,10 +361,13 @@ export const Requirements = (props: IRequirementsProps) => {
             isMobile={isMobile}
             handleClose={() => setShowSeeDetailsModal(false)}
             data={{
+              documents:
+                approvalDocumentValues[selectedEntryId]?.selectedDocuments,
               answer: approvalDocumentValues[selectedEntryId]?.answer || "",
               observations:
                 approvalDocumentValues[selectedEntryId]?.observations || "",
             }}
+            businessUnitPublicCode={businessUnitPublicCode}
           />
         )}
       {showSeeDetailsModal &&

@@ -111,7 +111,14 @@ export function ApprovalModalDocumentaries(
     <BaseModal
       title={`${approvalsConfig.title} ${title}`}
       handleNext={() => {
-        onConfirm?.(formik.values);
+        const selectedIds = formik.values.selectedDocumentIds || {};
+        const selectedDocuments = documents.filter(
+          (doc) => selectedIds[doc.documentId]
+        );
+        onConfirm?.({
+          ...formik.values,
+          selectedDocuments,
+        });
         onCloseModal?.();
       }}
       width={isMobile ? "280px" : "500px"}
@@ -132,11 +139,23 @@ export function ApprovalModalDocumentaries(
                   <Stack justifyContent="space-between">
                     <Stack gap="4px">
                       <Checkbox
-                        id="check"
-                        name="check"
-                        checked={formik.values.check}
-                        onChange={formik.handleChange}
-                        value={"check"}
+                        id={`check-${doc.documentId}`}
+                        name={`selectedDocumentIds.${doc.documentId}`}
+                        checked={
+                          formik.values.selectedDocumentIds?.[doc.documentId] ||
+                          false
+                        }
+                        onChange={() => {
+                          const currentValue =
+                            formik.values.selectedDocumentIds?.[
+                              doc.documentId
+                            ] || false;
+                          formik.setFieldValue(
+                            `selectedDocumentIds.${doc.documentId}`,
+                            !currentValue
+                          );
+                        }}
+                        value={doc.documentId}
                       />
                       <Text type="label" size="large">
                         {doc.abbreviatedName}

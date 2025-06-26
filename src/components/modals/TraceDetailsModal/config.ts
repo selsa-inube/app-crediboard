@@ -4,4 +4,5 @@ export const dataTrace = {
   answer: "¿Quieres aprobar el requisito aunque no se pudo evaluar?",
   observations: "Observaciones",
   understood: "Entendido",
+  see: "Ver",
 };
