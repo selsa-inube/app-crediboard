@@ -22,7 +22,6 @@ import {
   infoItems,
   maperDataRequirements,
   maperEntries,
-  getAcctionMobile,
   dataButton,
   textFlagsRequirements,
   dataAddRequirement,
@@ -162,14 +161,13 @@ export const Requirements = (props: IRequirementsProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creditRequestCode, sentData]);
 
-  const renderAccion = getAcctionMobile(
-    setShowSeeDetailsModal,
-    setShowAprovalsModal
-  );
-
   const toggleAprovalsModal = () => setShowAprovalsModal(!showAprovalsModal);
 
-  const handleToggleSeeDetailsModal = () => {
+  const handleToggleSeeDetailsModal = (tableId?: string, entryId?: string) => {
+    if (tableId && entryId) {
+      setSelectedTableId(tableId);
+      setSelectedEntryId(entryId);
+    }
     setShowSeeDetailsModal((prevState) => !prevState);
   };
 
@@ -202,7 +200,7 @@ export const Requirements = (props: IRequirementsProps) => {
         <Icon
           icon={<MdOutlineRemoveRedEye />}
           appearance="primary"
-          onClick={() => handleToggleSeeDetailsModal()}
+          onClick={() => handleToggleSeeDetailsModal(tableId, entry.id)}
           spacing="compact"
           variant="empty"
           size="32px"
@@ -327,7 +325,16 @@ export const Requirements = (props: IRequirementsProps) => {
                   content: (entry: IEntries) => renderCheckIcon(entry, item.id),
                 },
               ]}
-              actionMobile={renderAccion}
+              actionMobile={[
+                {
+                  id: "agregar",
+                  content: (entry: IEntries) => renderAddIcon(entry, item.id),
+                },
+                {
+                  id: "aprobar",
+                  content: (entry: IEntries) => renderCheckIcon(entry, item.id),
+                },
+              ]}
               actionMobileIcon={getActionsMobileIcon()}
               appearanceTable={{
                 widthTd: !isMobile ? "75%" : "70%",

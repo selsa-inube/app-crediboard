@@ -164,49 +164,6 @@ const isValidTagElement = (element: unknown): element is TagElement => {
   return isValidElement(element) && element.props !== undefined;
 };
 
-export const getAcctionMobile = (
-  showModalAdd: (state: boolean) => void,
-  showAprovalsModal: (state: boolean) => void
-) => {
-  const actionsMobile = [
-    {
-      id: "agregar",
-      content: () => (
-        <Stack justifyContent="center">
-          <Icon
-            icon={<MdOutlineRemoveRedEye />}
-            appearance="primary"
-            onClick={() => showModalAdd(true)}
-            spacing="narrow"
-            size="20px"
-            cursorHover
-          />
-        </Stack>
-      ),
-    },
-    {
-      id: "aprobar",
-      content: (data: IEntries) => (
-        <Stack justifyContent="center">
-          <Icon
-            icon={<MdOutlineHowToReg />}
-            appearance="primary"
-            spacing="narrow"
-            cursorHover
-            size="20px"
-            onClick={() => showAprovalsModal(true)}
-            disabled={
-              isValidElement(data?.tag) &&
-              data?.tag?.props?.label === "No Cumple"
-            }
-          />
-        </Stack>
-      ),
-    },
-  ];
-  return actionsMobile;
-};
-
 const actionsMobile = [
   {
     id: "tags",

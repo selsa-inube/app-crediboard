@@ -50,7 +50,7 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
         onConfirm?.(formik.values);
         onCloseModal?.();
       }}
-      width={isMobile ? "280px" : "500px"}
+      width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
       backButton={approvalsConfig.Cancel}
       nextButton={approvalsConfig.confirm}
@@ -86,6 +86,7 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           required
+          fullwidth
         />
       </Stack>
     </BaseModal>

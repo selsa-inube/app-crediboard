@@ -39,7 +39,7 @@ export function ApprovalsModalHuman(props: ApprovalsModalHumanProps) {
         onConfirm?.(formik.values);
         onCloseModal?.();
       }}
-      width={isMobile ? "280px" : "500px"}
+      width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
       backButton={approvalsConfig.Cancel}
       nextButton={approvalsConfig.confirm}
@@ -58,6 +58,7 @@ export function ApprovalsModalHuman(props: ApprovalsModalHumanProps) {
             onChange={(name, value) => formik.setFieldValue(name, value)}
             onBlur={formik.handleBlur}
             size="compact"
+            fullwidth
           />
         </Stack>
         <Textarea

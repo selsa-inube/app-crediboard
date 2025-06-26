@@ -21,7 +21,7 @@ import { DocumentViewer } from "@components/modals/DocumentViewer";
 import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
 import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
 
-import { IApprovalDocumentaries } from "../types";
+import { DocumentItem, IApprovalDocumentaries } from "../types";
 import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
 import { StyledScroll } from "./styles";
 
@@ -48,8 +48,7 @@ export function ApprovalModalDocumentaries(
     onCloseModal,
   } = props;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [isShowModal, setIsShowModal] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
@@ -65,6 +64,9 @@ export function ApprovalModalDocumentaries(
     observations: Yup.string()
       .max(approvalsConfig.maxLength, validationMessages.limitedTxt)
       .required(validationMessages.required),
+    selectedDocumentIds: Yup.object().test(
+      (value) => value && Object.values(value).some(Boolean)
+    ),
   });
 
   const formik = useFormik({
@@ -121,7 +123,7 @@ export function ApprovalModalDocumentaries(
         });
         onCloseModal?.();
       }}
-      width={isMobile ? "280px" : "500px"}
+      width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
       backButton={approvalsConfig.Cancel}
       nextButton={approvalsConfig.confirm}
