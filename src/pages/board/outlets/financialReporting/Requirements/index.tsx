@@ -25,7 +25,6 @@ import {
   getAcctionMobile,
   dataFlags,
   dataButton,
-  textFlagsRequirements,
   dataAddRequirement,
   getActionsMobileIcon,
 } from "./config";
@@ -225,13 +224,6 @@ export const Requirements = (props: IRequirementsProps) => {
   const openAddRequirementModal = () => setShowAddRequirementModal(true);
 
   const handleAddRequirement = async () => {
-    addFlag({
-      title: textFlagsRequirements.titleSuccess,
-      description: textFlagsRequirements.descriptionSuccess,
-      appearance: "success",
-      duration: 5000,
-    });
-
     if (closeAdd) closeAdd();
   };
 
