@@ -1,20 +1,15 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import {
-  Stack,
-  useMediaQuery,
-  Select,
-  Textfield,
-  Textarea,
-} from "@inubekit/inubekit";
+import { Stack, useMediaQuery, Select } from "@inubekit/inubekit";
 
-import { IPatchOfRequirements } from "@services/types";
+import { IPatchOfRequirements, IRequirement } from "@services/types";
 import { BaseModal } from "@components/modals/baseModal";
+import { CardGray } from "@components/cards/CardGray";
 
 import { IOptionsSelect } from "../types";
 import { dataAddRequirement } from "../config";
 
-export interface IRequirement {
+export interface IRequirements {
   optionsRequirement: IOptionsSelect[];
   creditRequestCode: string;
   title: string;
@@ -22,6 +17,10 @@ export interface IRequirement {
   setDescriptionUseValue: React.Dispatch<React.SetStateAction<string>>;
   setRequirementName: React.Dispatch<React.SetStateAction<string>>;
   buttonText: string;
+  rawRequirements?: IRequirement[];
+  requirementName?: string;
+  descriptionUseValue?: string;
+  typeOfRequirementToEvaluated?: string;
   readOnly?: boolean;
   handleNext?: () => void;
   onSecondaryButtonClick?: () => void;
@@ -35,7 +34,7 @@ export interface IRequirement {
   >;
 }
 
-export function AddRequirement(props: IRequirement) {
+export function AddRequirement(props: IRequirements) {
   const {
     onSubmit,
     title,
@@ -45,8 +44,6 @@ export function AddRequirement(props: IRequirement) {
     onSecondaryButtonClick,
     optionsRequirement,
     setTypeOfRequirementToEvaluated,
-    setDescriptionUseValue,
-    setRequirementName,
     handleNext,
     secondaryButtonText = "Cancelar",
   } = props;
@@ -56,23 +53,14 @@ export function AddRequirement(props: IRequirement) {
     typeOfRequirementToEvaluated: Yup.string().required(
       "Este campo es obligatorio"
     ),
-    requirementCatalogName: Yup.string().required("Este campo es obligatorio"),
-    descriptionUse: Yup.string().required("Este campo es obligatorio"),
   });
   const isButtonDisabled = (
     values: {
       typeOfRequirementToEvaluated: string;
-      requirementCatalogName: string;
-      descriptionUse: string;
     },
     isSubmitting: boolean
   ): boolean => {
-    return (
-      !values.typeOfRequirementToEvaluated ||
-      !values.requirementCatalogName ||
-      !values.descriptionUse ||
-      isSubmitting
-    );
+    return !values.typeOfRequirementToEvaluated || isSubmitting;
   };
   const handleRequirementChange = (
     name: string,
@@ -139,31 +127,14 @@ export function AddRequirement(props: IRequirement) {
                 fullwidth
                 disabled={options.Requirement.length === 0}
               />
-              <Textfield
-                name="requirementCatalogName"
-                id="requirementCatalogName"
-                label={dataAddRequirement.labelName}
-                placeholder={dataAddRequirement.placeHolderDate}
-                onChange={(e) => {
-                  setRequirementName(e.target.value);
-                  setFieldValue("requirementCatalogName", e.target.value);
-                }}
-                value={values.requirementCatalogName}
-                size="wide"
-                fullwidth
-              />
-              <Textarea
-                id={"descriptionUse"}
-                name={"descriptionUse"}
-                label={dataAddRequirement.labelTextarea}
-                placeholder={dataAddRequirement.placeHolderTextarea}
-                value={values.descriptionUse}
-                onChange={(e) => {
-                  setDescriptionUseValue(e.target.value);
-                  setFieldValue("descriptionUse", e.target.value);
-                }}
-                fullwidth
-              />
+              {values.typeOfRequirementToEvaluated && (
+                <CardGray
+                  label={dataAddRequirement.titleJustification}
+                  placeHolder={dataAddRequirement.descriptionJustification}
+                  apparencePlaceHolder="gray"
+                  height="108px"
+                />
+              )}
             </Stack>
           </Form>
         </BaseModal>

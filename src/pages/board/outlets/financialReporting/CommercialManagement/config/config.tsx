@@ -410,7 +410,7 @@ export const menuOptions = (
   visibleExtraPayments: boolean
 ): IOptions[] => [
   {
-    title: "Origen de cupo",
+    title: "Origen de caaaupo",
     onClick: () => handleOpenModal("creditLimit"),
     icon: <MdOutlineBalance />,
     visible: true,

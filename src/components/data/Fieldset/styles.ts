@@ -60,7 +60,20 @@ export const StyledContainerFieldset = styled.div<IStyledContainerFieldset>`
 `;
 
 export const StyledPrint = styled.div`
+  display: flex;
+  gap: 8px;
   @media print {
     display: none;
   }
+`;
+export const StyledMenuContainer = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+export const StyledMenuDropdown = styled.div`
+  position: absolute;
+  bottom: 30px;
+  right: 0;
+  z-index: 1000;
 `;
