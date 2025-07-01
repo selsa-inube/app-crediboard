@@ -1,14 +1,21 @@
 import { useState } from "react";
-import { MdAdd, MdOutlineInfo } from "react-icons/md";
+import { MdAdd, MdOutlineMoreVert } from "react-icons/md";
 import { Stack, Text, useMediaQuery, Button, Icon } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
+import { MenuProspect } from "@components/navigation/MenuProspect";
 
-import { StyledContainerFieldset, StyledPrint } from "./styles";
+import {
+  StyledContainerFieldset,
+  StyledMenuContainer,
+  StyledMenuDropdown,
+  StyledPrint,
+} from "./styles";
 import { titlesModal } from "./config";
 
 interface IOptionsButton {
   title: string;
+  titleHuman: string;
   onClick?: () => void;
 }
 
@@ -39,7 +46,6 @@ export const Fieldset = (props: IFieldsetProps) => {
     heightFieldset,
     descriptionTitle,
     activeButton,
-    disabledButton,
     hasTable = false,
     hasOverflow = false,
     isClickable = false,
@@ -52,7 +58,7 @@ export const Fieldset = (props: IFieldsetProps) => {
 
   const [isSelected, setIsSelected] = useState(selectedState || false);
   const [infoModal, setInfoModal] = useState(false);
-
+  const [showMenu, setShowMenu] = useState(false);
   const handleOnClick = () => {
     if (isClickable) {
       setIsSelected(!isSelected);
@@ -61,6 +67,32 @@ export const Fieldset = (props: IFieldsetProps) => {
       }
     }
   };
+  const menuOptions = (
+    handleClick?: () => void
+  ): {
+    title: string;
+    onClick: () => void;
+    visible: boolean;
+    icon: JSX.Element;
+  }[] => [
+    {
+      icon: <MdAdd />,
+      title: activeButton?.title || "",
+      onClick: () => {
+        handleClick?.();
+        setShowMenu(false);
+      },
+      visible: true,
+    },
+    {
+      icon: <MdAdd />,
+      title: activeButton?.titleHuman || "",
+      onClick: () => {
+        setShowMenu(false);
+      },
+      visible: true,
+    },
+  ];
 
   return (
     <Stack
@@ -86,25 +118,45 @@ export const Fieldset = (props: IFieldsetProps) => {
         </Stack>
         {activeButton && (
           <Stack>
-            <StyledPrint>
-              <Button
-                iconBefore={<MdAdd />}
-                spacing="compact"
-                disabled={!disabledButton}
-                onClick={activeButton.onClick}
-              >
-                {activeButton.title}
-              </Button>
-              {!disabledButton && (
+            {isMobile ? (
+              <StyledMenuContainer>
                 <Icon
-                  icon={<MdOutlineInfo />}
+                  icon={<MdOutlineMoreVert />}
                   appearance="primary"
-                  size="16px"
+                  size="24px"
                   cursorHover
-                  onClick={() => setInfoModal(true)}
+                  onClick={() => setShowMenu((prev) => !prev)}
                 />
-              )}
-            </StyledPrint>
+
+                {showMenu && activeButton && (
+                  <StyledMenuDropdown>
+                    <MenuProspect
+                      options={menuOptions(activeButton.onClick)}
+                      onMouseLeave={() => setShowMenu(false)}
+                    />
+                  </StyledMenuDropdown>
+                )}
+              </StyledMenuContainer>
+            ) : (
+              <StyledPrint>
+                <Button
+                  iconBefore={<MdAdd />}
+                  spacing="compact"
+                  onClick={() => []}
+                  variant="outlined"
+                >
+                  {activeButton.titleHuman}
+                </Button>
+                <Button
+                  iconBefore={<MdAdd />}
+                  spacing="compact"
+                  onClick={activeButton.onClick}
+                  variant="outlined"
+                >
+                  {activeButton.title}
+                </Button>
+              </StyledPrint>
+            )}
           </Stack>
         )}
       </Stack>
