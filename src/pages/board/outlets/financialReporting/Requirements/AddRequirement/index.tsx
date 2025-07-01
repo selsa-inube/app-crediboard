@@ -132,6 +132,7 @@ export function AddRequirement(props: IRequirements) {
                   label={dataAddRequirement.titleJustification}
                   placeHolder={dataAddRequirement.descriptionJustification}
                   apparencePlaceHolder="gray"
+                  size="large"
                   height="108px"
                 />
               )}
