@@ -40,9 +40,6 @@ function BoardLayout() {
     boardOrientation: eventData.user.preferences.boardOrientation || "vertical",
   });
 
-  // const [filteredRequests, setFilteredRequests] = useState<ICreditRequest[]>(
-  //   []
-  // );
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1024px)");
@@ -91,7 +88,6 @@ function BoardLayout() {
           ...prevState,
           boardRequests: boardRequestsResult.value,
         }));
-        //setFilteredRequests(boardRequestsResult.value);
       }
 
       if (requestsPinnedResult.status === "fulfilled") {
@@ -115,8 +111,9 @@ function BoardLayout() {
     fetchBoardData(businessUnitPublicCode, recordsToFetch);
 
     fetchValidationRulesData();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, recordsToFetch]);
+
   const handleLoadMoreData = () => {
     setRecordsToFetch((prev) => prev + 50);
   };
@@ -260,10 +257,12 @@ function BoardLayout() {
       handleFlag(errorData.anchor[0], errorData.anchor[1]);
     }
   };
+
   const openFilterModal = useCallback(() => {
     setIsFilterModalOpen(true);
     setIsMenuOpen(false);
   }, []);
+
   const handleClearFilters = async () => {
     setActiveOptions([]);
     setFilters((prev) => ({
