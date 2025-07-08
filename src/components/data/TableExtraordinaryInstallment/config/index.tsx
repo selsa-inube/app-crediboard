@@ -32,7 +32,7 @@ export const dataTableExtraordinaryInstallment = {
   noData: "¡Ups! No se encontraron registros.",
   deletion: "Eliminación",
   delete: "Eliminar",
-  content: "¿Realmente desea eliminar este pago extra?",
+  content: "¿Realmente desea eliminar este pago extraaaa?",
   cancel: "Cancelar",
 };
 

@@ -15,7 +15,9 @@ import {
   IErrorService,
   ICreditRequest,
   IDeleteCreditRequest,
+  IPaymentChannel,
 } from "@services/types";
+import { IExtraordinaryInstallments } from "@services/iProspect/saveExtraordinaryInstallments/types";
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { getUnreadErrorsById } from "@services/credit-request/command/unreadErrors";
 import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
@@ -67,7 +69,10 @@ export const FinancialReporting = () => {
   const [attachDocuments, setAttachDocuments] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [collapse, setCollapse] = useState(false);
-
+  const [sentData, setSentData] = useState<IExtraordinaryInstallments | null>(
+    null
+  );
+  const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const { addFlag } = useFlag();
@@ -149,7 +154,7 @@ export const FinancialReporting = () => {
     };
 
     fetchData();
-  }, [businessUnitPublicCode, id]);
+  }, [businessUnitPublicCode, id, sentData]);
 
   const handleGeneratePDF = () => {
     setTimeout(() => {
@@ -362,6 +367,10 @@ export const FinancialReporting = () => {
                     hasPermitRejection={
                       eventData.user.staff.useCases.canSendDecision
                     }
+                    sentData={null}
+                    setSentData={setSentData}
+                    setRequestValue={setRequestValue}
+                    requestValue={requestValue}
                   />
                 </Stack>
               </Stack>
