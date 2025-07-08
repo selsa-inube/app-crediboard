@@ -23,6 +23,7 @@ import { getCanUnpin } from "@utils/configRules/permissions";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules";
+import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 
 import { StyledBoardSection, StyledCollapseIcon } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
@@ -46,7 +47,6 @@ interface BoardSectionProps {
   dragIcon?: React.ReactElement;
   onOrientationChange: (orientation: SectionOrientation) => void;
 }
-
 
 function BoardSection(props: BoardSectionProps) {
   const {
@@ -197,6 +197,11 @@ function BoardSection(props: BoardSectionProps) {
     if (businessUnitPublicCode) fetchValidationRulesData();
   }, [businessUnitPublicCode, fetchValidationRulesData]);
 
+  const getTaskLabel = (code: string): string => {
+    const task = taskPrs.find((t) => t.Code === code);
+    return task ? `${task.Value}` : code;
+  };
+
   return (
     <StyledBoardSection
       $sectionBackground={sectionBackground}
@@ -243,6 +248,7 @@ function BoardSection(props: BoardSectionProps) {
             appearance="primary"
             size="24px"
             onClick={handleToggleOrientation}
+            cursorHover
           />
 
           <Text
@@ -275,7 +281,9 @@ function BoardSection(props: BoardSectionProps) {
                 name={request.clientName}
                 destination={request.moneyDestinationAbreviatedName}
                 value={request.loanAmount}
-                toDo={request.taskToBeDone}
+                toDo={
+                  request.taskToBeDone ? getTaskLabel(request.taskToBeDone) : ""
+                }
                 path={`extended-card/${request.creditRequestCode}`}
                 isPinned={isRequestPinned(
                   request.creditRequestId,

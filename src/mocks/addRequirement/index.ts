@@ -1,17 +1,12 @@
 export const AddRequirementMock = [
   {
-    id: "SYSTEM_VALIDATION",
-    label: "Validación del sistema 1",
-    value: "Validaciones del sistema",
+    id: "HUMAN_VALIDATION",
+    label: "Validaciones humanas",
+    value: "Validaciones humanas",
   },
   {
     id: "DOCUMENT",
-    label: "Validación del sistema 2",
+    label: "Requisitos documentales",
     value: "Requisitos documentales",
-  },
-  {
-    id: "HUMAN_VALIDATION",
-    label: "Validación del sistema 3",
-    value: "Validaciones humanas",
   },
 ];

@@ -1,15 +1,20 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Stack, useMediaQuery, Select } from "@inubekit/inubekit";
+import {
+  Stack,
+  useMediaQuery,
+  Select,
+  Textfield,
+  Textarea,
+} from "@inubekit/inubekit";
 
-import { IPatchOfRequirements, IRequirement } from "@services/types";
+import { IPatchOfRequirements } from "@services/types";
 import { BaseModal } from "@components/modals/baseModal";
-import { CardGray } from "@components/cards/CardGray";
+import { dataAddRequirement } from "@pages/board/outlets/financialReporting/Requirements/config";
 
 import { IOptionsSelect } from "../types";
-import { dataAddRequirement } from "../config";
 
-export interface IRequirements {
+export interface IRequirement {
   optionsRequirement: IOptionsSelect[];
   creditRequestCode: string;
   title: string;
@@ -17,10 +22,6 @@ export interface IRequirements {
   setDescriptionUseValue: React.Dispatch<React.SetStateAction<string>>;
   setRequirementName: React.Dispatch<React.SetStateAction<string>>;
   buttonText: string;
-  rawRequirements?: IRequirement[];
-  requirementName?: string;
-  descriptionUseValue?: string;
-  typeOfRequirementToEvaluated?: string;
   readOnly?: boolean;
   handleNext?: () => void;
   onSecondaryButtonClick?: () => void;
@@ -34,7 +35,7 @@ export interface IRequirements {
   >;
 }
 
-export function AddRequirement(props: IRequirements) {
+export function AddRequirement(props: IRequirement) {
   const {
     onSubmit,
     title,
@@ -44,23 +45,32 @@ export function AddRequirement(props: IRequirements) {
     onSecondaryButtonClick,
     optionsRequirement,
     setTypeOfRequirementToEvaluated,
+    setDescriptionUseValue,
+    setRequirementName,
     handleNext,
     secondaryButtonText = "Cancelar",
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
   const validationSchema = Yup.object().shape({
-    typeOfRequirementToEvaluated: Yup.string().required(
-      "Este campo es obligatorio"
-    ),
+    typeOfRequirementToEvaluated: Yup.string().required(""),
+    requirementCatalogName: Yup.string().required(""),
+    descriptionUse: Yup.string().required(""),
   });
   const isButtonDisabled = (
     values: {
       typeOfRequirementToEvaluated: string;
+      requirementCatalogName: string;
+      descriptionUse: string;
     },
     isSubmitting: boolean
   ): boolean => {
-    return !values.typeOfRequirementToEvaluated || isSubmitting;
+    return (
+      !values.typeOfRequirementToEvaluated ||
+      !values.requirementCatalogName ||
+      !values.descriptionUse ||
+      isSubmitting
+    );
   };
   const handleRequirementChange = (
     name: string,
@@ -127,15 +137,32 @@ export function AddRequirement(props: IRequirements) {
                 fullwidth
                 disabled={options.Requirement.length === 0}
               />
-              {values.typeOfRequirementToEvaluated && (
-                <CardGray
-                  label={dataAddRequirement.titleJustification}
-                  placeHolder={dataAddRequirement.descriptionJustification}
-                  apparencePlaceHolder="gray"
-                  size="large"
-                  height="108px"
-                />
-              )}
+              <Textfield
+                name="descriptionUse"
+                id="descriptionUse"
+                label={dataAddRequirement.labelName}
+                placeholder={dataAddRequirement.placeHolderDate}
+                onChange={(e) => {
+                  setDescriptionUseValue(e.target.value);
+                  setFieldValue("descriptionUse", e.target.value);
+                }}
+                value={values.descriptionUse}
+                size="wide"
+                fullwidth
+                required
+              />
+              <Textarea
+                id={"requirementCatalogName"}
+                name={"requirementCatalogName"}
+                label={dataAddRequirement.labelTextarea}
+                placeholder={dataAddRequirement.placeHolderTextarea}
+                value={values.requirementCatalogName}
+                onChange={(e) => {
+                  setRequirementName(e.target.value);
+                  setFieldValue("requirementCatalogName", e.target.value);
+                }}
+                fullwidth
+              />
             </Stack>
           </Form>
         </BaseModal>
