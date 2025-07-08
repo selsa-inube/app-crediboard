@@ -1,5 +1,4 @@
 import { useState, isValidElement, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { MdOutlineHowToReg, MdOutlineRemoveRedEye } from "react-icons/md";
 import { Stack, Icon, useFlag } from "@inubekit/inubekit";
 
@@ -21,6 +20,7 @@ import {
 } from "@services/types";
 import { AddRequirementMock } from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
+import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
 
 import { errorMessages } from "../config";
 import {
@@ -105,8 +105,9 @@ export const Requirements = (props: IRequirementsProps) => {
   const [error, setError] = useState(false);
   const [rawRequirements, setRawRequirements] = useState<IRequirement[]>([]);
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
-  const navigate = useNavigate();
   const { addFlag } = useFlag();
+  const [showAddSystemValidationModal, setShowAddSystemValidationModal] =
+    useState(false);
 
   useEffect(() => {
     const fetchRequirements = async () => {
@@ -174,6 +175,7 @@ export const Requirements = (props: IRequirementsProps) => {
 
   const closeAdd = () => {
     setShowAddRequirementModal(false);
+    setShowAddSystemValidationModal(false);
   };
 
   const renderAddIcon = (entry: IEntries, tableId: string) => {
@@ -233,24 +235,28 @@ export const Requirements = (props: IRequirementsProps) => {
       />
     </Stack>
   );
-
-  const openAddRequirementModal = () => setShowAddRequirementModal(true);
+  const handleAddRequirementAddSystemValidation = async () => {
+    if (closeAdd) closeAdd();
+  };
 
   const handleAddRequirement = async (creditRequests: IPatchOfRequirements) => {
     await saveRequirements(businessUnitPublicCode, creditRequests)
       .then(() => {
-        addFlag({
-          title: textFlagsRequirements.titleSuccess,
-          description: textFlagsRequirements.descriptionSuccess,
-          appearance: "success",
-          duration: 5000,
-        });
         setSentData(creditRequests);
       })
-      .catch(() => {
+      .catch((error) => {
+        const err = error as {
+          message?: string;
+          status: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + err?.message + (err?.data?.description || "");
+
         addFlag({
           title: textFlagsRequirements.titleError,
-          description: textFlagsRequirements.descriptionError,
+          description,
           appearance: "danger",
           duration: 5000,
         });
@@ -259,10 +265,6 @@ export const Requirements = (props: IRequirementsProps) => {
         if (closeAdd) closeAdd();
         handleToggleModal();
       });
-
-    setTimeout(() => {
-      navigate(`/extended-card/${id}`);
-    }, 6000);
   };
 
   const initialValues: IPatchOfRequirements = {
@@ -294,7 +296,10 @@ export const Requirements = (props: IRequirementsProps) => {
     <>
       <Fieldset
         title={errorMessages.Requirements.titleCard}
-        activeButton={dataButton(openAddRequirementModal)}
+        activeButton={dataButton(
+          () => setShowAddRequirementModal(true),
+          () => setShowAddSystemValidationModal(true)
+        )}
         disabledButton={hasPermitRejection}
         heightFieldset="100%"
         hasTable={!error}
@@ -472,6 +477,24 @@ export const Requirements = (props: IRequirementsProps) => {
           handleNext={() => {
             handleAddRequirement(initialValues);
           }}
+        />
+      )}
+      {showAddSystemValidationModal && (
+        <AddSystemValidation
+          title={dataAddRequirement.title}
+          buttonText={dataAddRequirement.add}
+          optionsRequirement={AddRequirementMock}
+          onCloseModal={closeAdd}
+          creditRequestCode={creditRequestCode}
+          setSentData={setSentData}
+          setRequirementName={setRequirementName}
+          setDescriptionUseValue={setDescriptionUseValue}
+          setTypeOfRequirementToEvaluated={setTypeOfRequirementToEvaluated}
+          handleNext={handleAddRequirementAddSystemValidation}
+          requirementName={requirementName}
+          descriptionUseValue={descriptionUseValue}
+          typeOfRequirementToEvaluated={typeOfRequirementToEvaluated}
+          rawRequirements={rawRequirements}
         />
       )}
     </>

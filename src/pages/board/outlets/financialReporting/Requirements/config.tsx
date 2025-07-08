@@ -16,10 +16,11 @@ import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
 import { CreditRequest } from "@services/types";
 
-export const dataButton = (onClick: () => void) => ({
+export const dataButton = (onClick: () => void, onClickHuman: () => void) => ({
   title: "Agregar validación del sistema",
   titleHuman: "Agregar validación humana",
   onClick,
+  onClickHuman,
 });
 
 const receiveData = (data: IEntries) => {

@@ -17,6 +17,7 @@ interface IOptionsButton {
   title: string;
   titleHuman: string;
   onClick?: () => void;
+  onClickHuman?: () => void;
 }
 
 interface IFieldsetProps {
@@ -67,9 +68,7 @@ export const Fieldset = (props: IFieldsetProps) => {
       }
     }
   };
-  const menuOptions = (
-    handleClick?: () => void
-  ): {
+  const menuOptions = (): {
     title: string;
     onClick: () => void;
     visible: boolean;
@@ -79,6 +78,7 @@ export const Fieldset = (props: IFieldsetProps) => {
       icon: <MdAdd />,
       title: activeButton?.title || "",
       onClick: () => {
+        activeButton?.onClick?.();
         setShowMenu(false);
       },
       visible: true,
@@ -87,7 +87,7 @@ export const Fieldset = (props: IFieldsetProps) => {
       icon: <MdAdd />,
       title: activeButton?.titleHuman || "",
       onClick: () => {
-        handleClick?.();
+        activeButton?.onClickHuman?.();
         setShowMenu(false);
       },
       visible: true,
@@ -131,7 +131,7 @@ export const Fieldset = (props: IFieldsetProps) => {
                 {showMenu && activeButton && (
                   <StyledMenuDropdown>
                     <MenuProspect
-                      options={menuOptions(activeButton.onClick)}
+                      options={menuOptions()}
                       onMouseLeave={() => setShowMenu(false)}
                     />
                   </StyledMenuDropdown>
@@ -145,15 +145,15 @@ export const Fieldset = (props: IFieldsetProps) => {
                   onClick={activeButton.onClick}
                   variant="outlined"
                 >
-                  {activeButton.titleHuman}
+                  {activeButton.title}
                 </Button>
                 <Button
                   iconBefore={<MdAdd />}
                   spacing="compact"
-                  onClick={() => []}
+                  onClick={activeButton.onClickHuman}
                   variant="outlined"
                 >
-                  {activeButton.title}
+                  {activeButton.titleHuman}
                 </Button>
               </StyledPrint>
             )}

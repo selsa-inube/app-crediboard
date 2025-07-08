@@ -1,5 +1,5 @@
 export const AddRequirementMock = [
-    {
+  {
     id: "HUMAN_VALIDATION",
     label: "Validaciones humanas",
     value: "Validaciones humanas",
@@ -9,5 +9,4 @@ export const AddRequirementMock = [
     label: "Requisitos documentales",
     value: "Requisitos documentales",
   },
-
 ];
