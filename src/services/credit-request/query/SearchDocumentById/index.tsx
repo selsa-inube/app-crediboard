@@ -51,8 +51,13 @@ export const getSearchDocumentById = async (
 
       return blob;
     } catch (error) {
-      console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
+        if (typeof error === "object" && error !== null) {
+          throw {
+            ...(error as object),
+            message: (error as Error).message,
+          };
+        }
         throw new Error(
           "Todos los intentos fallaron. No se pudo obtener el documento."
         );

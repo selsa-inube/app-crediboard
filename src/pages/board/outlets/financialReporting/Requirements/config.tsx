@@ -93,6 +93,8 @@ export const dataAddRequirement = {
   placeHolderDate: "Seleccione un requisito",
   placeHolderTextarea: "¿Qué hace necesario incluir este requisito?",
   placeHolderJustification: "Justificación del requisito",
+  yes: "Sí, aprobar requisito.",
+  no: "No, aprobar requisito.",
 };
 
 export const infoItems = [
@@ -164,49 +166,6 @@ interface TagElement {
 
 const isValidTagElement = (element: unknown): element is TagElement => {
   return isValidElement(element) && element.props !== undefined;
-};
-
-export const getAcctionMobile = (
-  showModalAdd: (state: boolean) => void,
-  showAprovalsModal: (state: boolean) => void
-) => {
-  const actionsMobile = [
-    {
-      id: "agregar",
-      content: () => (
-        <Stack justifyContent="center">
-          <Icon
-            icon={<MdOutlineRemoveRedEye />}
-            appearance="primary"
-            onClick={() => showModalAdd(true)}
-            spacing="narrow"
-            size="20px"
-            cursorHover
-          />
-        </Stack>
-      ),
-    },
-    {
-      id: "aprobar",
-      content: (data: IEntries) => (
-        <Stack justifyContent="center">
-          <Icon
-            icon={<MdOutlineHowToReg />}
-            appearance="primary"
-            spacing="narrow"
-            cursorHover
-            size="20px"
-            onClick={() => showAprovalsModal(true)}
-            disabled={
-              isValidElement(data?.tag) &&
-              data?.tag?.props?.label === "No Cumple"
-            }
-          />
-        </Stack>
-      ),
-    },
-  ];
-  return actionsMobile;
 };
 
 const actionsMobile = [
@@ -373,19 +332,4 @@ export const getActionsMobileIcon = () => {
       },
     },
   ];
-};
-
-export const dataFlags = {
-  requirements: {
-    title: "Error al cargar requisitos",
-    description: "No se encontraron requisitos disponibles.",
-  },
-  documentApproved: {
-    title: "Éxito",
-    description: "Documentación aprobada correctamente.",
-  },
-  documentRejected: {
-    title: "Error",
-    description: "Ocurrió un error al aprobar el documento.",
-  },
 };
