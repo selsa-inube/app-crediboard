@@ -139,7 +139,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   };
 
   const initialValues: IExtraordinaryInstallments = {
-    creditProductCode: "SC-000000038-1",
+    creditProductCode: "SC-122254646-3",
     extraordinaryInstallments: [
       {
         installmentAmount: 0,

@@ -79,7 +79,7 @@ export function EditSeriesModal(props: EditSeriesModalProps) {
     } = formik.values;
 
     const data: IExtraordinaryInstallments = {
-      creditProductCode: "SC-000000038-1",
+      creditProductCode: "SC-122254646-3",
       prospectId: "67f7e8f52c014414fca8b52d",
       extraordinaryInstallments: [
         {
