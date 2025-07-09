@@ -10,3 +10,16 @@ export const AddRequirementMock = [
     value: "Requisitos documentales",
   },
 ];
+
+export const AddRequirementMockSistemValidations = [
+  {
+    id: "1",
+    label: "El asociado tiene más de 20 años de edad.",
+    value: "El asociado tiene más de 20 años de edad.",
+  },
+  {
+    id: "2",
+    label: "Antiguedad minima",
+    value: "Antiguedad minima",
+  },
+];

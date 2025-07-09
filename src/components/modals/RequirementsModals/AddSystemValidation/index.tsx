@@ -14,19 +14,21 @@ export interface IRequirements {
   creditRequestCode: string;
   title: string;
   setTypeOfRequirementToEvaluated: React.Dispatch<React.SetStateAction<string>>;
-  setDescriptionUseValue: React.Dispatch<React.SetStateAction<string>>;
+  setdescriptionUseValues: React.Dispatch<React.SetStateAction<string>>;
   setRequirementName: React.Dispatch<React.SetStateAction<string>>;
   buttonText: string;
+  justificationRequirement: string;
+  setJustificationRequirement: React.Dispatch<React.SetStateAction<string>>;
   rawRequirements?: IRequirement[];
   requirementName?: string;
-  descriptionUseValue?: string;
+  descriptionUseValues?: string;
   typeOfRequirementToEvaluated?: string;
   readOnly?: boolean;
   handleNext?: () => void;
   onSecondaryButtonClick?: () => void;
   secondaryButtonText?: string;
   onChange?: (key: string) => void;
-  onSubmit?: (values: { typeOfRequirementToEvaluated: string }) => void;
+  onSubmit?: (values: { descriptionUseValues: string }) => void;
   onCloseModal?: () => void;
   disabledBack?: boolean;
   setSentData: React.Dispatch<
@@ -43,25 +45,37 @@ export function AddSystemValidation(props: IRequirements) {
     onCloseModal,
     onSecondaryButtonClick,
     optionsRequirement,
-    setTypeOfRequirementToEvaluated,
+    setdescriptionUseValues,
     handleNext,
     secondaryButtonText = "Cancelar",
+    setJustificationRequirement,
+    justificationRequirement,
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
+
   const validationSchema = Yup.object().shape({
-    typeOfRequirementToEvaluated: Yup.string().required(
-      "Este campo es obligatorio"
-    ),
+    descriptionUseValues: Yup.string().required("Este campo es obligatorio"),
   });
+
   const isButtonDisabled = (
-    values: {
-      typeOfRequirementToEvaluated: string;
-    },
+    values: { descriptionUseValues: string },
     isSubmitting: boolean
   ): boolean => {
-    return !values.typeOfRequirementToEvaluated || isSubmitting;
+    return !values.descriptionUseValues || isSubmitting;
   };
+
+  const getPlaceholderText = (selectedValue: string) => {
+    switch (selectedValue) {
+      case "El asociado tiene más de 20 años de edad.":
+        return "Se valida la edad mínima para el requisito";
+      case "Antiguedad minima":
+        return "Se valida la antigüedad mínima para el requisito";
+      default:
+        return "";
+    }
+  };
+
   const handleRequirementChange = (
     name: string,
     value: string,
@@ -72,7 +86,9 @@ export function AddSystemValidation(props: IRequirements) {
       (option) => option.value === value
     );
     if (selectedOption) {
-      setTypeOfRequirementToEvaluated(selectedOption.id);
+      setdescriptionUseValues(selectedOption.value);
+      const newPlaceholder = getPlaceholderText(selectedOption.value);
+      setJustificationRequirement(newPlaceholder);
     }
   };
 
@@ -83,11 +99,10 @@ export function AddSystemValidation(props: IRequirements) {
       value: official.value,
     })),
   };
-
   return (
     <Formik
       initialValues={{
-        typeOfRequirementToEvaluated: "",
+        descriptionUseValues: "",
         requirementCatalogName: "",
         descriptionUse: "",
       }}
@@ -111,8 +126,8 @@ export function AddSystemValidation(props: IRequirements) {
           <Form>
             <Stack direction="column" gap="24px">
               <Select
-                name="typeOfRequirementToEvaluated"
-                id="typeOfRequirementToEvaluated"
+                name="descriptionUseValues"
+                id="descriptionUseValues"
                 label={dataAddRequirement.labelPaymentMethod}
                 placeholder={
                   options.Requirement.length > 0
@@ -123,14 +138,14 @@ export function AddSystemValidation(props: IRequirements) {
                 onChange={(name, value) =>
                   handleRequirementChange(name, value, setFieldValue)
                 }
-                value={values.typeOfRequirementToEvaluated}
+                value={values.descriptionUseValues}
                 fullwidth
                 disabled={options.Requirement.length === 0}
               />
-              {values.typeOfRequirementToEvaluated && (
+              {values.descriptionUseValues && (
                 <CardGray
                   label={dataAddRequirement.titleJustification}
-                  placeHolder={dataAddRequirement.descriptionJustification}
+                  placeHolder={justificationRequirement}
                   apparencePlaceHolder="gray"
                   size="large"
                   height="108px"

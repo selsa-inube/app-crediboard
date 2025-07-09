@@ -18,7 +18,10 @@ import {
   IPatchOfRequirements,
   IRequirement,
 } from "@services/types";
-import { AddRequirementMock } from "@mocks/addRequirement";
+import {
+  AddRequirementMock,
+  AddRequirementMockSistemValidations,
+} from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
 
@@ -99,11 +102,16 @@ export const Requirements = (props: IRequirementsProps) => {
   );
   const [requirementName, setRequirementName] = useState("");
   const [descriptionUseValue, setDescriptionUseValue] = useState("");
+  const [descriptionUseValues, setDescriptionUseValues] = useState("");
   const [typeOfRequirementToEvaluated, setTypeOfRequirementToEvaluated] =
     useState<string>("");
+
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(false);
   const [rawRequirements, setRawRequirements] = useState<IRequirement[]>([]);
+  const [justificationRequirement, setJustificationRequirement] = useState(
+    dataAddRequirement.descriptionJustification
+  );
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
   const { addFlag } = useFlag();
   const [showAddSystemValidationModal, setShowAddSystemValidationModal] =
@@ -235,9 +243,6 @@ export const Requirements = (props: IRequirementsProps) => {
       />
     </Stack>
   );
-  const handleAddRequirementAddSystemValidation = async () => {
-    if (closeAdd) closeAdd();
-  };
 
   const handleAddRequirement = async (creditRequests: IPatchOfRequirements) => {
     await saveRequirements(businessUnitPublicCode, creditRequests)
@@ -266,27 +271,53 @@ export const Requirements = (props: IRequirementsProps) => {
         handleToggleModal();
       });
   };
-
-  const initialValues: IPatchOfRequirements = {
+  const createInitialRequirementValues = ({
+    requirementCatalogName,
+    descriptionUse,
+    typeOfRequirementToEvaluated,
+    rawRequirements,
+    creditRequestCode,
+  }: {
+    requirementCatalogName: string;
+    descriptionUse: string;
+    typeOfRequirementToEvaluated: string;
+    rawRequirements: IRequirement[];
+    creditRequestCode: string;
+  }): IPatchOfRequirements => ({
     packageId: rawRequirements[0]?.packageId,
     uniqueReferenceNumber: creditRequestCode,
     packageDate: rawRequirements[0]?.packageDate,
-    packageDescription:
-      "Requisitos para la solicitud de crédito SC-12225464610",
+    packageDescription: `Requisitos para la solicitud de crédito ${creditRequestCode}`,
     modifyJustification: "modifyJustification",
     listsOfRequirementsByPackage: [
       {
         packageId: rawRequirements[0]?.packageId,
-        requirementCatalogName: requirementName,
+        requirementCatalogName,
         requirementDate: rawRequirements[0]?.packageDate,
         requirementStatus: "UNVALIDATED",
         descriptionEvaluationRequirement: "Requisitos no evaluados",
-        descriptionUse: descriptionUseValue,
-        typeOfRequirementToEvaluated: typeOfRequirementToEvaluated,
+        descriptionUse,
+        typeOfRequirementToEvaluated,
         transactionOperation: "Insert",
       },
     ],
-  };
+  });
+
+  const initialValues = createInitialRequirementValues({
+    requirementCatalogName: requirementName,
+    descriptionUse: descriptionUseValue,
+    typeOfRequirementToEvaluated,
+    rawRequirements,
+    creditRequestCode,
+  });
+
+  const initialValuesSystemValidation = createInitialRequirementValues({
+    requirementCatalogName: justificationRequirement,
+    descriptionUse: descriptionUseValues,
+    typeOfRequirementToEvaluated: "SYSTEM_VALIDATION",
+    rawRequirements,
+    creditRequestCode,
+  });
 
   const handleToggleModal = () => {
     setShowModal(!showModal);
@@ -483,18 +514,22 @@ export const Requirements = (props: IRequirementsProps) => {
         <AddSystemValidation
           title={dataAddRequirement.title}
           buttonText={dataAddRequirement.add}
-          optionsRequirement={AddRequirementMock}
+          optionsRequirement={AddRequirementMockSistemValidations}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}
           setSentData={setSentData}
           setRequirementName={setRequirementName}
-          setDescriptionUseValue={setDescriptionUseValue}
+          setdescriptionUseValues={setDescriptionUseValues}
           setTypeOfRequirementToEvaluated={setTypeOfRequirementToEvaluated}
-          handleNext={handleAddRequirementAddSystemValidation}
+          handleNext={() => {
+            handleAddRequirement(initialValuesSystemValidation);
+          }}
           requirementName={requirementName}
-          descriptionUseValue={descriptionUseValue}
+          descriptionUseValues={descriptionUseValues}
           typeOfRequirementToEvaluated={typeOfRequirementToEvaluated}
           rawRequirements={rawRequirements}
+          setJustificationRequirement={setJustificationRequirement}
+          justificationRequirement={justificationRequirement}
         />
       )}
     </>

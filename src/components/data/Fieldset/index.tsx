@@ -15,9 +15,9 @@ import { titlesModal } from "./config";
 
 interface IOptionsButton {
   title: string;
-  titleHuman: string;
+  titleSistemValidation: string;
   onClick?: () => void;
-  onClickHuman?: () => void;
+  onClickSistemValidation?: () => void;
 }
 
 interface IFieldsetProps {
@@ -85,9 +85,9 @@ export const Fieldset = (props: IFieldsetProps) => {
     },
     {
       icon: <MdAdd />,
-      title: activeButton?.titleHuman || "",
+      title: activeButton?.titleSistemValidation || "",
       onClick: () => {
-        activeButton?.onClickHuman?.();
+        activeButton?.onClickSistemValidation?.();
         setShowMenu(false);
       },
       visible: true,
@@ -150,10 +150,10 @@ export const Fieldset = (props: IFieldsetProps) => {
                 <Button
                   iconBefore={<MdAdd />}
                   spacing="compact"
-                  onClick={activeButton.onClickHuman}
+                  onClick={activeButton.onClickSistemValidation}
                   variant="outlined"
                 >
-                  {activeButton.titleHuman}
+                  {activeButton.titleSistemValidation}
                 </Button>
               </StyledPrint>
             )}

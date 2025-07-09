@@ -16,11 +16,14 @@ import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
 import { CreditRequest } from "@services/types";
 
-export const dataButton = (onClick: () => void, onClickHuman: () => void) => ({
-  title: "Agregar validación del sistema",
-  titleHuman: "Agregar validación humana",
+export const dataButton = (
+  onClick: () => void,
+  onClickSistemValidation: () => void
+) => ({
+  title: "Agregar validación humana",
+  titleSistemValidation: "Agregar validación del sistema",
   onClick,
-  onClickHuman,
+  onClickSistemValidation,
 });
 
 const receiveData = (data: IEntries) => {
@@ -74,7 +77,7 @@ export const textFlagsRequirements = {
 
 export const dataAddRequirement = {
   title: "Agregar requisito a esta solicitud",
-  titleJustification: "Justificación del requisito",
+  titleJustification: "Descripcion del requisito",
   descriptionJustification:
     "Lorem ipsum dolor sit amet consectetur adipiscing elit, primis turpis a donec dictum ad, urna eu sem malesuada mauris ac.",
   close: "Cerrar",
@@ -96,6 +99,10 @@ export const dataAddRequirement = {
   placeHolderJustification: "Justificación del requisito",
   yes: "Sí, aprobar requisito.",
   no: "No, aprobar requisito.",
+};
+export const justificationDescriptions: Record<string, string> = {
+  edad: "Se valida la edad mínima para el requisito",
+  antiguedad: "Se valida la antigüedad mínima para el requisito",
 };
 
 export const infoItems = [
