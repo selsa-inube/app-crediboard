@@ -108,6 +108,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const { addFlag } = useFlag();
   const [showAddSystemValidationModal, setShowAddSystemValidationModal] =
     useState(false);
+  const [seenDocuments, setSeenDocuments] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchRequirements = async () => {
@@ -181,21 +182,27 @@ export const Requirements = (props: IRequirementsProps) => {
   const renderAddIcon = (entry: IEntries, tableId: string) => {
     let isDisabled = false;
 
-    if (tableId === "tabla1") {
-      isDisabled =
-        !approvalSystemValues[entry.id] ||
-        (approvalSystemValues[entry.id].observations === "" &&
-          approvalSystemValues[entry.id].labelText === "");
-    } else if (tableId === "tabla2") {
-      isDisabled =
-        !approvalDocumentValues[entry.id] ||
-        (approvalDocumentValues[entry.id].observations === "" &&
-          approvalDocumentValues[entry.id].answer === "");
-    } else if (tableId === "tabla3") {
-      isDisabled =
-        !approvalHumanValues[entry.id] ||
-        (approvalHumanValues[entry.id].observations === "" &&
-          approvalHumanValues[entry.id].answer === "");
+    const label = isValidElement(entry?.tag) ? entry?.tag?.props?.label : "";
+
+    if (label === "Cumple") {
+      isDisabled = false;
+    } else {
+      if (tableId === "tabla1") {
+        isDisabled =
+          !approvalSystemValues[entry.id] ||
+          (approvalSystemValues[entry.id].observations === "" &&
+            approvalSystemValues[entry.id].labelText === "");
+      } else if (tableId === "tabla2") {
+        isDisabled =
+          !approvalDocumentValues[entry.id] ||
+          (approvalDocumentValues[entry.id].observations === "" &&
+            approvalDocumentValues[entry.id].answer === "");
+      } else if (tableId === "tabla3") {
+        isDisabled =
+          !approvalHumanValues[entry.id] ||
+          (approvalHumanValues[entry.id].observations === "" &&
+            approvalHumanValues[entry.id].answer === "");
+      }
     }
 
     return (
@@ -230,11 +237,12 @@ export const Requirements = (props: IRequirementsProps) => {
         size="32px"
         onClick={() => openApprovalsModal(tableId, entry.id)}
         disabled={
-          isValidElement(entry?.tag) && entry?.tag?.props?.label === "No Cumple"
+          isValidElement(entry?.tag) && entry?.tag?.props?.label === "Cumple"
         }
       />
     </Stack>
   );
+
   const handleAddRequirementAddSystemValidation = async () => {
     if (closeAdd) closeAdd();
   };
@@ -414,6 +422,22 @@ export const Requirements = (props: IRequirementsProps) => {
               [selectedEntryId]: values,
             }))
           }
+          question={(() => {
+            const entry = dataRequirements
+              .find((table) => table.id === "tabla1")
+              ?.entriesRequirements.find(
+                (entry) => entry.id === selectedEntryId
+              );
+
+            let label: string | undefined;
+            if (isValidElement(entry?.tag)) {
+              label = entry.tag.props?.label;
+            }
+
+            if (label === "Sin Evaluar") return "pudo evaluar?";
+            if (label === "No Cumple") return "cumple?";
+            return "";
+          })()}
         />
       )}
       {showAprovalsModal && selectedTableId === "tabla2" && selectedEntryId && (
@@ -443,6 +467,8 @@ export const Requirements = (props: IRequirementsProps) => {
               [selectedEntryId]: values,
             }))
           }
+          seenDocuments={seenDocuments}
+          setSeenDocuments={setSeenDocuments}
         />
       )}
       {showAprovalsModal && selectedTableId === "tabla3" && selectedEntryId && (
