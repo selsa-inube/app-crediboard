@@ -16,13 +16,13 @@ import {
 import { TextLabels } from "./config";
 
 export interface ExtraordinaryPaymentModalProps {
+  businessUnitPublicCode: string;
   dataTable: IExtraordinaryPayment[];
   prospectData?: IProspect;
-  sentData?: IExtraordinaryInstallments | null;
   setSentData: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallments | null>
   >;
-  businessUnitPublicCode: string;
+  sentData?: IExtraordinaryInstallments | null;
   handleClose: () => void;
   onClickDetails?: (id: string) => void;
   onClickEdit?: (id: string) => void;
@@ -114,6 +114,7 @@ export const ExtraordinaryPaymentModal = (
             setSeriesModal={setSeriesModal}
             setAddModal={setAddModal}
             selectedModal={selectedModal}
+            prospectData={prospectData}
           />
         )}
       </Stack>

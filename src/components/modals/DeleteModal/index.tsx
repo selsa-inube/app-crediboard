@@ -5,9 +5,9 @@ import { BaseModal } from "@components/modals/baseModal";
 import { DeleteData } from "./config";
 
 export interface IDeleteModalProps {
+  TextDelete: string;
   handleClose: () => void;
   handleDelete?: () => void;
-  TextDelete: string;
 }
 
 export function DeleteModal(props: IDeleteModalProps) {

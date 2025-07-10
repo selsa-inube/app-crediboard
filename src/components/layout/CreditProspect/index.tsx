@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FormikValues } from "formik";
 import {
@@ -36,7 +36,6 @@ import { getPropertyValue } from "@utils/mappingData/mappings";
 import { IProspect } from "@services/prospects/types";
 import { CreditLimitModal } from "@components/modals/CreditLimitModal";
 import { IExtraordinaryInstallments } from "@services/iProspect/saveExtraordinaryInstallments/types";
-import { AppContext } from "@context/AppContext";
 
 import { IncomeDebtor } from "./incomeDebtor";
 import { dataCreditProspect } from "./config";
@@ -46,13 +45,14 @@ import { IIncomeSources } from "./types";
 interface ICreditProspectProps {
   showMenu: () => void;
   isMobile: boolean;
-  prospectData?: IProspect;
-  isPrint?: boolean;
-  showPrint?: boolean;
+  businessUnitPublicCode: string;
   sentData: IExtraordinaryInstallments | null;
   setSentData: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallments | null>
   >;
+  prospectData?: IProspect;
+  isPrint?: boolean;
+  showPrint?: boolean;
   setRequestValue?: React.Dispatch<
     React.SetStateAction<IPaymentChannel[] | undefined>
   >;
@@ -67,6 +67,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     showPrint = true,
     sentData,
     setSentData,
+    businessUnitPublicCode,
   } = props;
 
   const [modalHistory, setModalHistory] = useState<string[]>([]);
@@ -77,9 +78,6 @@ export function CreditProspect(props: ICreditProspectProps) {
   const [incomeData, setIncomeData] = useState<Record<string, IIncomeSources>>(
     {}
   );
-  const { businessUnitSigla } = useContext(AppContext);
-  const businessUnitPublicCode: string =
-    JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 

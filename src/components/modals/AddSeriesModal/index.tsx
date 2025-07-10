@@ -26,6 +26,7 @@ import {
   IExtraordinaryInstallment,
   IExtraordinaryInstallments,
 } from "@services/iProspect/saveExtraordinaryInstallments/types";
+import { IProspect } from "@services/prospects/types";
 
 import { dataAddSeriesModal } from "./config";
 import { TextLabels } from "../ExtraordinaryPaymentModal/config";
@@ -61,6 +62,7 @@ export interface AddSeriesModalProps {
   >;
   sentData?: IExtraordinaryInstallments | null;
   selectedModal?: IExtraordinaryInstallment | null;
+  prospectData?: IProspect;
 }
 
 export function AddSeriesModal(props: AddSeriesModalProps) {
@@ -72,6 +74,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     setAddModal,
     installmentState,
     setInstallmentState,
+    prospectData,
   } = props;
 
   const { businessUnitSigla } = useContext(AppContext);
@@ -139,7 +142,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   };
 
   const initialValues: IExtraordinaryInstallments = {
-    creditProductCode: "SC-122254646-3",
+    creditProductCode:
+      prospectData?.creditProducts?.[0]?.creditProductCode || "",
     extraordinaryInstallments: [
       {
         installmentAmount: 0,
@@ -147,7 +151,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         paymentChannelAbbreviatedName: "",
       },
     ],
-    prospectId: "67f7e8f52c014414fca8b52d",
+    prospectId: prospectData?.prospectId || "",
   };
 
   const handleExtraordinaryInstallment = async (

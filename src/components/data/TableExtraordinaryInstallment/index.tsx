@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Text,
   SkeletonLine,
@@ -18,9 +18,9 @@ import { ActionMobile } from "@components/feedback/ActionMobile";
 import { EditSeriesModal } from "@components/modals/EditSeriesModal";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { IProspect } from "@services/prospects/types";
-import { AppContext } from "@context/AppContext";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { IExtraordinaryInstallments } from "@services/iProspect/removeExtraordinaryInstallments/types";
+import { TextLabels } from "@components/modals/ExtraordinaryPaymentModal/config";
 
 import { Detail } from "./Detail";
 import {
@@ -33,6 +33,7 @@ import { removeExtraordinaryInstallment } from "./utils";
 
 export interface TableExtraordinaryInstallmentProps {
   [key: string]: unknown;
+  businessUnitPublicCode?: string;
   prospectData?: IProspect;
   handleClose?: (() => void) | undefined;
   refreshKey?: number;
@@ -76,7 +77,13 @@ const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
 export const TableExtraordinaryInstallment = (
   props: TableExtraordinaryInstallmentProps
 ) => {
-  const { refreshKey, prospectData, handleClose, setSentData } = props;
+  const {
+    refreshKey,
+    prospectData,
+    handleClose,
+    setSentData,
+    businessUnitPublicCode,
+  } = props;
 
   const headers = headersTableExtraordinaryInstallment;
 
@@ -94,9 +101,6 @@ export const TableExtraordinaryInstallment = (
   const [loading, setLoading] = useState(true);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
-  const { businessUnitSigla } = useContext(AppContext);
-  const businessUnitPublicCode: string =
-    JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width:880px)");
 
@@ -174,7 +178,7 @@ export const TableExtraordinaryInstallment = (
   ) => {
     try {
       await removeExtraordinaryInstallment(
-        businessUnitPublicCode,
+        businessUnitPublicCode || "",
         extraordinaryInstallments
       );
 
@@ -192,7 +196,7 @@ export const TableExtraordinaryInstallment = (
         code + (err?.message || "") + (err?.data?.description || "");
 
       addFlag({
-        title: "aaa",
+        title: TextLabels.titleError,
         description,
         appearance: "danger",
         duration: 5000,

@@ -70,15 +70,15 @@ interface ComercialManagementProps {
   setSentData: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallments | null>
   >;
+  setRequestValue: React.Dispatch<
+    React.SetStateAction<IPaymentChannel[] | undefined>
+  >;
   print: () => void;
   id: string;
   isPrint?: boolean;
   hideContactIcons?: boolean;
   hasPermitRejection?: boolean;
   requestValue?: IPaymentChannel[];
-  setRequestValue: React.Dispatch<
-    React.SetStateAction<IPaymentChannel[] | undefined>
-  >;
 }
 
 export const ComercialManagement = (props: ComercialManagementProps) => {
@@ -551,6 +551,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   sentData={sentData}
                   setSentData={setSentData}
                   setRequestValue={setRequestValue}
+                  businessUnitPublicCode={businessUnitPublicCode}
                 />
               )}
             </Stack>
