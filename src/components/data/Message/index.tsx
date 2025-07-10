@@ -7,7 +7,7 @@ import {
   IconWrapper,
 } from "./styles";
 export interface MessageProps {
-  type: "sent" | "received";
+  type: "sent" | "received" | "system";
   timestamp: number | string;
   message: string;
   icon?: React.ReactNode;
@@ -28,10 +28,17 @@ export const Message: React.FC<MessageProps> = ({
   return (
     <MessageWrapper type={type}>
       <MessageContent type={type}>
-        <IconWrapper type={type} onClick={onIconClick} role="button">
-          {icon}
-        </IconWrapper>
+        {type === "sent" && (
+          <IconWrapper type={type} onClick={onIconClick} role="button">
+            {icon}
+          </IconWrapper>
+        )}
         {message}
+        {type !== "sent" && (
+          <IconWrapper type={type} onClick={onIconClick} role="button">
+            {icon}
+          </IconWrapper>
+        )}
       </MessageContent>
       <Timestamp type={type}>{formatDate(timestamp)}</Timestamp>
     </MessageWrapper>
