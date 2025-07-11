@@ -279,19 +279,19 @@ export const maperEntries = (data: CreditRequest): IEntries[][] => {
 export const maperDataRequirements = (processedEntries: IEntries[][]) => {
   return [
     {
-      id: "tabla1",
+      id: "tableApprovalSystem",
       titlesRequirements: titlesRequirements[0],
       entriesRequirements: processedEntries[0],
       actionsMovile: actionsMobile,
     },
     {
-      id: "tabla2",
+      id: "tableDocumentValues",
       titlesRequirements: titlesRequirements[1],
       entriesRequirements: processedEntries[1],
       actionsMovile: actionsMobile,
     },
     {
-      id: "tabla3",
+      id: "tableApprovalHuman",
       titlesRequirements: titlesRequirements[2],
       entriesRequirements: processedEntries[2],
       actionsMovile: actionsMobile,

@@ -187,17 +187,17 @@ export const Requirements = (props: IRequirementsProps) => {
     if (label === "Cumple") {
       isDisabled = false;
     } else {
-      if (tableId === "tabla1") {
+      if (tableId === "tableApprovalSystem") {
         isDisabled =
           !approvalSystemValues[entry.id] ||
           (approvalSystemValues[entry.id].observations === "" &&
             approvalSystemValues[entry.id].labelText === "");
-      } else if (tableId === "tabla2") {
+      } else if (tableId === "tableDocumentValues") {
         isDisabled =
           !approvalDocumentValues[entry.id] ||
           (approvalDocumentValues[entry.id].observations === "" &&
             approvalDocumentValues[entry.id].answer === "");
-      } else if (tableId === "tabla3") {
+      } else if (tableId === "tableApprovalHuman") {
         isDisabled =
           !approvalHumanValues[entry.id] ||
           (approvalHumanValues[entry.id].observations === "" &&
@@ -363,7 +363,7 @@ export const Requirements = (props: IRequirementsProps) => {
         )}
       </Fieldset>
       {showSeeDetailsModal &&
-        selectedTableId === "tabla1" &&
+        selectedTableId === "tableApprovalSystem" &&
         selectedEntryId && (
           <TraceDetailsModal
             isMobile={isMobile}
@@ -376,7 +376,7 @@ export const Requirements = (props: IRequirementsProps) => {
           />
         )}
       {showSeeDetailsModal &&
-        selectedTableId === "tabla2" &&
+        selectedTableId === "tableDocumentValues" &&
         selectedEntryId && (
           <TraceDetailsModal
             isMobile={isMobile}
@@ -393,7 +393,7 @@ export const Requirements = (props: IRequirementsProps) => {
           />
         )}
       {showSeeDetailsModal &&
-        selectedTableId === "tabla3" &&
+        selectedTableId === "tableApprovalHuman" &&
         selectedEntryId && (
           <TraceDetailsModal
             isMobile={isMobile}
@@ -405,7 +405,7 @@ export const Requirements = (props: IRequirementsProps) => {
             }}
           />
         )}
-      {showAprovalsModal && selectedTableId === "tabla1" && selectedEntryId && (
+      {showAprovalsModal && selectedTableId === "tableApprovalSystem" && selectedEntryId && (
         <ApprovalsModalSystem
           initialValues={
             approvalSystemValues[selectedEntryId] || {
@@ -424,7 +424,7 @@ export const Requirements = (props: IRequirementsProps) => {
           }
           question={(() => {
             const entry = dataRequirements
-              .find((table) => table.id === "tabla1")
+              .find((table) => table.id === "tableApprovalSystem")
               ?.entriesRequirements.find(
                 (entry) => entry.id === selectedEntryId
               );
@@ -440,7 +440,7 @@ export const Requirements = (props: IRequirementsProps) => {
           })()}
         />
       )}
-      {showAprovalsModal && selectedTableId === "tabla2" && selectedEntryId && (
+      {showAprovalsModal && selectedTableId === "tableDocumentValues" && selectedEntryId && (
         <ApprovalModalDocumentaries
           initialValues={
             approvalDocumentValues[selectedEntryId] || {
@@ -450,7 +450,7 @@ export const Requirements = (props: IRequirementsProps) => {
           }
           title={
             dataRequirements
-              .find((table) => table.id === "tabla2")
+              .find((table) => table.id === "tableDocumentValues")
               ?.entriesRequirements.find(
                 (entry) => entry.id === selectedEntryId
               )
@@ -471,7 +471,7 @@ export const Requirements = (props: IRequirementsProps) => {
           setSeenDocuments={setSeenDocuments}
         />
       )}
-      {showAprovalsModal && selectedTableId === "tabla3" && selectedEntryId && (
+      {showAprovalsModal && selectedTableId === "tableApprovalHuman" && selectedEntryId && (
         <ApprovalsModalHuman
           initialValues={
             approvalHumanValues[selectedEntryId] || {
