@@ -374,7 +374,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             )}
 
             {!isMobile && (
-              <Stack width="280px" alignItems="center">
+              <Stack width="280px" alignItems="center" gap="8px">
                 <Textfield
                   id="SearchCardsDesktop"
                   name="SearchCardsDesktop"
@@ -387,7 +387,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 />
                 <Icon
                   icon={<MdOutlineMicNone />}
-                  size="28px"
+                  size="26px"
                   appearance="primary"
                   cursorHover
                   onClick={() => {
@@ -521,7 +521,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
               <Stack direction="column" gap="24px">
                 <Text type="title" size="large">
                   {listening
-                    ? voiceSearchConfig.states.listening
+                    ? transcript || voiceSearchConfig.states.listening
                     : voiceSearchConfig.states.instruction}
                 </Text>
 
