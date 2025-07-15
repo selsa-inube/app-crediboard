@@ -2,11 +2,15 @@ import { useContext, useEffect, useRef, useState } from "react";
 import {
   MdOutlineFilterAlt,
   MdOutlineFilterAltOff,
+  MdOutlineMicNone,
   MdOutlinePushPin,
   MdSearch,
+  MdMic,
 } from "react-icons/md";
 import { RxDragHandleVertical, RxDragHandleHorizontal } from "react-icons/rx";
-
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 import {
   Stack,
   Icon,
@@ -31,7 +35,16 @@ import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getC
 import { AppContext } from "@context/AppContext";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { totalsKeyBySection } from "@components/layout/BoardSection/config";
+import { BaseModal } from "@components/modals/baseModal";
 
+import { selectCheckOptions } from "./config/select";
+import { IFilterFormValues } from ".";
+import { boardColumns, seePinned } from "./config/board";
+import {
+  speechRecognitionConfig,
+  textProcessingConfig,
+  voiceSearchConfig,
+} from "./config/voiceSearch";
 import {
   StyledInputsContainer,
   StyledBoardContainer,
@@ -39,11 +52,8 @@ import {
   StyledError,
   StyledSearch,
   StyledRequestsContainer,
+  StyledMic,
 } from "./styles";
-
-import { selectCheckOptions } from "./config/select";
-import { IFilterFormValues } from ".";
-import { boardColumns, seePinned } from "./config/board";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -62,7 +72,6 @@ interface BoardLayoutProps {
     userWhoPinnnedId: string,
     isPinned: string
   ) => void;
-
   handleShowPinnedOnly: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchRequestsValue: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onOrientationChange: (orientation: SectionOrientation) => void;
@@ -98,8 +107,15 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     onOrientationChange,
   } = props;
 
-  const [showErrorAlert, setShowErrorAlert] = useState(true);
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
 
+  const [showErrorAlert, setShowErrorAlert] = useState(true);
+  const [isShowModal, setIsShowModal] = useState(false);
   const { businessUnitSigla } = useContext(AppContext);
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
   const { addFlag } = useFlag();
@@ -107,6 +123,57 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const [isExpanded, setIsExpanded] = useState(false);
   const stackRef = useRef<HTMLDivElement>(null);
+
+  const startListening = () => {
+    resetTranscript();
+    SpeechRecognition.startListening({
+      continuous: speechRecognitionConfig.continuous,
+      language: speechRecognitionConfig.language,
+    });
+  };
+
+  const stopListening = () => {
+    SpeechRecognition.stopListening();
+  };
+
+  const handleMicClick = () => {
+    if (listening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  const processTranscript = (text: string) => {
+    const processedText = text.replace(
+      textProcessingConfig.numberSpaceRegex,
+      "$1$2"
+    );
+    return processedText.trim();
+  };
+
+  const applyVoiceSearch = () => {
+    if (transcript) {
+      stopListening();
+      const processedText = processTranscript(transcript);
+      const syntheticEvent = {
+        target: {
+          value: processedText,
+        },
+      } as React.ChangeEvent<HTMLInputElement>;
+
+      handleSearchRequestsValue(syntheticEvent);
+      resetTranscript();
+      setIsShowModal(false);
+    }
+  };
+
+  const cancelVoiceSearch = () => {
+    resetTranscript();
+    stopListening();
+    setIsShowModal(false);
+  };
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -160,7 +227,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     }, 3000);
 
     return () => clearTimeout(timeout);
-    //eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const normalizedTotalData = (result: ICreditRequestTotalsByStage) => {
@@ -195,11 +262,24 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     fetchTotals();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode]);
+
   const counterTotalsData = (value: string) => {
     if (totalsData) {
       return totalsData.find((item) => item.name === value)?.counter;
     }
   };
+
+  const handleCloseModal = () => {
+    cancelVoiceSearch();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (listening) {
+        SpeechRecognition.stopListening();
+      }
+    };
+  }, [listening]);
 
   return (
     <StyledContainerToCenter>
@@ -294,7 +374,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             )}
 
             {!isMobile && (
-              <Stack width="280px" alignItems="end">
+              <Stack width="280px" alignItems="center">
                 <Textfield
                   id="SearchCardsDesktop"
                   name="SearchCardsDesktop"
@@ -304,6 +384,15 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   value={searchRequestValue}
                   onChange={handleSearchRequestsValue}
                   fullwidth
+                />
+                <Icon
+                  icon={<MdOutlineMicNone />}
+                  size="28px"
+                  appearance="primary"
+                  cursorHover
+                  onClick={() => {
+                    setIsShowModal(true);
+                  }}
                 />
               </Stack>
             )}
@@ -420,6 +509,47 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           })}
         </StyledBoardContainer>
 
+        {isShowModal &&
+          (browserSupportsSpeechRecognition ? (
+            <BaseModal
+              title={voiceSearchConfig.modal.title}
+              width={voiceSearchConfig.modal.width}
+              handleClose={handleCloseModal}
+              handleNext={applyVoiceSearch}
+              nextButton={voiceSearchConfig.modal.buttons.apply}
+            >
+              <Stack direction="column" gap="24px">
+                <Text type="title" size="large">
+                  {listening
+                    ? voiceSearchConfig.states.listening
+                    : voiceSearchConfig.states.instruction}
+                </Text>
+
+                <Stack justifyContent="center">
+                  <StyledMic>
+                    <Icon
+                      icon={listening ? <MdMic /> : <MdOutlineMicNone />}
+                      size="58px"
+                      appearance={listening ? "danger" : "primary"}
+                      shape="circle"
+                      variant="filled"
+                      spacing="compact"
+                      cursorHover
+                      onClick={handleMicClick}
+                    />
+                  </StyledMic>
+                </Stack>
+              </Stack>
+            </BaseModal>
+          ) : (
+            <BaseModal
+              title={voiceSearchConfig.errors.notSupported.title}
+              width={voiceSearchConfig.modal.width}
+              handleClose={handleCloseModal}
+            >
+              <Text>{voiceSearchConfig.errors.notSupported.message}</Text>
+            </BaseModal>
+          ))}
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
     </StyledContainerToCenter>

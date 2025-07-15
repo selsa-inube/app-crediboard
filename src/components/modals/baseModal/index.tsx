@@ -16,10 +16,10 @@ import { StyledContainer, StyledContainerClose } from "./styles";
 import { dataBaseModal } from "./config";
 
 export interface IBaseModalProps {
-  handleNext: () => void;
   title: string;
-  nextButton: string;
   children: JSX.Element | JSX.Element[];
+  nextButton?: string;
+  handleNext?: () => void;
   handleBack?: () => void;
   handleClose?: () => void;
   width?: string;
