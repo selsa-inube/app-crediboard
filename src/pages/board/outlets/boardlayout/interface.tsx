@@ -73,6 +73,7 @@ interface BoardLayoutProps {
   handleClearFilters: () => void;
   handleRemoveFilter: (filterIdToRemove: string) => void;
   isMenuOpen: boolean;
+  filterValues: IFilterFormValues;
 }
 
 function BoardLayoutUI(props: BoardLayoutProps) {
@@ -88,6 +89,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     pinnedRequests,
     errorLoadingPins,
     activeOptions,
+    filterValues,
     closeFilterModal,
     handleLoadMoreData,
     handlePinRequest,
@@ -101,12 +103,15 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const [showErrorAlert, setShowErrorAlert] = useState(true);
 
   const { businessUnitSigla } = useContext(AppContext);
+
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
   const { addFlag } = useFlag();
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const [isExpanded, setIsExpanded] = useState(false);
+
   const stackRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -290,9 +295,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 selectedFilters={activeOptions}
                 onCloseModal={closeFilterModal}
                 onRemoveFilter={handleRemoveFilter}
+                initialValues={filterValues}
               />
             )}
-
             {!isMobile && (
               <Stack width="280px" alignItems="end">
                 <Textfield
@@ -307,7 +312,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 />
               </Stack>
             )}
-
             {!isMobile && (
               <StyledRequestsContainer $isMobile={isMobile}>
                 <SelectedFilters
@@ -337,7 +341,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 </Button>
               </StyledRequestsContainer>
             )}
-
             <Stack alignItems="center">
               <Stack gap="16px">
                 {!isMobile && (

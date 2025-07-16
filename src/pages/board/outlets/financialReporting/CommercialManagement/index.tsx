@@ -19,6 +19,7 @@ import {
   useMediaQuery,
   Button,
   useFlag,
+  Select,
 } from "@inubekit/inubekit";
 
 import { ICreditRequest, IModeOfDisbursement } from "@services/types";
@@ -47,7 +48,7 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
-import { menuOptions, tittleOptions } from "./config/config";
+import { incomeOptions, menuOptions, tittleOptions } from "./config/config";
 import {
   StyledCollapseIcon,
   StyledFieldset,
@@ -55,6 +56,12 @@ import {
   StyledVerticalDivider,
   StyledPrint,
 } from "./styles";
+import { CreditLimitModal } from "@components/modals/CreditLimitModal";
+import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
+import { dataCreditProspect } from "@components/layout/CreditProspect/config";
+import { IIncomeSources } from "@components/layout/CreditProspect/types";
+import { IncomeDebtor } from "@components/layout/CreditProspect/incomeDebtor";
+import { IncomeModal } from "@components/modals/IncomeModal";
 
 interface ComercialManagementProps {
   data: ICreditRequest;
@@ -95,8 +102,26 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   const [checkManagement, setCheckManagement] =
     useState<IModeOfDisbursement | null>(null);
   const [cash, setCash] = useState<IModeOfDisbursement | null>(null);
-
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
+  const [dataProspect, setDataProspect] = useState<IProspect[]>([]);
+  const [incomeData, setIncomeData] = useState<Record<string, IIncomeSources>>(
+    {}
+  );
+  const [openModal, setOpenModal] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+  const [form, setForm] = useState({
+    borrower: "",
+    monthlySalary: 0,
+    otherMonthlyPayments: 0,
+    pensionAllowances: 0,
+    leases: 0,
+    dividendsOrShares: 0,
+    financialReturns: 0,
+    averageMonthlyProfit: 0,
+    monthlyFees: 0,
+    total: undefined,
+  });
 
   const navigation = useNavigate();
   const { addFlag } = useFlag();
@@ -218,6 +243,132 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     accountType: "",
     accountNumber: "",
     observation: "",
+  };
+
+  const onChangesReportCredit = (name: string, newValue: string) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: newValue,
+    }));
+  };
+
+  const borrowersProspect =
+    dataProspect.length > 0 ? dataProspect[0] : undefined;
+
+  const selectedBorrower = borrowersProspect?.borrowers?.[selectedIndex];
+
+  const handleIncomeSubmit = (updatedData: IIncomeSources) => {
+    if (selectedBorrower) {
+      const borrowerName = selectedBorrower.borrowerName;
+
+      setIncomeData((prev) => ({
+        ...prev,
+        [borrowerName]: {
+          ...updatedData,
+          edited: true,
+        },
+      }));
+
+      setDataProspect((prev) => {
+        return prev.map((prospect) => {
+          const updatedBorrowers = prospect.borrowers.map((borrower) => {
+            if (borrower.borrowerName === borrowerName) {
+              const updatedProperties = [
+                ...borrower.borrowerProperties.filter(
+                  (prop) =>
+                    ![
+                      "PeriodicSalary",
+                      "OtherNonSalaryEmoluments",
+                      "PensionAllowances",
+                      "PersonalBusinessUtilities",
+                      "ProfessionalFees",
+                      "Leases",
+                      "Dividends",
+                      "FinancialIncome",
+                      "name",
+                      "surname",
+                    ].includes(prop.propertyName)
+                ),
+                {
+                  propertyName: "PeriodicSalary",
+                  propertyValue: updatedData.PeriodicSalary?.toString() || "0",
+                },
+                {
+                  propertyName: "OtherNonSalaryEmoluments",
+                  propertyValue:
+                    updatedData.OtherNonSalaryEmoluments?.toString() || "0",
+                },
+                {
+                  propertyName: "PensionAllowances",
+                  propertyValue:
+                    updatedData.PensionAllowances?.toString() || "0",
+                },
+                {
+                  propertyName: "PersonalBusinessUtilities",
+                  propertyValue:
+                    updatedData.PersonalBusinessUtilities?.toString() || "0",
+                },
+                {
+                  propertyName: "ProfessionalFees",
+                  propertyValue:
+                    updatedData.ProfessionalFees?.toString() || "0",
+                },
+                {
+                  propertyName: "Leases",
+                  propertyValue: updatedData.Leases?.toString() || "0",
+                },
+                {
+                  propertyName: "Dividends",
+                  propertyValue: updatedData.Dividends?.toString() || "0",
+                },
+                {
+                  propertyName: "FinancialIncome",
+                  propertyValue: updatedData.FinancialIncome?.toString() || "0",
+                },
+                {
+                  propertyName: "name",
+                  propertyValue: updatedData.name || "",
+                },
+                {
+                  propertyName: "surname",
+                  propertyValue: updatedData.surname || "",
+                },
+              ];
+
+              return {
+                ...borrower,
+                borrowerProperties: updatedProperties,
+              };
+            }
+            return borrower;
+          });
+
+          return {
+            ...prospect,
+            borrowers: updatedBorrowers,
+          };
+        });
+      });
+      setOpenModal(null);
+    }
+  };
+
+  const borrowerOptions =
+    borrowersProspect?.borrowers?.map((borrower) => ({
+      id: crypto.randomUUID(),
+      label: borrower.borrowerName,
+      value: borrower.borrowerName,
+    })) ?? [];
+
+  useEffect(() => {
+    setDataProspect(prospectData ? [prospectData] : []);
+  }, [prospectData]);
+
+  const handleChangeIncome = (_name: string, value: string) => {
+    const index = borrowersProspect?.borrowers?.findIndex(
+      (borrower) => borrower.borrowerName === value
+    );
+    setSelectedIndex(index ?? 0);
   };
 
   return (
@@ -535,10 +686,90 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 />
               )}
             </Stack>
+            //
+            {currentModal === "creditLimit" && (
+              <CreditLimitModal
+                isMobile={isMobile}
+                handleClose={handleCloseModal}
+                setRequestValue={() => {}}
+              />
+            )}
+            {currentModal === "IncomeModal" && (
+              <BaseModal
+                title={dataCreditProspect.incomeSources}
+                nextButton={dataCreditProspect.close}
+                handleNext={handleCloseModal}
+                handleClose={handleCloseModal}
+                width={isMobile ? "290px" : "auto"}
+              >
+                {borrowersProspect ? (
+                  <>
+                    <Stack
+                      justifyContent="space-between"
+                      direction={isMobile ? "column" : "row"}
+                      alignItems={isMobile ? "start" : "end"}
+                      width="400px"
+                      gap="16px"
+                    >
+                      <Select
+                        label="Deudor"
+                        id="borrower"
+                        name="borrower"
+                        options={borrowerOptions}
+                        value={borrowerOptions[selectedIndex]?.value}
+                        onChange={handleChangeIncome}
+                        size="compact"
+                      />
+                      <Button
+                        onClick={() => {
+                          handleCloseModal();
+                          setOpenModal("IncomeModalEdit");
+                        }}
+                      >
+                        {dataCreditProspect.edit}
+                      </Button>
+                    </Stack>
+                    <IncomeDebtor
+                      initialValues={
+                        dataProspect[0]?.borrowers?.find(
+                          (b) =>
+                            b.borrowerName ===
+                            borrowerOptions[selectedIndex]?.value
+                        ) || selectedBorrower
+                      }
+                    />
+                  </>
+                ) : (
+                  <Stack width={isMobile ? "300px" : "400px"}>
+                    <Text>{dataCreditProspect.noDataIncome}</Text>
+                  </Stack>
+                )}
+              </BaseModal>
+            )}
+            {currentModal === "reportCreditsModal" && (
+              <ReportCreditsModal
+                onChange={onChangesReportCredit}
+                debtor={form.borrower}
+                handleClose={handleCloseModal}
+                prospectData={prospectData ? [prospectData] : undefined}
+                options={incomeOptions}
+              />
+            )}
             {currentModal === "extraPayments" && (
               <ExtraordinaryPaymentModal
                 dataTable={extraordinaryInstallmentMock}
                 handleClose={handleCloseModal}
+              />
+            )}
+            {openModal === "IncomeModalEdit" && (
+              <IncomeModal
+                handleClose={() => setOpenModal(null)}
+                initialValues={
+                  (selectedBorrower &&
+                    incomeData[selectedBorrower.borrowerName]) ||
+                  {}
+                }
+                onSubmit={handleIncomeSubmit}
               />
             )}
             {currentModal === "disbursementModal" && (

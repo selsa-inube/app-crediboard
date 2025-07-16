@@ -9,7 +9,9 @@ import {
 } from "./styles";
 import { useSelectedFilters, SelectedFiltersProps } from "./interface";
 
-function SelectedFilters({ filters, onRemove }: SelectedFiltersProps) {
+function SelectedFilters(props: SelectedFiltersProps) {
+  const { filters, onRemove } = props;
+
   const {
     containerRef,
     visibleFilters,
@@ -33,7 +35,6 @@ function SelectedFilters({ filters, onRemove }: SelectedFiltersProps) {
               onClose={() => handleRemoveFilter(filter.id)}
             />
           ))}
-
           {hiddenFilters.length > 0 && (
             <MoreFiltersWrapper
               onClick={() => setShowHiddenFilters((prev) => !prev)}

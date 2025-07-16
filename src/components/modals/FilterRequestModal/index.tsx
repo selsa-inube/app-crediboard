@@ -32,6 +32,7 @@ export interface FilterRequestModalProps {
   assignmentOptions?: IOption[];
   statusOptions?: IOption[];
   selectedFilters?: Filter[];
+  initialValues?: IFilterFormValues;
   onCloseModal?: () => void;
   onSubmit?: (values: IFilterFormValues) => void;
   onClearFilters?: () => void;
@@ -43,6 +44,7 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
     portalId = "portal",
     assignmentOptions = [],
     selectedFilters = [],
+    initialValues,
     onCloseModal,
     onSubmit,
     onClearFilters,
@@ -64,9 +66,10 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
 
   const formik = useFormik<FormValues>({
     initialValues: {
-      assignment: "",
-      status: "",
+      assignment: initialValues?.assignment ?? "",
+      status: initialValues?.status ?? "",
     },
+    enableReinitialize: true,
     validationSchema,
     onSubmit: () => {
       console.log("Form submitted");

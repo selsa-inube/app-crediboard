@@ -438,6 +438,7 @@ export const FinancialReporting = () => {
             handleNext={() => {
               handleSubmit();
               setShowRejectModal(false);
+              navigation("/");
             }}
             onChange={(e) => setRemovalJustification(e.target.value)}
           />
