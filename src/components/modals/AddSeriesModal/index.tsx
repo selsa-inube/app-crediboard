@@ -102,22 +102,20 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
     if (name === "installmentDate") {
       const parsedDate = new Date(value);
-      const isDate = !isNaN(parsedDate.getTime())
-        ? parsedDate.toISOString()
-        : "";
-
+      const isValidDate = !isNaN(parsedDate.getTime());
+      const dateString = isValidDate ? parsedDate.toISOString() : "";
       const selected = seriesModal?.find((s) => s.installmentDate === value);
 
       if (selected && setAddModal && setInstallmentState) {
         setAddModal(selected);
         setInstallmentState((prev) => ({
           ...prev,
-          installmentDate: isDate || selected.installmentDate,
+          installmentDate: dateString || selected.installmentDate,
         }));
       } else if (setInstallmentState) {
         setInstallmentState((prev) => ({
           ...prev,
-          installmentDate: isDate,
+          installmentDate: dateString,
         }));
       }
     }
@@ -251,10 +249,10 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           id="value"
           label={dataAddSeriesModal.labelAmount}
           placeholder={dataAddSeriesModal.placeHolderAmount}
-          onChange={(event) => {
+          onChange={(e) => {
             handleChangeWithCurrency(
               { setFieldValue: formik.setFieldValue },
-              event
+              e
             );
           }}
           value={formik.values.value}
@@ -268,11 +266,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           label={dataAddSeriesModal.labelValue}
           placeholder={dataAddSeriesModal.placeHolderValue}
           iconBefore={<MdOutlineAttachMoney color={inube.palette.green.G400} />}
-          onChange={(event) =>
-            handleInstallmentAmountChange(
-              "installmentAmount",
-              event.target.value
-            )
+          onChange={(e) =>
+            handleInstallmentAmountChange("installmentAmount", e.target.value)
           }
           value={
             installmentState?.installmentAmount &&

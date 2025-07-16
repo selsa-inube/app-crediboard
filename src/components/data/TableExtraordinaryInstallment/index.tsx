@@ -118,29 +118,56 @@ export const TableExtraordinaryInstallment = (
 
   useEffect(() => {
     if (prospectData?.creditProducts) {
-      const extraordinaryInstallmentsUpdate = prospectData.creditProducts
-        .flatMap((product) =>
+      const extraordinaryInstallmentsFlat = prospectData.creditProducts.flatMap(
+        (product) =>
           Array.isArray(product.extraordinaryInstallments)
             ? product.extraordinaryInstallments.map((installment) => ({
-                id: `${product.creditProductCode},${installment.installmentDate}`,
+                id: `${product.creditProductCode},${installment.installmentDate},${installment.paymentChannelAbbreviatedName}`,
                 datePayment: installment.installmentDate,
                 value: installment.installmentAmount,
                 paymentMethod: installment.paymentChannelAbbreviatedName,
+                creditProductCode: product.creditProductCode,
               }))
             : []
-        )
-        .reverse();
+      );
+      const installmentsByUniqueKey = extraordinaryInstallmentsFlat.reduce(
+        (
+          installmentsAccumulator: Record<
+            string,
+            TableExtraordinaryInstallmentProps
+          >,
+          currentInstallment
+        ) => {
+          const uniqueKey = `${currentInstallment.creditProductCode}_${currentInstallment.datePayment}_${currentInstallment.paymentMethod}`;
+
+          if (installmentsAccumulator[uniqueKey]) {
+            installmentsAccumulator[uniqueKey].value =
+              (installmentsAccumulator[uniqueKey].value as number) +
+              (currentInstallment.value as number);
+          } else {
+            installmentsAccumulator[uniqueKey] = { ...currentInstallment };
+          }
+
+          return installmentsAccumulator;
+        },
+        {}
+      );
+
+      const extraordinaryInstallmentsUpdate = Object.values(
+        installmentsByUniqueKey
+      ).reverse() as TableExtraordinaryInstallmentProps[];
+
       setExtraordinaryInstallments(extraordinaryInstallmentsUpdate);
     }
     setLoading(false);
   }, [prospectData, refreshKey]);
 
-  const initialValues: IExtraordinaryInstallments = {
+  const itemIdentifiersForUpdate: IExtraordinaryInstallments = {
     creditProductCode: prospectData?.creditProducts[0].creditProductCode || "",
     extraordinaryInstallments:
       prospectData?.creditProducts[0]?.extraordinaryInstallments
         ?.filter((ins) => {
-          const expectedId = `${prospectData?.creditProducts[0].creditProductCode},${ins.installmentDate}`;
+          const expectedId = `${prospectData?.creditProducts[0].creditProductCode},${ins.installmentDate},${ins.paymentChannelAbbreviatedName}`;
           return expectedId === selectedDebtor?.id;
         })
         ?.map((installment) => ({
@@ -155,6 +182,7 @@ export const TableExtraordinaryInstallment = (
         })) || [],
     prospectId: prospectData?.prospectId || "",
   };
+
   const handleExtraordinaryInstallment = async (
     extraordinaryInstallments: IExtraordinaryInstallments
   ) => {
@@ -312,7 +340,7 @@ export const TableExtraordinaryInstallment = (
       {isOpenModalDelete && (
         <DeleteModal
           handleClose={() => setIsOpenModalDelete(false)}
-          handleDelete={() => handleExtraordinaryInstallment(initialValues)}
+          handleDelete={() => handleExtraordinaryInstallment(itemIdentifiersForUpdate)}
           TextDelete={dataTableExtraordinaryInstallment.content}
         />
       )}
