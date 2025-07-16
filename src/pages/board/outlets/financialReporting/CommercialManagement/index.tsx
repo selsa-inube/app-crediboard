@@ -48,7 +48,7 @@ import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { IExtraordinaryInstallments } from "@services/iProspect/saveExtraordinaryInstallments/types";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";

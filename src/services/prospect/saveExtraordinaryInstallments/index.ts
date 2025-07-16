@@ -4,8 +4,8 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IExtraordinaryInstallments } from "./types";
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
+import { IExtraordinaryInstallments } from "../types/extraordInaryInstallments";
 
 export const saveExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,

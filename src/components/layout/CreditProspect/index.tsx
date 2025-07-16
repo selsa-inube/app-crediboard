@@ -35,7 +35,7 @@ import { CardCommercialManagement } from "@pages/board/outlets/financialReportin
 import { getPropertyValue } from "@utils/mappingData/mappings";
 import { IProspect } from "@services/prospects/types";
 import { CreditLimitModal } from "@components/modals/CreditLimitModal";
-import { IExtraordinaryInstallments } from "@services/iProspect/saveExtraordinaryInstallments/types";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 
 import { IncomeDebtor } from "./incomeDebtor";
 import { dataCreditProspect } from "./config";

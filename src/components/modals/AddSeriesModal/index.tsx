@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import {
   Select,
@@ -25,7 +25,7 @@ import { AppContext } from "@context/AppContext";
 import {
   IExtraordinaryInstallment,
   IExtraordinaryInstallments,
-} from "@services/iProspect/saveExtraordinaryInstallments/types";
+} from "@services/prospect/types/extraordInaryInstallments";
 import { IProspect } from "@services/prospects/types";
 
 import { dataAddSeriesModal } from "./config";
@@ -97,12 +97,12 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     },
   });
 
-  const handleGenericSelectChange = (name: string, value: string) => {
+  const handleFieldChange = (name: string, value: string) => {
     formik.setFieldValue(name, value);
 
     if (name === "installmentDate") {
       const parsedDate = new Date(value);
-      const isoDate = !isNaN(parsedDate.getTime())
+      const isDate = !isNaN(parsedDate.getTime())
         ? parsedDate.toISOString()
         : "";
 
@@ -112,12 +112,12 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         setAddModal(selected);
         setInstallmentState((prev) => ({
           ...prev,
-          installmentDate: isoDate || selected.installmentDate,
+          installmentDate: isDate || selected.installmentDate,
         }));
       } else if (setInstallmentState) {
         setInstallmentState((prev) => ({
           ...prev,
-          installmentDate: isoDate,
+          installmentDate: isDate,
         }));
       }
     }
@@ -215,17 +215,6 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     handleExtraordinaryInstallment(updatedValues);
   };
 
-  useEffect(() => {
-    if (setInstallmentState) {
-      setInstallmentState({
-        installmentAmount: 0,
-        installmentDate: "",
-        paymentChannelAbbreviatedName: "",
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <BaseModal
       title={dataAddSeriesModal.title}
@@ -251,7 +240,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           placeholder={dataAddSeriesModal.placeHolderSelect}
           options={paymentMethodOptionsMock}
           value={formik.values.paymentChannelAbbreviatedName}
-          onChange={(name, value) => handleGenericSelectChange(name, value)}
+          onChange={(name, value) => handleFieldChange(name, value)}
           size="wide"
           fullwidth
           required
@@ -262,10 +251,10 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           id="value"
           label={dataAddSeriesModal.labelAmount}
           placeholder={dataAddSeriesModal.placeHolderAmount}
-          onChange={(e) => {
+          onChange={(event) => {
             handleChangeWithCurrency(
               { setFieldValue: formik.setFieldValue },
-              e
+              event
             );
           }}
           value={formik.values.value}
@@ -279,8 +268,11 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           label={dataAddSeriesModal.labelValue}
           placeholder={dataAddSeriesModal.placeHolderValue}
           iconBefore={<MdOutlineAttachMoney color={inube.palette.green.G400} />}
-          onChange={(e) =>
-            handleInstallmentAmountChange("installmentAmount", e.target.value)
+          onChange={(event) =>
+            handleInstallmentAmountChange(
+              "installmentAmount",
+              event.target.value
+            )
           }
           value={
             installmentState?.installmentAmount &&
@@ -311,7 +303,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           placeholder={dataAddSeriesModal.placeHolderSelect}
           options={paymentDateOptionsMock}
           value={formik.values.installmentDate}
-          onChange={(name, value) => handleGenericSelectChange(name, value)}
+          onChange={(name, value) => handleFieldChange(name, value)}
           size="wide"
           required
           fullwidth

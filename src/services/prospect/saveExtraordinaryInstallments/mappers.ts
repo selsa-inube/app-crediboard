@@ -1,7 +1,7 @@
-import { IExtraordinaryInstallments } from "./types";
+import { IExtraordinaryInstallments } from "../types/extraordInaryInstallments";
 
 const mapExtraordinaryInstallmentsEntity = (
-  data: IExtraordinaryInstallments,
+  data: IExtraordinaryInstallments
 ): IExtraordinaryInstallments => {
   const creditRequest: IExtraordinaryInstallments = {
     creditProductCode: String(data.creditProductCode || ""),

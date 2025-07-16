@@ -4,10 +4,10 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IExtraordinaryInstallments } from "./types";
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
+import { IExtraordinaryInstallments } from "../types/extraordInaryInstallments";
 
-export const updateExtraordinaryInstallments = async (
+export const removeExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string
 ): Promise<IExtraordinaryInstallments | undefined> => {
@@ -21,7 +21,7 @@ export const updateExtraordinaryInstallments = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "UpdateExtraordinaryInstallments",
+          "X-Action": "RemoveExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -62,7 +62,7 @@ export const updateExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo actualizar los Pagos Extras"
+          "Todos los intentos fallaron. No se pudo eliminar los Pagos Extras."
         );
       }
     }

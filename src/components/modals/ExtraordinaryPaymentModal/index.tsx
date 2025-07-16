@@ -3,7 +3,6 @@ import { MdOutlineAdd } from "react-icons/md";
 import { Stack, Icon, useMediaQuery, Button } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-
 import { IExtraordinaryPayment } from "@services/types";
 import { IProspect } from "@services/prospects/types";
 import { AddSeriesModal } from "@components/modals/AddSeriesModal";
@@ -11,7 +10,7 @@ import { TableExtraordinaryInstallment } from "@components/data/TableExtraordina
 import {
   IExtraordinaryInstallment,
   IExtraordinaryInstallments,
-} from "@services/iProspect/saveExtraordinaryInstallments/types";
+} from "@services/prospect/types/extraordInaryInstallments";
 
 import { TextLabels } from "./config";
 
@@ -49,6 +48,11 @@ export const ExtraordinaryPaymentModal = (
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const openAddSeriesModal = () => {
+    setInstallmentState({
+      installmentAmount: 0,
+      installmentDate: "",
+      paymentChannelAbbreviatedName: "",
+    });
     setAddSeriesModalOpen(true);
   };
   const [seriesModal, setSeriesModal] = useState<IExtraordinaryInstallment[]>(

@@ -17,7 +17,7 @@ import {
   IDeleteCreditRequest,
   IPaymentChannel,
 } from "@services/types";
-import { IExtraordinaryInstallments } from "@services/iProspect/saveExtraordinaryInstallments/types";
+
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { getUnreadErrorsById } from "@services/credit-request/command/unreadErrors";
 import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
@@ -32,6 +32,7 @@ import {
 } from "@config/pages/staffModal/addFlag";
 import { getSearchProspectByCode } from "@services/prospects/ProspectByCode";
 import { IProspect } from "@services/prospects/types";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";

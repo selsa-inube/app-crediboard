@@ -1,25 +1,14 @@
-import { removeExtraordinaryInstallments } from "@services/iProspect/removeExtraordinaryInstallments";
-import { updateExtraordinaryInstallments } from "@services/iProspect/updateExtraordinaryInstallments";
-import { IExtraordinaryInstallments } from "@services/iProspect/removeExtraordinaryInstallments/types";
+import { removeExtraordinaryInstallments } from "@services/prospect/removeExtraordinaryInstallments";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 
 const removeExtraordinaryInstallment = (
   businessUnitPublicCode: string,
-  extraordinaryInstallments: IExtraordinaryInstallments,
+  extraordinaryInstallments: IExtraordinaryInstallments
 ) => {
   return removeExtraordinaryInstallments(
     extraordinaryInstallments,
-    businessUnitPublicCode,
+    businessUnitPublicCode
   );
 };
 
-const updateExtraordinaryInstallment = (
-  businessUnitPublicCode: string,
-  extraordinaryInstallments: IExtraordinaryInstallments,
-) => {
-  return updateExtraordinaryInstallments(
-    extraordinaryInstallments,
-    businessUnitPublicCode,
-  );
-};
-
-export { removeExtraordinaryInstallment, updateExtraordinaryInstallment };
+export { removeExtraordinaryInstallment };

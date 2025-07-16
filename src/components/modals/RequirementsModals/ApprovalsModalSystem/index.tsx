@@ -62,8 +62,8 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
           <Stack>
             <Toggle
               checked={formik.values.toggleChecked}
-              onChange={(e) => {
-                const checked = e.target.checked;
+              onChange={(event) => {
+                const checked = event.target.checked;
                 formik.setFieldValue("toggleChecked", checked);
                 formik.setFieldValue(
                   "labelText",

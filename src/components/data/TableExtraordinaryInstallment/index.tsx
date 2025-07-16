@@ -15,11 +15,11 @@ import {
 } from "@inubekit/inubekit";
 
 import { ActionMobile } from "@components/feedback/ActionMobile";
-import { EditSeriesModal } from "@components/modals/EditSeriesModal";
+
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { IProspect } from "@services/prospects/types";
 import { DeleteModal } from "@components/modals/DeleteModal";
-import { IExtraordinaryInstallments } from "@services/iProspect/removeExtraordinaryInstallments/types";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 import { TextLabels } from "@components/modals/ExtraordinaryPaymentModal/config";
 
 import { Detail } from "./Detail";
@@ -93,14 +93,9 @@ export const TableExtraordinaryInstallment = (
   const [selectedDebtor, setSelectedDebtor] =
     useState<TableExtraordinaryInstallmentProps>({});
 
-  const handleEdit = (debtor: TableExtraordinaryInstallmentProps) => {
-    setSelectedDebtor(debtor);
-    setIsOpenModalEdit(true);
-  };
-
   const [loading, setLoading] = useState(true);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
-  const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
+
   const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width:880px)");
 
@@ -140,19 +135,6 @@ export const TableExtraordinaryInstallment = (
     setLoading(false);
   }, [prospectData, refreshKey]);
 
-  const handleUpdate = async (
-    updatedDebtor: TableExtraordinaryInstallmentProps
-  ) => {
-    try {
-      const updatedExtraordinaryInstallments = extraordinaryInstallments.map(
-        (debtor) => (debtor.id === updatedDebtor.id ? updatedDebtor : debtor)
-      );
-      setExtraordinaryInstallments(updatedExtraordinaryInstallments);
-      setIsOpenModalEdit(false);
-    } catch (error) {
-      console.error("Error updating debtor:", error);
-    }
-  };
   const initialValues: IExtraordinaryInstallments = {
     creditProductCode: prospectData?.creditProducts[0].creditProductCode || "",
     extraordinaryInstallments:
@@ -274,11 +256,9 @@ export const TableExtraordinaryInstallment = (
                     {isMobile ? (
                       <ActionMobile
                         handleDelete={() => setIsOpenModalDelete(true)}
-                        handleEdit={() => handleEdit(row)}
                       />
                     ) : (
                       <Detail
-                        handleEdit={() => handleEdit(row)}
                         handleDelete={() => {
                           setSelectedDebtor(row);
                           setIsOpenModalDelete(true);
@@ -334,19 +314,6 @@ export const TableExtraordinaryInstallment = (
           handleClose={() => setIsOpenModalDelete(false)}
           handleDelete={() => handleExtraordinaryInstallment(initialValues)}
           TextDelete={dataTableExtraordinaryInstallment.content}
-        />
-      )}
-      {isOpenModalEdit && (
-        <EditSeriesModal
-          handleClose={() => setIsOpenModalEdit(false)}
-          onSubmit={() => setIsOpenModalEdit(false)}
-          onConfirm={async (updatedDebtor) => {
-            await handleUpdate(updatedDebtor);
-          }}
-          prospectData={prospectData}
-          selectedDebtor={selectedDebtor}
-          setSentData={setSentData}
-          businessUnitPublicCode={businessUnitPublicCode}
         />
       )}
     </Table>
