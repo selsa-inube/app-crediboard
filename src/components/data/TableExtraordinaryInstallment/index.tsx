@@ -11,13 +11,16 @@ import {
   Th,
   Thead,
   Tr,
+  useFlag,
 } from "@inubekit/inubekit";
 
 import { ActionMobile } from "@components/feedback/ActionMobile";
-import { ListModal } from "@components/modals/ListModal";
-import { EditSeriesModal } from "@components/modals/EditSeriesModal";
+
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { IProspect } from "@services/prospects/types";
+import { DeleteModal } from "@components/modals/DeleteModal";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { TextLabels } from "@components/modals/ExtraordinaryPaymentModal/config";
 
 import { Detail } from "./Detail";
 import {
@@ -26,12 +29,18 @@ import {
   rowsActions,
   dataTableExtraordinaryInstallment,
 } from "./config";
+import { removeExtraordinaryInstallment } from "./utils";
 
 export interface TableExtraordinaryInstallmentProps {
   [key: string]: unknown;
+  businessUnitPublicCode?: string;
   prospectData?: IProspect;
+  handleClose?: (() => void) | undefined;
   refreshKey?: number;
   id?: string;
+  setSentData?:
+    | React.Dispatch<React.SetStateAction<IExtraordinaryInstallments | null>>
+    | undefined;
 }
 
 const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
@@ -68,7 +77,13 @@ const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
 export const TableExtraordinaryInstallment = (
   props: TableExtraordinaryInstallmentProps
 ) => {
-  const { refreshKey, prospectData } = props;
+  const {
+    refreshKey,
+    prospectData,
+    handleClose,
+    setSentData,
+    businessUnitPublicCode,
+  } = props;
 
   const headers = headersTableExtraordinaryInstallment;
 
@@ -78,15 +93,10 @@ export const TableExtraordinaryInstallment = (
   const [selectedDebtor, setSelectedDebtor] =
     useState<TableExtraordinaryInstallmentProps>({});
 
-  const handleEdit = (debtor: TableExtraordinaryInstallmentProps) => {
-    setSelectedDebtor(debtor);
-    setIsOpenModalEdit(true);
-  };
-
   const [loading, setLoading] = useState(true);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
-  const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
 
+  const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const visbleHeaders = isMobile
@@ -108,46 +118,101 @@ export const TableExtraordinaryInstallment = (
 
   useEffect(() => {
     if (prospectData?.creditProducts) {
-      const extraordinaryInstallmentsDB = prospectData.creditProducts.flatMap(
+      const extraordinaryInstallmentsFlat = prospectData.creditProducts.flatMap(
         (product) =>
-          product.extraordinaryInstallments.map((installment) => ({
-            id: `${product.creditProductCode}-${installment.installmentDate}`,
-            datePayment: installment.installmentDate,
-            value: installment.installmentAmount,
-            paymentMethod: installment.paymentChannelAbbreviatedName,
-          }))
+          Array.isArray(product.extraordinaryInstallments)
+            ? product.extraordinaryInstallments.map((installment) => ({
+                id: `${product.creditProductCode},${installment.installmentDate},${installment.paymentChannelAbbreviatedName}`,
+                datePayment: installment.installmentDate,
+                value: installment.installmentAmount,
+                paymentMethod: installment.paymentChannelAbbreviatedName,
+                creditProductCode: product.creditProductCode,
+              }))
+            : []
+      );
+      const installmentsByUniqueKey = extraordinaryInstallmentsFlat.reduce(
+        (
+          installmentsAccumulator: Record<
+            string,
+            TableExtraordinaryInstallmentProps
+          >,
+          currentInstallment
+        ) => {
+          const uniqueKey = `${currentInstallment.creditProductCode}_${currentInstallment.datePayment}_${currentInstallment.paymentMethod}`;
+
+          if (installmentsAccumulator[uniqueKey]) {
+            installmentsAccumulator[uniqueKey].value =
+              (installmentsAccumulator[uniqueKey].value as number) +
+              (currentInstallment.value as number);
+          } else {
+            installmentsAccumulator[uniqueKey] = { ...currentInstallment };
+          }
+
+          return installmentsAccumulator;
+        },
+        {}
       );
 
-      setExtraordinaryInstallments(extraordinaryInstallmentsDB);
+      const extraordinaryInstallmentsUpdate = Object.values(
+        installmentsByUniqueKey
+      ).reverse() as TableExtraordinaryInstallmentProps[];
+
+      setExtraordinaryInstallments(extraordinaryInstallmentsUpdate);
     }
     setLoading(false);
   }, [prospectData, refreshKey]);
 
-  const handleDelete = async (id: string) => {
-    try {
-      const updatedExtraordinaryInstallments = extraordinaryInstallments.filter(
-        (debtor) => debtor.id !== id
-      );
-      setExtraordinaryInstallments(updatedExtraordinaryInstallments);
-    } catch (error) {
-      console.error("Failed to delete extraordinary installment:", error);
-    }
+  const itemIdentifiersForUpdate: IExtraordinaryInstallments = {
+    creditProductCode: prospectData?.creditProducts[0].creditProductCode || "",
+    extraordinaryInstallments:
+      prospectData?.creditProducts[0]?.extraordinaryInstallments
+        ?.filter((ins) => {
+          const expectedId = `${prospectData?.creditProducts[0].creditProductCode},${ins.installmentDate},${ins.paymentChannelAbbreviatedName}`;
+          return expectedId === selectedDebtor?.id;
+        })
+        ?.map((installment) => ({
+          installmentDate:
+            typeof installment.installmentDate === "string"
+              ? installment.installmentDate
+              : new Date(installment.installmentDate).toISOString(),
+          installmentAmount: Number(installment.installmentAmount),
+          paymentChannelAbbreviatedName: String(
+            installment.paymentChannelAbbreviatedName
+          ),
+        })) || [],
+    prospectId: prospectData?.prospectId || "",
   };
 
-  const handleUpdate = async (
-    updatedDebtor: TableExtraordinaryInstallmentProps
+  const handleExtraordinaryInstallment = async (
+    extraordinaryInstallments: IExtraordinaryInstallments
   ) => {
     try {
-      const updatedExtraordinaryInstallments = extraordinaryInstallments.map(
-        (debtor) => (debtor.id === updatedDebtor.id ? updatedDebtor : debtor)
+      await removeExtraordinaryInstallment(
+        businessUnitPublicCode || "",
+        extraordinaryInstallments
       );
-      setExtraordinaryInstallments(updatedExtraordinaryInstallments);
-      setIsOpenModalEdit(false);
-    } catch (error) {
-      console.error("Error updating debtor:", error);
+
+      setSentData?.(extraordinaryInstallments);
+      setIsOpenModalDelete(false);
+      handleClose?.();
+    } catch (error: unknown) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      addFlag({
+        title: TextLabels.titleError,
+        description,
+        appearance: "danger",
+        duration: 5000,
+      });
     }
   };
-
   return (
     <Table>
       <Thead>
@@ -219,12 +284,13 @@ export const TableExtraordinaryInstallment = (
                     {isMobile ? (
                       <ActionMobile
                         handleDelete={() => setIsOpenModalDelete(true)}
-                        handleEdit={() => handleEdit(row)}
                       />
                     ) : (
                       <Detail
-                        handleDelete={() => setIsOpenModalDelete(true)}
-                        handleEdit={() => handleEdit(row)}
+                        handleDelete={() => {
+                          setSelectedDebtor(row);
+                          setIsOpenModalDelete(true);
+                        }}
                       />
                     )}
                   </Td>
@@ -272,29 +338,10 @@ export const TableExtraordinaryInstallment = (
         </Tfoot>
       )}
       {isOpenModalDelete && (
-        <ListModal
-          title={dataTableExtraordinaryInstallment.deletion}
+        <DeleteModal
           handleClose={() => setIsOpenModalDelete(false)}
-          handleSubmit={() => setIsOpenModalDelete(false)}
-          onSubmit={() => {
-            if (selectedDebtor) {
-              handleDelete(selectedDebtor.id as string);
-              setIsOpenModalDelete(false);
-            }
-          }}
-          buttonLabel={dataTableExtraordinaryInstallment.delete}
-          content={dataTableExtraordinaryInstallment.content}
-          cancelButton={dataTableExtraordinaryInstallment.cancel}
-        />
-      )}
-      {isOpenModalEdit && (
-        <EditSeriesModal
-          handleClose={() => setIsOpenModalEdit(false)}
-          onSubmit={() => setIsOpenModalEdit(false)}
-          onConfirm={async (updatedDebtor) => {
-            await handleUpdate(updatedDebtor);
-          }}
-          initialValues={selectedDebtor}
+          handleDelete={() => handleExtraordinaryInstallment(itemIdentifiersForUpdate)}
+          TextDelete={dataTableExtraordinaryInstallment.content}
         />
       )}
     </Table>

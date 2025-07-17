@@ -11,9 +11,10 @@ export const approvalsConfig = {
   answerPlaceHoleder: "Selecciona de la lista",
   observationdetails:
     "Proporciona detalles acerca de la evaluación del requisito",
-  Cancel: "Cancelar",
+  cancel: "Cancelar",
   confirm: "Confirmar",
   see: "Ver",
+  seen: "Visto",
   titleError: "Lamentamos los inconvenientes",
   maxLength: 200,
 };

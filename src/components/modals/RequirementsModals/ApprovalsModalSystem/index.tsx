@@ -12,12 +12,13 @@ import { approvalsConfig } from "./config";
 interface ApprovalsModalSystemProps {
   isMobile: boolean;
   initialValues: IApprovalSystem;
+  questionToBeAskedInModal: string;
   onConfirm?: (values: IApprovalSystem) => void;
   onCloseModal?: () => void;
 }
 
 export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
-  const { isMobile, initialValues, onConfirm, onCloseModal } = props;
+  const { isMobile, initialValues, questionToBeAskedInModal, onConfirm, onCloseModal } = props;
 
   const validationSchema = Yup.object({
     toggleChecked: Yup.boolean(),
@@ -58,12 +59,12 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
     >
       <Stack direction="column" gap="24px">
         <Stack direction="column" gap="8px">
-          <Text>{approvalsConfig.approval}</Text>
+          <Text>{`${approvalsConfig.approval} ${questionToBeAskedInModal}`}</Text>
           <Stack>
             <Toggle
               checked={formik.values.toggleChecked}
-              onChange={(e) => {
-                const checked = e.target.checked;
+              onChange={(event) => {
+                const checked = event.target.checked;
                 formik.setFieldValue("toggleChecked", checked);
                 formik.setFieldValue(
                   "labelText",

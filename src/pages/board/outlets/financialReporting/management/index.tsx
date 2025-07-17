@@ -164,11 +164,23 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     setDetailsOpen(true);
   };
 
+  const getMessageType = (
+    traceType: string
+  ): "sent" | "received" | "system" => {
+    const map: Record<string, "sent" | "received" | "system"> = {
+      Novelty: "sent",
+      Message: "received",
+      Executed_task: "system",
+    };
+
+    return map[traceType] ?? "sent";
+  };
+
   const renderMessages = () =>
     traces.map((trace, index) => (
       <Message
         key={index}
-        type={trace.traceType === "Message" ? "received" : "sent"}
+        type={getMessageType(trace.traceType)}
         timestamp={trace.executionDate || ""}
         message={trace.traceValue}
         icon={<MdInfoOutline size={14} />}
