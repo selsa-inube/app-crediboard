@@ -31,7 +31,7 @@ function SelectedFilters(props: SelectedFiltersProps) {
             <Tag
               key={index}
               appearance={filter.type === "status" ? "dark" : "primary"}
-              label={`${filter.label} (${filter.count})`}
+              label={`${filter.label}`}
               removable={onRemove !== undefined}
               onClose={() => handleRemoveFilter(filter.id)}
             />
@@ -52,7 +52,7 @@ function SelectedFilters(props: SelectedFiltersProps) {
                           size="14px"
                         />
                         <Text size="small">
-                          {`${filter.label} (${filter.count})`}
+                          {`${filter.label}`}
                         </Text>
                       </Stack>
                       <Icon

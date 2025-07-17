@@ -159,12 +159,13 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
                 size="compact"
                 fullwidth
                 onChange={(name, value) => {
-                  void formik.setFieldValue(name, value);
+                  setTimeout(() => {
+                    formik.setFieldValue(name, value);
+                  }, 0);
                 }}
                 options={sortedAssignmentOptions}
               />
             </Stack>
-
             <Stack justifyContent="flex-end" gap="20px">
               <Button
                 onClick={onClearFilters}
