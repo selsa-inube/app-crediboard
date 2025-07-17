@@ -6,4 +6,5 @@ export const dataTrace = {
   understood: "Entendido",
   see: "Ver",
   titleError: "Lamentamos los inconvenientes",
+  documents: "Documentos Correspondientes",
 };
