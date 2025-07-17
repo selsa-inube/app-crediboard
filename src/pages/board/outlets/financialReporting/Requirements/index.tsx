@@ -422,7 +422,7 @@ export const Requirements = (props: IRequirementsProps) => {
               [selectedEntryId]: values,
             }))
           }
-          question={(() => {
+          questionToBeAskedInModal={(() => {
             const entry = dataRequirements
               .find((table) => table.id === "tableApprovalSystem")
               ?.entriesRequirements.find(

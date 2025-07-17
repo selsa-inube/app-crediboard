@@ -158,7 +158,7 @@ export function ApprovalModalDocumentaries(
       }}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
-      backButton={approvalsConfig.Cancel}
+      backButton={approvalsConfig.cancel}
       nextButton={approvalsConfig.confirm}
       disabledNext={!formik.values.observations || !formik.isValid}
     >
