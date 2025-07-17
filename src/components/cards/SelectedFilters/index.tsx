@@ -8,6 +8,7 @@ import {
   HiddenFilterItem,
 } from "./styles";
 import { useSelectedFilters, SelectedFiltersProps } from "./interface";
+import { dataFilters } from "./config";
 
 function SelectedFilters(props: SelectedFiltersProps) {
   const { filters, onRemove } = props;
@@ -74,7 +75,7 @@ function SelectedFilters(props: SelectedFiltersProps) {
         </Stack>
       ) : (
         <Text type="label" size="small" appearance="gray">
-          Sin filtros aún.
+          {dataFilters.withoutFileters}
         </Text>
       )}
     </StyledContainerFilters>

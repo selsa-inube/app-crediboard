@@ -19,7 +19,6 @@ import {
   useMediaQuery,
   Button,
   useFlag,
-  Select,
 } from "@inubekit/inubekit";
 
 import { ICreditRequest, IModeOfDisbursement } from "@services/types";
@@ -58,10 +57,10 @@ import {
 } from "./styles";
 import { CreditLimitModal } from "@components/modals/CreditLimitModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
-import { dataCreditProspect } from "@components/layout/CreditProspect/config";
 import { IIncomeSources } from "@components/layout/CreditProspect/types";
-import { IncomeDebtor } from "@components/layout/CreditProspect/incomeDebtor";
 import { IncomeModal } from "@components/modals/IncomeModal";
+import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
+import { getPropertyValue } from "@utils/mappingData/mappings";
 
 interface ComercialManagementProps {
   data: ICreditRequest;
@@ -371,6 +370,77 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     setSelectedIndex(index ?? 0);
   };
 
+  useEffect(() => {
+    if (selectedBorrower) {
+      const borrowerName = selectedBorrower.borrowerName;
+      if (!incomeData[borrowerName]?.edited) {
+        setIncomeData((prev) => ({
+          ...prev,
+          [borrowerName]: {
+            identificationNumber: selectedBorrower.borrowerIdentificationNumber,
+            identificationType: selectedBorrower.borrowerIdentificationType,
+            name:
+              getPropertyValue(selectedBorrower.borrowerProperties, "name") ||
+              "",
+            surname:
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "surname"
+              ) || "",
+            Leases: parseFloat(
+              getPropertyValue(selectedBorrower.borrowerProperties, "Leases") ||
+                "0"
+            ),
+            Dividends: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "Dividends"
+              ) || "0"
+            ),
+            FinancialIncome: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "FinancialIncome"
+              ) || "0"
+            ),
+            PeriodicSalary: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "PeriodicSalary"
+              ) || "0"
+            ),
+            OtherNonSalaryEmoluments: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "OtherNonSalaryEmoluments"
+              ) || "0"
+            ),
+            PensionAllowances: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "PensionAllowances"
+              ) || "0"
+            ),
+            PersonalBusinessUtilities: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "PersonalBusinessUtilities"
+              ) || "0"
+            ),
+            ProfessionalFees: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "ProfessionalFees"
+              ) || "0"
+            ),
+            edited: false,
+          },
+        }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedBorrower]);
+
   return (
     <>
       <Fieldset
@@ -678,15 +748,22 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               {collapse && <Stack>{isMobile && <Divider />}</Stack>}
               {collapse && (
                 <CreditProspect
+                  borrowersProspect={borrowersProspect}
+                  borrowerOptions={borrowerOptions}
+                  selectedIndex={selectedIndex}
+                  dataProspect={dataProspect}
+                  selectedBorrower={selectedBorrower}
+                  incomeData={incomeData}
                   isMobile={isMobile}
-                  isPrint={isPrint}
-                  showMenu={() => setShowMenu(false)}
-                  showPrint
                   prospectData={prospectData}
+                  isPrint={isPrint}
+                  showPrint
+                  showMenu={() => setShowMenu(false)}
+                  handleChange={handleChangeIncome}
+                  handleIncomeSubmit={handleIncomeSubmit}
                 />
               )}
             </Stack>
-            //
             {currentModal === "creditLimit" && (
               <CreditLimitModal
                 isMobile={isMobile}
@@ -695,56 +772,17 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               />
             )}
             {currentModal === "IncomeModal" && (
-              <BaseModal
-                title={dataCreditProspect.incomeSources}
-                nextButton={dataCreditProspect.close}
-                handleNext={handleCloseModal}
-                handleClose={handleCloseModal}
-                width={isMobile ? "290px" : "auto"}
-              >
-                {borrowersProspect ? (
-                  <>
-                    <Stack
-                      justifyContent="space-between"
-                      direction={isMobile ? "column" : "row"}
-                      alignItems={isMobile ? "start" : "end"}
-                      width="400px"
-                      gap="16px"
-                    >
-                      <Select
-                        label="Deudor"
-                        id="borrower"
-                        name="borrower"
-                        options={borrowerOptions}
-                        value={borrowerOptions[selectedIndex]?.value}
-                        onChange={handleChangeIncome}
-                        size="compact"
-                      />
-                      <Button
-                        onClick={() => {
-                          handleCloseModal();
-                          setOpenModal("IncomeModalEdit");
-                        }}
-                      >
-                        {dataCreditProspect.edit}
-                      </Button>
-                    </Stack>
-                    <IncomeDebtor
-                      initialValues={
-                        dataProspect[0]?.borrowers?.find(
-                          (b) =>
-                            b.borrowerName ===
-                            borrowerOptions[selectedIndex]?.value
-                        ) || selectedBorrower
-                      }
-                    />
-                  </>
-                ) : (
-                  <Stack width={isMobile ? "300px" : "400px"}>
-                    <Text>{dataCreditProspect.noDataIncome}</Text>
-                  </Stack>
-                )}
-              </BaseModal>
+              <IncomeBorrowersModal
+                borrowersProspect={borrowersProspect}
+                borrowerOptions={borrowerOptions}
+                selectedIndex={selectedIndex}
+                dataProspect={dataProspect}
+                selectedBorrower={selectedBorrower}
+                isMobile={isMobile}
+                handleCloseModal={handleCloseModal}
+                handleChange={handleChangeIncome}
+                setOpenModal={setOpenModal}
+              />
             )}
             {currentModal === "reportCreditsModal" && (
               <ReportCreditsModal
