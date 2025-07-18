@@ -141,15 +141,15 @@ export const Requirements = (props: IRequirementsProps) => {
         };
 
         data.forEach((item) => {
-          item.listsOfRequirementsByPackage.forEach((req) => {
-            const type = req.typeOfRequirementToEvaluated;
+          item.requirementsByPackage.forEach((req) => {
+            const type = req.requirementTypeToEvaluate;
             const key = req.descriptionUse;
             const value = req.requirementStatus;
 
             if (
               type &&
               key &&
-              value &&
+              //value &&
               Object.prototype.hasOwnProperty.call(mapped, type)
             ) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
