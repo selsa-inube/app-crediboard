@@ -18,11 +18,13 @@ import {
   IPatchOfRequirements,
   IRequirement,
 } from "@services/types";
-import { AddRequirementMock } from "@mocks/addRequirement";
+import {
+  AddRequirementMock,
+  AddRequirementMockSistemValidations,
+} from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
 
-import { errorMessages } from "../config";
 import {
   infoItems,
   maperDataRequirements,
@@ -31,8 +33,10 @@ import {
   textFlagsRequirements,
   dataAddRequirement,
   getActionsMobileIcon,
+  questionToBeAskedInModalText,
 } from "./config";
 import { DocumentItem } from "./types";
+import { errorMessages } from "../config";
 
 interface IRequirementsData {
   id: string;
@@ -99,11 +103,16 @@ export const Requirements = (props: IRequirementsProps) => {
   );
   const [requirementName, setRequirementName] = useState("");
   const [descriptionUseValue, setDescriptionUseValue] = useState("");
+  const [descriptionUseValues, setDescriptionUseValues] = useState("");
   const [typeOfRequirementToEvaluated, setTypeOfRequirementToEvaluated] =
     useState<string>("");
+
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(false);
   const [rawRequirements, setRawRequirements] = useState<IRequirement[]>([]);
+  const [justificationRequirement, setJustificationRequirement] = useState(
+    dataAddRequirement.descriptionJustification
+  );
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
   const { addFlag } = useFlag();
   const [showAddSystemValidationModal, setShowAddSystemValidationModal] =
@@ -243,10 +252,6 @@ export const Requirements = (props: IRequirementsProps) => {
     </Stack>
   );
 
-  const handleAddRequirementAddSystemValidation = async () => {
-    if (closeAdd) closeAdd();
-  };
-
   const handleAddRequirement = async (creditRequests: IPatchOfRequirements) => {
     await saveRequirements(businessUnitPublicCode, creditRequests)
       .then(() => {
@@ -274,27 +279,53 @@ export const Requirements = (props: IRequirementsProps) => {
         handleToggleModal();
       });
   };
-
-  const initialValues: IPatchOfRequirements = {
+  const createInitialRequirementValues = ({
+    requirementCatalogName,
+    descriptionUse,
+    typeOfRequirementToEvaluated,
+    rawRequirements,
+    creditRequestCode,
+  }: {
+    requirementCatalogName: string;
+    descriptionUse: string;
+    typeOfRequirementToEvaluated: string;
+    rawRequirements: IRequirement[];
+    creditRequestCode: string;
+  }): IPatchOfRequirements => ({
     packageId: rawRequirements[0]?.packageId,
     uniqueReferenceNumber: creditRequestCode,
     packageDate: rawRequirements[0]?.packageDate,
-    packageDescription:
-      "Requisitos para la solicitud de crédito SC-12225464610",
+    packageDescription: `Requisitos para la solicitud de crédito ${creditRequestCode}`,
     modifyJustification: "modifyJustification",
     listsOfRequirementsByPackage: [
       {
         packageId: rawRequirements[0]?.packageId,
-        requirementCatalogName: requirementName,
+        requirementCatalogName,
         requirementDate: rawRequirements[0]?.packageDate,
         requirementStatus: "UNVALIDATED",
         descriptionEvaluationRequirement: "Requisitos no evaluados",
-        descriptionUse: descriptionUseValue,
-        typeOfRequirementToEvaluated: typeOfRequirementToEvaluated,
+        descriptionUse,
+        typeOfRequirementToEvaluated,
         transactionOperation: "Insert",
       },
     ],
-  };
+  });
+
+  const initialValues = createInitialRequirementValues({
+    requirementCatalogName: requirementName,
+    descriptionUse: descriptionUseValue,
+    typeOfRequirementToEvaluated,
+    rawRequirements,
+    creditRequestCode,
+  });
+
+  const initialValuesSystemValidation = createInitialRequirementValues({
+    requirementCatalogName: justificationRequirement,
+    descriptionUse: descriptionUseValues,
+    typeOfRequirementToEvaluated: "SYSTEM_VALIDATION",
+    rawRequirements,
+    creditRequestCode,
+  });
 
   const handleToggleModal = () => {
     setShowModal(!showModal);
@@ -405,90 +436,98 @@ export const Requirements = (props: IRequirementsProps) => {
             }}
           />
         )}
-      {showAprovalsModal && selectedTableId === "tableApprovalSystem" && selectedEntryId && (
-        <ApprovalsModalSystem
-          initialValues={
-            approvalSystemValues[selectedEntryId] || {
-              observations: "",
-              toggleChecked: false,
-              labelText: "",
+      {showAprovalsModal &&
+        selectedTableId === "tableApprovalSystem" &&
+        selectedEntryId && (
+          <ApprovalsModalSystem
+            initialValues={
+              approvalSystemValues[selectedEntryId] || {
+                observations: "",
+                toggleChecked: false,
+                labelText: "",
+              }
             }
-          }
-          onCloseModal={() => setShowAprovalsModal(false)}
-          isMobile={isMobile}
-          onConfirm={(values) =>
-            setApprovalSystemValues((prev) => ({
-              ...prev,
-              [selectedEntryId]: values,
-            }))
-          }
-          questionToBeAskedInModal={(() => {
-            const entry = dataRequirements
-              .find((table) => table.id === "tableApprovalSystem")
-              ?.entriesRequirements.find(
-                (entry) => entry.id === selectedEntryId
-              );
+            onCloseModal={() => setShowAprovalsModal(false)}
+            isMobile={isMobile}
+            onConfirm={(values) =>
+              setApprovalSystemValues((prev) => ({
+                ...prev,
+                [selectedEntryId]: values,
+              }))
+            }
+            questionToBeAskedInModal={(() => {
+              const entry = dataRequirements
+                .find((table) => table.id === "tableApprovalSystem")
+                ?.entriesRequirements.find(
+                  (entry) => entry.id === selectedEntryId
+                );
 
-            let label: string | undefined;
-            if (isValidElement(entry?.tag)) {
-              label = entry.tag.props?.label;
-            }
+              let label: string | undefined;
+              if (isValidElement(entry?.tag)) {
+                label = entry.tag.props?.label;
+              }
 
-            if (label === "Sin Evaluar") return "pudo evaluar?";
-            if (label === "No Cumple") return "cumple?";
-            return "";
-          })()}
-        />
-      )}
-      {showAprovalsModal && selectedTableId === "tableDocumentValues" && selectedEntryId && (
-        <ApprovalModalDocumentaries
-          initialValues={
-            approvalDocumentValues[selectedEntryId] || {
-              answer: "",
-              observations: "",
+              if (label === questionToBeAskedInModalText.notEvaluated)
+                return questionToBeAskedInModalText.questionForUnvalidated;
+              if (label === questionToBeAskedInModalText.notCompliant)
+                return questionToBeAskedInModalText.questionForNotCompliant;
+              return "";
+            })()}
+          />
+        )}
+      {showAprovalsModal &&
+        selectedTableId === "tableDocumentValues" &&
+        selectedEntryId && (
+          <ApprovalModalDocumentaries
+            initialValues={
+              approvalDocumentValues[selectedEntryId] || {
+                answer: "",
+                observations: "",
+              }
             }
-          }
-          title={
-            dataRequirements
-              .find((table) => table.id === "tableDocumentValues")
-              ?.entriesRequirements.find(
-                (entry) => entry.id === selectedEntryId
-              )
-              ?.["Requisitos documentales"]?.toString() || ""
-          }
-          id={id}
-          onCloseModal={toggleAprovalsModal}
-          businessUnitPublicCode={businessUnitPublicCode}
-          user={user}
-          isMobile={isMobile}
-          onConfirm={(values) =>
-            setApprovalDocumentValues((prev) => ({
-              ...prev,
-              [selectedEntryId]: values,
-            }))
-          }
-          seenDocuments={seenDocuments}
-          setSeenDocuments={setSeenDocuments}
-        />
-      )}
-      {showAprovalsModal && selectedTableId === "tableApprovalHuman" && selectedEntryId && (
-        <ApprovalsModalHuman
-          initialValues={
-            approvalHumanValues[selectedEntryId] || {
-              answer: "",
-              observations: "",
+            title={
+              dataRequirements
+                .find((table) => table.id === "tableDocumentValues")
+                ?.entriesRequirements.find(
+                  (entry) => entry.id === selectedEntryId
+                )
+                ?.["Requisitos documentales"]?.toString() || ""
             }
-          }
-          onCloseModal={toggleAprovalsModal}
-          isMobile={isMobile}
-          onConfirm={(values) =>
-            setApprovalHumanValues((prev) => ({
-              ...prev,
-              [selectedEntryId]: values,
-            }))
-          }
-        />
-      )}
+            id={id}
+            onCloseModal={toggleAprovalsModal}
+            businessUnitPublicCode={businessUnitPublicCode}
+            user={user}
+            isMobile={isMobile}
+            onConfirm={(values) =>
+              setApprovalDocumentValues((prev) => ({
+                ...prev,
+                [selectedEntryId]: values,
+              }))
+            }
+            seenDocuments={seenDocuments}
+            setSeenDocuments={setSeenDocuments}
+          />
+        )}
+      {showAprovalsModal &&
+        selectedTableId === "tableApprovalHuman" &&
+        selectedEntryId && (
+          <ApprovalsModalHuman
+            initialValues={
+              approvalHumanValues[selectedEntryId] || {
+                answer: "",
+                observations: "",
+              }
+            }
+            onCloseModal={toggleAprovalsModal}
+            isMobile={isMobile}
+            onConfirm={(values) =>
+              setApprovalHumanValues((prev) => ({
+                ...prev,
+                [selectedEntryId]: values,
+              }))
+            }
+          />
+        )}
       {showAddRequirementModal && (
         <AddRequirement
           title={dataAddRequirement.title}
@@ -509,18 +548,22 @@ export const Requirements = (props: IRequirementsProps) => {
         <AddSystemValidation
           title={dataAddRequirement.title}
           buttonText={dataAddRequirement.add}
-          optionsRequirement={AddRequirementMock}
+          optionsRequirement={AddRequirementMockSistemValidations}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}
           setSentData={setSentData}
           setRequirementName={setRequirementName}
-          setDescriptionUseValue={setDescriptionUseValue}
+          setdescriptionUseValues={setDescriptionUseValues}
           setTypeOfRequirementToEvaluated={setTypeOfRequirementToEvaluated}
-          handleNext={handleAddRequirementAddSystemValidation}
+          handleNext={() => {
+            handleAddRequirement(initialValuesSystemValidation);
+          }}
           requirementName={requirementName}
-          descriptionUseValue={descriptionUseValue}
+          descriptionUseValues={descriptionUseValues}
           typeOfRequirementToEvaluated={typeOfRequirementToEvaluated}
           rawRequirements={rawRequirements}
+          setJustificationRequirement={setJustificationRequirement}
+          justificationRequirement={justificationRequirement}
         />
       )}
     </>

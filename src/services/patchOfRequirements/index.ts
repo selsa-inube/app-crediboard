@@ -6,7 +6,7 @@ const patchOfRequirements = async (
   creditRequest: IPatchOfRequirements,
   businessUnitPublicCode: string
 ): Promise<IPatchOfRequirements | undefined> => {
-  const requestUrl = `${environment.ICOREBANKING_API_URL_PERSISTENCE}/packages-of-requirements-to-manage`;
+  const requestUrl = `${environment.ICOREBANKING_API_URL_PERSISTENCE}/requirements-packages`;
 
   try {
     const options: RequestInit = {
