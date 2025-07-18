@@ -9,9 +9,7 @@ const mapRequirementsEntity = (
     packageDate: String(data.packageDate || ""),
     packageDescription: String(data.packageDescription || ""),
     modifyJustification: String(data.modifyJustification || ""),
-    listsOfRequirementsByPackage: Object(
-      data.listsOfRequirementsByPackage || ""
-    ),
+    requirementsByPackage: Object(data.requirementsByPackage || ""),
   };
   return creditRequest;
 };

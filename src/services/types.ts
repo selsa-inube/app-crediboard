@@ -24,7 +24,7 @@ export interface IlistsOfRequirementsByPackage {
   requirementStatus: string;
   descriptionEvaluationRequirement: string;
   descriptionUse: string;
-  typeOfRequirementToEvaluated: string;
+  requirementTypeToEvaluate: string;
   transactionOperation: string;
 }
 
@@ -34,7 +34,7 @@ export interface IPatchOfRequirements {
   packageDate: string;
   packageDescription: string;
   modifyJustification?: string;
-  listsOfRequirementsByPackage: IlistsOfRequirementsByPackage[];
+  requirementsByPackage: IlistsOfRequirementsByPackage[];
 }
 
 export interface IAccountingVouchers {

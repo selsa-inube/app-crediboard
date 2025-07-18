@@ -274,13 +274,13 @@ export const Requirements = (props: IRequirementsProps) => {
   const createInitialRequirementValues = ({
     requirementCatalogName,
     descriptionUse,
-    typeOfRequirementToEvaluated,
+    requirementTypeToEvaluate,
     rawRequirements,
     creditRequestCode,
   }: {
     requirementCatalogName: string;
     descriptionUse: string;
-    typeOfRequirementToEvaluated: string;
+    requirementTypeToEvaluate: string;
     rawRequirements: IRequirement[];
     creditRequestCode: string;
   }): IPatchOfRequirements => ({
@@ -289,7 +289,7 @@ export const Requirements = (props: IRequirementsProps) => {
     packageDate: rawRequirements[0]?.packageDate,
     packageDescription: `Requisitos para la solicitud de crédito ${creditRequestCode}`,
     modifyJustification: "modifyJustification",
-    listsOfRequirementsByPackage: [
+    requirementsByPackage: [
       {
         packageId: rawRequirements[0]?.packageId,
         requirementCatalogName,
@@ -297,7 +297,7 @@ export const Requirements = (props: IRequirementsProps) => {
         requirementStatus: "UNVALIDATED",
         descriptionEvaluationRequirement: "Requisitos no evaluados",
         descriptionUse,
-        typeOfRequirementToEvaluated,
+        requirementTypeToEvaluate,
         transactionOperation: "Insert",
       },
     ],
@@ -306,7 +306,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const initialValues = createInitialRequirementValues({
     requirementCatalogName: requirementName,
     descriptionUse: descriptionUseValue,
-    typeOfRequirementToEvaluated,
+    requirementTypeToEvaluate: typeOfRequirementToEvaluated,
     rawRequirements,
     creditRequestCode,
   });
@@ -314,7 +314,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const initialValuesSystemValidation = createInitialRequirementValues({
     requirementCatalogName: justificationRequirement,
     descriptionUse: descriptionUseValues,
-    typeOfRequirementToEvaluated: "SYSTEM_VALIDATION",
+    requirementTypeToEvaluate: "SYSTEM_VALIDATION",
     rawRequirements,
     creditRequestCode,
   });
