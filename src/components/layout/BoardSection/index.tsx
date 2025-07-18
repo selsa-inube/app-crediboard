@@ -46,6 +46,7 @@ interface BoardSectionProps {
   handleLoadMoreData: () => void;
   dragIcon?: React.ReactElement;
   onOrientationChange: (orientation: SectionOrientation) => void;
+  shouldCollapseAll: boolean;
 }
 
 function BoardSection(props: BoardSectionProps) {
@@ -61,6 +62,7 @@ function BoardSection(props: BoardSectionProps) {
     handlePinRequest,
     handleLoadMoreData,
     onOrientationChange,
+    shouldCollapseAll,
   } = props;
   const disabledCollapse = sectionInformation.length === 0;
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
@@ -81,6 +83,11 @@ function BoardSection(props: BoardSectionProps) {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  useEffect(() => {
+    if (shouldCollapseAll && !disabledCollapse) {
+      setCollapse(true);
+    }
+  }, [shouldCollapseAll, disabledCollapse]);
   const handleCollapse = () => {
     if (!disabledCollapse) {
       setCollapse((prev) => !prev);
@@ -237,19 +244,21 @@ function BoardSection(props: BoardSectionProps) {
             </StyledCollapseIcon>
           )}
 
-          <Icon
-            icon={
-              currentOrientation === "vertical" ? (
-                <MdOutlineFilterAlt />
-              ) : (
-                <MdOutlineFilterAltOff />
-              )
-            }
-            appearance="primary"
-            size="24px"
-            onClick={handleToggleOrientation}
-            cursorHover
-          />
+          {!isTablet && (
+            <Icon
+              icon={
+                currentOrientation === "vertical" ? (
+                  <MdOutlineFilterAlt />
+                ) : (
+                  <MdOutlineFilterAltOff />
+                )
+              }
+              appearance="primary"
+              size="24px"
+              onClick={handleToggleOrientation}
+              cursorHover
+            />
+          )}
 
           <Text
             type={orientation === "vertical" || isMobile ? "title" : "headline"}

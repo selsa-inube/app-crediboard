@@ -8,6 +8,7 @@ import { CardGray } from "@components/cards/CardGray";
 import { dataAddRequirement } from "@pages/board/outlets/financialReporting/Requirements/config";
 
 import { IOptionsSelect } from "../types";
+import { requirementJustificationMap, validationMessages } from "./config";
 
 export interface IRequirements {
   optionsRequirement: IOptionsSelect[];
@@ -55,7 +56,9 @@ export function AddSystemValidation(props: IRequirements) {
   const isMobile = useMediaQuery("(max-width: 700px)");
 
   const validationSchema = Yup.object().shape({
-    descriptionUseValues: Yup.string().required("Este campo es obligatorio"),
+    descriptionUseValues: Yup.string().required(
+      validationMessages.requiredField
+    ),
   });
 
   const isButtonDisabled = (
@@ -66,14 +69,7 @@ export function AddSystemValidation(props: IRequirements) {
   };
 
   const getPlaceholderText = (selectedValue: string) => {
-    switch (selectedValue) {
-      case "El asociado tiene más de 20 años de edad.":
-        return "Se valida la edad mínima para el requisito";
-      case "Antiguedad minima":
-        return "Se valida la antigüedad mínima para el requisito";
-      default:
-        return "";
-    }
+    return requirementJustificationMap[selectedValue] || "";
   };
 
   const handleRequirementChange = (

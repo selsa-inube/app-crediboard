@@ -142,9 +142,9 @@ export function AddRequirement(props: IRequirement) {
                 id="descriptionUse"
                 label={dataAddRequirement.labelName}
                 placeholder={dataAddRequirement.placeHolderDate}
-                onChange={(e) => {
-                  setDescriptionUseValue(e.target.value);
-                  setFieldValue("descriptionUse", e.target.value);
+                onChange={(event) => {
+                  setDescriptionUseValue(event.target.value);
+                  setFieldValue("descriptionUse", event.target.value);
                 }}
                 value={values.descriptionUse}
                 size="wide"
@@ -157,9 +157,9 @@ export function AddRequirement(props: IRequirement) {
                 label={dataAddRequirement.labelTextarea}
                 placeholder={dataAddRequirement.placeHolderTextarea}
                 value={values.requirementCatalogName}
-                onChange={(e) => {
-                  setRequirementName(e.target.value);
-                  setFieldValue("requirementCatalogName", e.target.value);
+                onChange={(event) => {
+                  setRequirementName(event.target.value);
+                  setFieldValue("requirementCatalogName", event.target.value);
                 }}
                 fullwidth
               />

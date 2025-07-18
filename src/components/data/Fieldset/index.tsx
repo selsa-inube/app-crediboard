@@ -36,6 +36,7 @@ interface IFieldsetProps {
   selectedState?: boolean;
   hasError?: boolean;
   alignContent?: string;
+  borderColor?: string;
 }
 
 export const Fieldset = (props: IFieldsetProps) => {
@@ -52,6 +53,7 @@ export const Fieldset = (props: IFieldsetProps) => {
     isClickable = false,
     selectedState = false,
     hasError = false,
+    borderColor = "normal",
     alignContent,
   } = props;
 
@@ -171,6 +173,7 @@ export const Fieldset = (props: IFieldsetProps) => {
         $isClickable={isClickable}
         $hasError={hasError}
         $alignContent={alignContent}
+        $borderColor={borderColor}
       >
         {children}
       </StyledContainerFieldset>

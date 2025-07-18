@@ -117,7 +117,7 @@ function BoardLayout() {
   const handleLoadMoreData = () => {
     setRecordsToFetch((prev) => prev + 50);
   };
-
+  const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
   const handleApplyFilters = async (values: IFilterFormValues) => {
     const assignmentIds = values.assignment.split(",");
     const activeFilteredValues: Filter[] = selectCheckOptions
@@ -141,6 +141,8 @@ function BoardLayout() {
     });
 
     setIsFilterModalOpen(false);
+    setShouldCollapseAll(true);
+    setTimeout(() => setShouldCollapseAll(false), 100);
   };
 
   const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
@@ -373,6 +375,7 @@ function BoardLayout() {
         selectOptions={[]}
         handleSelectCheckChange={() => {}}
         closeFilterModal={closeFilterModal}
+        shouldCollapseAll={shouldCollapseAll}
       />
       {isOpenModal && (
         <BaseModal

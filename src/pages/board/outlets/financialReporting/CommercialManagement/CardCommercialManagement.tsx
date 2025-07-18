@@ -19,6 +19,7 @@ import { DeductibleExpensesModal } from "@components/modals/DeductibleExpensesMo
 import { IProspectSummaryById } from "@services/prospects/ProspectSummaryById/types";
 import { getAllDeductibleExpensesById } from "@services/iProspect/deductibleExpenses";
 import { EditProductModal } from "@components/modals/ProspectProductModal";
+import { dataTableExtraordinaryInstallment } from "@components/data/TableExtraordinaryInstallment/config";
 
 import { StyledCardsCredit, StyledPrint } from "./styles";
 
@@ -192,6 +193,7 @@ export const CardCommercialManagement = (
         <DeleteModal
           handleClose={() => setShowDeleteModal(false)}
           handleDelete={handleDelete}
+          TextDelete={dataTableExtraordinaryInstallment.content}
         />
       )}
       {currentModal === "editProductModal" && selectedProduct && (

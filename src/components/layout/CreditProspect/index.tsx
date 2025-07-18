@@ -35,6 +35,7 @@ import { CardCommercialManagement } from "@pages/board/outlets/financialReportin
 import { getPropertyValue } from "@utils/mappingData/mappings";
 import { IProspect } from "@services/prospects/types";
 import { CreditLimitModal } from "@components/modals/CreditLimitModal";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 
 import { IncomeDebtor } from "./incomeDebtor";
 import { dataCreditProspect } from "./config";
@@ -44,9 +45,17 @@ import { IIncomeSources } from "./types";
 interface ICreditProspectProps {
   showMenu: () => void;
   isMobile: boolean;
+  businessUnitPublicCode: string;
+  sentData: IExtraordinaryInstallments | null;
+  setSentData: React.Dispatch<
+    React.SetStateAction<IExtraordinaryInstallments | null>
+  >;
   prospectData?: IProspect;
   isPrint?: boolean;
   showPrint?: boolean;
+  setRequestValue?: React.Dispatch<
+    React.SetStateAction<IPaymentChannel[] | undefined>
+  >;
 }
 
 export function CreditProspect(props: ICreditProspectProps) {
@@ -56,6 +65,9 @@ export function CreditProspect(props: ICreditProspectProps) {
     isMobile,
     isPrint = false,
     showPrint = true,
+    sentData,
+    setSentData,
+    businessUnitPublicCode,
   } = props;
 
   const [modalHistory, setModalHistory] = useState<string[]>([]);
@@ -560,6 +572,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           dataTable={extraordinaryInstallmentMock}
           handleClose={handleCloseModal}
           prospectData={prospectData}
+          sentData={sentData}
+          setSentData={setSentData}
+          businessUnitPublicCode={businessUnitPublicCode}
         />
       )}
       {showShareModal && (
