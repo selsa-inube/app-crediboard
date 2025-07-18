@@ -25,7 +25,6 @@ import {
 import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
 
-import { errorMessages } from "../config";
 import {
   infoItems,
   maperDataRequirements,
@@ -34,8 +33,10 @@ import {
   textFlagsRequirements,
   dataAddRequirement,
   getActionsMobileIcon,
+  questionToBeAskedInModalText,
 } from "./config";
 import { DocumentItem } from "./types";
+import { errorMessages } from "../config";
 
 interface IRequirementsData {
   id: string;
@@ -466,8 +467,10 @@ export const Requirements = (props: IRequirementsProps) => {
                 label = entry.tag.props?.label;
               }
 
-              if (label === "Sin Evaluar") return "pudo evaluar?";
-              if (label === "No Cumple") return "cumple?";
+              if (label === questionToBeAskedInModalText.notEvaluated)
+                return questionToBeAskedInModalText.questionForUnvalidated;
+              if (label === questionToBeAskedInModalText.notCompliant)
+                return questionToBeAskedInModalText.questionForNotCompliant;
               return "";
             })()}
           />

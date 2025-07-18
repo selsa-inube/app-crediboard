@@ -19,7 +19,7 @@ export const AddRequirementMockSistemValidations = [
   },
   {
     id: "2",
-    label: "Antiguedad minima",
-    value: "Antiguedad minima",
+    label: "Antigüedad mínima.",
+    value: "Antigüedad mínima.",
   },
 ];

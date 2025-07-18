@@ -77,7 +77,7 @@ export const textFlagsRequirements = {
 
 export const dataAddRequirement = {
   title: "Agregar requisito a esta solicitud",
-  titleJustification: "Descripcion del requisito",
+  titleJustification: "Descripción del requisito",
   descriptionJustification:
     "Lorem ipsum dolor sit amet consectetur adipiscing elit, primis turpis a donec dictum ad, urna eu sem malesuada mauris ac.",
   close: "Cerrar",
@@ -113,7 +113,12 @@ export const infoItems = [
     appearance: "help",
   },
 ];
-
+export const questionToBeAskedInModalText = {
+  notEvaluated: "Sin Evaluar",
+  notCompliant: "No Cumple",
+  questionForUnvalidated: "¿Pudo evaluar?",
+  questionForNotCompliant: "¿Cumple?",
+};
 export const actionsRequirements = [
   [
     {
