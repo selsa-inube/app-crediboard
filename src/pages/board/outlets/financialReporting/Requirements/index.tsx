@@ -143,15 +143,14 @@ export const Requirements = (props: IRequirementsProps) => {
         };
 
         data.forEach((item) => {
-          item.listsOfRequirementsByPackage.forEach((req) => {
-            const type = req.typeOfRequirementToEvaluated;
+          item.requirementsByPackage.forEach((req) => {
+            const type = req.requirementTypeToEvaluate;
             const key = req.descriptionUse;
             const value = req.requirementStatus;
 
             if (
               type &&
               key &&
-              value &&
               Object.prototype.hasOwnProperty.call(mapped, type)
             ) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -282,13 +281,13 @@ export const Requirements = (props: IRequirementsProps) => {
   const createInitialRequirementValues = ({
     requirementCatalogName,
     descriptionUse,
-    typeOfRequirementToEvaluated,
+    requirementTypeToEvaluate,
     rawRequirements,
     creditRequestCode,
   }: {
     requirementCatalogName: string;
     descriptionUse: string;
-    typeOfRequirementToEvaluated: string;
+    requirementTypeToEvaluate: string;
     rawRequirements: IRequirement[];
     creditRequestCode: string;
   }): IPatchOfRequirements => ({
@@ -297,7 +296,7 @@ export const Requirements = (props: IRequirementsProps) => {
     packageDate: rawRequirements[0]?.packageDate,
     packageDescription: `Requisitos para la solicitud de crédito ${creditRequestCode}`,
     modifyJustification: "modifyJustification",
-    listsOfRequirementsByPackage: [
+    requirementsByPackage: [
       {
         packageId: rawRequirements[0]?.packageId,
         requirementCatalogName,
@@ -305,7 +304,7 @@ export const Requirements = (props: IRequirementsProps) => {
         requirementStatus: "UNVALIDATED",
         descriptionEvaluationRequirement: "Requisitos no evaluados",
         descriptionUse,
-        typeOfRequirementToEvaluated,
+        requirementTypeToEvaluate,
         transactionOperation: "Insert",
       },
     ],
@@ -314,7 +313,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const initialValues = createInitialRequirementValues({
     requirementCatalogName: requirementName,
     descriptionUse: descriptionUseValue,
-    typeOfRequirementToEvaluated,
+    requirementTypeToEvaluate: typeOfRequirementToEvaluated,
     rawRequirements,
     creditRequestCode,
   });
@@ -322,7 +321,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const initialValuesSystemValidation = createInitialRequirementValues({
     requirementCatalogName: justificationRequirement,
     descriptionUse: descriptionUseValues,
-    typeOfRequirementToEvaluated: "SYSTEM_VALIDATION",
+    requirementTypeToEvaluate: "SYSTEM_VALIDATION",
     rawRequirements,
     creditRequestCode,
   });
