@@ -3,8 +3,7 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-
-import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";
+import { IApprovals } from "@pages/prospect/outlets/financialReporting/Approvals/types";
 
 export const getApprovalsById = async (
   businessUnitPublicCode: string,

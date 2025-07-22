@@ -2,9 +2,8 @@ import { useEffect } from "react";
 import { Stack, Text } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { CreditLimitCard } from "@components/cards/CreditLimitCard";
 import { IPaymentChannel } from "@services/types";
-
+import { CreditLimitCard } from "@pages/simulateCredit/CreditLimitCard";
 import { get } from "@mocks/utils/dataMock.service";
 import { mockCreditLimit } from "@mocks/add-prospect/modals-amount/modalsAmount.mock";
 

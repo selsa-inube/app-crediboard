@@ -13,34 +13,34 @@ import { MenuProspect } from "@components/navigation/MenuProspect";
 import { PaymentCapacity } from "@components/modals/PaymentCapacityModal";
 import { ReciprocityModal } from "@components/modals/ReciprocityModal";
 import { ScoreModal } from "@components/modals/FrcModal";
-import { EditProductModal } from "@components/modals/ProspectProductModal";
-import { IncomeModal } from "@components/modals/IncomeModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { BaseModal } from "@components/modals/baseModal";
-import { ShareCreditModal } from "@components/modals/ShareCreditModal";
 import { IPaymentChannel } from "@services/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { addCreditProduct } from "@mocks/utils/addCreditProductMock.service";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
+import { getPropertyValue } from "@utils/mappingData/mappings";
+import { IProspect } from "@services/prospects/types";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 import {
   incomeOptions,
   menuOptions,
-} from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
+} from "@pages/prospect/outlets/financialReporting/CommercialManagement/config/config";
 import {
   StyledContainerIcon,
   StyledVerticalDivider,
-} from "@pages/board/outlets/financialReporting/CommercialManagement/styles";
-import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
-import { getPropertyValue } from "@utils/mappingData/mappings";
-import { IProspect } from "@services/prospects/types";
-import { CreditLimitModal } from "@components/modals/CreditLimitModal";
-import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+} from "@pages/prospect/outlets/financialReporting/CommercialManagement/styles";
+import { CardCommercialManagement } from "@pages/prospect/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 
-import { IncomeDebtor } from "./incomeDebtor";
+import { IncomeDebtor } from "../modals/DebtorDetailsModal/incomeDebtor";
 import { dataCreditProspect } from "./config";
 import { StyledPrint } from "./styles";
 import { IIncomeSources } from "./types";
+import { CreditLimitModal } from "../modals/CreditLimitModal";
+import { IncomeModal } from "../modals/IncomeModal";
+import { EditProductModal } from "../modals/ProspectProductModal";
+import { ShareCreditModal } from "../modals/ShareCreditModal";
 
 interface ICreditProspectProps {
   showMenu: () => void;

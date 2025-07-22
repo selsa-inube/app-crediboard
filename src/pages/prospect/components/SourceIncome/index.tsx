@@ -3,18 +3,19 @@ import { MdCached, MdOutlineEdit } from "react-icons/md";
 import { Stack, Text, Grid, useMediaQuery, Button } from "@inubekit/inubekit";
 import { incomeCardData } from "@components/cards/IncomeCard/config";
 import { CardGray } from "@components/cards/CardGray";
-import { IncomeModal } from "@components/modals/IncomeModal";
+
 import {
   currencyFormat,
   parseCurrencyString,
 } from "@utils/formatData/currency";
 import { IIncome } from "@services/types";
-import { IIncomeSources } from "../CreditProspect/types";
+import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { BaseModal } from "@components/modals/baseModal";
+import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
+import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
 
 import { IncomeEmployment, IncomeCapital, MicroBusinesses } from "./config";
 import { StyledContainer } from "./styles";
-import { dataReport } from "../../data/TableObligationsFinancial/config";
 
 interface ISourceIncomeProps {
   openModal?: (state: boolean) => void;
