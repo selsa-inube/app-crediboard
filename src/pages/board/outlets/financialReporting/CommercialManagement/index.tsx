@@ -40,7 +40,7 @@ import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInsta
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { currencyFormat } from "@utils/formatData/currency";
 import { CreditProspect } from "@components/layout/CreditProspect";
-import { IProspect, ICreditProduct } from "@services/prospects/types";
+import { IProspect, ICreditProduct } from "@services/prospect/types";
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { getModeOfDisbursement } from "@services/credit-request/query/getModeOfDisbursement";
 import { AppContext } from "@context/AppContext";
@@ -48,7 +48,7 @@ import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";

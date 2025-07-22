@@ -5,7 +5,7 @@ import {
 } from "@config/environment";
 
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-import { IExtraordinaryInstallments } from "../types/extraordInaryInstallments";
+import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 export const saveExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,

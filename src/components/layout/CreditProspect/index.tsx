@@ -33,9 +33,9 @@ import {
 } from "@pages/board/outlets/financialReporting/CommercialManagement/styles";
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { getPropertyValue } from "@utils/mappingData/mappings";
-import { IProspect } from "@services/prospects/types";
+import { IProspect } from "@services/prospect/types";
 import { CreditLimitModal } from "@components/modals/CreditLimitModal";
-import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 import { IncomeDebtor } from "./incomeDebtor";
 import { dataCreditProspect } from "./config";

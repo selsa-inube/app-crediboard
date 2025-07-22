@@ -4,9 +4,12 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { ICustomer } from "./types";
+import { IStaffPortalByBusinessManager } from "../types";
+import { mapResendApiToEntities } from "./mappers";
 
-const getCustomerById = async (customerId: string): Promise<ICustomer> => {
+const getStaffPortalsByBusinessManager = async (): Promise<
+  IStaffPortalByBusinessManager[]
+> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -14,55 +17,46 @@ const getCustomerById = async (customerId: string): Promise<ICustomer> => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchByIdCustomerCatalog",
-          "X-Business-Unit": "fondecom",
+          "X-Action": "SearchAllStaffPortalsByBusinessManager",
           "Content-type": "application/json; charset=UTF-8",
         },
-        signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICLIENT_QUERY_PROCESS_SERVICE}/customers/${customerId}`,
+        `${environment.IVITE_ISAAS_QUERY_PROCESS_SERVICE}/staff-portals-by-business-manager`,
         options
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay tarea disponible.");
+        return [];
       }
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw {
-          message: "Error al obtener la tarea.",
-          status: res.status,
-          data,
-        };
+        throw new Error(`Error al obtener los datos: ${res.status}`);
       }
 
-      if (Array.isArray(data) && data.length > 0) {
-        return data[0]; 
-      }
+      const normalizedUser = Array.isArray(data)
+        ? mapResendApiToEntities(data)
+        : [];
 
-      return data;
+      return normalizedUser;
     } catch (error) {
-      console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la tarea."
+          "Todos los intentos fallaron. No se pudieron obtener los datos del operador."
         );
       }
     }
   }
 
-  throw new Error("No se pudo obtener la tarea después de varios intentos.");
+  return [];
 };
 
-
-export { getCustomerById };
+export { getStaffPortalsByBusinessManager };

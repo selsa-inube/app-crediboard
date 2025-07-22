@@ -11,13 +11,12 @@ import {
   tittleOptions,
 } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
-import { getSearchProspectSummaryById } from "@services/prospects/ProspectSummaryById";
+import { getSearchProspectSummaryById } from "@services/prospect/ProspectSummaryById";
 import { AppContext } from "@context/AppContext";
-import { IProspect, ICreditProduct } from "@services/prospects/types";
+import { IProspect, ICreditProduct, IProspectSummaryById } from "@services/prospect/types";
 import { Schedule } from "@services/enums";
 import { DeductibleExpensesModal } from "@components/modals/DeductibleExpensesModal";
-import { IProspectSummaryById } from "@services/prospects/ProspectSummaryById/types";
-import { getAllDeductibleExpensesById } from "@services/iProspect/deductibleExpenses";
+import { getAllDeductibleExpensesById } from "@services/prospect/deductibleExpenses";
 import { EditProductModal } from "@components/modals/ProspectProductModal";
 import { dataTableExtraordinaryInstallment } from "@components/data/TableExtraordinaryInstallment/config";
 

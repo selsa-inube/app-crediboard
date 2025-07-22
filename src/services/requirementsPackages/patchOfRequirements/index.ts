@@ -1,5 +1,6 @@
 import { environment } from "@config/environment";
-import { IPatchOfRequirements } from "@services/types";
+
+import { IPatchOfRequirements } from "../types";
 import { mapRequirementsEntity } from "./mappers";
 
 const patchOfRequirements = async (

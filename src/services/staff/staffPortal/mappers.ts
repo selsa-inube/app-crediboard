@@ -1,4 +1,4 @@
-import { IStaffPortalByBusinessManager } from "./types";
+import { IStaffPortalByBusinessManager } from "../types";
 
 const mapResendApiToEntity = (
   resend: Record<string, string | number | object>

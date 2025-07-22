@@ -3,12 +3,12 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IPackagesOfRequirementsById } from "./types";
+import { IAllDeductibleExpensesById } from "../types";
 
-const getAllPackagesOfRequirementsById = async (
+const getAllDeductibleExpensesById = async (
   businessUnitPublicCode: string,
-  uniqueReferenceNumber: string
-): Promise<IPackagesOfRequirementsById[]> => {
+  publicCode: string,
+): Promise<IAllDeductibleExpensesById[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -16,14 +16,11 @@ const getAllPackagesOfRequirementsById = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-      const queryParams = new URLSearchParams({
-        uniqueReferenceNumber: uniqueReferenceNumber,
-      });
 
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllPackagesOfRequirementsToManage",
+          "X-Action": "SearchAllDeductibleExpensesById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -31,44 +28,40 @@ const getAllPackagesOfRequirementsById = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/requirements-packages?${queryParams.toString()}`,
-        options
+        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${publicCode}`,
+        options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay requisitos disponibles.");
+        throw new Error("No hay gastos descontables.");
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Error al obtener los requisitos.",
+          message: "Error al obtener los gastos descontables.",
           status: res.status,
           data,
         };
       }
 
-      if (Array.isArray(data)) {
-        return data;
-      }
-
-      throw new Error("La respuesta no contiene un array de requisitos.");
+      return data;
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener los requisitos."
+          "Todos los intentos fallaron. No se pudo obtener los gastos descontables.",
         );
       }
     }
   }
 
   throw new Error(
-    "No se pudo obtener los requisitos después de varios intentos."
+    "No se pudo obtener los gastos descontables después de varios intentos.",
   );
 };
 
-export { getAllPackagesOfRequirementsById };
+export { getAllDeductibleExpensesById };

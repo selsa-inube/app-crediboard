@@ -30,9 +30,8 @@ import {
   textFlagsReject,
   textFlagsUsers,
 } from "@config/pages/staffModal/addFlag";
-import { getSearchProspectByCode } from "@services/prospects/ProspectByCode";
-import { IProspect } from "@services/prospects/types";
-import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { getSearchProspectByCode } from "@services/prospect/ProspectByCode";
+import { IProspect, IExtraordinaryInstallments } from "@services/prospect/types";
 
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";

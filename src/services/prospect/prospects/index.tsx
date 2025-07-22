@@ -3,19 +3,14 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+import { IProspect } from "../types";
 
-import { ICustomer } from "./types";
-
-const getSearchCustomerByCode = async (
-  publicCode: string,
+const getSearchProspectById = async (
   businessUnitPublicCode: string,
-  silent = false
-): Promise<ICustomer | null> => {
+  prospectCode: string
+): Promise<IProspect> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-  const queryParams = new URLSearchParams({
-    publicCode: publicCode,
-  });
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -25,17 +20,15 @@ const getSearchCustomerByCode = async (
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllCustomerCatalog",
-          "X-Business-Unit": "fondecom",
+          "X-Action": "SearchByIdProspect",
+          "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
         signal: controller.signal,
       };
 
-      // The console.log is requied due to the fondecom business unit
-      console.log(businessUnitPublicCode);
       const res = await fetch(
-        `${environment.VITE_ICLIENT_QUERY_PROCESS_SERVICE}/customers?${queryParams.toString()}`,
+        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectCode}`,
         options
       );
 
@@ -46,7 +39,6 @@ const getSearchCustomerByCode = async (
       }
 
       const data = await res.json();
-
       if (!res.ok) {
         throw {
           message: "Error al obtener la tarea.",
@@ -61,18 +53,16 @@ const getSearchCustomerByCode = async (
 
       return data;
     } catch (error) {
-      if (!silent) {
-        console.error(`Intento ${attempt} fallido:`, error);
-        if (attempt === maxRetries) {
-          throw new Error(
-            "Todos los intentos fallaron. No se pudo obtener la tarea."
-          );
-        }
+      console.error(`Intento ${attempt} fallido:`, error);
+      if (attempt === maxRetries) {
+        throw new Error(
+          "Todos los intentos fallaron. No se pudo obtener la tarea."
+        );
       }
     }
   }
 
-  return null;
+  throw new Error("No se pudo obtener la tarea después de varios intentos.");
 };
 
-export { getSearchCustomerByCode };
+export { getSearchProspectById };

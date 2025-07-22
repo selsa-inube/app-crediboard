@@ -9,7 +9,7 @@ import { IEntries } from "@components/data/TableBoard/types";
 import { TextAreaModal } from "@components/modals/TextAreaModal";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getNotificationOnApprovals } from "@services/notificationOnApprovals";
+import { getNotificationOnApprovals } from "@services/credit-request/command/notificationOnApprovals";
 import { getApprovalsById } from "@services/credit-request/query/getApprovals";
 import { IApprovals } from "./types";
 import { ICreditRequest } from "@services/types";

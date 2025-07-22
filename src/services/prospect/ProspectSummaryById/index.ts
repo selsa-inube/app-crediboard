@@ -3,12 +3,13 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IProspect } from "./types";
 
-const getSearchProspectByCode = async (
+import { IProspectSummaryById } from "../types";
+
+const getSearchProspectSummaryById = async (
   businessUnitPublicCode: string,
   prospectCode: string
-): Promise<IProspect> => {
+): Promise<IProspectSummaryById> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -16,14 +17,10 @@ const getSearchProspectByCode = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-      const queryParams = new URLSearchParams({
-        prospectCode: prospectCode,
-      });
-
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllProspects",
+          "X-Action": "GetProspectSummaryById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -31,28 +28,28 @@ const getSearchProspectByCode = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects?${queryParams.toString()}`,
+        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectCode}`,
         options
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay tarea disponible.");
+        throw new Error("No hay resumen de montos disponibles.");
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Error al obtener la tarea.",
+          message: "Error al obtener el resumen de montos.",
           status: res.status,
           data,
         };
       }
 
       if (Array.isArray(data)) {
-        return data[0] as IProspect;
+        return data[0] as IProspectSummaryById;
       }
 
       return data;
@@ -60,13 +57,15 @@ const getSearchProspectByCode = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la tarea."
+          "Todos los intentos fallaron. No se pudo traer el resumen de montos"
         );
       }
     }
   }
 
-  throw new Error("No se pudo obtener la tarea después de varios intentos.");
+  throw new Error(
+    "No se pudo obtener el resumen de montos después de varios intentos."
+  );
 };
 
-export { getSearchProspectByCode };
+export { getSearchProspectSummaryById };

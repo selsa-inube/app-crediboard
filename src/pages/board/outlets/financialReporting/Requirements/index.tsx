@@ -22,7 +22,7 @@ import {
   AddRequirementMock,
   AddRequirementMockSistemValidations,
 } from "@mocks/addRequirement";
-import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
+import { getAllPackagesOfRequirementsById } from "@services/requirementsPackages/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
 
 import {

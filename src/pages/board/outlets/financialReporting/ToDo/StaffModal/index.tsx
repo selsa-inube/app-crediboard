@@ -4,7 +4,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Stack, useMediaQuery, Select, useFlag } from "@inubekit/inubekit";
 
-import { getCommercialManagerAndAnalyst } from "@services/commercialManagerAndAnalyst";
+import { getCommercialManagerAndAnalyst } from "@services/staff/commercialManagerAndAnalyst";
 
 import { AppContext } from "@context/AppContext";
 import {

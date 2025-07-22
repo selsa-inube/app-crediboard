@@ -4,7 +4,7 @@ import {
   IConsolidatedCredit,
   ICreditProduct,
   IOutlay,
-} from "./types";
+} from "../types";
 
 const mapProspectEntity = (
   data: Record<string, string | number | object>
