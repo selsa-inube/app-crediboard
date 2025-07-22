@@ -116,8 +116,8 @@ export const infoItems = [
 export const questionToBeAskedInModalText = {
   notEvaluated: "Sin Evaluar",
   notCompliant: "No Cumple",
-  questionForUnvalidated: "¿Pudo evaluar?",
-  questionForNotCompliant: "¿Cumple?",
+  questionForUnvalidated: "Pudo evaluar?",
+  questionForNotCompliant: "Cumple?",
 };
 export const actionsRequirements = [
   [
@@ -246,10 +246,19 @@ const generateTag = (value: string): JSX.Element => {
     value === "DOCUMENT_STORED_WITHOUT_VALIDATION" ||
     value === "PASSED_WITH_HUMAN_VALIDATION" ||
     value === "DOCUMENT_VALIDATED_BY_THE_USER" ||
-    value === "IGNORED_BY_THE_USER"
+    value === "IGNORED_BY_THE_USER" ||
+    value === "PASSED_HUMAN_VALIDATION" ||
+    value === "DOCUMENT_STORED_AND_VALIDATED" ||
+    value === "IGNORED_BY_THE_USER_HUMAN_VALIDATION" ||
+    value === "DOCUMENT_IGNORED_BY_THE_USER"
   ) {
     return <Tag label="Cumple" appearance="success" />;
-  } else if (value === "FAILED_SYSTEM_VALIDATION") {
+  } else if (
+    value === "FAILED_SYSTEM_VALIDATION" ||
+    value === "IGNORED_BY_THE_USER_SYSTEM_VALIDATION" ||
+    value === "FAILED_DOCUMENT_VALIDATION" ||
+    value === "FAILED_HUMAN_VALIDATION"
+  ) {
     return <Tag label="No Cumple" appearance="danger" />;
   } else {
     return <Tag label="Sin Evaluar" appearance="warning" />;

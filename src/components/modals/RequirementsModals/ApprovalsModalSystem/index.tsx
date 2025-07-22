@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Stack, Text, Textarea, Toggle } from "@inubekit/inubekit";
+import { Stack, Text, Textarea, Toggle, useFlag } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
+import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
+import { IRequirement } from "@services/types";
 
 import { IApprovalSystem } from "../types";
 import { approvalsConfig } from "./config";
@@ -13,12 +15,28 @@ interface ApprovalsModalSystemProps {
   isMobile: boolean;
   initialValues: IApprovalSystem;
   questionToBeAskedInModal: string;
+  businessUnitPublicCode: string;
+  entryId: string;
+  entryIdToRequirementMap: Record<string, string>;
+  rawRequirements: IRequirement[];
   onConfirm?: (values: IApprovalSystem) => void;
   onCloseModal?: () => void;
 }
 
 export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
-  const { isMobile, initialValues, questionToBeAskedInModal, onConfirm, onCloseModal } = props;
+  const {
+    isMobile,
+    initialValues,
+    questionToBeAskedInModal,
+    businessUnitPublicCode,
+    entryId,
+    entryIdToRequirementMap,
+    rawRequirements,
+    onConfirm,
+    onCloseModal,
+  } = props;
+
+  const { addFlag } = useFlag();
 
   const validationSchema = Yup.object({
     toggleChecked: Yup.boolean(),
@@ -32,7 +50,56 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
     initialValues: initialValues || {},
     validationSchema,
     validateOnMount: true,
-    onSubmit: () => {},
+    onSubmit: async () => {
+      try {
+        const requirementPackageId = entryIdToRequirementMap[entryId];
+
+        if (!requirementPackageId) return;
+
+        const payload = {
+          modifyJustification: "change state",
+          nextStatusValue: formik.values.toggleChecked
+            ? "UNVALIDATED_SYSTEM_VALIDATION"
+            : "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
+          packageId: rawRequirements[0].packageId,
+          requirementPackageId: requirementPackageId,
+          statusChangeJustification: formik.values.observations,
+          transactionOperation: "PartialUpdate",
+          documentsByRequirement: [
+            {
+              documentCode: "",
+              requirementPackageId: "",
+              transactionOperation: "PartialUpdate",
+            },
+          ],
+        };
+
+        await approveRequirementById(businessUnitPublicCode, payload);
+
+        if (onConfirm) {
+          onConfirm(formik.values);
+        }
+
+        if (onCloseModal) {
+          onCloseModal();
+        }
+      } catch (error: unknown) {
+        const err = error as {
+          message?: string;
+          status: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + err?.message + (err?.data?.description || "");
+        addFlag({
+          title: approvalsConfig.titleError,
+          description,
+          appearance: "danger",
+          duration: 5000,
+        });
+      }
+    },
   });
 
   useEffect(() => {
@@ -42,15 +109,12 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
 
     formik.setFieldValue("labelText", label);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [formik.values.toggleChecked]);
 
   return (
     <BaseModal
       title={approvalsConfig.title}
-      handleNext={() => {
-        onConfirm?.(formik.values);
-        onCloseModal?.();
-      }}
+      handleNext={formik.handleSubmit}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
       backButton={approvalsConfig.Cancel}

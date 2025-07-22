@@ -20,6 +20,8 @@ import { ListModal } from "@components/modals/ListModal";
 import { DocumentViewer } from "@components/modals/DocumentViewer";
 import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
 import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
+import { IRequirement } from "@services/types";
+import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
 import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
@@ -33,6 +35,9 @@ interface ApprovalModalDocumentariesProps {
   businessUnitPublicCode: string;
   user: string;
   seenDocuments: string[];
+  entryId: string;
+  entryIdToRequirementMap: Record<string, string>;
+  rawRequirements: IRequirement[];
   setSeenDocuments: React.Dispatch<React.SetStateAction<string[]>>;
   onConfirm?: (values: IApprovalDocumentaries) => void;
   onCloseModal?: () => void;
@@ -49,6 +54,9 @@ export function ApprovalModalDocumentaries(
     businessUnitPublicCode,
     user,
     seenDocuments,
+    entryId,
+    entryIdToRequirementMap,
+    rawRequirements,
     setSeenDocuments,
     onConfirm,
     onCloseModal,
@@ -62,6 +70,8 @@ export function ApprovalModalDocumentaries(
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+
+  const { addFlag } = useFlag();
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
@@ -77,10 +87,74 @@ export function ApprovalModalDocumentaries(
     initialValues: initialValues || {},
     validationSchema,
     validateOnMount: true,
-    onSubmit: () => {},
-  });
+    onSubmit: async (values) => {
+      try {
+        const requirementPackageId = entryIdToRequirementMap[entryId];
 
-  const { addFlag } = useFlag();
+        if (!requirementPackageId) return;
+
+        const selectedIds = values.selectedDocumentIds || {};
+        const selectedDocuments = documents.filter(
+          (doc) => selectedIds[doc.documentId]
+        );
+
+        let nextStatusValue = "";
+        if (values.answer === "Cumple") {
+          nextStatusValue = "DOCUMENT_STORED_AND_VALIDATED";
+        } else if (values.answer === "No cumple") {
+          nextStatusValue = "FAILED_DOCUMENT_VALIDATION";
+        } else if (values.answer === "No cumple y rechazar solicitud") {
+          nextStatusValue = "INVALID_DOCUMENT_CANCELS_REQUEST";
+        } else if (values.answer === "Aprobar") {
+          nextStatusValue = "DOCUMENT_IGNORED_BY_THE_USER";
+        }
+
+        const payload = {
+          modifyJustification: "change state",
+          nextStatusValue,
+          packageId: rawRequirements[0]?.packageId,
+          requirementPackageId,
+          statusChangeJustification: values.observations,
+          transactionOperation: "PartialUpdate",
+          documentsByRequirement: [
+            {
+              documentCode: "",
+              requirementPackageId: "",
+              transactionOperation: "PartialUpdate",
+            },
+          ],
+        };
+
+        await approveRequirementById(businessUnitPublicCode, payload);
+
+        if (onConfirm) {
+          onConfirm({
+            ...values,
+            selectedDocuments,
+          });
+        }
+
+        if (onCloseModal) {
+          onCloseModal();
+        }
+      } catch (error: unknown) {
+        const err = error as {
+          message?: string;
+          status: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + err?.message + (err?.data?.description || "");
+        addFlag({
+          title: approvalsConfig.titleError,
+          description,
+          appearance: "danger",
+          duration: 5000,
+        });
+      }
+    },
+  });
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -145,17 +219,7 @@ export function ApprovalModalDocumentaries(
   return (
     <BaseModal
       title={`${approvalsConfig.title} ${title}`}
-      handleNext={() => {
-        const selectedIds = formik.values.selectedDocumentIds || {};
-        const selectedDocuments = documents.filter(
-          (doc) => selectedIds[doc.documentId]
-        );
-        onConfirm?.({
-          ...formik.values,
-          selectedDocuments,
-        });
-        onCloseModal?.();
-      }}
+      handleNext={formik.handleSubmit}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
       backButton={approvalsConfig.cancel}

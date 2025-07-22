@@ -13,11 +13,7 @@ import { TableBoard } from "@components/data/TableBoard";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { TraceDetailsModal } from "@components/modals/TraceDetailsModal";
 import { IAction, IEntries, ITitle } from "@components/data/TableBoard/types";
-import {
-  CreditRequest,
-  IPatchOfRequirements,
-  IRequirement,
-} from "@services/types";
+import { CreditRequest, IPatchOfRequirements } from "@services/types";
 import {
   AddRequirementMock,
   AddRequirementMockSistemValidations,
@@ -35,7 +31,7 @@ import {
   getActionsMobileIcon,
   questionToBeAskedInModalText,
 } from "./config";
-import { DocumentItem } from "./types";
+import { DocumentItem, IRequirement } from "./types";
 import { errorMessages } from "../config";
 
 interface IRequirementsData {
@@ -331,6 +327,35 @@ export const Requirements = (props: IRequirementsProps) => {
     setShowModal(!showModal);
   };
 
+  const [entryIdToRequirementMap, setEntryIdToRequirementMap] = useState<
+    Record<string, string>
+  >({});
+
+  useEffect(() => {
+    if (rawRequirements.length > 0) {
+      const map: Record<string, string> = {};
+      const typeCounters = { sistema: 0, documento: 0, humano: 0 };
+
+      rawRequirements[0].requirementsByPackage.forEach((req) => {
+        const prefixMap = {
+          SYSTEM_VALIDATION: "sistema",
+          DOCUMENT: "documento",
+          HUMAN_VALIDATION: "humano",
+        } as const;
+
+        const prefix =
+          prefixMap[req.requirementTypeToEvaluate as keyof typeof prefixMap];
+
+        if (prefix) {
+          typeCounters[prefix] += 1;
+          map[`${prefix}-${typeCounters[prefix]}`] = req.requirementPackageId;
+        }
+      });
+
+      setEntryIdToRequirementMap(map);
+    }
+  }, [rawRequirements]);
+
   return (
     <>
       <Fieldset
@@ -473,6 +498,10 @@ export const Requirements = (props: IRequirementsProps) => {
                 return questionToBeAskedInModalText.questionForNotCompliant;
               return "";
             })()}
+            businessUnitPublicCode={businessUnitPublicCode}
+            entryId={selectedEntryId}
+            rawRequirements={rawRequirements}
+            entryIdToRequirementMap={entryIdToRequirementMap}
           />
         )}
       {showAprovalsModal &&
@@ -506,6 +535,9 @@ export const Requirements = (props: IRequirementsProps) => {
             }
             seenDocuments={seenDocuments}
             setSeenDocuments={setSeenDocuments}
+            entryId={selectedEntryId}
+            rawRequirements={rawRequirements}
+            entryIdToRequirementMap={entryIdToRequirementMap}
           />
         )}
       {showAprovalsModal &&
@@ -526,6 +558,10 @@ export const Requirements = (props: IRequirementsProps) => {
                 [selectedEntryId]: values,
               }))
             }
+            businessUnitPublicCode={businessUnitPublicCode}
+            entryId={selectedEntryId}
+            rawRequirements={rawRequirements}
+            entryIdToRequirementMap={entryIdToRequirementMap}
           />
         )}
       {showAddRequirementModal && (
