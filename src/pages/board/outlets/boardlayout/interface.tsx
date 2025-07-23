@@ -66,14 +66,16 @@ interface BoardLayoutProps {
   errorLoadingPins: boolean;
   activeOptions: Filter[];
   closeFilterModal: () => void;
-  handleSelectCheckChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSelectCheckChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
     isPinned: string
   ) => void;
-  handleShowPinnedOnly: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSearchRequestsValue: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleShowPinnedOnly: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSearchRequestsValue: (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => void;
   onOrientationChange: (orientation: SectionOrientation) => void;
   handleLoadMoreData: () => void;
   openFilterModal: () => void;
@@ -115,7 +117,12 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   } = useSpeechRecognition();
 
   const [showErrorAlert, setShowErrorAlert] = useState(true);
+  const displayText = listening
+    ? transcript || voiceSearchConfig.states.listening
+    : voiceSearchConfig.states.instruction;
+
   const [isShowModal, setIsShowModal] = useState(false);
+  const [isVoiceProcessed, setIsVoiceProcessed] = useState(false);
   const { businessUnitSigla } = useContext(AppContext);
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
   const { addFlag } = useFlag();
@@ -126,8 +133,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
 
   const startListening = () => {
     resetTranscript();
+    setIsVoiceProcessed(false);
     SpeechRecognition.startListening({
-      continuous: speechRecognitionConfig.continuous,
+      continuous: false,
       language: speechRecognitionConfig.language,
     });
   };
@@ -152,10 +160,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     return processedText.trim();
   };
 
-  const applyVoiceSearch = () => {
-    if (transcript) {
-      stopListening();
-      const processedText = processTranscript(transcript);
+  const applyVoiceSearch = (transcriptText: string) => {
+    if (transcriptText && transcriptText.trim() !== "" && !isVoiceProcessed) {
+      const processedText = processTranscript(transcriptText);
       const syntheticEvent = {
         target: {
           value: processedText,
@@ -163,16 +170,68 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       } as React.ChangeEvent<HTMLInputElement>;
 
       handleSearchRequestsValue(syntheticEvent);
-      resetTranscript();
+      setIsVoiceProcessed(true);
       setIsShowModal(false);
+      resetTranscript();
     }
   };
 
-  const cancelVoiceSearch = () => {
-    resetTranscript();
+  const handleCloseModal = () => {
     stopListening();
+    resetTranscript();
     setIsShowModal(false);
+    setIsVoiceProcessed(false);
   };
+
+  useEffect(() => {
+    if (isShowModal && browserSupportsSpeechRecognition) {
+      startListening();
+
+      const recognition = SpeechRecognition.getRecognition();
+      if (recognition) {
+        recognition.onend = () => {
+          if (transcript && transcript.trim() !== "" && !isVoiceProcessed) {
+            applyVoiceSearch(transcript);
+          }
+        };
+
+        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+          console.error("Speech recognition error:", event.error);
+          if (event.error === "no-speech") {
+            setTimeout(() => {
+              if (isShowModal && !isVoiceProcessed) {
+                startListening();
+              }
+            }, 1000);
+          }
+        };
+      }
+
+      return () => {
+        if (recognition) {
+          recognition.onend = null;
+          recognition.onerror = null;
+        }
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isShowModal, browserSupportsSpeechRecognition]);
+
+  useEffect(() => {
+    if (
+      transcript &&
+      transcript.trim() !== "" &&
+      isShowModal &&
+      !isVoiceProcessed
+    ) {
+      const timeoutId = setTimeout(() => {
+        applyVoiceSearch(transcript);
+      }, 1500);
+
+      return () => clearTimeout(timeoutId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transcript, isShowModal, isVoiceProcessed]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -269,10 +328,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     }
   };
 
-  const handleCloseModal = () => {
-    cancelVoiceSearch();
-  };
-
   useEffect(() => {
     return () => {
       if (listening) {
@@ -290,7 +345,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         {errorLoadingPins && showErrorAlert && (
           <StyledError $isMobile={isMobile}>
             <ErrorAlert
-              message="Error: No se pudo cargar el estado de los anclados."
+              message={voiceSearchConfig.errors.loadingPins}
               onClose={() => setShowErrorAlert(false)}
             />
           </StyledError>
@@ -412,7 +467,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   disabled={!activeOptions.length}
                   onClick={handleClearFilters}
                 >
-                  Quitar
+                  {voiceSearchConfig.buttons.remove}
                 </Button>
                 <Button
                   appearance="primary"
@@ -422,7 +477,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   variant="outlined"
                   onClick={openFilterModal}
                 >
-                  Filtrar
+                  {voiceSearchConfig.buttons.filter}
                 </Button>
               </StyledRequestsContainer>
             )}
@@ -515,22 +570,24 @@ function BoardLayoutUI(props: BoardLayoutProps) {
               title={voiceSearchConfig.modal.title}
               width={voiceSearchConfig.modal.width}
               handleClose={handleCloseModal}
-              handleNext={applyVoiceSearch}
-              nextButton={voiceSearchConfig.modal.buttons.apply}
             >
               <Stack direction="column" gap="24px">
                 <Text type="title" size="large">
-                  {listening
-                    ? transcript || voiceSearchConfig.states.listening
-                    : voiceSearchConfig.states.instruction}
+                  {displayText}
                 </Text>
-
+                {!listening && transcript && (
+                  <Stack justifyContent="center">
+                    <Text type="body" size="large">
+                      {transcript}
+                    </Text>
+                  </Stack>
+                )}
                 <Stack justifyContent="center">
                   <StyledMic>
                     <Icon
                       icon={listening ? <MdMic /> : <MdOutlineMicNone />}
                       size="58px"
-                      appearance={listening ? "danger" : "primary"}
+                      appearance="primary"
                       shape="circle"
                       variant="filled"
                       spacing="compact"

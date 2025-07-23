@@ -17,6 +17,11 @@ export const voiceSearchConfig = {
       message:
         "Tu navegador no soporta reconocimiento de voz. Por favor, usa un navegador compatible como Chrome, Edge o Safari.",
     },
+    loadingPins: "Error: No se pudo cargar el estado de los anclados.",
+  },
+  buttons: {
+    remove: "Quitar",
+    filter: "Filtrar",
   },
   accessibility: {
     microphoneButton: "Botón de micrófono para búsqueda por voz",
@@ -24,18 +29,16 @@ export const voiceSearchConfig = {
   },
 };
 
-
 export const speechRecognitionConfig = {
   language: "es-ES",
   continuous: true,
-  interimResults: false
+  interimResults: false,
 };
-
 
 export const textProcessingConfig = {
   numberSpaceRegex: /(\d)\s+(\d)/g,
   cleanupPatterns: {
     extraSpaces: /\s+/g,
-    leadingTrailing: /^\s+|\s+$/g
-  }
+    leadingTrailing: /^\s+|\s+$/g,
+  },
 };

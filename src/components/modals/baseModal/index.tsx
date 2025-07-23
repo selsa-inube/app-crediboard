@@ -107,14 +107,16 @@ export function BaseModal(props: IBaseModalProps) {
                 {backButton}
               </Button>
             )}
-            <Button
-              onClick={handleNext}
-              disabled={disabledNext}
-              iconAfter={iconAfterNext}
-              iconBefore={iconBeforeNext}
-            >
-              {nextButton}
-            </Button>
+            {nextButton && (
+              <Button
+                onClick={handleNext}
+                disabled={disabledNext}
+                iconAfter={iconAfterNext}
+                iconBefore={iconBeforeNext}
+              >
+                {nextButton}
+              </Button>
+            )}
           </Stack>
         </Stack>
       </StyledContainer>
