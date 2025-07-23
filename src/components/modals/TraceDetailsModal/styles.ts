@@ -5,6 +5,7 @@ export const StyledScroll = styled.div`
   overflow-y: auto;
   padding-right: 8px;
   margin-bottom: 8px;
+  max-height: 118px;
 
   ${({ theme }) =>
     `

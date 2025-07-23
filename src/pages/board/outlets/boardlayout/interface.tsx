@@ -40,7 +40,6 @@ import {
   StyledSearch,
   StyledRequestsContainer,
 } from "./styles";
-
 import { selectCheckOptions } from "./config/select";
 import { IFilterFormValues } from ".";
 import { boardColumns, seePinned } from "./config/board";
@@ -70,6 +69,7 @@ interface BoardLayoutProps {
   openFilterModal: () => void;
   isFilterModalOpen: boolean;
   handleApplyFilters: (values: IFilterFormValues) => void;
+  shouldCollapseAll: boolean;
   handleClearFilters: () => void;
   handleRemoveFilter: (filterIdToRemove: string) => void;
   isMenuOpen: boolean;
@@ -98,6 +98,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     handleRemoveFilter,
     handleSearchRequestsValue,
     onOrientationChange,
+    shouldCollapseAll,
   } = props;
 
   const [showErrorAlert, setShowErrorAlert] = useState(true);
@@ -418,6 +419,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 handleLoadMoreData={handleLoadMoreData}
                 dragIcon={dragIcon}
                 onOrientationChange={onOrientationChange}
+                shouldCollapseAll={shouldCollapseAll}
               />
             );
           })}

@@ -31,7 +31,7 @@ const getAllPackagesOfRequirementsById = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/packages-of-requirements-to-manage?${queryParams.toString()}`,
+        `${environment.ICOREBANKING_API_URL_QUERY}/requirements-packages?${queryParams.toString()}`,
         options
       );
 

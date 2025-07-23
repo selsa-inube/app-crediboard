@@ -18,11 +18,13 @@ import {
   IPatchOfRequirements,
   IRequirement,
 } from "@services/types";
-import { AddRequirementMock } from "@mocks/addRequirement";
+import {
+  AddRequirementMock,
+  AddRequirementMockSistemValidations,
+} from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
 
-import { errorMessages } from "../config";
 import {
   infoItems,
   maperDataRequirements,
@@ -31,8 +33,10 @@ import {
   textFlagsRequirements,
   dataAddRequirement,
   getActionsMobileIcon,
+  questionToBeAskedInModalText,
 } from "./config";
 import { DocumentItem } from "./types";
+import { errorMessages } from "../config";
 
 interface IRequirementsData {
   id: string;
@@ -99,15 +103,21 @@ export const Requirements = (props: IRequirementsProps) => {
   );
   const [requirementName, setRequirementName] = useState("");
   const [descriptionUseValue, setDescriptionUseValue] = useState("");
+  const [descriptionUseValues, setDescriptionUseValues] = useState("");
   const [typeOfRequirementToEvaluated, setTypeOfRequirementToEvaluated] =
     useState<string>("");
+
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(false);
   const [rawRequirements, setRawRequirements] = useState<IRequirement[]>([]);
+  const [justificationRequirement, setJustificationRequirement] = useState(
+    dataAddRequirement.descriptionJustification
+  );
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
   const { addFlag } = useFlag();
   const [showAddSystemValidationModal, setShowAddSystemValidationModal] =
     useState(false);
+  const [seenDocuments, setSeenDocuments] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchRequirements = async () => {
@@ -133,15 +143,14 @@ export const Requirements = (props: IRequirementsProps) => {
         };
 
         data.forEach((item) => {
-          item.listsOfRequirementsByPackage.forEach((req) => {
-            const type = req.typeOfRequirementToEvaluated;
+          item.requirementsByPackage.forEach((req) => {
+            const type = req.requirementTypeToEvaluate;
             const key = req.descriptionUse;
             const value = req.requirementStatus;
 
             if (
               type &&
               key &&
-              value &&
               Object.prototype.hasOwnProperty.call(mapped, type)
             ) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -181,21 +190,27 @@ export const Requirements = (props: IRequirementsProps) => {
   const renderAddIcon = (entry: IEntries, tableId: string) => {
     let isDisabled = false;
 
-    if (tableId === "tabla1") {
-      isDisabled =
-        !approvalSystemValues[entry.id] ||
-        (approvalSystemValues[entry.id].observations === "" &&
-          approvalSystemValues[entry.id].labelText === "");
-    } else if (tableId === "tabla2") {
-      isDisabled =
-        !approvalDocumentValues[entry.id] ||
-        (approvalDocumentValues[entry.id].observations === "" &&
-          approvalDocumentValues[entry.id].answer === "");
-    } else if (tableId === "tabla3") {
-      isDisabled =
-        !approvalHumanValues[entry.id] ||
-        (approvalHumanValues[entry.id].observations === "" &&
-          approvalHumanValues[entry.id].answer === "");
+    const label = isValidElement(entry?.tag) ? entry?.tag?.props?.label : "";
+
+    if (label === "Cumple") {
+      isDisabled = false;
+    } else {
+      if (tableId === "tableApprovalSystem") {
+        isDisabled =
+          !approvalSystemValues[entry.id] ||
+          (approvalSystemValues[entry.id].observations === "" &&
+            approvalSystemValues[entry.id].labelText === "");
+      } else if (tableId === "tableDocumentValues") {
+        isDisabled =
+          !approvalDocumentValues[entry.id] ||
+          (approvalDocumentValues[entry.id].observations === "" &&
+            approvalDocumentValues[entry.id].answer === "");
+      } else if (tableId === "tableApprovalHuman") {
+        isDisabled =
+          !approvalHumanValues[entry.id] ||
+          (approvalHumanValues[entry.id].observations === "" &&
+            approvalHumanValues[entry.id].answer === "");
+      }
     }
 
     return (
@@ -230,14 +245,11 @@ export const Requirements = (props: IRequirementsProps) => {
         size="32px"
         onClick={() => openApprovalsModal(tableId, entry.id)}
         disabled={
-          isValidElement(entry?.tag) && entry?.tag?.props?.label === "No Cumple"
+          isValidElement(entry?.tag) && entry?.tag?.props?.label === "Cumple"
         }
       />
     </Stack>
   );
-  const handleAddRequirementAddSystemValidation = async () => {
-    if (closeAdd) closeAdd();
-  };
 
   const handleAddRequirement = async (creditRequests: IPatchOfRequirements) => {
     await saveRequirements(businessUnitPublicCode, creditRequests)
@@ -266,27 +278,53 @@ export const Requirements = (props: IRequirementsProps) => {
         handleToggleModal();
       });
   };
-
-  const initialValues: IPatchOfRequirements = {
+  const createInitialRequirementValues = ({
+    requirementCatalogName,
+    descriptionUse,
+    requirementTypeToEvaluate,
+    rawRequirements,
+    creditRequestCode,
+  }: {
+    requirementCatalogName: string;
+    descriptionUse: string;
+    requirementTypeToEvaluate: string;
+    rawRequirements: IRequirement[];
+    creditRequestCode: string;
+  }): IPatchOfRequirements => ({
     packageId: rawRequirements[0]?.packageId,
     uniqueReferenceNumber: creditRequestCode,
     packageDate: rawRequirements[0]?.packageDate,
-    packageDescription:
-      "Requisitos para la solicitud de crédito SC-12225464610",
+    packageDescription: `Requisitos para la solicitud de crédito ${creditRequestCode}`,
     modifyJustification: "modifyJustification",
-    listsOfRequirementsByPackage: [
+    requirementsByPackage: [
       {
         packageId: rawRequirements[0]?.packageId,
-        requirementCatalogName: requirementName,
+        requirementCatalogName,
         requirementDate: rawRequirements[0]?.packageDate,
         requirementStatus: "UNVALIDATED",
         descriptionEvaluationRequirement: "Requisitos no evaluados",
-        descriptionUse: descriptionUseValue,
-        typeOfRequirementToEvaluated: typeOfRequirementToEvaluated,
+        descriptionUse,
+        requirementTypeToEvaluate,
         transactionOperation: "Insert",
       },
     ],
-  };
+  });
+
+  const initialValues = createInitialRequirementValues({
+    requirementCatalogName: requirementName,
+    descriptionUse: descriptionUseValue,
+    requirementTypeToEvaluate: typeOfRequirementToEvaluated,
+    rawRequirements,
+    creditRequestCode,
+  });
+
+  const initialValuesSystemValidation = createInitialRequirementValues({
+    requirementCatalogName: justificationRequirement,
+    descriptionUse: descriptionUseValues,
+    requirementTypeToEvaluate: "SYSTEM_VALIDATION",
+    rawRequirements,
+    creditRequestCode,
+  });
 
   const handleToggleModal = () => {
     setShowModal(!showModal);
@@ -355,7 +393,7 @@ export const Requirements = (props: IRequirementsProps) => {
         )}
       </Fieldset>
       {showSeeDetailsModal &&
-        selectedTableId === "tabla1" &&
+        selectedTableId === "tableApprovalSystem" &&
         selectedEntryId && (
           <TraceDetailsModal
             isMobile={isMobile}
@@ -368,7 +406,7 @@ export const Requirements = (props: IRequirementsProps) => {
           />
         )}
       {showSeeDetailsModal &&
-        selectedTableId === "tabla2" &&
+        selectedTableId === "tableDocumentValues" &&
         selectedEntryId && (
           <TraceDetailsModal
             isMobile={isMobile}
@@ -385,7 +423,7 @@ export const Requirements = (props: IRequirementsProps) => {
           />
         )}
       {showSeeDetailsModal &&
-        selectedTableId === "tabla3" &&
+        selectedTableId === "tableApprovalHuman" &&
         selectedEntryId && (
           <TraceDetailsModal
             isMobile={isMobile}
@@ -397,72 +435,98 @@ export const Requirements = (props: IRequirementsProps) => {
             }}
           />
         )}
-      {showAprovalsModal && selectedTableId === "tabla1" && selectedEntryId && (
-        <ApprovalsModalSystem
-          initialValues={
-            approvalSystemValues[selectedEntryId] || {
-              observations: "",
-              toggleChecked: false,
-              labelText: "",
+      {showAprovalsModal &&
+        selectedTableId === "tableApprovalSystem" &&
+        selectedEntryId && (
+          <ApprovalsModalSystem
+            initialValues={
+              approvalSystemValues[selectedEntryId] || {
+                observations: "",
+                toggleChecked: false,
+                labelText: "",
+              }
             }
-          }
-          onCloseModal={() => setShowAprovalsModal(false)}
-          isMobile={isMobile}
-          onConfirm={(values) =>
-            setApprovalSystemValues((prev) => ({
-              ...prev,
-              [selectedEntryId]: values,
-            }))
-          }
-        />
-      )}
-      {showAprovalsModal && selectedTableId === "tabla2" && selectedEntryId && (
-        <ApprovalModalDocumentaries
-          initialValues={
-            approvalDocumentValues[selectedEntryId] || {
-              answer: "",
-              observations: "",
+            onCloseModal={() => setShowAprovalsModal(false)}
+            isMobile={isMobile}
+            onConfirm={(values) =>
+              setApprovalSystemValues((prev) => ({
+                ...prev,
+                [selectedEntryId]: values,
+              }))
             }
-          }
-          title={
-            dataRequirements
-              .find((table) => table.id === "tabla2")
-              ?.entriesRequirements.find(
-                (entry) => entry.id === selectedEntryId
-              )
-              ?.["Requisitos documentales"]?.toString() || ""
-          }
-          id={id}
-          onCloseModal={toggleAprovalsModal}
-          businessUnitPublicCode={businessUnitPublicCode}
-          user={user}
-          isMobile={isMobile}
-          onConfirm={(values) =>
-            setApprovalDocumentValues((prev) => ({
-              ...prev,
-              [selectedEntryId]: values,
-            }))
-          }
-        />
-      )}
-      {showAprovalsModal && selectedTableId === "tabla3" && selectedEntryId && (
-        <ApprovalsModalHuman
-          initialValues={
-            approvalHumanValues[selectedEntryId] || {
-              answer: "",
-              observations: "",
+            questionToBeAskedInModal={(() => {
+              const entry = dataRequirements
+                .find((table) => table.id === "tableApprovalSystem")
+                ?.entriesRequirements.find(
+                  (entry) => entry.id === selectedEntryId
+                );
+
+              let label: string | undefined;
+              if (isValidElement(entry?.tag)) {
+                label = entry.tag.props?.label;
+              }
+
+              if (label === questionToBeAskedInModalText.notEvaluated)
+                return questionToBeAskedInModalText.questionForUnvalidated;
+              if (label === questionToBeAskedInModalText.notCompliant)
+                return questionToBeAskedInModalText.questionForNotCompliant;
+              return "";
+            })()}
+          />
+        )}
+      {showAprovalsModal &&
+        selectedTableId === "tableDocumentValues" &&
+        selectedEntryId && (
+          <ApprovalModalDocumentaries
+            initialValues={
+              approvalDocumentValues[selectedEntryId] || {
+                answer: "",
+                observations: "",
+              }
             }
-          }
-          onCloseModal={toggleAprovalsModal}
-          isMobile={isMobile}
-          onConfirm={(values) =>
-            setApprovalHumanValues((prev) => ({
-              ...prev,
-              [selectedEntryId]: values,
-            }))
-          }
-        />
-      )}
+            title={
+              dataRequirements
+                .find((table) => table.id === "tableDocumentValues")
+                ?.entriesRequirements.find(
+                  (entry) => entry.id === selectedEntryId
+                )
+                ?.["Requisitos documentales"]?.toString() || ""
+            }
+            id={id}
+            onCloseModal={toggleAprovalsModal}
+            businessUnitPublicCode={businessUnitPublicCode}
+            user={user}
+            isMobile={isMobile}
+            onConfirm={(values) =>
+              setApprovalDocumentValues((prev) => ({
+                ...prev,
+                [selectedEntryId]: values,
+              }))
+            }
+            seenDocuments={seenDocuments}
+            setSeenDocuments={setSeenDocuments}
+          />
+        )}
+      {showAprovalsModal &&
+        selectedTableId === "tableApprovalHuman" &&
+        selectedEntryId && (
+          <ApprovalsModalHuman
+            initialValues={
+              approvalHumanValues[selectedEntryId] || {
+                answer: "",
+                observations: "",
+              }
+            }
+            onCloseModal={toggleAprovalsModal}
+            isMobile={isMobile}
+            onConfirm={(values) =>
+              setApprovalHumanValues((prev) => ({
+                ...prev,
+                [selectedEntryId]: values,
+              }))
+            }
+          />
+        )}
       {showAddRequirementModal && (
         <AddRequirement
           title={dataAddRequirement.title}
@@ -483,18 +547,22 @@ export const Requirements = (props: IRequirementsProps) => {
         <AddSystemValidation
           title={dataAddRequirement.title}
           buttonText={dataAddRequirement.add}
-          optionsRequirement={AddRequirementMock}
+          optionsRequirement={AddRequirementMockSistemValidations}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}
           setSentData={setSentData}
           setRequirementName={setRequirementName}
-          setDescriptionUseValue={setDescriptionUseValue}
+          setdescriptionUseValues={setDescriptionUseValues}
           setTypeOfRequirementToEvaluated={setTypeOfRequirementToEvaluated}
-          handleNext={handleAddRequirementAddSystemValidation}
+          handleNext={() => {
+            handleAddRequirement(initialValuesSystemValidation);
+          }}
           requirementName={requirementName}
-          descriptionUseValue={descriptionUseValue}
+          descriptionUseValues={descriptionUseValues}
           typeOfRequirementToEvaluated={typeOfRequirementToEvaluated}
           rawRequirements={rawRequirements}
+          setJustificationRequirement={setJustificationRequirement}
+          justificationRequirement={justificationRequirement}
         />
       )}
     </>

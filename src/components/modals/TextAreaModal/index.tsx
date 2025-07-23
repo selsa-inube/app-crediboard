@@ -23,7 +23,7 @@ export interface TextAreaModalProps {
   disableTextarea?: boolean;
   secondaryButtonText?: string;
   showSecundaryButton?: boolean;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function TextAreaModal(props: TextAreaModalProps) {
@@ -95,13 +95,13 @@ export function TextAreaModal(props: TextAreaModalProps) {
                   }
                   fullwidth
                   disabled={disableTextarea}
-                  onBlur={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  onBlur={(event: React.ChangeEvent<HTMLInputElement>) => {
                     setFieldTouched("textarea");
-                    field.onBlur(e);
+                    field.onBlur(event);
                   }}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onChange?.(e);
+                  onChange={(event) => {
+                    field.onChange(event);
+                    onChange?.(event);
                   }}
                 />
               )}

@@ -32,6 +32,8 @@ interface ApprovalModalDocumentariesProps {
   id: string;
   businessUnitPublicCode: string;
   user: string;
+  seenDocuments: string[];
+  setSeenDocuments: React.Dispatch<React.SetStateAction<string[]>>;
   onConfirm?: (values: IApprovalDocumentaries) => void;
   onCloseModal?: () => void;
 }
@@ -46,6 +48,8 @@ export function ApprovalModalDocumentaries(
     id,
     businessUnitPublicCode,
     user,
+    seenDocuments,
+    setSeenDocuments,
     onConfirm,
     onCloseModal,
   } = props;
@@ -120,6 +124,7 @@ export function ApprovalModalDocumentaries(
       setSelectedFile(fileUrl);
       setFileName(name);
       setOpen(true);
+      setSeenDocuments((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (error) {
       const err = error as {
         message?: string;
@@ -153,7 +158,7 @@ export function ApprovalModalDocumentaries(
       }}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
-      backButton={approvalsConfig.Cancel}
+      backButton={approvalsConfig.cancel}
       nextButton={approvalsConfig.confirm}
       disabledNext={!formik.values.observations || !formik.isValid}
     >
@@ -161,7 +166,7 @@ export function ApprovalModalDocumentaries(
         <Text type="body" size="large">
           {approvalsConfig.selectDocument}
         </Text>
-        <Fieldset heightFieldset="210px" hasOverflow>
+        <Fieldset heightFieldset="210px" borderColor="gray" hasOverflow>
           <StyledScroll>
             <Stack direction="column" gap="8px" height="145px">
               {documents.map((doc, index) => (
@@ -201,7 +206,9 @@ export function ApprovalModalDocumentaries(
                         handlePreview(doc.documentId, doc.abbreviatedName)
                       }
                     >
-                      {approvalsConfig.see}
+                      {seenDocuments.includes(doc.documentId)
+                        ? approvalsConfig.seen
+                        : approvalsConfig.see}
                     </Text>
                   </Stack>
                   {index < documents.length - 1 && <Divider />}

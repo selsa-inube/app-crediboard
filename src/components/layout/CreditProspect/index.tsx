@@ -33,10 +33,11 @@ import {
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { IProspect } from "@services/prospects/types";
 import { CreditLimitModal } from "@components/modals/CreditLimitModal";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 
 import { dataCreditProspect } from "./config";
 import { StyledPrint } from "./styles";
-import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { IIncomeSources } from "./types";
 
 interface ICreditProspectProps {
@@ -47,9 +48,17 @@ interface ICreditProspectProps {
   selectedBorrower: IProspect["borrowers"][number] | undefined;
   incomeData: Record<string, IIncomeSources>;
   isMobile: boolean;
+  businessUnitPublicCode: string;
+  sentData: IExtraordinaryInstallments | null;
+  setSentData: React.Dispatch<
+    React.SetStateAction<IExtraordinaryInstallments | null>
+  >;
   prospectData?: IProspect;
   isPrint?: boolean;
   showPrint?: boolean;
+  setRequestValue?: React.Dispatch<
+    React.SetStateAction<IPaymentChannel[] | undefined>
+  >;
   showMenu: () => void;
   handleChange: (name: string, newValue: string) => void;
   handleIncomeSubmit: (values: IIncomeSources) => void;
@@ -67,6 +76,9 @@ export function CreditProspect(props: ICreditProspectProps) {
     isMobile,
     isPrint = false,
     showPrint = true,
+    sentData,
+    setSentData,
+    businessUnitPublicCode,
     showMenu,
     handleChange,
     handleIncomeSubmit,
@@ -343,6 +355,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           dataTable={extraordinaryInstallmentMock}
           handleClose={handleCloseModal}
           prospectData={prospectData}
+          sentData={sentData}
+          setSentData={setSentData}
+          businessUnitPublicCode={businessUnitPublicCode}
         />
       )}
       {showShareModal && (

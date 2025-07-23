@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { MdClear, MdOutlineFilterAlt } from "react-icons/md";
 import {
@@ -18,10 +18,10 @@ import * as Yup from "yup";
 import { validationMessages } from "@validations/validationMessages";
 import { SelectedFilters } from "@components/cards/SelectedFilters/index.tsx";
 import { Filter } from "@components/cards/SelectedFilters/interface.ts";
+import { IFilterFormValues } from "@pages/board/outlets/boardlayout/index.tsx";
 
 import { StyledModal, StyledContainerClose } from "./styles.ts";
 import { FormValues } from "./types.ts";
-import { IFilterFormValues } from "@pages/board/outlets/boardlayout/index.tsx";
 import { dataFiltersRequest } from "./config.ts";
 
 export interface SelectedFilter extends IOption {
@@ -75,7 +75,7 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
     },
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     setLoading(true);
     setTimeout(() => {
       if (onSubmit) {
@@ -83,7 +83,7 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
       }
       setLoading(false);
     }, 800);
-  };
+  }, [onSubmit, formik.values]);
 
   const sortedAssignmentOptions = [...assignmentOptions].sort((a, b) =>
     a.label.localeCompare(b.label)

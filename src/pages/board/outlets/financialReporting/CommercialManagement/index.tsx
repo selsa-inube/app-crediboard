@@ -21,7 +21,11 @@ import {
   useFlag,
 } from "@inubekit/inubekit";
 
-import { ICreditRequest, IModeOfDisbursement } from "@services/types";
+import {
+  ICreditRequest,
+  IModeOfDisbursement,
+  IPaymentChannel,
+} from "@services/types";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
@@ -44,6 +48,7 @@ import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
+import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
@@ -67,11 +72,19 @@ interface ComercialManagementProps {
   prospectData: IProspect;
   collapse: boolean;
   setCollapse: React.Dispatch<React.SetStateAction<boolean>>;
+  sentData: IExtraordinaryInstallments | null;
+  setSentData: React.Dispatch<
+    React.SetStateAction<IExtraordinaryInstallments | null>
+  >;
+  setRequestValue: React.Dispatch<
+    React.SetStateAction<IPaymentChannel[] | undefined>
+  >;
   print: () => void;
   id: string;
   isPrint?: boolean;
   hideContactIcons?: boolean;
   hasPermitRejection?: boolean;
+  requestValue?: IPaymentChannel[];
 }
 
 export const ComercialManagement = (props: ComercialManagementProps) => {
@@ -85,6 +98,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     hideContactIcons,
     prospectData,
     hasPermitRejection,
+    sentData,
+    setSentData,
+    setRequestValue,
   } = props;
   const [showMenu, setShowMenu] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
@@ -756,11 +772,15 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   incomeData={incomeData}
                   isMobile={isMobile}
                   prospectData={prospectData}
-                  isPrint={isPrint}
                   showPrint
                   showMenu={() => setShowMenu(false)}
                   handleChange={handleChangeIncome}
+                  isPrint={true}
                   handleIncomeSubmit={handleIncomeSubmit}
+                  sentData={sentData}
+                  setSentData={setSentData}
+                  setRequestValue={setRequestValue}
+                  businessUnitPublicCode={businessUnitPublicCode}
                 />
               )}
             </Stack>
@@ -797,6 +817,21 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <ExtraordinaryPaymentModal
                 dataTable={extraordinaryInstallmentMock}
                 handleClose={handleCloseModal}
+                prospectData={prospectData}
+                sentData={sentData}
+                setSentData={setSentData}
+                businessUnitPublicCode={businessUnitPublicCode}
+              />
+            )}
+            {openModal === "IncomeModalEdit" && (
+              <IncomeModal
+                handleClose={() => setOpenModal(null)}
+                initialValues={
+                  (selectedBorrower &&
+                    incomeData[selectedBorrower.borrowerName]) ||
+                  {}
+                }
+                onSubmit={handleIncomeSubmit}
               />
             )}
             {openModal === "IncomeModalEdit" && (
