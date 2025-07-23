@@ -15,9 +15,9 @@ import { titlesModal } from "./config";
 
 interface IOptionsButton {
   title: string;
-  titleHuman: string;
+  titleSistemValidation: string;
   onClick?: () => void;
-  onClickHuman?: () => void;
+  onClickSistemValidation?: () => void;
 }
 
 interface IFieldsetProps {
@@ -36,6 +36,7 @@ interface IFieldsetProps {
   selectedState?: boolean;
   hasError?: boolean;
   alignContent?: string;
+  borderColor?: string;
 }
 
 export const Fieldset = (props: IFieldsetProps) => {
@@ -52,6 +53,7 @@ export const Fieldset = (props: IFieldsetProps) => {
     isClickable = false,
     selectedState = false,
     hasError = false,
+    borderColor = "normal",
     alignContent,
   } = props;
 
@@ -85,9 +87,9 @@ export const Fieldset = (props: IFieldsetProps) => {
     },
     {
       icon: <MdAdd />,
-      title: activeButton?.titleHuman || "",
+      title: activeButton?.titleSistemValidation || "",
       onClick: () => {
-        activeButton?.onClickHuman?.();
+        activeButton?.onClickSistemValidation?.();
         setShowMenu(false);
       },
       visible: true,
@@ -150,10 +152,10 @@ export const Fieldset = (props: IFieldsetProps) => {
                 <Button
                   iconBefore={<MdAdd />}
                   spacing="compact"
-                  onClick={activeButton.onClickHuman}
+                  onClick={activeButton.onClickSistemValidation}
                   variant="outlined"
                 >
-                  {activeButton.titleHuman}
+                  {activeButton.titleSistemValidation}
                 </Button>
               </StyledPrint>
             )}
@@ -171,6 +173,7 @@ export const Fieldset = (props: IFieldsetProps) => {
         $isClickable={isClickable}
         $hasError={hasError}
         $alignContent={alignContent}
+        $borderColor={borderColor}
       >
         {children}
       </StyledContainerFieldset>

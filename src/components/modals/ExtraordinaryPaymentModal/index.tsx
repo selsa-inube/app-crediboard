@@ -3,16 +3,25 @@ import { MdOutlineAdd } from "react-icons/md";
 import { Stack, Icon, useMediaQuery, Button } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { TableExtraordinaryInstallment } from "@components/data/TableExtraordinaryInstallment";
 import { IExtraordinaryPayment } from "@services/types";
 import { IProspect } from "@services/prospects/types";
 import { AddSeriesModal } from "@components/modals/AddSeriesModal";
+import { TableExtraordinaryInstallment } from "@components/data/TableExtraordinaryInstallment";
+import {
+  IExtraordinaryInstallment,
+  IExtraordinaryInstallments,
+} from "@services/prospect/types/extraordInaryInstallments";
 
 import { TextLabels } from "./config";
 
 export interface ExtraordinaryPaymentModalProps {
+  businessUnitPublicCode: string;
   dataTable: IExtraordinaryPayment[];
   prospectData?: IProspect;
+  setSentData: React.Dispatch<
+    React.SetStateAction<IExtraordinaryInstallments | null>
+  >;
+  sentData?: IExtraordinaryInstallments | null;
   handleClose: () => void;
   onClickDetails?: (id: string) => void;
   onClickEdit?: (id: string) => void;
@@ -22,19 +31,35 @@ export interface ExtraordinaryPaymentModalProps {
 export const ExtraordinaryPaymentModal = (
   props: ExtraordinaryPaymentModalProps
 ) => {
-  const { handleClose, prospectData } = props;
+  const {
+    handleClose,
+    prospectData,
+    sentData,
+    setSentData,
+    businessUnitPublicCode,
+  } = props;
 
+  const [installmentState, setInstallmentState] = useState({
+    installmentAmount: 0,
+    installmentDate: "",
+    paymentChannelAbbreviatedName: "",
+  });
   const [isAddSeriesModalOpen, setAddSeriesModalOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width:880px)");
 
-  const handleConfirm = () => {
-    console.log("Confirmar acción");
-  };
-
   const openAddSeriesModal = () => {
+    setInstallmentState({
+      installmentAmount: 0,
+      installmentDate: "",
+      paymentChannelAbbreviatedName: "",
+    });
     setAddSeriesModalOpen(true);
   };
-
+  const [seriesModal, setSeriesModal] = useState<IExtraordinaryInstallment[]>(
+    []
+  );
+  const [selectedModal, setAddModal] =
+    useState<IExtraordinaryInstallment | null>(null);
   const closeAddSeriesModal = () => {
     setAddSeriesModalOpen(false);
   };
@@ -73,14 +98,27 @@ export const ExtraordinaryPaymentModal = (
           </Button>
         </Stack>
         <Stack>
-          <TableExtraordinaryInstallment prospectData={prospectData} />
+          <TableExtraordinaryInstallment
+            prospectData={prospectData}
+            sentData={sentData}
+            setSentData={setSentData}
+            handleClose={closeAddSeriesModal}
+            businessUnitPublicCode={businessUnitPublicCode}
+          />
         </Stack>
         {isAddSeriesModalOpen && (
           <AddSeriesModal
             handleClose={closeAddSeriesModal}
             onSubmit={handleSubmit}
-            onConfirm={handleConfirm}
-            initialValues={{ field1: 0, field2: 0 }}
+            installmentState={installmentState}
+            setInstallmentState={setInstallmentState}
+            setSentData={setSentData}
+            sentData={sentData}
+            seriesModal={seriesModal}
+            setSeriesModal={setSeriesModal}
+            setAddModal={setAddModal}
+            selectedModal={selectedModal}
+            prospectData={prospectData}
           />
         )}
       </Stack>

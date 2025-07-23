@@ -37,9 +37,6 @@ import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { totalsKeyBySection } from "@components/layout/BoardSection/config";
 import { BaseModal } from "@components/modals/baseModal";
 
-import { selectCheckOptions } from "./config/select";
-import { IFilterFormValues } from ".";
-import { boardColumns, seePinned } from "./config/board";
 import {
   speechRecognitionConfig,
   textProcessingConfig,
@@ -54,6 +51,9 @@ import {
   StyledRequestsContainer,
   StyledMic,
 } from "./styles";
+import { selectCheckOptions } from "./config/select";
+import { IFilterFormValues } from ".";
+import { boardColumns, seePinned } from "./config/board";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -81,6 +81,7 @@ interface BoardLayoutProps {
   openFilterModal: () => void;
   isFilterModalOpen: boolean;
   handleApplyFilters: (values: IFilterFormValues) => void;
+  shouldCollapseAll: boolean;
   handleClearFilters: () => void;
   handleRemoveFilter: (filterIdToRemove: string) => void;
   isMenuOpen: boolean;
@@ -107,6 +108,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     handleRemoveFilter,
     handleSearchRequestsValue,
     onOrientationChange,
+    shouldCollapseAll,
   } = props;
 
   const {
@@ -559,6 +561,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 handleLoadMoreData={handleLoadMoreData}
                 dragIcon={dragIcon}
                 onOrientationChange={onOrientationChange}
+                shouldCollapseAll={shouldCollapseAll}
               />
             );
           })}

@@ -66,35 +66,39 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
     >
       <Stack direction="column" gap="16px">
         {data.documents && (
-          <Fieldset heightFieldset="210px" hasOverflow>
-            <StyledScroll>
-              <Stack direction="column" gap="8px" height="145px">
-                {data.documents.map((doc, index) => (
-                  <Stack key={doc.documentId} direction="column" gap="8px">
-                    <Stack justifyContent="space-between">
-                      <Stack gap="4px">
-                        <Text type="label" size="large">
-                          {doc.abbreviatedName}
+          <Fieldset borderColor="gray" hasOverflow>
+            <Stack direction="column" gap="12px">
+              <Text>{dataTrace.documents}</Text>
+              <Divider dashed />
+              <StyledScroll>
+                <Stack direction="column" gap="8px">
+                  {data.documents.map((doc, index) => (
+                    <Stack key={doc.documentId} direction="column" gap="8px">
+                      <Stack justifyContent="space-between">
+                        <Stack gap="4px">
+                          <Text type="label" size="large">
+                            {doc.abbreviatedName}
+                          </Text>
+                        </Stack>
+                        <Text
+                          type="label"
+                          weight="bold"
+                          size="large"
+                          appearance="primary"
+                          cursorHover
+                          onClick={() =>
+                            handlePreview(doc.documentId, doc.abbreviatedName)
+                          }
+                        >
+                          {dataTrace.see}
                         </Text>
                       </Stack>
-                      <Text
-                        type="label"
-                        weight="bold"
-                        size="large"
-                        appearance="primary"
-                        cursorHover
-                        onClick={() =>
-                          handlePreview(doc.documentId, doc.abbreviatedName)
-                        }
-                      >
-                        {dataTrace.see}
-                      </Text>
+                      {index < (data.documents?.length ?? 0) - 1 && <Divider />}
                     </Stack>
-                    {index < (data.documents?.length ?? 0) - 1 && <Divider />}
-                  </Stack>
-                ))}
-              </Stack>
-            </StyledScroll>
+                  ))}
+                </Stack>
+              </StyledScroll>
+            </Stack>
           </Fieldset>
         )}
         <CardGray
