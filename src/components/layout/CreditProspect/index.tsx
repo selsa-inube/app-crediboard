@@ -7,7 +7,7 @@ import {
   MdOutlinePictureAsPdf,
   MdOutlineShare,
 } from "react-icons/md";
-import { Stack, Icon, Button } from "@inubekit/inubekit";
+import { Stack, Icon, Button, IOption } from "@inubekit/inubekit";
 
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import { PaymentCapacity } from "@components/modals/PaymentCapacityModal";
@@ -42,7 +42,7 @@ import { IIncomeSources } from "./types";
 
 interface ICreditProspectProps {
   borrowersProspect: IProspect | undefined;
-  borrowerOptions: { id: string; label: string; value: string }[];
+  borrowerOptions: IOption[];
   selectedIndex: number;
   dataProspect: IProspect[];
   selectedBorrower: IProspect["borrowers"][number] | undefined;

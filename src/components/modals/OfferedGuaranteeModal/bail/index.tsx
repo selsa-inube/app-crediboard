@@ -1,6 +1,8 @@
 import { MdInfoOutline } from "react-icons/md";
 import { Stack, Icon, Text } from "@inubekit/inubekit";
 
+import userNotFound from "@assets/images/ItemNotFound.png";
+import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { Fieldset } from "@components/data/Fieldset";
 import { currencyFormat } from "@utils/formatData/currency";
 
@@ -50,7 +52,12 @@ export function Bail(props: IBailProps) {
           </>
         ) : (
           <Stack margin="auto">
-            <Text>{dataBail.noContent}</Text>
+            <ItemNotFound
+              image={userNotFound}
+              title={dataBail.noBorrowersTitle}
+              description={dataBail.noBorrowersDescription}
+              buttonDescription={dataBail.retry}
+            />
           </Stack>
         )}
       </Stack>

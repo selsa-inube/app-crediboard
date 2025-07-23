@@ -49,6 +49,12 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { CreditLimitModal } from "@components/modals/CreditLimitModal";
+import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
+import { IIncomeSources } from "@components/layout/CreditProspect/types";
+import { IncomeModal } from "@components/modals/IncomeModal";
+import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
+import { getPropertyValue } from "@utils/mappingData/mappings";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
@@ -60,12 +66,6 @@ import {
   StyledVerticalDivider,
   StyledPrint,
 } from "./styles";
-import { CreditLimitModal } from "@components/modals/CreditLimitModal";
-import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
-import { IIncomeSources } from "@components/layout/CreditProspect/types";
-import { IncomeModal } from "@components/modals/IncomeModal";
-import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
-import { getPropertyValue } from "@utils/mappingData/mappings";
 
 interface ComercialManagementProps {
   data: ICreditRequest;

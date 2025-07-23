@@ -450,7 +450,7 @@ export const FinancialReporting = () => {
               setShowRejectModal(false);
               navigation("/");
             }}
-            onChange={(e) => setRemovalJustification(e.target.value)}
+            onChange={(event) => setRemovalJustification(event.target.value)}
           />
         )}
         {showGuarantee && (
