@@ -12,6 +12,13 @@ export const approvalsConfig = {
   maxLength: 200,
 };
 
+export const validationHuman = {
+  passed: "PASSED_HUMAN_VALIDATION",
+  failed: "FAILED_HUMAN_VALIDATION",
+  cancel: "VALIDATION_FAILED_CANCELS_REQUEST",
+  ignored: "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
+};
+
 export const optionsAnswer = [
   {
     id: "compliant",

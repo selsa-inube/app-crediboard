@@ -1,7 +1,7 @@
 export const approvalsConfig = {
   title: "Evaluación del requisito",
-  yes: "Sí, aprobar requisito.",
-  no: "No, aprobar requisito.",
+  approveRequirementLabel: "Sí, aprobar requisito.",
+  rejectRequirementLabel: "No, aprobar requisito.",
   approval: "¿Quieres aprobar el requisito aunque no se",
   observations: "Observaciones",
   observationdetails:

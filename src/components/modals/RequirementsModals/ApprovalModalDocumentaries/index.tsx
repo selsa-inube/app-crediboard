@@ -24,7 +24,12 @@ import { IRequirement } from "@services/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
-import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
+import {
+  approvalsConfig,
+  optionButtons,
+  optionsAnswer,
+  validationDocument,
+} from "./config";
 import { StyledScroll } from "./styles";
 
 interface ApprovalModalDocumentariesProps {
@@ -99,14 +104,14 @@ export function ApprovalModalDocumentaries(
         );
 
         let nextStatusValue = "";
-        if (values.answer === "Cumple") {
-          nextStatusValue = "DOCUMENT_STORED_AND_VALIDATED";
-        } else if (values.answer === "No cumple") {
-          nextStatusValue = "FAILED_DOCUMENT_VALIDATION";
-        } else if (values.answer === "No cumple y rechazar solicitud") {
-          nextStatusValue = "INVALID_DOCUMENT_CANCELS_REQUEST";
-        } else if (values.answer === "Aprobar") {
-          nextStatusValue = "DOCUMENT_IGNORED_BY_THE_USER";
+        if (formik.values.answer === optionsAnswer[0].label) {
+          nextStatusValue = validationDocument.passed;
+        } else if (formik.values.answer === optionsAnswer[1].label) {
+          nextStatusValue = validationDocument.failed;
+        } else if (formik.values.answer === optionsAnswer[3].label) {
+          nextStatusValue = validationDocument.cancel;
+        } else if (formik.values.answer === optionsAnswer[2].label) {
+          nextStatusValue = validationDocument.ignored;
         }
 
         const payload = {

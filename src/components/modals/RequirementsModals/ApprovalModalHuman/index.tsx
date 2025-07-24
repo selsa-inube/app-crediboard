@@ -8,7 +8,7 @@ import { IRequirement } from "@services/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 
 import { IApprovalHuman } from "../types";
-import { approvalsConfig, optionsAnswer } from "./config";
+import { approvalsConfig, optionsAnswer, validationHuman } from "./config";
 
 interface ApprovalsModalHumanProps {
   isMobile: boolean;
@@ -53,14 +53,14 @@ export function ApprovalsModalHuman(props: ApprovalsModalHumanProps) {
         if (!requirementPackageId) return;
 
         let nextStatusValue = "";
-        if (formik.values.answer === "Cumple") {
-          nextStatusValue = "PASSED_HUMAN_VALIDATION";
-        } else if (formik.values.answer === "No cumple") {
-          nextStatusValue = "FAILED_HUMAN_VALIDATION";
-        } else if (formik.values.answer === "No cumple y rechazar solicitud") {
-          nextStatusValue = "VALIDATION_FAILED_CANCELS_REQUEST";
-        } else if (formik.values.answer === "Aprobar") {
-          nextStatusValue = "IGNORED_BY_THE_USER_HUMAN_VALIDATION";
+        if (formik.values.answer === optionsAnswer[0].label) {
+          nextStatusValue = validationHuman.passed;
+        } else if (formik.values.answer === optionsAnswer[1].label) {
+          nextStatusValue = validationHuman.failed;
+        } else if (formik.values.answer === optionsAnswer[3].label) {
+          nextStatusValue = validationHuman.cancel;
+        } else if (formik.values.answer === optionsAnswer[2].label) {
+          nextStatusValue = validationHuman.ignored;
         }
 
         const payload = {

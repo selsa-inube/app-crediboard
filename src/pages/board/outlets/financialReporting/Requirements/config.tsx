@@ -97,9 +97,8 @@ export const dataAddRequirement = {
   placeHolderDate: "Seleccione un requisito",
   placeHolderTextarea: "¿Qué hace necesario incluir este requisito?",
   placeHolderJustification: "Justificación del requisito",
-  yes: "Sí, aprobar requisito.",
-  no: "No, aprobar requisito.",
 };
+
 export const justificationDescriptions: Record<string, string> = {
   edad: "Se valida la edad mínima para el requisito",
   antiguedad: "Se valida la antigüedad mínima para el requisito",

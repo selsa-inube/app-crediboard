@@ -104,8 +104,8 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
 
   useEffect(() => {
     const label = formik.values.toggleChecked
-      ? approvalsConfig.yes
-      : approvalsConfig.no;
+      ? approvalsConfig.approveRequirementLabel
+      : approvalsConfig.rejectRequirementLabel;
 
     formik.setFieldValue("labelText", label);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,7 +132,9 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
                 formik.setFieldValue("toggleChecked", checked);
                 formik.setFieldValue(
                   "labelText",
-                  checked ? approvalsConfig.yes : approvalsConfig.no
+                  checked
+                    ? approvalsConfig.approveRequirementLabel
+                    : approvalsConfig.rejectRequirementLabel
                 );
               }}
             />

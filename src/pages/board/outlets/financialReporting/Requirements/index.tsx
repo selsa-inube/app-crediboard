@@ -31,7 +31,12 @@ import {
   getActionsMobileIcon,
   questionToBeAskedInModalText,
 } from "./config";
-import { DocumentItem, IRequirement } from "./types";
+import {
+  DocumentItem,
+  IRequirement,
+  MappedRequirements,
+  RequirementType,
+} from "./types";
 import { errorMessages } from "../config";
 
 interface IRequirementsData {
@@ -149,8 +154,8 @@ export const Requirements = (props: IRequirementsProps) => {
               key &&
               Object.prototype.hasOwnProperty.call(mapped, type)
             ) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (mapped as any)[type][key] = value;
+              (mapped as MappedRequirements)[type as RequirementType][key] =
+                value;
             }
           });
         });

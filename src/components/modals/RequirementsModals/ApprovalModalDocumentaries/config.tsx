@@ -19,6 +19,13 @@ export const approvalsConfig = {
   maxLength: 200,
 };
 
+export const validationDocument = {
+  passed: "DOCUMENT_STORED_AND_VALIDATED",
+  failed: "FAILED_DOCUMENT_VALIDATION",
+  cancel: "INVALID_DOCUMENT_CANCELS_REQUEST",
+  ignored: "DOCUMENT_IGNORED_BY_THE_USER",
+};
+
 export const optionsAnswer = [
   {
     id: "compliant",
