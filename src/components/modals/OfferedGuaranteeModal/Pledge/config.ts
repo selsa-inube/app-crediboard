@@ -4,5 +4,7 @@ export const dataPledge = {
   years: "Modelo (año)",
   value: "Valor estimado",
   description: "Descripción del vehículo",
-  noContent: "No hay contenido",
+  noBorrowersTitle: "No se encontraron vehículos.",
+  noBorrowersDescription: "No hay vehículos disponibles para esta solicitud.",
+  retry: "Volver a intentar",
 };

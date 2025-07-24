@@ -147,7 +147,6 @@ export const Requirements = (props: IRequirementsProps) => {
             if (
               type &&
               key &&
-              //value &&
               Object.prototype.hasOwnProperty.call(mapped, type)
             ) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
