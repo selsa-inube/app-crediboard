@@ -5,5 +5,7 @@ export const dataMortgage = {
   years: "Antigüedad (años)",
   value: "Valor estimado",
   description: "Descripción del inmueble",
-  noContent: "No hay contenido",
+  noBorrowersTitle: "No se encontraron hipotecas.",
+  noBorrowersDescription: "No hay hipotecas disponibles para esta solicitud.",
+  retry: "Volver a intentar",
 };
