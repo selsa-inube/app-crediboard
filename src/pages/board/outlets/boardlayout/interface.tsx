@@ -296,7 +296,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 selectedFilters={activeOptions}
                 onCloseModal={closeFilterModal}
                 onRemoveFilter={handleRemoveFilter}
-                initialValues={filterValues}
+                filterValues={filterValues}
               />
             )}
             {!isMobile && (

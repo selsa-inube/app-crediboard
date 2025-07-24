@@ -7,9 +7,9 @@ import { currencyFormat } from "@utils/formatData/currency";
 
 import { dataIncomeDebtor } from "./config";
 
-interface IIncomeDebtor {
+interface IIncomeBorrower {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialValues: any;
+  initialIncome: any;
 }
 
 const incomeFields = [
@@ -27,8 +27,8 @@ const incomeFields = [
   },
 ];
 
-export function IncomeDebtor(props: IIncomeDebtor) {
-  const { initialValues } = props;
+export function IncomeBorrower(props: IIncomeBorrower) {
+  const { initialIncome } = props;
 
   return (
     <Fieldset>
@@ -36,7 +36,7 @@ export function IncomeDebtor(props: IIncomeDebtor) {
         {incomeFields.map((field, index) => {
           const sum = field.keys.reduce((acc, key) => {
             const val = Number(
-              getPropertyValue(initialValues.borrowerProperties, key) ?? 0
+              getPropertyValue(initialIncome.borrowerProperties, key) ?? 0
             );
             return acc + (isNaN(val) ? 0 : val);
           }, 0);

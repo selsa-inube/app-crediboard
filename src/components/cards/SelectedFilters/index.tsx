@@ -75,7 +75,7 @@ function SelectedFilters(props: SelectedFiltersProps) {
         </Stack>
       ) : (
         <Text type="label" size="small" appearance="gray">
-          {dataFilters.withoutFileters}
+          {dataFilters.withoutFilters}
         </Text>
       )}
     </StyledContainerFilters>

@@ -1,6 +1,6 @@
 import { Button, IOption, Select, Stack, Text } from "@inubekit/inubekit";
 
-import { IncomeDebtor } from "@components/layout/CreditProspect/incomeDebtor";
+import { IncomeBorrower } from "@components/layout/CreditProspect/incomeDebtor";
 import { IProspect } from "@services/prospects/types";
 
 import { BaseModal } from "../baseModal";
@@ -68,8 +68,8 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
               {dataCreditProspect.edit}
             </Button>
           </Stack>
-          <IncomeDebtor
-            initialValues={
+          <IncomeBorrower
+            initialIncome={
               dataProspect[0]?.borrowers?.find(
                 (borrower) =>
                   borrower.borrowerName ===
