@@ -5,6 +5,7 @@ import { Icon, Stack, Tag } from "@inubekit/inubekit";
 import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
+import info from "@assets/images/info.png";
 
 import { IEntries } from "@components/data/TableBoard/types";
 import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";
@@ -25,7 +26,25 @@ export const titlesApprovals = [
     priority: 2,
   },
 ];
+export const getTitlesApprovals = (isMobile: boolean) => {
+  const baseTitles = [
+    {
+      id: "usuarios",
+      titleName: "Usuarios",
+      priority: 1,
+    },
+  ];
 
+  if (!isMobile) {
+    baseTitles.push({
+      id: "tag",
+      titleName: "Decisión",
+      priority: 2,
+    });
+  }
+
+  return baseTitles;
+};
 export const actionsApprovals = [
   {
     id: "Error",
@@ -177,6 +196,9 @@ const appearanceTag = (label: string) => {
   if (label === "Pendiente") {
     return "warning";
   }
+  if (label === "Devuelto") {
+    return "help";
+  }
   if (label === "GESTION_COMERCIAL") {
     return "help";
   }
@@ -195,6 +217,8 @@ const getIconByTagStatus = (tagElement: React.ReactElement) => {
     return <img src={remove} alt="Sin Evaluar" width={14} height={14} />;
   } else if (label === "Rechazado") {
     return <img src={close} alt="No Cumple" width={14} height={14} />;
+  } else if (label === "Devuelto") {
+    return <img src={info} alt="Devuelto" width={14} height={14} />;
   } else {
     return null;
   }

@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { MdOutlineInfo } from "react-icons/md";
-import { Icon, Text, SkeletonLine, Stack } from "@inubekit/inubekit";
+import { MdOutlineInfo, MdWarningAmber } from "react-icons/md";
+import { LuUserRoundCheck } from "react-icons/lu";
+import {
+  Icon,
+  Text,
+  SkeletonLine,
+  Stack,
+  useMediaQuery,
+} from "@inubekit/inubekit";
 
 import { InfoModal } from "@components/modals/InfoModal";
 
@@ -22,6 +29,7 @@ import {
 interface ITableBoardUIProps extends ITableBoardProps {
   loading: boolean;
   isTablet: boolean;
+  hideTagOnTablet?: boolean;
 }
 
 interface IRenderActionsTitles {
@@ -89,12 +97,12 @@ const actionsLoading = (numberActions: number) => {
   return cellsOfActionsLoading;
 };
 
-const dataLoading = (titleColumns: ITitle[], numberActions: number) => {
+const dataLoading = (filteredTitles: ITitle[], numberActions: number) => {
   const rowsLoading = [];
   for (let rows = 0; rows < 3; rows++) {
     rowsLoading.push(
       <StyledTr key={rows}>
-        {titleColumns.map((title) => (
+        {filteredTitles.map((title) => (
           <StyledTd key={`e-${title.id}`}>
             <SkeletonLine animated />
           </StyledTd>
@@ -158,6 +166,14 @@ const Actions = (props: IActionsComponent) => {
   );
 };
 
+const isPendingStatus = (entry: IEntries): boolean => {
+  const tag = entry.tag;
+  if (typeof tag === "object" && tag !== null && "props" in tag) {
+    return (tag as JSX.Element).props?.label === "Pendiente";
+  }
+  return false;
+};
+
 export const TableBoardUI = (props: ITableBoardUIProps) => {
   const {
     id,
@@ -172,9 +188,19 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
     actionMobile,
     isFirstTable,
     infoItems,
+    hideTagOnTablet = true,
   } = props;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 560px)");
+
+  const getFilteredTitles = () => {
+    return titles.filter(
+      (title) => !(isTablet && hideTagOnTablet && title.id === "tag")
+    );
+  };
+
+  const filteredTitles = getFilteredTitles();
 
   return (
     <StyledContainer
@@ -190,22 +216,21 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
       >
         <StyledThead>
           <tr>
-            {titles
-              .filter((title) => !(isTablet && title.id === "tag"))
-              .map((title) =>
-                !isTablet || title.titleName ? (
-                  <StyledTh key={title.id + id}>
-                    <Text
-                      appearance={appearanceTable!.title}
-                      type="title"
-                      size="medium"
-                      padding={isTablet ? "0px" : "0px 4px"}
-                    >
-                      {title.titleName}
-                    </Text>
-                  </StyledTh>
-                ) : null
-              )}
+            {(isTablet
+              ? filteredTitles.filter((_, index) => index !== 1)
+              : filteredTitles
+            ).map((title) => (
+              <StyledTh key={title.id + id}>
+                <Text
+                  appearance={appearanceTable!.title}
+                  type="title"
+                  size="medium"
+                  padding="0px 4px"
+                >
+                  {title.titleName}
+                </Text>
+              </StyledTh>
+            ))}
 
             {actions && actionMobile && (
               <RenderActionsTitles
@@ -221,7 +246,7 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
         </StyledThead>
         <StyledTbody>
           {loading ? (
-            dataLoading(titles, actions?.length || 0)
+            dataLoading(filteredTitles, actions?.length || 0)
           ) : (
             <>
               {entries.map((entry, index) => (
@@ -229,35 +254,66 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                   key={`${entry.id}-${index}`}
                   $borderTable={appearanceTable!.borderTable}
                 >
-                  {titles
-                    .filter((title) => !(isTablet && title.id === "tag"))
-                    .map((title, titleIndex) => (
-                      <StyledTd
-                        key={title.id}
-                        $widthTd={appearanceTable?.widthTd}
-                      >
-                        <Stack gap="6px">
-                          {actionMobileIcon && titleIndex === 0 && (
-                            <ActionsIcon
-                              actionMobile={actionMobileIcon}
-                              entry={entry}
-                              isTablet={isTablet}
-                              actions={[]}
-                            />
-                          )}
-                          {typeof entry[title.id] !== "string" ? (
-                            entry[title.id]
-                          ) : (
-                            <Text
-                              size="medium"
-                              padding={isTablet ? "0px" : "0px 4px"}
+                  {filteredTitles.map((title, titleIndex) => (
+                    <StyledTd
+                      key={title.id}
+                      $widthTd={appearanceTable?.widthTd}
+                    >
+                      <Stack gap="6px">
+                        {actionMobileIcon && titleIndex === 0 && (
+                          <ActionsIcon
+                            actionMobile={actionMobileIcon}
+                            entry={entry}
+                            isTablet={isTablet}
+                            actions={[]}
+                          />
+                        )}
+                        <Stack justifyContent="space-between" width="100%">
+                          {!(isMobile && titleIndex === 1) && (
+                            <Stack
+                              direction="row"
+                              gap={isMobile ? "0px" : "8px"}
+                              alignItems="center"
+                              justifyContent={
+                                isMobile ? "space-between" : "flex-start"
+                              }
+                              width="100%"
                             >
-                              {entry[title.id]}
-                            </Text>
+                              {typeof entry[title.id] !== "string" ? (
+                                entry[title.id]
+                              ) : (
+                                <Text
+                                  size="medium"
+                                  padding={isTablet ? "0px" : "0px 4px"}
+                                >
+                                  {entry[title.id]}
+                                </Text>
+                              )}
+
+                              {titleIndex === 0 &&
+                                isTablet &&
+                                isPendingStatus(entry) && (
+                                  <Icon
+                                    appearance="warning"
+                                    size="20px"
+                                    icon={<MdWarningAmber />}
+                                  />
+                                )}
+                            </Stack>
                           )}
+                          <Stack padding="0px 14px">
+                            {titleIndex === 1 && isTablet && (
+                              <Icon
+                                appearance="gray"
+                                size="20px"
+                                icon={<LuUserRoundCheck />}
+                              />
+                            )}
+                          </Stack>
                         </Stack>
-                      </StyledTd>
-                    ))}
+                      </Stack>
+                    </StyledTd>
+                  ))}
                   {actions && (
                     <Actions
                       actions={actions}

@@ -7,6 +7,7 @@ export interface IInfoItems {
   isFirstTable?: boolean;
   infoItems?: { icon: JSX.Element; text: string }[];
 }
+
 export interface ITableBoardProps extends IInfoItems {
   id: string;
   entries: IEntries[];
@@ -18,6 +19,7 @@ export interface ITableBoardProps extends IInfoItems {
   loading?: boolean;
   portalId?: string;
   appearanceTable?: IAppearances;
+  hideTagOnTablet?: boolean;
 }
 
 export const TableBoard = (props: ITableBoardProps) => {
@@ -40,9 +42,10 @@ export const TableBoard = (props: ITableBoardProps) => {
     },
     isFirstTable,
     infoItems,
+    hideTagOnTablet = true,
   } = props;
 
-  const isTablet = useMediaQuery("(max-width: 720px)");
+  const isTablet = useMediaQuery("(max-width: 768px)");
 
   return (
     <TableBoardUI
@@ -59,6 +62,7 @@ export const TableBoard = (props: ITableBoardProps) => {
       isTablet={isTablet}
       isFirstTable={isFirstTable}
       infoItems={infoItems}
+      hideTagOnTablet={hideTagOnTablet} 
     />
   );
 };

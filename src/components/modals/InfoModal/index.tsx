@@ -4,6 +4,7 @@ import { Stack, Icon } from "@inubekit/inubekit";
 import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
+import info from "@assets/images/info.png";
 
 import { StyledContainer, StyledUl } from "./styles";
 import { InfoItemComponent } from "./interface";
@@ -40,6 +41,10 @@ const defaultItems: InfoItem[] = [
   {
     icon: <img src={remove} alt="remove" width={16} height={16} />,
     text: "Sin Evaluar",
+  },
+  {
+    icon: <img src={info} alt="Devuelto" width={16} height={16} />,
+    text: "Devuelto",
   },
 ];
 
