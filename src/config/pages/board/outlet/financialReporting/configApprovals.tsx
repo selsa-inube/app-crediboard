@@ -26,25 +26,7 @@ export const titlesApprovals = [
     priority: 2,
   },
 ];
-export const getTitlesApprovals = (isMobile: boolean) => {
-  const baseTitles = [
-    {
-      id: "usuarios",
-      titleName: "Usuarios",
-      priority: 1,
-    },
-  ];
 
-  if (!isMobile) {
-    baseTitles.push({
-      id: "tag",
-      titleName: "Decisión",
-      priority: 2,
-    });
-  }
-
-  return baseTitles;
-};
 export const actionsApprovals = [
   {
     id: "Error",
