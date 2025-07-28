@@ -85,6 +85,7 @@ interface BoardLayoutProps {
   handleClearFilters: () => void;
   handleRemoveFilter: (filterIdToRemove: string) => void;
   isMenuOpen: boolean;
+  filterValues: IFilterFormValues;
 }
 
 function BoardLayoutUI(props: BoardLayoutProps) {
@@ -100,6 +101,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     pinnedRequests,
     errorLoadingPins,
     activeOptions,
+    filterValues,
     closeFilterModal,
     handleLoadMoreData,
     handlePinRequest,
@@ -126,13 +128,14 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const [isShowModal, setIsShowModal] = useState(false);
   const [isVoiceProcessed, setIsVoiceProcessed] = useState(false);
   const { businessUnitSigla } = useContext(AppContext);
+
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
   const { addFlag } = useFlag();
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const [isExpanded, setIsExpanded] = useState(false);
-  const stackRef = useRef<HTMLDivElement>(null);
 
+  const stackRef = useRef<HTMLDivElement>(null);
   const startListening = () => {
     resetTranscript();
     setIsVoiceProcessed(false);
@@ -234,6 +237,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transcript, isShowModal, isVoiceProcessed]);
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -427,9 +431,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 selectedFilters={activeOptions}
                 onCloseModal={closeFilterModal}
                 onRemoveFilter={handleRemoveFilter}
+                filterValues={filterValues}
               />
             )}
-
             {!isMobile && (
               <Stack width="280px" alignItems="center" gap="8px">
                 <Textfield
@@ -453,7 +457,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 />
               </Stack>
             )}
-
             {!isMobile && (
               <StyledRequestsContainer $isMobile={isMobile}>
                 <SelectedFilters
@@ -483,7 +486,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 </Button>
               </StyledRequestsContainer>
             )}
-
             <Stack alignItems="center">
               <Stack gap="16px">
                 {!isMobile && (

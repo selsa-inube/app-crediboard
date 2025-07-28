@@ -56,6 +56,23 @@ export const StyledContainerContent = styled.div<IStyledModal>`
   padding-right: 4px;
   padding-bottom: 4px;
   padding-left: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+
+  ${({ theme }) =>
+    `
+      &::-webkit-scrollbar {
+        width: 8px; 
+        border-radius: 8px;
+      }
+  
+      &::-webkit-scrollbar-thumb {
+        background-color: ${
+          theme?.palette?.neutral?.N30 || inube.palette.neutral.N30
+        };
+        border-radius: 8px;
+      }
+    `}
 `;
 
 export const StyledContainerClose = styled.div`

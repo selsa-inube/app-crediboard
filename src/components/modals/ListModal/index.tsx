@@ -26,6 +26,7 @@ import { AppContext } from "@context/AppContext";
 import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
 import { IUploadedFile } from "@services/types";
+import { truncateTextToMaxLength } from "@utils/formatData/text";
 
 import { DocumentViewer } from "../DocumentViewer";
 import {
@@ -126,6 +127,8 @@ export const ListModal = (props: IListModalProps) => {
   const Listdata = (props: IListdataProps) => {
     const { data, icon, onDelete, onPreview } = props;
 
+    const maxLength = isMobile ? 20 : 40;
+
     return (
       <ul
         style={{
@@ -135,7 +138,7 @@ export const ListModal = (props: IListModalProps) => {
       >
         {data?.map((element) => (
           <StyledItem key={element.id}>
-            <Text>{element.name}</Text>
+            <Text>{truncateTextToMaxLength(element.name, maxLength)}</Text>
             <Icon
               icon={icon}
               appearance="dark"

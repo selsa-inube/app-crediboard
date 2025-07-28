@@ -1,11 +1,5 @@
 import { isValidElement } from "react";
-import {
-  MdCheck,
-  MdClose,
-  MdNotificationsNone,
-  MdRemove,
-  MdWarningAmber,
-} from "react-icons/md";
+import { MdNotificationsNone, MdWarningAmber } from "react-icons/md";
 import { Icon, Stack, Tag } from "@inubekit/inubekit";
 
 import check from "@assets/images/check.svg";
@@ -65,20 +59,6 @@ export const actionsApprovals = [
         }
       />
     ),
-  },
-];
-
-export const infoItems = [
-  { icon: <MdCheck />, text: "Aprobado", appearance: "success" },
-  { icon: <MdClose />, text: "Rechazado", appearance: "danger" },
-  { icon: <MdRemove />, text: "Pendiente", appearance: "warning" },
-  { icon: <MdRemove />, text: "GESTION_COMERCIAL", appearance: "help" },
-  { icon: <MdRemove />, text: "ANALISIS_RIESGO", appearance: "dark" },
-  { icon: <MdWarningAmber />, text: "Error", appearance: "danger" },
-  {
-    icon: <MdNotificationsNone />,
-    text: "Notificaciones",
-    appearance: "help",
   },
 ];
 

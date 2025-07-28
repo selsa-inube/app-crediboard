@@ -8,8 +8,11 @@ import {
   HiddenFilterItem,
 } from "./styles";
 import { useSelectedFilters, SelectedFiltersProps } from "./interface";
+import { dataFilters } from "./config";
 
-function SelectedFilters({ filters, onRemove }: SelectedFiltersProps) {
+function SelectedFilters(props: SelectedFiltersProps) {
+  const { filters, onRemove } = props;
+
   const {
     containerRef,
     visibleFilters,
@@ -28,12 +31,11 @@ function SelectedFilters({ filters, onRemove }: SelectedFiltersProps) {
             <Tag
               key={index}
               appearance={filter.type === "status" ? "dark" : "primary"}
-              label={`${filter.label} (${filter.count})`}
+              label={`${filter.label}`}
               removable={onRemove !== undefined}
               onClose={() => handleRemoveFilter(filter.id)}
             />
           ))}
-
           {hiddenFilters.length > 0 && (
             <MoreFiltersWrapper
               onClick={() => setShowHiddenFilters((prev) => !prev)}
@@ -50,7 +52,7 @@ function SelectedFilters({ filters, onRemove }: SelectedFiltersProps) {
                           size="14px"
                         />
                         <Text size="small">
-                          {`${filter.label} (${filter.count})`}
+                          {`${filter.label}`}
                         </Text>
                       </Stack>
                       <Icon
@@ -73,7 +75,7 @@ function SelectedFilters({ filters, onRemove }: SelectedFiltersProps) {
         </Stack>
       ) : (
         <Text type="label" size="small" appearance="gray">
-          Sin filtros aún.
+          {dataFilters.withoutFilters}
         </Text>
       )}
     </StyledContainerFilters>

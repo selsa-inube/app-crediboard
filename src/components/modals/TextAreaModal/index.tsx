@@ -22,6 +22,7 @@ export interface TextAreaModalProps {
   hideCharCount?: boolean;
   disableTextarea?: boolean;
   secondaryButtonText?: string;
+  showSecundaryButton?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -39,6 +40,7 @@ export function TextAreaModal(props: TextAreaModalProps) {
     readOnly = false,
     disableTextarea = false,
     secondaryButtonText = "Cancelar",
+    showSecundaryButton = true,
     onChange,
   } = props;
 
@@ -69,7 +71,7 @@ export function TextAreaModal(props: TextAreaModalProps) {
         <BaseModal
           title={title}
           nextButton={buttonText}
-          backButton={secondaryButtonText}
+          backButton={showSecundaryButton ? secondaryButtonText : undefined}
           handleNext={handleNext ?? (() => {})}
           handleBack={onSecondaryButtonClick}
           handleClose={onCloseModal}
