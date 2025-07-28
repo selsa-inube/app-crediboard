@@ -76,7 +76,11 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               onChange={(name, value) => onChange(name, value)}
               size="compact"
             />
-            <Stack alignItems="center" gap="16px">
+            <Stack
+              direction={isMobile ? "column" : "row"}
+              alignItems="center"
+              gap="16px"
+            >
               <Stack>
                 <Button
                   children="Restablecer"

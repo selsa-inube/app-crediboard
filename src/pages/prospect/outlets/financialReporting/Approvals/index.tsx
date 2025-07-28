@@ -21,7 +21,6 @@ import {
   handleErrorClick,
   desktopActions,
   getMobileActionsConfig,
-  infoItems,
   entriesApprovals,
   getActionsMobileIcon,
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
@@ -194,7 +193,6 @@ export const Approvals = (props: IApprovalsProps) => {
               isStyleMobile: true,
             }}
             isFirstTable={true}
-            infoItems={infoItems}
           />
         )}
       </Fieldset>
@@ -204,7 +202,7 @@ export const Approvals = (props: IApprovalsProps) => {
           nextButton="Enviar"
           handleNext={handleSubmit}
           handleClose={handleCloseNotificationModal}
-          width="400px"
+          width={isMobile ? "290px" : "400px"}
         >
           <Text>{dataInfoApprovals.notifyModal}</Text>
         </BaseModal>
@@ -212,12 +210,14 @@ export const Approvals = (props: IApprovalsProps) => {
       {showErrorModal && selectedData && (
         <TextAreaModal
           title="Error"
-          buttonText="Cerrar"
+          buttonText="Entendido"
           inputLabel="Descripción del error"
           inputPlaceholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nec mollis felis. Donec eget sapien viverra, tincidunt ex ut, ornare nisi. Nulla eget fermentum velit."
           readOnly
           disableTextarea={true}
           onCloseModal={() => setShowErrorModal(false)}
+          handleNext={() => setShowErrorModal(false)}
+          showSecundaryButton={false}
         />
       )}
     </>

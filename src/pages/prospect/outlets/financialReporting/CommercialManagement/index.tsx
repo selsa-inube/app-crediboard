@@ -11,6 +11,7 @@ import {
   MdOutlinePayments,
   MdOutlineInfo,
 } from "react-icons/md";
+
 import {
   Stack,
   Icon,
@@ -20,7 +21,6 @@ import {
   Button,
   useFlag,
 } from "@inubekit/inubekit";
-
 import {
   ICreditRequest,
   IModeOfDisbursement,
@@ -49,10 +49,16 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
+import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
+import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitModal";
+import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
+import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
+import { getPropertyValue } from "@utils/mappingData/mappings";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
-import { menuOptions, tittleOptions } from "./config/config";
+import { incomeOptions, menuOptions, tittleOptions } from "./config/config";
 import {
   StyledCollapseIcon,
   StyledFieldset,
@@ -111,8 +117,26 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   const [checkManagement, setCheckManagement] =
     useState<IModeOfDisbursement | null>(null);
   const [cash, setCash] = useState<IModeOfDisbursement | null>(null);
-
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
+  const [dataProspect, setDataProspect] = useState<IProspect[]>([]);
+  const [incomeData, setIncomeData] = useState<Record<string, IIncomeSources>>(
+    {}
+  );
+  const [openModal, setOpenModal] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+  const [form, setForm] = useState({
+    borrower: "",
+    monthlySalary: 0,
+    otherMonthlyPayments: 0,
+    pensionAllowances: 0,
+    leases: 0,
+    dividendsOrShares: 0,
+    financialReturns: 0,
+    averageMonthlyProfit: 0,
+    monthlyFees: 0,
+    total: undefined,
+  });
 
   const navigation = useNavigate();
   const { addFlag } = useFlag();
@@ -235,6 +259,203 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     accountNumber: "",
     observation: "",
   };
+
+  const onChangesReportCredit = (name: string, newValue: string) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: newValue,
+    }));
+  };
+
+  const borrowersProspect =
+    dataProspect.length > 0 ? dataProspect[0] : undefined;
+
+  const selectedBorrower = borrowersProspect?.borrowers?.[selectedIndex];
+
+  const handleIncomeSubmit = (updatedData: IIncomeSources) => {
+    if (selectedBorrower) {
+      const borrowerName = selectedBorrower.borrowerName;
+
+      setIncomeData((prev) => ({
+        ...prev,
+        [borrowerName]: {
+          ...updatedData,
+          edited: true,
+        },
+      }));
+
+      setDataProspect((prev) => {
+        return prev.map((prospect) => {
+          const updatedBorrowers = prospect.borrowers.map((borrower) => {
+            if (borrower.borrowerName === borrowerName) {
+              const updatedProperties = [
+                ...borrower.borrowerProperties.filter(
+                  (prop) =>
+                    ![
+                      "PeriodicSalary",
+                      "OtherNonSalaryEmoluments",
+                      "PensionAllowances",
+                      "PersonalBusinessUtilities",
+                      "ProfessionalFees",
+                      "Leases",
+                      "Dividends",
+                      "FinancialIncome",
+                      "name",
+                      "surname",
+                    ].includes(prop.propertyName)
+                ),
+                {
+                  propertyName: "PeriodicSalary",
+                  propertyValue: updatedData.PeriodicSalary?.toString() || "0",
+                },
+                {
+                  propertyName: "OtherNonSalaryEmoluments",
+                  propertyValue:
+                    updatedData.OtherNonSalaryEmoluments?.toString() || "0",
+                },
+                {
+                  propertyName: "PensionAllowances",
+                  propertyValue:
+                    updatedData.PensionAllowances?.toString() || "0",
+                },
+                {
+                  propertyName: "PersonalBusinessUtilities",
+                  propertyValue:
+                    updatedData.PersonalBusinessUtilities?.toString() || "0",
+                },
+                {
+                  propertyName: "ProfessionalFees",
+                  propertyValue:
+                    updatedData.ProfessionalFees?.toString() || "0",
+                },
+                {
+                  propertyName: "Leases",
+                  propertyValue: updatedData.Leases?.toString() || "0",
+                },
+                {
+                  propertyName: "Dividends",
+                  propertyValue: updatedData.Dividends?.toString() || "0",
+                },
+                {
+                  propertyName: "FinancialIncome",
+                  propertyValue: updatedData.FinancialIncome?.toString() || "0",
+                },
+                {
+                  propertyName: "name",
+                  propertyValue: updatedData.name || "",
+                },
+                {
+                  propertyName: "surname",
+                  propertyValue: updatedData.surname || "",
+                },
+              ];
+
+              return {
+                ...borrower,
+                borrowerProperties: updatedProperties,
+              };
+            }
+            return borrower;
+          });
+
+          return {
+            ...prospect,
+            borrowers: updatedBorrowers,
+          };
+        });
+      });
+      setOpenModal(null);
+    }
+  };
+
+  const borrowerOptions =
+    borrowersProspect?.borrowers?.map((borrower) => ({
+      id: crypto.randomUUID(),
+      label: borrower.borrowerName,
+      value: borrower.borrowerName,
+    })) ?? [];
+
+  useEffect(() => {
+    setDataProspect(prospectData ? [prospectData] : []);
+  }, [prospectData]);
+
+  const handleChangeIncome = (_name: string, value: string) => {
+    const index = borrowersProspect?.borrowers?.findIndex(
+      (borrower) => borrower.borrowerName === value
+    );
+    setSelectedIndex(index ?? 0);
+  };
+
+  useEffect(() => {
+    if (selectedBorrower) {
+      const borrowerName = selectedBorrower.borrowerName;
+      if (!incomeData[borrowerName]?.edited) {
+        setIncomeData((prev) => ({
+          ...prev,
+          [borrowerName]: {
+            identificationNumber: selectedBorrower.borrowerIdentificationNumber,
+            identificationType: selectedBorrower.borrowerIdentificationType,
+            name:
+              getPropertyValue(selectedBorrower.borrowerProperties, "name") ||
+              "",
+            surname:
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "surname"
+              ) || "",
+            Leases: parseFloat(
+              getPropertyValue(selectedBorrower.borrowerProperties, "Leases") ||
+                "0"
+            ),
+            Dividends: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "Dividends"
+              ) || "0"
+            ),
+            FinancialIncome: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "FinancialIncome"
+              ) || "0"
+            ),
+            PeriodicSalary: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "PeriodicSalary"
+              ) || "0"
+            ),
+            OtherNonSalaryEmoluments: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "OtherNonSalaryEmoluments"
+              ) || "0"
+            ),
+            PensionAllowances: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "PensionAllowances"
+              ) || "0"
+            ),
+            PersonalBusinessUtilities: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "PersonalBusinessUtilities"
+              ) || "0"
+            ),
+            ProfessionalFees: parseFloat(
+              getPropertyValue(
+                selectedBorrower.borrowerProperties,
+                "ProfessionalFees"
+              ) || "0"
+            ),
+            edited: false,
+          },
+        }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedBorrower]);
 
   return (
     <>
@@ -543,11 +764,19 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               {collapse && <Stack>{isMobile && <Divider />}</Stack>}
               {collapse && (
                 <CreditProspect
+                  borrowersProspect={borrowersProspect}
+                  borrowerOptions={borrowerOptions}
+                  selectedIndex={selectedIndex}
+                  dataProspect={dataProspect}
+                  selectedBorrower={selectedBorrower}
+                  incomeData={incomeData}
                   isMobile={isMobile}
-                  showMenu={() => setShowMenu(false)}
-                  showPrint={true}
-                  isPrint={true}
                   prospectData={prospectData}
+                  showPrint
+                  showMenu={() => setShowMenu(false)}
+                  handleChange={handleChangeIncome}
+                  isPrint={true}
+                  handleIncomeSubmit={handleIncomeSubmit}
                   sentData={sentData}
                   setSentData={setSentData}
                   setRequestValue={setRequestValue}
@@ -555,6 +784,35 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 />
               )}
             </Stack>
+            {currentModal === "creditLimit" && (
+              <CreditLimitModal
+                isMobile={isMobile}
+                handleClose={handleCloseModal}
+                setRequestValue={() => {}}
+              />
+            )}
+            {currentModal === "IncomeModal" && (
+              <IncomeBorrowersModal
+                borrowersProspect={borrowersProspect}
+                borrowerOptions={borrowerOptions}
+                selectedIndex={selectedIndex}
+                dataProspect={dataProspect}
+                selectedBorrower={selectedBorrower}
+                isMobile={isMobile}
+                handleCloseModal={handleCloseModal}
+                handleChange={handleChangeIncome}
+                setOpenModal={setOpenModal}
+              />
+            )}
+            {currentModal === "reportCreditsModal" && (
+              <ReportCreditsModal
+                onChange={onChangesReportCredit}
+                debtor={form.borrower}
+                handleClose={handleCloseModal}
+                prospectData={prospectData ? [prospectData] : undefined}
+                options={incomeOptions}
+              />
+            )}
             {currentModal === "extraPayments" && (
               <ExtraordinaryPaymentModal
                 dataTable={extraordinaryInstallmentMock}
@@ -563,6 +821,28 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 sentData={sentData}
                 setSentData={setSentData}
                 businessUnitPublicCode={businessUnitPublicCode}
+              />
+            )}
+            {openModal === "IncomeModalEdit" && (
+              <IncomeModal
+                handleClose={() => setOpenModal(null)}
+                initialValues={
+                  (selectedBorrower &&
+                    incomeData[selectedBorrower.borrowerName]) ||
+                  {}
+                }
+                onSubmit={handleIncomeSubmit}
+              />
+            )}
+            {openModal === "IncomeModalEdit" && (
+              <IncomeModal
+                handleClose={() => setOpenModal(null)}
+                initialValues={
+                  (selectedBorrower &&
+                    incomeData[selectedBorrower.borrowerName]) ||
+                  {}
+                }
+                onSubmit={handleIncomeSubmit}
               />
             )}
             {currentModal === "disbursementModal" && (

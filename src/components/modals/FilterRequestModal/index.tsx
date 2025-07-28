@@ -22,6 +22,7 @@ import { IFilterFormValues } from "@pages/board/outlets/boardlayout/index.tsx";
 
 import { StyledModal, StyledContainerClose } from "./styles.ts";
 import { FormValues } from "./types.ts";
+import { dataFiltersRequest } from "./config.ts";
 
 export interface SelectedFilter extends IOption {
   count: number;
@@ -32,6 +33,7 @@ export interface FilterRequestModalProps {
   assignmentOptions?: IOption[];
   statusOptions?: IOption[];
   selectedFilters?: Filter[];
+  filterValues?: IFilterFormValues;
   onCloseModal?: () => void;
   onSubmit?: (values: IFilterFormValues) => void;
   onClearFilters?: () => void;
@@ -43,6 +45,7 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
     portalId = "portal",
     assignmentOptions = [],
     selectedFilters = [],
+    filterValues,
     onCloseModal,
     onSubmit,
     onClearFilters,
@@ -57,16 +60,15 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
   const validationSchema = Yup.object({
     assignment: Yup.string().required(validationMessages.required),
     status: Yup.string().required(validationMessages.required),
-    value: Yup.number()
-      .required(validationMessages.required)
-      .min(1, "El valor debe ser mayor a 0"),
+    value: Yup.number().required(validationMessages.required).min(1, ""),
   });
 
   const formik = useFormik<FormValues>({
     initialValues: {
-      assignment: "",
-      status: "",
+      assignment: filterValues?.assignment ?? "",
+      status: filterValues?.status ?? "",
     },
+    enableReinitialize: true,
     validationSchema,
     onSubmit: () => {
       console.log("Form submitted");
@@ -82,15 +84,6 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
       setLoading(false);
     }, 800);
   }, [onSubmit, formik.values]);
-
-  const handleCheckpickerChange = useCallback(
-    (name: string, value: string) => {
-      setTimeout(() => {
-        formik.setFieldValue(name, value);
-      }, 0);
-    },
-    [formik]
-  );
 
   const sortedAssignmentOptions = [...assignmentOptions].sort((a, b) =>
     a.label.localeCompare(b.label)
@@ -111,11 +104,11 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
           margin="0px 0px 10px 0px"
         >
           <Text type="headline" size="small">
-            Filtrar
+            {dataFiltersRequest.filter}
           </Text>
           <StyledContainerClose onClick={onCloseModal}>
             <Stack alignItems="center" gap="8px">
-              <Text>Cerrar</Text>
+              <Text>{dataFiltersRequest.close}</Text>
               <Icon
                 icon={<MdClear />}
                 size="24px"
@@ -142,7 +135,6 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
             <Divider dashed />
           </>
         )}
-
         <form onSubmit={formik.handleSubmit}>
           <Stack direction="column" gap="20px">
             <Stack alignItems="center" gap="8px">
@@ -166,21 +158,24 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
                 }
                 size="compact"
                 fullwidth
-                onChange={handleCheckpickerChange}
+                onChange={(name, value) => {
+                  setTimeout(() => {
+                    formik.setFieldValue(name, value);
+                  }, 0);
+                }}
                 options={sortedAssignmentOptions}
               />
             </Stack>
-
             <Stack justifyContent="flex-end" gap="20px">
               <Button
                 onClick={onClearFilters}
                 appearance="gray"
                 variant="outlined"
               >
-                Cancelar
+                {dataFiltersRequest.cancel}
               </Button>
               <Button onClick={handleSubmit} loading={loading}>
-                Filtrar
+                {dataFiltersRequest.filter}
               </Button>
             </Stack>
           </Stack>

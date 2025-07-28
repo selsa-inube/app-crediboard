@@ -65,6 +65,10 @@ function BoardLayout() {
 
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
   const [recordsToFetch, setRecordsToFetch] = useState(79);
+  const [filterValues, setFilterValues] = useState<IFilterFormValues>({
+    assignment: "",
+    status: "",
+  });
 
   const fetchBoardData = async (
     businessUnitPublicCode: string,
@@ -119,6 +123,13 @@ function BoardLayout() {
   };
   const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
   const handleApplyFilters = async (values: IFilterFormValues) => {
+    setFilterValues(values);
+    setFilters((prev) => ({
+      ...prev,
+      searchRequestValue: "",
+      showPinnedOnly: false,
+      selectOptions: selectCheckOptions,
+    }));
     const assignmentIds = values.assignment.split(",");
     const activeFilteredValues: Filter[] = selectCheckOptions
       .filter((option) => assignmentIds.includes(option.id))
@@ -266,6 +277,7 @@ function BoardLayout() {
   }, []);
 
   const handleClearFilters = async () => {
+    setFilterValues({ assignment: "", status: "" });
     setActiveOptions([]);
     setFilters((prev) => ({
       ...prev,
@@ -309,6 +321,8 @@ function BoardLayout() {
     const value = e.target.value;
 
     handleFiltersChange({ searchRequestValue: value });
+    setFilterValues({ assignment: "", status: "" });
+    setActiveOptions([]);
 
     if (value.trim().length >= 3) {
       fetchBoardData(businessUnitPublicCode, recordsToFetch, {
@@ -375,6 +389,7 @@ function BoardLayout() {
         selectOptions={[]}
         handleSelectCheckChange={() => {}}
         closeFilterModal={closeFilterModal}
+        filterValues={filterValues}
         shouldCollapseAll={shouldCollapseAll}
       />
       {isOpenModal && (

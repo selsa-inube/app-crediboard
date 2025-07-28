@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Stack, Tabs, Text, useFlag } from "@inubekit/inubekit";
+import { Stack, Tabs, useFlag } from "@inubekit/inubekit";
 
+import userNotFound from "@assets/images/ItemNotFound.png";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardBorrower } from "@components/cards/CardBorrower";
 import { Fieldset } from "@components/data/Fieldset";
@@ -16,6 +17,7 @@ import { Pledge } from "./Pledge";
 import { Bail } from "./bail";
 import { dataGuarantee, dataTabs } from "./config";
 import { ScrollableContainer } from "./styles";
+import { ItemNotFound } from "@components/layout/ItemNotFound";
 
 export interface IOfferedGuaranteeModalProps {
   handleClose: () => void;
@@ -153,7 +155,12 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                   alignItems="center"
                   height="290px"
                 >
-                  <Text>{dataGuarantee.noContent}</Text>
+                  <ItemNotFound
+                    image={userNotFound}
+                    title={dataGuarantee.noBorrowersTitle}
+                    description={dataGuarantee.noBorrowersDescription}
+                    buttonDescription={dataGuarantee.retry}
+                  />
                 </Stack>
               </Fieldset>
             )}
