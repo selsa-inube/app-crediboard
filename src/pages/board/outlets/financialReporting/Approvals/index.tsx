@@ -192,6 +192,7 @@ export const Approvals = (props: IApprovalsProps) => {
             loading={loading}
             isFirstTable={true}
             hideTagOnTablet={false}
+            hideSecondColumnOnTablet={true}
           />
         )}
       </Fieldset>

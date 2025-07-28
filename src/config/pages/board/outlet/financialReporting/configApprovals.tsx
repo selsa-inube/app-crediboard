@@ -5,7 +5,7 @@ import { Icon, Stack, Tag } from "@inubekit/inubekit";
 import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
-import info from "@assets/images/info.png";
+import info from "@assets/images/info.svg";
 
 import { IEntries } from "@components/data/TableBoard/types";
 import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";

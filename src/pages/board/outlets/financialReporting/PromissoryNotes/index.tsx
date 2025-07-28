@@ -185,6 +185,9 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
             }}
             isFirstTable
             infoItems={infoItems}
+            hideSecondColumnOnTablet={false}
+            hideSecondColumnOnMobile={false}
+            showUserIconOnTablet={false}
           />
 
           {showModal && (

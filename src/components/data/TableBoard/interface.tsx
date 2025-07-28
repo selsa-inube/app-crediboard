@@ -30,6 +30,9 @@ interface ITableBoardUIProps extends ITableBoardProps {
   loading: boolean;
   isTablet: boolean;
   hideTagOnTablet?: boolean;
+  hideSecondColumnOnTablet?: boolean;
+  hideSecondColumnOnMobile?: boolean; 
+  showUserIconOnTablet?: boolean; 
 }
 
 interface IRenderActionsTitles {
@@ -189,6 +192,9 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
     isFirstTable,
     infoItems,
     hideTagOnTablet = true,
+    hideSecondColumnOnTablet = false,
+    hideSecondColumnOnMobile = true, 
+    showUserIconOnTablet = true,
   } = props;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -200,7 +206,17 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
     );
   };
 
+
+  const getFilteredTitlesForHeader = () => {
+    const filtered = getFilteredTitles();
+    if (isTablet && hideSecondColumnOnTablet) {
+      return filtered.filter((_, index) => index !== 1);
+    }
+    return filtered;
+  };
+
   const filteredTitles = getFilteredTitles();
+  const filteredTitlesForHeader = getFilteredTitlesForHeader();
 
   return (
     <StyledContainer
@@ -216,10 +232,7 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
       >
         <StyledThead>
           <tr>
-            {(isTablet
-              ? filteredTitles.filter((_, index) => index !== 1)
-              : filteredTitles
-            ).map((title) => (
+            {filteredTitlesForHeader.map((title) => (
               <StyledTh key={title.id + id}>
                 <Text
                   appearance={appearanceTable!.title}
@@ -269,7 +282,12 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                           />
                         )}
                         <Stack justifyContent="space-between" width="100%">
-                          {!(isMobile && titleIndex === 1) && (
+                          {/* AQUÍ SE USA LA NUEVA PROP hideSecondColumnOnMobile */}
+                          {!(
+                            isMobile &&
+                            hideSecondColumnOnMobile &&
+                            titleIndex === 1
+                          ) && (
                             <Stack
                               direction="row"
                               gap={isMobile ? "0px" : "8px"}
@@ -302,13 +320,15 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                             </Stack>
                           )}
                           <Stack padding="0px 14px">
-                            {titleIndex === 1 && isTablet && (
-                              <Icon
-                                appearance="gray"
-                                size="20px"
-                                icon={<LuUserRoundCheck />}
-                              />
-                            )}
+                            {titleIndex === 1 &&
+                              isTablet &&
+                              showUserIconOnTablet && (
+                                <Icon
+                                  appearance="gray"
+                                  size="20px"
+                                  icon={<LuUserRoundCheck />}
+                                />
+                              )}
                           </Stack>
                         </Stack>
                       </Stack>

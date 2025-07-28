@@ -1,3 +1,4 @@
+
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { IAction, IEntries, ITitle, IAppearances } from "./types";
@@ -20,6 +21,9 @@ export interface ITableBoardProps extends IInfoItems {
   portalId?: string;
   appearanceTable?: IAppearances;
   hideTagOnTablet?: boolean;
+  hideSecondColumnOnTablet?: boolean; 
+  hideSecondColumnOnMobile?: boolean;
+  showUserIconOnTablet?: boolean; 
 }
 
 export const TableBoard = (props: ITableBoardProps) => {
@@ -43,6 +47,9 @@ export const TableBoard = (props: ITableBoardProps) => {
     isFirstTable,
     infoItems,
     hideTagOnTablet = true,
+    hideSecondColumnOnTablet = false,
+    hideSecondColumnOnMobile = true,
+    showUserIconOnTablet = true,
   } = props;
 
   const isTablet = useMediaQuery("(max-width: 768px)");
@@ -62,7 +69,10 @@ export const TableBoard = (props: ITableBoardProps) => {
       isTablet={isTablet}
       isFirstTable={isFirstTable}
       infoItems={infoItems}
-      hideTagOnTablet={hideTagOnTablet} 
+      hideTagOnTablet={hideTagOnTablet}
+      hideSecondColumnOnTablet={hideSecondColumnOnTablet}
+      hideSecondColumnOnMobile={hideSecondColumnOnMobile}
+      showUserIconOnTablet={showUserIconOnTablet}
     />
   );
 };
