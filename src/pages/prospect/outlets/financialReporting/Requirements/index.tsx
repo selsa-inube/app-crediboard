@@ -3,21 +3,17 @@ import { MdOutlineHowToReg, MdOutlineRemoveRedEye } from "react-icons/md";
 import { Stack, Icon, useFlag } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { ApprovalsModalSystem } from "@components/modals/RequirementsModals/ApprovalsModalSystem";
+import { SystemValidationApprovalModal } from "@components/modals/RequirementsModals/SystemValidationApprovalModal";
 import { AddRequirement } from "@components/modals/RequirementsModals/AddRequirement";
 import { saveRequirements } from "@components/modals/RequirementsModals/AddRequirement/utils";
-import { ApprovalModalDocumentaries } from "@components/modals/RequirementsModals/ApprovalModalDocumentaries";
-import { ApprovalsModalHuman } from "@components/modals/RequirementsModals/ApprovalModalHuman";
+import { DocumentValidationApprovalModal } from "@components/modals/RequirementsModals/DocumentValidationApprovalModal";
+import { HumanValidationApprovalModal } from "@components/modals/RequirementsModals/HumanValidationApprovalModal";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { TraceDetailsModal } from "@components/modals/TraceDetailsModal";
 import { IAction, IEntries, ITitle } from "@components/data/TableBoard/types";
-import {
-  CreditRequest,
-  IPatchOfRequirements,
-  IRequirement,
-} from "@services/types";
+import { CreditRequest, IPatchOfRequirements } from "@services/types";
 import {
   AddRequirementMock,
   AddRequirementMockSistemValidations,
@@ -35,7 +31,12 @@ import {
   getActionsMobileIcon,
   questionToBeAskedInModalText,
 } from "./config";
-import { DocumentItem } from "./types";
+import {
+  DocumentItem,
+  IRequirement,
+  MappedRequirements,
+  RequirementType,
+} from "./types";
 import { errorMessages } from "../config";
 
 interface IRequirementsData {
@@ -153,8 +154,8 @@ export const Requirements = (props: IRequirementsProps) => {
               key &&
               Object.prototype.hasOwnProperty.call(mapped, type)
             ) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (mapped as any)[type][key] = value;
+              (mapped as MappedRequirements)[type as RequirementType][key] =
+                value;
             }
           });
         });
@@ -330,6 +331,35 @@ export const Requirements = (props: IRequirementsProps) => {
     setShowModal(!showModal);
   };
 
+  const [entryIdToRequirementMap, setEntryIdToRequirementMap] = useState<
+    Record<string, string>
+  >({});
+
+  useEffect(() => {
+    if (rawRequirements.length > 0) {
+      const map: Record<string, string> = {};
+      const typeCounters = { sistema: 0, documento: 0, humano: 0 };
+
+      rawRequirements[0].requirementsByPackage.forEach((req) => {
+        const prefixMap = {
+          SYSTEM_VALIDATION: "sistema",
+          DOCUMENT: "documento",
+          HUMAN_VALIDATION: "humano",
+        } as const;
+
+        const prefix =
+          prefixMap[req.requirementTypeToEvaluate as keyof typeof prefixMap];
+
+        if (prefix) {
+          typeCounters[prefix] += 1;
+          map[`${prefix}-${typeCounters[prefix]}`] = req.requirementPackageId;
+        }
+      });
+
+      setEntryIdToRequirementMap(map);
+    }
+  }, [rawRequirements]);
+
   return (
     <>
       <Fieldset
@@ -438,7 +468,7 @@ export const Requirements = (props: IRequirementsProps) => {
       {showAprovalsModal &&
         selectedTableId === "tableApprovalSystem" &&
         selectedEntryId && (
-          <ApprovalsModalSystem
+          <SystemValidationApprovalModal
             initialValues={
               approvalSystemValues[selectedEntryId] || {
                 observations: "",
@@ -472,12 +502,16 @@ export const Requirements = (props: IRequirementsProps) => {
                 return questionToBeAskedInModalText.questionForNotCompliant;
               return "";
             })()}
+            businessUnitPublicCode={businessUnitPublicCode}
+            entryId={selectedEntryId}
+            rawRequirements={rawRequirements}
+            entryIdToRequirementMap={entryIdToRequirementMap}
           />
         )}
       {showAprovalsModal &&
         selectedTableId === "tableDocumentValues" &&
         selectedEntryId && (
-          <ApprovalModalDocumentaries
+          <DocumentValidationApprovalModal
             initialValues={
               approvalDocumentValues[selectedEntryId] || {
                 answer: "",
@@ -505,12 +539,15 @@ export const Requirements = (props: IRequirementsProps) => {
             }
             seenDocuments={seenDocuments}
             setSeenDocuments={setSeenDocuments}
+            entryId={selectedEntryId}
+            rawRequirements={rawRequirements}
+            entryIdToRequirementMap={entryIdToRequirementMap}
           />
         )}
       {showAprovalsModal &&
         selectedTableId === "tableApprovalHuman" &&
         selectedEntryId && (
-          <ApprovalsModalHuman
+          <HumanValidationApprovalModal
             initialValues={
               approvalHumanValues[selectedEntryId] || {
                 answer: "",
@@ -525,6 +562,10 @@ export const Requirements = (props: IRequirementsProps) => {
                 [selectedEntryId]: values,
               }))
             }
+            businessUnitPublicCode={businessUnitPublicCode}
+            entryId={selectedEntryId}
+            rawRequirements={rawRequirements}
+            entryIdToRequirementMap={entryIdToRequirementMap}
           />
         )}
       {showAddRequirementModal && (

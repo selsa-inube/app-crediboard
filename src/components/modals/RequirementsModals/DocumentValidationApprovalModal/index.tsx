@@ -20,12 +20,16 @@ import { ListModal } from "@components/modals/ListModal";
 import { DocumentViewer } from "@components/modals/DocumentViewer";
 import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
 import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
+import { IRequirement } from "@services/types";
+import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
+import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
 import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
 import { StyledScroll } from "./styles";
+import { dataFlags } from "@config/components/flags/flag.config";
 
-interface ApprovalModalDocumentariesProps {
+interface IDocumentValidationApprovalModalsProps {
   isMobile: boolean;
   initialValues: IApprovalDocumentaries;
   title: string;
@@ -33,13 +37,16 @@ interface ApprovalModalDocumentariesProps {
   businessUnitPublicCode: string;
   user: string;
   seenDocuments: string[];
+  entryId: string;
+  entryIdToRequirementMap: Record<string, string>;
+  rawRequirements: IRequirement[];
   setSeenDocuments: React.Dispatch<React.SetStateAction<string[]>>;
   onConfirm?: (values: IApprovalDocumentaries) => void;
   onCloseModal?: () => void;
 }
 
-export function ApprovalModalDocumentaries(
-  props: ApprovalModalDocumentariesProps
+export function DocumentValidationApprovalModal(
+  props: IDocumentValidationApprovalModalsProps
 ) {
   const {
     isMobile,
@@ -49,6 +56,9 @@ export function ApprovalModalDocumentaries(
     businessUnitPublicCode,
     user,
     seenDocuments,
+    entryId,
+    entryIdToRequirementMap,
+    rawRequirements,
     setSeenDocuments,
     onConfirm,
     onCloseModal,
@@ -63,6 +73,8 @@ export function ApprovalModalDocumentaries(
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
 
+  const { addFlag } = useFlag();
+
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
     observations: Yup.string()
@@ -73,14 +85,84 @@ export function ApprovalModalDocumentaries(
     ),
   });
 
+  const getRequirementCode = (codeKey: string) => {
+    return requirementStatus.find((item) => item.Code === codeKey)?.Code || "";
+  };
+
   const formik = useFormik({
     initialValues: initialValues || {},
     validationSchema,
     validateOnMount: true,
-    onSubmit: () => {},
-  });
+    onSubmit: async (values) => {
+      try {
+        const requirementPackageId = entryIdToRequirementMap[entryId];
 
-  const { addFlag } = useFlag();
+        if (!requirementPackageId) return;
+
+        const selectedIds = values.selectedDocumentIds || {};
+        const selectedDocuments = documents.filter(
+          (doc) => selectedIds[doc.documentId]
+        );
+
+        let nextStatusValue = "";
+        if (formik.values.answer === optionsAnswer[0].label) {
+          nextStatusValue = getRequirementCode("DOCUMENT_STORED_AND_VALIDATED");
+        } else if (formik.values.answer === optionsAnswer[1].label) {
+          nextStatusValue = getRequirementCode("FAILED_DOCUMENT_VALIDATION");
+        } else if (formik.values.answer === optionsAnswer[3].label) {
+          nextStatusValue = getRequirementCode(
+            "INVALID_DOCUMENT_CANCELS_REQUEST"
+          );
+        } else if (formik.values.answer === optionsAnswer[2].label) {
+          nextStatusValue = getRequirementCode("DOCUMENT_IGNORED_BY_THE_USER");
+        }
+
+        const payload = {
+          modifyJustification: "Status change",
+          nextStatusValue,
+          packageId: rawRequirements[0]?.packageId,
+          requirementPackageId,
+          statusChangeJustification: values.observations,
+          transactionOperation: "PartialUpdate",
+          documentsByRequirement: [
+            {
+              documentCode: "",
+              requirementPackageId: "",
+              transactionOperation: "PartialUpdate",
+            },
+          ],
+        };
+
+        await approveRequirementById(businessUnitPublicCode, payload);
+
+        if (onConfirm) {
+          onConfirm({
+            ...values,
+            selectedDocuments,
+          });
+        }
+
+        if (onCloseModal) {
+          onCloseModal();
+        }
+      } catch (error: unknown) {
+        const err = error as {
+          message?: string;
+          status: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + err?.message + (err?.data?.description || "");
+        addFlag({
+          title: approvalsConfig.titleError,
+          description,
+          appearance: "danger",
+          duration: dataFlags.duration,
+        });
+      }
+    },
+  });
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -145,17 +227,7 @@ export function ApprovalModalDocumentaries(
   return (
     <BaseModal
       title={`${approvalsConfig.title} ${title}`}
-      handleNext={() => {
-        const selectedIds = formik.values.selectedDocumentIds || {};
-        const selectedDocuments = documents.filter(
-          (doc) => selectedIds[doc.documentId]
-        );
-        onConfirm?.({
-          ...formik.values,
-          selectedDocuments,
-        });
-        onCloseModal?.();
-      }}
+      handleNext={formik.handleSubmit}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
       backButton={approvalsConfig.cancel}
