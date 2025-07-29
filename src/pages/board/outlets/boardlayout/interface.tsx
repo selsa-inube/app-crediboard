@@ -121,8 +121,21 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   } = useSpeechRecognition();
 
   const [showErrorAlert, setShowErrorAlert] = useState(true);
+
+  const capitalizeWords = (text: string) => {
+    return text
+      .split(" ")
+      .map((word) => {
+        if (word.length === 0) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join(" ");
+  };
+
   const displayText = listening
-    ? transcript || voiceSearchConfig.states.listening
+    ? capitalizeWords(
+        (transcript || voiceSearchConfig.states.listening).replace(/\.+$/, "")
+      )
     : voiceSearchConfig.states.instruction;
 
   const [isShowModal, setIsShowModal] = useState(false);
@@ -158,11 +171,23 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   };
 
   const processTranscript = (text: string) => {
-    const processedText = text.replace(
+    let processedText = text.replace(
       textProcessingConfig.numberSpaceRegex,
       "$1$2"
     );
-    return processedText.trim();
+
+    processedText = processedText
+      .trim()
+      .replace(/[.,;:!?¿¡]+$/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\.$/g, "");
+    if (processedText.endsWith(".")) {
+      processedText = processedText.slice(0, -1).trim();
+    }
+    processedText = capitalizeWords(processedText);
+
+    return processedText;
   };
 
   const applyVoiceSearch = (transcriptText: string) => {
@@ -237,7 +262,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transcript, isShowModal, isVoiceProcessed]);
-
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -583,7 +607,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 {!listening && transcript && (
                   <Stack justifyContent="center">
                     <Text type="body" size="large">
-                      {transcript}
+                      {capitalizeWords(transcript.replace(/\.+$/, ""))}
                     </Text>
                   </Stack>
                 )}
