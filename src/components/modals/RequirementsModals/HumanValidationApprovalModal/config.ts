@@ -8,6 +8,7 @@ export const approvalsConfig = {
   answerPlaceHoleder: "Selecciona de la lista",
   Cancel: "Cancelar",
   confirm: "Confirmar",
+  titleError: "Lamentamos los inconvenientes",
   maxLength: 200,
 };
 

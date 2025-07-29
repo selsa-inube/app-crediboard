@@ -15,6 +15,7 @@ import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
 import { CreditRequest } from "@services/types";
+import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 
 export const dataButton = (
   onClick: () => void,
@@ -97,9 +98,8 @@ export const dataAddRequirement = {
   placeHolderDate: "Seleccione un requisito",
   placeHolderTextarea: "¿Qué hace necesario incluir este requisito?",
   placeHolderJustification: "Justificación del requisito",
-  yes: "Sí, aprobar requisito.",
-  no: "No, aprobar requisito.",
 };
+
 export const justificationDescriptions: Record<string, string> = {
   edad: "Se valida la edad mínima para el requisito",
   antiguedad: "Se valida la antigüedad mínima para el requisito",
@@ -116,8 +116,8 @@ export const infoItems = [
 export const questionToBeAskedInModalText = {
   notEvaluated: "Sin Evaluar",
   notCompliant: "No Cumple",
-  questionForUnvalidated: "¿Pudo evaluar?",
-  questionForNotCompliant: "¿Cumple?",
+  questionForUnvalidated: "Pudo evaluar?",
+  questionForNotCompliant: "Cumple?",
 };
 export const actionsRequirements = [
   [
@@ -240,16 +240,29 @@ const actionsMobile = [
   },
 ];
 
+const getRequirementCode = (codeKey: string) => {
+  return requirementStatus.find((item) => item.Code === codeKey)?.Code || "";
+};
+
 const generateTag = (value: string): JSX.Element => {
   if (
-    value === "PASSED_WITH_SYSTEM_VALIDATION" ||
-    value === "DOCUMENT_STORED_WITHOUT_VALIDATION" ||
-    value === "PASSED_WITH_HUMAN_VALIDATION" ||
-    value === "DOCUMENT_VALIDATED_BY_THE_USER" ||
-    value === "IGNORED_BY_THE_USER"
+    value === getRequirementCode("PASSED_WITH_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_STORED_WITHOUT_VALIDATION") ||
+    value === getRequirementCode("PASSED_WITH_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_VALIDATED_BY_THE_USER") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER") ||
+    value === getRequirementCode("PASSED_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_STORED_AND_VALIDATED") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_IGNORED_BY_THE_USER")
   ) {
     return <Tag label="Cumple" appearance="success" />;
-  } else if (value === "FAILED_SYSTEM_VALIDATION") {
+  } else if (
+    value === getRequirementCode("FAILED_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("FAILED_DOCUMENT_VALIDATION") ||
+    value === getRequirementCode("FAILED_HUMAN_VALIDATION")
+  ) {
     return <Tag label="No Cumple" appearance="danger" />;
   } else {
     return <Tag label="Sin Evaluar" appearance="warning" />;
