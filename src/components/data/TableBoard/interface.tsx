@@ -1,13 +1,9 @@
-import { useState } from "react";
-import { MdOutlineInfo, MdWarningAmber } from "react-icons/md";
-import { LuUserRoundCheck } from "react-icons/lu";
 import {
-  Icon,
-  Text,
-  SkeletonLine,
-  Stack,
-  useMediaQuery,
-} from "@inubekit/inubekit";
+  MdOutlineInfo,
+  MdOutlineHowToReg,
+  MdWarningAmber,
+} from "react-icons/md";
+import { Icon, Text, SkeletonLine, Stack } from "@inubekit/inubekit";
 
 import { InfoModal } from "@components/modals/InfoModal";
 
@@ -29,10 +25,19 @@ import {
 interface ITableBoardUIProps extends ITableBoardProps {
   loading: boolean;
   isTablet: boolean;
+  isMobile: boolean;
   hideTagOnTablet?: boolean;
   hideSecondColumnOnTablet?: boolean;
-  hideSecondColumnOnMobile?: boolean; 
-  showUserIconOnTablet?: boolean; 
+  hideSecondColumnOnMobile?: boolean;
+  showUserIconOnTablet?: boolean;
+  enableStickyActions?: boolean;
+  showPendingWarningIcon?: boolean;
+  isModalOpen: boolean;
+  onInfoClick: () => void;
+  onCloseModal: () => void;
+  filteredTitles: ITitle[];
+  filteredTitlesForHeader: ITitle[];
+  isPendingStatus: (entry: IEntries) => boolean;
 }
 
 interface IRenderActionsTitles {
@@ -42,6 +47,7 @@ interface IRenderActionsTitles {
   isStyleMobile: boolean;
   onInfoClick: () => void;
   isFirstTable: boolean;
+  enableStickyActions?: boolean;
 }
 
 const RenderActionsTitles = (props: IRenderActionsTitles) => {
@@ -52,13 +58,17 @@ const RenderActionsTitles = (props: IRenderActionsTitles) => {
     isStyleMobile,
     onInfoClick,
     isFirstTable,
+    enableStickyActions = true,
   } = props;
 
   return (
     <>
       {!isTablet
         ? actions.map((actionTitle) => (
-            <StyledThactions key={actionTitle.id}>
+            <StyledThactions
+              key={actionTitle.id}
+              $enableSticky={enableStickyActions}
+            >
               <Text
                 appearance={appearance}
                 type="title"
@@ -71,7 +81,12 @@ const RenderActionsTitles = (props: IRenderActionsTitles) => {
             </StyledThactions>
           ))
         : isFirstTable && (
-            <StyledThactions $isTablet={isTablet} colSpan={3} $isFirst>
+            <StyledThactions
+              $isTablet={isTablet}
+              $enableSticky={enableStickyActions}
+              colSpan={3}
+              $isFirst
+            >
               {isStyleMobile && (
                 <Stack margin="0 10px 0 0" justifyContent="end">
                   <Icon
@@ -169,54 +184,31 @@ const Actions = (props: IActionsComponent) => {
   );
 };
 
-const isPendingStatus = (entry: IEntries): boolean => {
-  const tag = entry.tag;
-  if (typeof tag === "object" && tag !== null && "props" in tag) {
-    return (tag as JSX.Element).props?.label === "Pendiente";
-  }
-  return false;
-};
-
 export const TableBoardUI = (props: ITableBoardUIProps) => {
   const {
     id,
     entries,
     actions,
-    titles,
     borderTable,
     loading,
     appearanceTable,
     isTablet,
+    isMobile,
     actionMobileIcon,
     actionMobile,
     isFirstTable,
     infoItems,
-    hideTagOnTablet = true,
-    hideSecondColumnOnTablet = false,
-    hideSecondColumnOnMobile = true, 
+    hideSecondColumnOnMobile = true,
     showUserIconOnTablet = true,
+    enableStickyActions = true,
+    showPendingWarningIcon = false,
+    isModalOpen,
+    onInfoClick,
+    onCloseModal,
+    filteredTitles,
+    filteredTitlesForHeader,
+    isPendingStatus,
   } = props;
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 560px)");
-
-  const getFilteredTitles = () => {
-    return titles.filter(
-      (title) => !(isTablet && hideTagOnTablet && title.id === "tag")
-    );
-  };
-
-
-  const getFilteredTitlesForHeader = () => {
-    const filtered = getFilteredTitles();
-    if (isTablet && hideSecondColumnOnTablet) {
-      return filtered.filter((_, index) => index !== 1);
-    }
-    return filtered;
-  };
-
-  const filteredTitles = getFilteredTitles();
-  const filteredTitlesForHeader = getFilteredTitlesForHeader();
 
   return (
     <StyledContainer
@@ -251,8 +243,9 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                 appearance={appearanceTable!.title!}
                 isTablet={isTablet}
                 isStyleMobile={appearanceTable!.isStyleMobile!}
-                onInfoClick={() => setIsModalOpen(true)}
+                onInfoClick={onInfoClick}
                 isFirstTable={isFirstTable ?? false}
+                enableStickyActions={enableStickyActions}
               />
             )}
           </tr>
@@ -281,8 +274,7 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                             actions={[]}
                           />
                         )}
-                        <Stack justifyContent="space-between" width="100%">
-                          {/* AQUÍ SE USA LA NUEVA PROP hideSecondColumnOnMobile */}
+                        <Stack justifyContent="flex-end" width="100%">
                           {!(
                             isMobile &&
                             hideSecondColumnOnMobile &&
@@ -308,8 +300,9 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                                 </Text>
                               )}
 
+                              {/* ⭐ Condición modificada para usar la nueva prop */}
                               {titleIndex === 0 &&
-                                isTablet &&
+                                showPendingWarningIcon &&
                                 isPendingStatus(entry) && (
                                   <Icon
                                     appearance="warning"
@@ -319,16 +312,16 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                                 )}
                             </Stack>
                           )}
-                          <Stack padding="0px 14px">
-                            {titleIndex === 1 &&
-                              isTablet &&
-                              showUserIconOnTablet && (
-                                <Icon
-                                  appearance="gray"
-                                  size="20px"
-                                  icon={<LuUserRoundCheck />}
-                                />
-                              )}
+                          <Stack padding="0px 4px">
+                            {titleIndex === 1 && showUserIconOnTablet && (
+                              <Icon
+                                appearance="gray"
+                                size="32px"
+                                spacing="compact"
+                                variant="empty"
+                                icon={<MdOutlineHowToReg />}
+                              />
+                            )}
                           </Stack>
                         </Stack>
                       </Stack>
@@ -349,10 +342,7 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
         </StyledTbody>
       </StyledTable>
       {isModalOpen && (
-        <InfoModal
-          onClose={() => setIsModalOpen(false)}
-          items={infoItems || []}
-        />
+        <InfoModal onClose={onCloseModal} items={infoItems || []} />
       )}
     </StyledContainer>
   );

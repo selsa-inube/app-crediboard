@@ -17,7 +17,7 @@ const handleData = (data: IEntries) => {
 export const titlesApprovals = [
   {
     id: "usuarios",
-    titleName: "Usuarios",
+    titleName: "Aprobadores asignados",
     priority: 1,
   },
   {

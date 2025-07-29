@@ -15,7 +15,6 @@ import { ICreditRequest } from "@services/types";
 import {
   actionMobileApprovals,
   titlesApprovals,
-  actionsApprovals,
   handleNotificationClick,
   handleErrorClick,
   desktopActions,
@@ -115,11 +114,7 @@ export const Approvals = (props: IApprovalsProps) => {
   };
 
   const desktopActionsConfig = !isMobile
-    ? desktopActions(
-        actionsApprovals,
-        handleNotificationClickBound,
-        handleErrorClickBound
-      )
+    ? desktopActions([], handleNotificationClickBound, handleErrorClickBound)
     : [];
 
   const mobileActions = !isMobile
@@ -193,6 +188,8 @@ export const Approvals = (props: IApprovalsProps) => {
             isFirstTable={true}
             hideTagOnTablet={false}
             hideSecondColumnOnTablet={true}
+            enableStickyActions={false}
+            showPendingWarningIcon={true}
           />
         )}
       </Fieldset>

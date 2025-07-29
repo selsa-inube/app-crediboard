@@ -1,4 +1,4 @@
-
+import { useState } from "react";
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { IAction, IEntries, ITitle, IAppearances } from "./types";
@@ -21,9 +21,11 @@ export interface ITableBoardProps extends IInfoItems {
   portalId?: string;
   appearanceTable?: IAppearances;
   hideTagOnTablet?: boolean;
-  hideSecondColumnOnTablet?: boolean; 
+  hideSecondColumnOnTablet?: boolean;
   hideSecondColumnOnMobile?: boolean;
-  showUserIconOnTablet?: boolean; 
+  showUserIconOnTablet?: boolean;
+  enableStickyActions?: boolean;
+  showPendingWarningIcon?: boolean;
 }
 
 export const TableBoard = (props: ITableBoardProps) => {
@@ -50,9 +52,41 @@ export const TableBoard = (props: ITableBoardProps) => {
     hideSecondColumnOnTablet = false,
     hideSecondColumnOnMobile = true,
     showUserIconOnTablet = true,
+    enableStickyActions = true,
+    showPendingWarningIcon = false,
   } = props;
 
-  const isTablet = useMediaQuery("(max-width: 768px)");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isTablet = useMediaQuery("(max-width: 880px)");
+  const isMobile = useMediaQuery("(max-width: 560px)");
+
+  const getFilteredTitles = () => {
+    return titles.filter(
+      (title) => !(isTablet && hideTagOnTablet && title.id === "tag")
+    );
+  };
+
+  const getFilteredTitlesForHeader = () => {
+    const filtered = getFilteredTitles();
+    if (hideSecondColumnOnTablet) {
+      return filtered.filter((_, index) => index !== 1);
+    }
+    return filtered;
+  };
+
+  const isPendingStatus = (entry: IEntries): boolean => {
+    const tag = entry.tag;
+    if (typeof tag === "object" && tag !== null && "props" in tag) {
+      return (tag as JSX.Element).props?.label === "Pendiente";
+    }
+    return false;
+  };
+
+  const handleInfoClick = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  const filteredTitles = getFilteredTitles();
+  const filteredTitlesForHeader = getFilteredTitlesForHeader();
 
   return (
     <TableBoardUI
@@ -67,12 +101,21 @@ export const TableBoard = (props: ITableBoardProps) => {
       titles={titles}
       appearanceTable={appearanceTable}
       isTablet={isTablet}
+      isMobile={isMobile}
       isFirstTable={isFirstTable}
       infoItems={infoItems}
       hideTagOnTablet={hideTagOnTablet}
       hideSecondColumnOnTablet={hideSecondColumnOnTablet}
       hideSecondColumnOnMobile={hideSecondColumnOnMobile}
       showUserIconOnTablet={showUserIconOnTablet}
+      enableStickyActions={enableStickyActions}
+      showPendingWarningIcon={showPendingWarningIcon}
+      isModalOpen={isModalOpen}
+      onInfoClick={handleInfoClick}
+      onCloseModal={handleCloseModal}
+      filteredTitles={filteredTitles}
+      filteredTitlesForHeader={filteredTitlesForHeader}
+      isPendingStatus={isPendingStatus}
     />
   );
 };
