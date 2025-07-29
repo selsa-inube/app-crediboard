@@ -15,6 +15,7 @@ import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
 import { CreditRequest } from "@services/types";
+import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 
 export const dataButton = (
   onClick: () => void,
@@ -239,24 +240,28 @@ const actionsMobile = [
   },
 ];
 
+const getRequirementCode = (codeKey: string) => {
+  return requirementStatus.find((item) => item.Code === codeKey)?.Code || "";
+};
+
 const generateTag = (value: string): JSX.Element => {
   if (
-    value === "PASSED_WITH_SYSTEM_VALIDATION" ||
-    value === "DOCUMENT_STORED_WITHOUT_VALIDATION" ||
-    value === "PASSED_WITH_HUMAN_VALIDATION" ||
-    value === "DOCUMENT_VALIDATED_BY_THE_USER" ||
-    value === "IGNORED_BY_THE_USER" ||
-    value === "PASSED_HUMAN_VALIDATION" ||
-    value === "DOCUMENT_STORED_AND_VALIDATED" ||
-    value === "IGNORED_BY_THE_USER_HUMAN_VALIDATION" ||
-    value === "DOCUMENT_IGNORED_BY_THE_USER"
+    value === getRequirementCode("PASSED_WITH_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_STORED_WITHOUT_VALIDATION") ||
+    value === getRequirementCode("PASSED_WITH_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_VALIDATED_BY_THE_USER") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER") ||
+    value === getRequirementCode("PASSED_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_STORED_AND_VALIDATED") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_IGNORED_BY_THE_USER")
   ) {
     return <Tag label="Cumple" appearance="success" />;
   } else if (
-    value === "FAILED_SYSTEM_VALIDATION" ||
-    value === "IGNORED_BY_THE_USER_SYSTEM_VALIDATION" ||
-    value === "FAILED_DOCUMENT_VALIDATION" ||
-    value === "FAILED_HUMAN_VALIDATION"
+    value === getRequirementCode("FAILED_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("FAILED_DOCUMENT_VALIDATION") ||
+    value === getRequirementCode("FAILED_HUMAN_VALIDATION")
   ) {
     return <Tag label="No Cumple" appearance="danger" />;
   } else {

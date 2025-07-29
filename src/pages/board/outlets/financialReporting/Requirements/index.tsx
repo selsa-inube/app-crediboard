@@ -3,11 +3,11 @@ import { MdOutlineHowToReg, MdOutlineRemoveRedEye } from "react-icons/md";
 import { Stack, Icon, useFlag } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { ApprovalsModalSystem } from "@components/modals/RequirementsModals/ApprovalsModalSystem";
+import { SystemValidationApprovalModal } from "@components/modals/RequirementsModals/SystemValidationApprovalModal";
 import { AddRequirement } from "@components/modals/RequirementsModals/AddRequirement";
 import { saveRequirements } from "@components/modals/RequirementsModals/AddRequirement/utils";
-import { ApprovalModalDocumentaries } from "@components/modals/RequirementsModals/ApprovalModalDocumentaries";
-import { ApprovalsModalHuman } from "@components/modals/RequirementsModals/ApprovalModalHuman";
+import { DocumentValidationApprovalModal } from "@components/modals/RequirementsModals/DocumentValidationApprovalModal";
+import { HumanValidationApprovalModal } from "@components/modals/RequirementsModals/HumanValidationApprovalModal";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
@@ -468,7 +468,7 @@ export const Requirements = (props: IRequirementsProps) => {
       {showAprovalsModal &&
         selectedTableId === "tableApprovalSystem" &&
         selectedEntryId && (
-          <ApprovalsModalSystem
+          <SystemValidationApprovalModal
             initialValues={
               approvalSystemValues[selectedEntryId] || {
                 observations: "",
@@ -511,7 +511,7 @@ export const Requirements = (props: IRequirementsProps) => {
       {showAprovalsModal &&
         selectedTableId === "tableDocumentValues" &&
         selectedEntryId && (
-          <ApprovalModalDocumentaries
+          <DocumentValidationApprovalModal
             initialValues={
               approvalDocumentValues[selectedEntryId] || {
                 answer: "",
@@ -547,7 +547,7 @@ export const Requirements = (props: IRequirementsProps) => {
       {showAprovalsModal &&
         selectedTableId === "tableApprovalHuman" &&
         selectedEntryId && (
-          <ApprovalsModalHuman
+          <HumanValidationApprovalModal
             initialValues={
               approvalHumanValues[selectedEntryId] || {
                 answer: "",

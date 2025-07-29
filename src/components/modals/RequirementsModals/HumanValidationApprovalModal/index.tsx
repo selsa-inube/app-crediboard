@@ -1,33 +1,34 @@
-import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Stack, Text, Textarea, Toggle, useFlag } from "@inubekit/inubekit";
+import { Select, Stack, Text, Textarea, useFlag } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
-import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { IRequirement } from "@services/types";
+import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
+import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
+import { dataFlags } from "@config/components/flags/flag.config";
 
-import { IApprovalSystem } from "../types";
-import { approvalsConfig } from "./config";
+import { IApprovalHuman } from "../types";
+import { approvalsConfig, optionsAnswer } from "./config";
 
-interface ApprovalsModalSystemProps {
+interface IHumanValidationApprovalModalProps {
   isMobile: boolean;
-  initialValues: IApprovalSystem;
-  questionToBeAskedInModal: string;
+  initialValues: IApprovalHuman;
   businessUnitPublicCode: string;
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
   rawRequirements: IRequirement[];
-  onConfirm?: (values: IApprovalSystem) => void;
+  onConfirm?: (values: IApprovalHuman) => void;
   onCloseModal?: () => void;
 }
 
-export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
+export function HumanValidationApprovalModal(
+  props: IHumanValidationApprovalModalProps
+) {
   const {
     isMobile,
     initialValues,
-    questionToBeAskedInModal,
     businessUnitPublicCode,
     entryId,
     entryIdToRequirementMap,
@@ -39,12 +40,15 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
   const { addFlag } = useFlag();
 
   const validationSchema = Yup.object({
-    toggleChecked: Yup.boolean(),
+    answer: Yup.string().required(),
     observations: Yup.string()
       .max(approvalsConfig.maxLength, validationMessages.limitedTxt)
       .required(validationMessages.required),
-    labelText: Yup.string(),
   });
+
+  const getRequirementCode = (codeKey: string) => {
+    return requirementStatus.find((item) => item.Code === codeKey)?.Code || "";
+  };
 
   const formik = useFormik({
     initialValues: initialValues || {},
@@ -56,11 +60,24 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
 
         if (!requirementPackageId) return;
 
+        let nextStatusValue = "";
+        if (formik.values.answer === optionsAnswer[0].label) {
+          nextStatusValue = getRequirementCode("PASSED_HUMAN_VALIDATION");
+        } else if (formik.values.answer === optionsAnswer[1].label) {
+          nextStatusValue = getRequirementCode("FAILED_HUMAN_VALIDATION");
+        } else if (formik.values.answer === optionsAnswer[3].label) {
+          nextStatusValue = getRequirementCode(
+            "VALIDATION_FAILED_CANCELS_REQUEST"
+          );
+        } else if (formik.values.answer === optionsAnswer[2].label) {
+          nextStatusValue = getRequirementCode(
+            "IGNORED_BY_THE_USER_HUMAN_VALIDATION"
+          );
+        }
+
         const payload = {
-          modifyJustification: "change state",
-          nextStatusValue: formik.values.toggleChecked
-            ? "UNVALIDATED_SYSTEM_VALIDATION"
-            : "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
+          modifyJustification: "Status change",
+          nextStatusValue,
           packageId: rawRequirements[0].packageId,
           requirementPackageId: requirementPackageId,
           statusChangeJustification: formik.values.observations,
@@ -96,20 +113,11 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
           title: approvalsConfig.titleError,
           description,
           appearance: "danger",
-          duration: 5000,
+          duration: dataFlags.duration,
         });
       }
     },
   });
-
-  useEffect(() => {
-    const label = formik.values.toggleChecked
-      ? approvalsConfig.approveRequirementLabel
-      : approvalsConfig.rejectRequirementLabel;
-
-    formik.setFieldValue("labelText", label);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values.toggleChecked]);
 
   return (
     <BaseModal
@@ -123,25 +131,19 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
     >
       <Stack direction="column" gap="24px">
         <Stack direction="column" gap="8px">
-          <Text>{`${approvalsConfig.approval} ${questionToBeAskedInModal}`}</Text>
-          <Stack>
-            <Toggle
-              checked={formik.values.toggleChecked}
-              onChange={(event) => {
-                const checked = event.target.checked;
-                formik.setFieldValue("toggleChecked", checked);
-                formik.setFieldValue(
-                  "labelText",
-                  checked
-                    ? approvalsConfig.approveRequirementLabel
-                    : approvalsConfig.rejectRequirementLabel
-                );
-              }}
-            />
-            <Text type="label" size="large" weight="bold">
-              {formik.values.labelText}
-            </Text>
-          </Stack>
+          <Text>{approvalsConfig.approval}</Text>
+          <Select
+            name="answer"
+            id="answer"
+            options={optionsAnswer}
+            label={approvalsConfig.answer}
+            placeholder={approvalsConfig.answerPlaceHoleder}
+            value={formik.values.answer}
+            onChange={(name, value) => formik.setFieldValue(name, value)}
+            onBlur={formik.handleBlur}
+            size="compact"
+            fullwidth
+          />
         </Stack>
         <Textarea
           id="observations"
@@ -152,7 +154,6 @@ export function ApprovalsModalSystem(props: ApprovalsModalSystemProps) {
           value={formik.values.observations}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          required
           fullwidth
         />
       </Stack>

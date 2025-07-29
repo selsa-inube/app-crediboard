@@ -22,17 +22,14 @@ import { getSearchAllDocumentsById } from "@services/credit-request/query/Search
 import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
 import { IRequirement } from "@services/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
+import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
-import {
-  approvalsConfig,
-  optionButtons,
-  optionsAnswer,
-  validationDocument,
-} from "./config";
+import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
 import { StyledScroll } from "./styles";
+import { dataFlags } from "@config/components/flags/flag.config";
 
-interface ApprovalModalDocumentariesProps {
+interface IDocumentValidationApprovalModalsProps {
   isMobile: boolean;
   initialValues: IApprovalDocumentaries;
   title: string;
@@ -48,8 +45,8 @@ interface ApprovalModalDocumentariesProps {
   onCloseModal?: () => void;
 }
 
-export function ApprovalModalDocumentaries(
-  props: ApprovalModalDocumentariesProps
+export function DocumentValidationApprovalModal(
+  props: IDocumentValidationApprovalModalsProps
 ) {
   const {
     isMobile,
@@ -88,6 +85,10 @@ export function ApprovalModalDocumentaries(
     ),
   });
 
+  const getRequirementCode = (codeKey: string) => {
+    return requirementStatus.find((item) => item.Code === codeKey)?.Code || "";
+  };
+
   const formik = useFormik({
     initialValues: initialValues || {},
     validationSchema,
@@ -105,17 +106,19 @@ export function ApprovalModalDocumentaries(
 
         let nextStatusValue = "";
         if (formik.values.answer === optionsAnswer[0].label) {
-          nextStatusValue = validationDocument.passed;
+          nextStatusValue = getRequirementCode("DOCUMENT_STORED_AND_VALIDATED");
         } else if (formik.values.answer === optionsAnswer[1].label) {
-          nextStatusValue = validationDocument.failed;
+          nextStatusValue = getRequirementCode("FAILED_DOCUMENT_VALIDATION");
         } else if (formik.values.answer === optionsAnswer[3].label) {
-          nextStatusValue = validationDocument.cancel;
+          nextStatusValue = getRequirementCode(
+            "INVALID_DOCUMENT_CANCELS_REQUEST"
+          );
         } else if (formik.values.answer === optionsAnswer[2].label) {
-          nextStatusValue = validationDocument.ignored;
+          nextStatusValue = getRequirementCode("DOCUMENT_IGNORED_BY_THE_USER");
         }
 
         const payload = {
-          modifyJustification: "change state",
+          modifyJustification: "Status change",
           nextStatusValue,
           packageId: rawRequirements[0]?.packageId,
           requirementPackageId,
@@ -155,7 +158,7 @@ export function ApprovalModalDocumentaries(
           title: approvalsConfig.titleError,
           description,
           appearance: "danger",
-          duration: 5000,
+          duration: dataFlags.duration,
         });
       }
     },
