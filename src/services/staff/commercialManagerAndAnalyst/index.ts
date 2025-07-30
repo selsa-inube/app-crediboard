@@ -3,7 +3,7 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { ICommercialManagerAndAnalyst } from "@services/types";
+import { ICommercialManagerAndAnalyst } from "../types";
 import { mapCommercialManagerAndAnalystEntities } from "./mappers";
 
 export const getCommercialManagerAndAnalyst = async (

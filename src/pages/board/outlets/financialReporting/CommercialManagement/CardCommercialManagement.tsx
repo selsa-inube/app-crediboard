@@ -13,8 +13,12 @@ import {
 import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
 import { getSearchProspectSummaryById } from "@services/prospect/ProspectSummaryById";
 import { AppContext } from "@context/AppContext";
-import { IProspect, ICreditProduct, IProspectSummaryById } from "@services/prospect/types";
-import { Schedule } from "@services/enums";
+import {
+  IProspect,
+  ICreditProduct,
+  IProspectSummaryById,
+} from "@services/prospect/types";
+import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { DeductibleExpensesModal } from "@components/modals/DeductibleExpensesModal";
 import { getAllDeductibleExpensesById } from "@services/prospect/deductibleExpenses";
 import { EditProductModal } from "@components/modals/ProspectProductModal";

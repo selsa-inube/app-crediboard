@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { MdCached, MdOutlineEdit } from "react-icons/md";
 import { Stack, Text, Grid, useMediaQuery, Button } from "@inubekit/inubekit";
+
 import { incomeCardData } from "@components/cards/IncomeCard/config";
 import { CardGray } from "@components/cards/CardGray";
 import { IncomeModal } from "@components/modals/IncomeModal";
@@ -8,13 +9,13 @@ import {
   currencyFormat,
   parseCurrencyString,
 } from "@utils/formatData/currency";
-import { IIncome } from "@services/types";
-import { IIncomeSources } from "../CreditProspect/types";
 import { BaseModal } from "@components/modals/baseModal";
+import { dataReport } from "@components/data/TableObligationsFinancial/config";
 
+import { IIncomeSources } from "../CreditProspect/types";
 import { IncomeEmployment, IncomeCapital, MicroBusinesses } from "./config";
+import { IIncome } from "./types";
 import { StyledContainer } from "./styles";
-import { dataReport } from "../../data/TableObligationsFinancial/config";
 
 interface ISourceIncomeProps {
   openModal?: (state: boolean) => void;

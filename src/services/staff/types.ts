@@ -34,3 +34,10 @@ export interface IStaffPortalByBusinessManager {
   staffPortalId?: string;
   url?: string;
 }
+
+export interface ICommercialManagerAndAnalyst {
+  identificationDocumentNumber: string;
+  staffId: string;
+  staffName: string;
+  userAccount: string;
+}

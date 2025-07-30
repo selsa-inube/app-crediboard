@@ -9,7 +9,7 @@ import {
 import { Stack, Text } from "@inubekit/inubekit";
 
 import { TableBoard } from "@components/data/TableBoard";
-import { Schedule } from "@services/enums";
+import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { IOptions } from "@components/navigation/MenuProspect/types";
 
 export const titlesCommercialManagementAccordion = [

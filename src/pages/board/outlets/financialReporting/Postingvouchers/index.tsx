@@ -2,9 +2,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Stack } from "@inubekit/inubekit";
 
-import { IAccountingVouchers, ICreditRequest } from "@services/types";
-import { getAccountingVouchers } from "@services/credit-request/query/accountingVouchers";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
+import { ICreditRequest } from "@services/creditRequest/query/types";
+import { getAccountingVouchers } from "@services/creditRequest/query/accountingVouchers";
+import { IAccountingVouchers } from "@services/creditRequest/query/types";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { AppContext } from "@context/AppContext";
 import { IEntries } from "@components/data/TableBoard/types";
 import { UnfoundData } from "@components/layout/UnfoundData";

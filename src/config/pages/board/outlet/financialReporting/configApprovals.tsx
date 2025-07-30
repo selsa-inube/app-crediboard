@@ -13,7 +13,7 @@ import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 
 import { IEntries } from "@components/data/TableBoard/types";
-import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";
+import { IApprovals } from "@services/creditRequest/query/types";
 
 const handleData = (data: IEntries) => {
   console.log("function that receives data", data);

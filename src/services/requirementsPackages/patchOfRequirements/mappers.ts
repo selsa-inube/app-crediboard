@@ -1,4 +1,4 @@
-import { IPatchOfRequirements } from "@services/types";
+import { IPatchOfRequirements } from "../types";
 
 const mapRequirementsEntity = (
   data: IPatchOfRequirements

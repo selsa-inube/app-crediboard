@@ -14,7 +14,8 @@ import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
-import { CreditRequest } from "@services/types";
+
+import { CreditRequest } from "./types";
 
 export const dataButton = (
   onClick: () => void,

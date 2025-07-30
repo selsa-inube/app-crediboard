@@ -12,26 +12,27 @@ import { MobileMenu } from "@components/modals/MobileMenu";
 import { TextAreaModal } from "@components/modals/TextAreaModal";
 import { ComercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement";
 import {
-  IErrorService,
-  ICreditRequest,
   IDeleteCreditRequest,
   IPaymentChannel,
-} from "@services/types";
-
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getUnreadErrorsById } from "@services/credit-request/command/unreadErrors";
-import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
+} from "@services/creditRequest/command/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { getUnreadErrorsById } from "@services/creditRequest/command/unreadErrors";
+import { getSearchAllDocumentsById } from "@services/creditRequest/query/SearchAllDocuments";
 import { generatePDF } from "@utils/pdf/generetePDF";
 import { AppContext } from "@context/AppContext";
-import { patchAssignAccountManager } from "@services/credit-request/command/patchAssignAccountManager";
-import { lateRejectionOfACreditRequest } from "@services/credit-request/command/lateRejectionCreditRequest";
+import { patchAssignAccountManager } from "@services/creditRequest/command/patchAssignAccountManager";
+import { lateRejectionOfACreditRequest } from "@services/creditRequest/command/lateRejectionCreditRequest";
 import {
   textFlagsCancel,
   textFlagsReject,
   textFlagsUsers,
 } from "@config/pages/staffModal/addFlag";
 import { getSearchProspectByCode } from "@services/prospect/ProspectByCode";
-import { IProspect, IExtraordinaryInstallments } from "@services/prospect/types";
+import {
+  IProspect,
+  IExtraordinaryInstallments,
+} from "@services/prospect/types";
 
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";
@@ -47,7 +48,7 @@ import { Requirements } from "./Requirements";
 import { Management } from "./management";
 import { PromissoryNotes } from "./PromissoryNotes";
 import { Postingvouchers } from "./Postingvouchers";
-import { IErrorsUnread } from "./types";
+import { IErrorService, IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
 
 interface IListdataProps {

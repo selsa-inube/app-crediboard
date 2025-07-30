@@ -4,13 +4,13 @@ import { Stack, Icon, Textfield } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
 import { Message } from "@components/data/Message";
-import { ITraceType } from "@services/types";
+import { ITraceType } from "@services/creditRequest/command/types";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { getTraceByCreditRequestId } from "@services/credit-request/query/getTraceByCreditRequestId";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { registerNewsToCreditRequest } from "@services/credit-request/command/registerNewsToCreditRequest";
-import { ICreditRequest } from "@services/types";
+import { getTraceByCreditRequestId } from "@services/creditRequest/query/getTraceByCreditRequestId";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { registerNewsToCreditRequest } from "@services/creditRequest/command/registerNewsToCreditRequest";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 import { DetailsModal } from "@pages/board/outlets/financialReporting/management/DetailsModal";
 import { AppContext } from "@context/AppContext";
 import { ListModal } from "@components/modals/ListModal";

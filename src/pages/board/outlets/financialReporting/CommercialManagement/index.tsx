@@ -24,8 +24,8 @@ import {
 import {
   ICreditRequest,
   IModeOfDisbursement,
-  IPaymentChannel,
-} from "@services/types";
+} from "@services/creditRequest/query/types";
+import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
@@ -41,8 +41,8 @@ import { formatPrimaryDate } from "@utils/formatData/date";
 import { currencyFormat } from "@utils/formatData/currency";
 import { CreditProspect } from "@components/layout/CreditProspect";
 import { IProspect, ICreditProduct } from "@services/prospect/types";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getModeOfDisbursement } from "@services/credit-request/query/getModeOfDisbursement";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { getModeOfDisbursement } from "@services/creditRequest/query/getModeOfDisbursement";
 import { AppContext } from "@context/AppContext";
 import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types";
 import { ItemNotFound } from "@components/layout/ItemNotFound";

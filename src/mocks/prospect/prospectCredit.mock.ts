@@ -1,5 +1,5 @@
-import { IProspect } from "@services/types";
-import { Schedule, GracePeriodType, BorrowerProperties } from "@services/enums";
+import { IProspect } from "@services/creditRequest/query/types";
+import { Schedule, GracePeriodType, BorrowerProperties } from "@services/enum/icorebanking-vi-crediboard/schedule";
 
 export const mockProspectCredit: IProspect[] = [
   {

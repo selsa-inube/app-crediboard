@@ -14,9 +14,9 @@ import {
 } from "@inubekit/inubekit";
 
 import { SummaryCard } from "@components/cards/SummaryCard";
-import { ICreditRequestPinned, ICreditRequest } from "@services/types";
+import { ICreditRequestPinned, ICreditRequest } from "@services/creditRequest/query/types";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
-import { patchChangeTracesToReadById } from "@services/credit-request/command/patchChangeTracesToReadById";
+import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { getCanUnpin } from "@utils/configRules/permissions";

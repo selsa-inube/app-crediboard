@@ -18,8 +18,8 @@ import { Fieldset } from "@components/data/Fieldset";
 import { BaseModal } from "@components/modals/baseModal";
 import { ListModal } from "@components/modals/ListModal";
 import { DocumentViewer } from "@components/modals/DocumentViewer";
-import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
-import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
+import { getSearchAllDocumentsById } from "@services/creditRequest/query/SearchAllDocuments";
+import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
 import { approvalsConfig, optionButtons, optionsAnswer } from "./config";

@@ -8,11 +8,11 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IEntries } from "@components/data/TableBoard/types";
 import { TextAreaModal } from "@components/modals/TextAreaModal";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getNotificationOnApprovals } from "@services/credit-request/command/notificationOnApprovals";
-import { getApprovalsById } from "@services/credit-request/query/getApprovals";
-import { IApprovals } from "./types";
-import { ICreditRequest } from "@services/types";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { getNotificationOnApprovals } from "@services/creditRequest/command/notificationOnApprovals";
+import { getApprovalsById } from "@services/creditRequest/query/getApprovals";
+import { IApprovals } from "@services/creditRequest/query/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 import {
   actionMobileApprovals,
   titlesApprovals,

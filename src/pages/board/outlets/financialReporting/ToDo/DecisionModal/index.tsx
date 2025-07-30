@@ -11,7 +11,7 @@ import {
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { makeDecisions } from "@services/credit-request/command/makeDecisions";
+import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
 
 import { IMakeDecisionsCreditRequestWithXAction } from "./types";

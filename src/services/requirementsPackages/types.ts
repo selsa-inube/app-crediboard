@@ -36,6 +36,13 @@ export interface IPackagesOfRequirementsById {
   packageId: string;
   tracesInRequirementsManagement: ITracesInRequirementsManagement[];
   uniqueReferenceNumber: string;
+  requirementCatalogName?: string;
+  requirementDate?: string;
+  requirementStatus?: string;
+  descriptionEvaluationRequirement?: string;
+  descriptionUse?: string;
+  requirementTypeToEvaluate?: string;
+  transactionOperation?: string;
 }
 
 export interface IPatchOfRequirements {

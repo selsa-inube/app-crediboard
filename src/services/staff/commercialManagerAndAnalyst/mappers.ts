@@ -1,4 +1,4 @@
-import { ICommercialManagerAndAnalyst } from "@services/types";
+import { ICommercialManagerAndAnalyst } from "../types";
 
 const mapCommercialManagerAndAnalystEntity = (
   data: Record<string, string | number | object>

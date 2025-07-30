@@ -14,16 +14,12 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { TraceDetailsModal } from "@components/modals/TraceDetailsModal";
 import { IAction, IEntries, ITitle } from "@components/data/TableBoard/types";
 import {
-  CreditRequest,
-  IPatchOfRequirements,
-  IRequirement,
-} from "@services/types";
-import {
   AddRequirementMock,
   AddRequirementMockSistemValidations,
 } from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/requirementsPackages/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
+import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 
 import {
   infoItems,
@@ -35,7 +31,7 @@ import {
   getActionsMobileIcon,
   questionToBeAskedInModalText,
 } from "./config";
-import { DocumentItem } from "./types";
+import { CreditRequest, DocumentItem, IRequirement } from "./types";
 import { errorMessages } from "../config";
 
 interface IRequirementsData {

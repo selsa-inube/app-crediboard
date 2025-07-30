@@ -19,7 +19,7 @@ import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { BaseModal } from "@components/modals/baseModal";
 import { ShareCreditModal } from "@components/modals/ShareCreditModal";
-import { IPaymentChannel } from "@services/types";
+import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { addCreditProduct } from "@mocks/utils/addCreditProductMock.service";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
