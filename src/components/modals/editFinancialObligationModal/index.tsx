@@ -4,16 +4,14 @@ import * as Yup from "yup";
 import { MdOutlineAttachMoney } from "react-icons/md";
 
 import { Icon, Grid, useMediaQuery, Textfield } from "@inubekit/inubekit";
-
+import { ITableFinancialObligationsProps } from "@pages/prospect/components/TableObligationsFinancial";
 import { BaseModal } from "@components/modals/baseModal";
-
 import {
   handleChangeWithCurrency,
   validateCurrencyField,
 } from "@utils/formatData/currency";
 
 import { dataInputs } from "./config";
-import { ITableFinancialObligationsProps } from "@pages/prospect/components/TableObligationsFinancial";
 
 interface IEditFinancialObligationModalProps {
   onCloseModal: () => void;

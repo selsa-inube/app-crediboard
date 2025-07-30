@@ -28,7 +28,6 @@ import { StyledItem } from "@pages/prospect/outlets/financialReporting/styles";
 import { optionFlags } from "@pages/prospect/outlets/financialReporting/config";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
 
-
 import { DocumentViewer } from "../DocumentViewer";
 import {
   StyledAttachContainer,
