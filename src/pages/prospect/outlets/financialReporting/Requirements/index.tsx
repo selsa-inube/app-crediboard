@@ -410,6 +410,7 @@ export const Requirements = (props: IRequirementsProps) => {
                 },
               ]}
               actionMobileIcon={getActionsMobileIcon()}
+              showUserIconOnTablet={false}
               appearanceTable={{
                 widthTd: !isMobile ? "75%" : "70%",
                 efectzebra: true,

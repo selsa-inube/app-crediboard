@@ -11,12 +11,10 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { getNotificationOnApprovals } from "@services/notificationOnApprovals";
 import { getApprovalsById } from "@services/credit-request/query/getApprovals";
-import { IApprovals } from "./types";
 import { ICreditRequest } from "@services/types";
 import {
   actionMobileApprovals,
   titlesApprovals,
-  actionsApprovals,
   handleNotificationClick,
   handleErrorClick,
   desktopActions,
@@ -26,6 +24,7 @@ import {
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
 import { AppContext } from "@context/AppContext";
 
+import { IApprovals } from "./types";
 import { errorObserver, errorMessages } from "../config";
 import { dataInfoApprovals } from "./config";
 
@@ -114,17 +113,17 @@ export const Approvals = (props: IApprovalsProps) => {
     handleErrorClick(data, setSelectedData, setShowErrorModal);
   };
 
-  const desktopActionsConfig = desktopActions(
-    actionsApprovals,
-    handleNotificationClickBound,
-    handleErrorClickBound
-  );
+  const desktopActionsConfig = !isMobile
+    ? desktopActions([], handleNotificationClickBound, handleErrorClickBound)
+    : [];
 
-  const mobileActions = getMobileActionsConfig(
-    actionMobileApprovals,
-    handleNotificationClickBound,
-    handleErrorClickBound
-  );
+  const mobileActions = !isMobile
+    ? getMobileActionsConfig(
+        actionMobileApprovals,
+        handleNotificationClickBound,
+        handleErrorClickBound
+      )
+    : [];
 
   const handleSubmit = async () => {
     try {
@@ -186,13 +185,11 @@ export const Approvals = (props: IApprovalsProps) => {
             actionMobile={mobileActions}
             actionMobileIcon={getActionsMobileIcon()}
             loading={loading}
-            appearanceTable={{
-              widthTd: isMobile ? "70%" : undefined,
-              efectzebra: true,
-              title: "primary",
-              isStyleMobile: true,
-            }}
             isFirstTable={true}
+            hideTagOnTablet={false}
+            hideSecondColumnOnTablet={true}
+            enableStickyActions={false}
+            showPendingWarningIcon={true}
           />
         )}
       </Fieldset>

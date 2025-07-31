@@ -111,6 +111,8 @@ export const Postingvouchers = (props: IApprovalsProps) => {
               isStyleMobile: true,
             }}
             isFirstTable={true}
+            hideSecondColumnOnMobile={false}
+            showUserIconOnTablet={false}
           />
         )}
       </Fieldset>
