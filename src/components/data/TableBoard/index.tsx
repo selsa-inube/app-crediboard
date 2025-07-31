@@ -85,9 +85,6 @@ export const TableBoard = (props: ITableBoardProps) => {
   const handleInfoClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const filteredTitles = getFilteredTitles();
-  const filteredTitlesForHeader = getFilteredTitlesForHeader();
-
   return (
     <TableBoardUI
       id={id}
@@ -113,8 +110,8 @@ export const TableBoard = (props: ITableBoardProps) => {
       isModalOpen={isModalOpen}
       onInfoClick={handleInfoClick}
       onCloseModal={handleCloseModal}
-      filteredTitles={filteredTitles}
-      filteredTitlesForHeader={filteredTitlesForHeader}
+      filteredTitles={getFilteredTitles()}
+      filteredTitlesForHeader={getFilteredTitlesForHeader()}
       isPendingStatus={isPendingStatus}
     />
   );

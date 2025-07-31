@@ -26,18 +26,18 @@ interface ITableBoardUIProps extends ITableBoardProps {
   loading: boolean;
   isTablet: boolean;
   isMobile: boolean;
-  hideTagOnTablet?: boolean;
-  hideSecondColumnOnTablet?: boolean;
-  hideSecondColumnOnMobile?: boolean;
-  showUserIconOnTablet?: boolean;
-  enableStickyActions?: boolean;
-  showPendingWarningIcon?: boolean;
   isModalOpen: boolean;
   onInfoClick: () => void;
   onCloseModal: () => void;
   filteredTitles: ITitle[];
   filteredTitlesForHeader: ITitle[];
   isPendingStatus: (entry: IEntries) => boolean;
+  hideTagOnTablet?: boolean;
+  hideSecondColumnOnTablet?: boolean;
+  hideSecondColumnOnMobile?: boolean;
+  showUserIconOnTablet?: boolean;
+  enableStickyActions?: boolean;
+  showPendingWarningIcon?: boolean;
 }
 
 interface IRenderActionsTitles {
@@ -299,8 +299,6 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                                   {entry[title.id]}
                                 </Text>
                               )}
-
-                              {/* ⭐ Condición modificada para usar la nueva prop */}
                               {titleIndex === 0 &&
                                 showPendingWarningIcon &&
                                 isPendingStatus(entry) && (
