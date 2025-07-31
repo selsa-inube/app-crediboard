@@ -19,7 +19,7 @@ import { IStaff, IToDo, ICreditRequest } from "@services/types";
 import { getToDoByCreditRequestId } from "@services/credit-request/query/getToDoByCreditRequestId";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
-import { DecisionModal } from "@pages/board/outlets/financialReporting/ToDo/DecisionModal";
+
 import { AppContext } from "@context/AppContext";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
@@ -38,6 +38,7 @@ import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
 import { StyledHorizontalDivider, StyledTextField } from "../styles";
 import { errorMessages, errorObserver } from "../config";
+import { DecisionModal } from "./DecisionModal";
 
 interface ToDoProps {
   icon?: IICon;

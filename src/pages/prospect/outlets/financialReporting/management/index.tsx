@@ -11,7 +11,6 @@ import { getTraceByCreditRequestId } from "@services/credit-request/query/getTra
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { registerNewsToCreditRequest } from "@services/credit-request/command/registerNewsToCreditRequest";
 import { ICreditRequest } from "@services/types";
-import { DetailsModal } from "@pages/board/outlets/financialReporting/management/DetailsModal";
 import { AppContext } from "@context/AppContext";
 import { ListModal } from "@components/modals/ListModal";
 
@@ -22,6 +21,7 @@ import {
   errorMessages,
   optionButtons,
 } from "../config";
+import { DetailsModal } from "./DetailsModal";
 
 interface IManagementProps {
   id: string;

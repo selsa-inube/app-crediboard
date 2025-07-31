@@ -5,23 +5,21 @@ import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
 import { CardValues } from "@components/cards/cardValues";
 import { DeleteModal } from "@components/modals/DeleteModal";
-import { ConsolidatedCredits } from "@components/modals/ConsolidatedCreditModal";
-import {
-  SummaryProspectCredit,
-  tittleOptions,
-} from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
+
 import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
 import { getSearchProspectSummaryById } from "@services/prospects/ProspectSummaryById";
 import { AppContext } from "@context/AppContext";
 import { IProspect, ICreditProduct } from "@services/prospects/types";
 import { Schedule } from "@services/enums";
-import { DeductibleExpensesModal } from "@components/modals/DeductibleExpensesModal";
+import { DeductibleExpensesModal } from "@pages/prospect/components/modals/DeductibleExpensesModal";
 import { IProspectSummaryById } from "@services/prospects/ProspectSummaryById/types";
 import { getAllDeductibleExpensesById } from "@services/iProspect/deductibleExpenses";
-import { EditProductModal } from "@components/modals/ProspectProductModal";
-import { dataTableExtraordinaryInstallment } from "@components/data/TableExtraordinaryInstallment/config";
+import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
+import { dataTableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment/config";
+import { ConsolidatedCredits } from "@pages/prospect/components/modals/ConsolidatedCreditModal";
 
 import { StyledCardsCredit, StyledPrint } from "./styles";
+import { SummaryProspectCredit, tittleOptions } from "./config/config";
 
 interface CardCommercialManagementProps {
   id: string;

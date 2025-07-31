@@ -11,6 +11,7 @@ import {
   MdOutlinePayments,
   MdOutlineInfo,
 } from "react-icons/md";
+
 import {
   Stack,
   Icon,
@@ -20,7 +21,6 @@ import {
   Button,
   useFlag,
 } from "@inubekit/inubekit";
-
 import {
   ICreditRequest,
   IModeOfDisbursement,
@@ -39,7 +39,7 @@ import { Fieldset } from "@components/data/Fieldset";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { currencyFormat } from "@utils/formatData/currency";
-import { CreditProspect } from "@components/layout/CreditProspect";
+import { CreditProspect } from "@pages/prospect/components/CreditProspect";
 import { IProspect, ICreditProduct } from "@services/prospects/types";
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { getModeOfDisbursement } from "@services/credit-request/query/getModeOfDisbursement";
@@ -49,10 +49,10 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
-import { CreditLimitModal } from "@components/modals/CreditLimitModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
-import { IIncomeSources } from "@components/layout/CreditProspect/types";
-import { IncomeModal } from "@components/modals/IncomeModal";
+import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
+import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitModal";
+import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
 

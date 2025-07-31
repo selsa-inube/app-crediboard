@@ -10,14 +10,12 @@ import { StockTray } from "@components/layout/ContainerSections/StockTray";
 import { ListModal } from "@components/modals/ListModal";
 import { MobileMenu } from "@components/modals/MobileMenu";
 import { TextAreaModal } from "@components/modals/TextAreaModal";
-import { ComercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement";
 import {
   IErrorService,
   ICreditRequest,
   IDeleteCreditRequest,
   IPaymentChannel,
 } from "@services/types";
-
 import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
 import { getUnreadErrorsById } from "@services/credit-request/command/unreadErrors";
 import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
@@ -50,6 +48,7 @@ import { PromissoryNotes } from "./PromissoryNotes";
 import { Postingvouchers } from "./Postingvouchers";
 import { IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
+import { ComercialManagement } from "./CommercialManagement";
 
 interface IListdataProps {
   data: { id: string; name: string }[];

@@ -5,7 +5,7 @@ import localforage from "localforage";
 import { Select, Stack, Textfield, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { ExtraDebtor } from "@components/data/TableExtraDebtors";
+import { ExtraDebtor } from "@pages/prospect/components/TableExtraDebtors";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
 import {
   handleChangeWithCurrency,

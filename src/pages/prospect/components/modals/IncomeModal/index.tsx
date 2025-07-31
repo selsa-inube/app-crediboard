@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFlag, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { SourceIncome } from "@components/layout/SourceIncome";
+import { SourceIncome } from "@pages/prospect/components/SourceIncome";
 
 import { dataIncomeModal } from "./config";
 

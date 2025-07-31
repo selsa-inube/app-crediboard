@@ -53,7 +53,7 @@ export function convertObligationsToProperties(
     outstandingDues: number;
     paymentMethodName: string;
     productName: string;
-  }[],
+  }[]
 ): { propertyName: string; propertyValue: string }[] {
   return obligations.map((obligation) => ({
     propertyName: "FinancialObligation",

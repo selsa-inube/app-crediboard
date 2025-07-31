@@ -6,7 +6,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IExtraordinaryPayment } from "@services/types";
 import { IProspect } from "@services/prospects/types";
 import { AddSeriesModal } from "@components/modals/AddSeriesModal";
-import { TableExtraordinaryInstallment } from "@components/data/TableExtraordinaryInstallment";
+import { TableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment";
 import {
   IExtraordinaryInstallment,
   IExtraordinaryInstallments,
