@@ -7,7 +7,7 @@ import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import info from "@assets/images/info.svg";
 import { IEntries } from "@components/data/TableBoard/types";
-import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";
+import { IApprovals } from "@pages/prospect/outlets/financialReporting/Approvals/types";
 
 import { approvalsConfig } from "./configApprovalTexts";
 

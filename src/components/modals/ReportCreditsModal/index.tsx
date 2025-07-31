@@ -4,12 +4,13 @@ import { FormikValues } from "formik";
 import { Stack, useMediaQuery, Button, Select } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-
+import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
+import { TableFinancialObligations } from "@pages/prospect/components/TableObligationsFinancial";
 import { IProspect } from "@services/prospects/types";
+
 import { ListModal } from "../ListModal";
 import { FinancialObligationModal } from "../financialObligationModal";
-import { dataReport } from "@components/data/TableObligationsFinancial/config";
-import { TableFinancialObligations } from "@components/data/TableObligationsFinancial";
+
 export interface ReportCreditsModalProps {
   handleClose: () => void;
   onChange: (name: string, newValue: string) => void;

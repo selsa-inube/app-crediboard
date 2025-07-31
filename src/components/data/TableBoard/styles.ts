@@ -137,3 +137,8 @@ export const StyledTd = styled.td<IStyledTd>`
   width: ${({ $widthTd }) => $widthTd};
   height: 24px;
 `;
+
+export const StyledCellText = styled.p`
+  white-space: normal;
+  word-break: break-word;
+`;

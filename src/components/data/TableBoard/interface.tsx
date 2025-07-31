@@ -20,6 +20,7 @@ import {
   StyledThactions,
   StyledTdactions,
   StyledDivactions,
+  StyledCellText,
 } from "./styles";
 
 interface ITableBoardUIProps extends ITableBoardProps {
@@ -288,17 +289,21 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                                 isMobile ? "space-between" : "flex-start"
                               }
                               width="100%"
+                              height="auto"
                             >
-                              {typeof entry[title.id] !== "string" ? (
-                                entry[title.id]
-                              ) : (
-                                <Text
-                                  size="medium"
-                                  padding={isTablet ? "0px" : "0px 4px"}
-                                >
-                                  {entry[title.id]}
-                                </Text>
-                              )}
+                              <StyledCellText>
+                                {typeof entry[title.id] !== "string" ? (
+                                  entry[title.id]
+                                ) : (
+                                  <Text
+                                    size="medium"
+                                    padding={isTablet ? "0px" : "0px 4px"}
+                                  >
+                                    {entry[title.id]}
+                                  </Text>
+                                )}
+                              </StyledCellText>
+
                               {titleIndex === 0 &&
                                 showPendingWarningIcon &&
                                 isPendingStatus(entry) && (
