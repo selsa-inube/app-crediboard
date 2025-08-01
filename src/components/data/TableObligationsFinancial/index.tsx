@@ -3,11 +3,11 @@ import localforage from "localforage";
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
+import { IBorrower, IProspect } from "@services/prospects/types";
 
 import { headers } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
 import { IProperty } from "./types";
-import { IBorrower, IProspect } from "@services/prospects/types";
 export interface ITableFinancialObligationsProps {
   type?: string;
   id?: string;
@@ -24,7 +24,7 @@ export interface ITableFinancialObligationsProps {
 export const TableFinancialObligations = (
   props: ITableFinancialObligationsProps
 ) => {
-  const { refreshKey, initialValues, showActions, showButtons } = props;
+  const { refreshKey, initialValues, showActions } = props;
   const [loading, setLoading] = useState(true);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [selectedDebtor, setSelectedDebtor] =
@@ -133,7 +133,6 @@ export const TableFinancialObligations = (
       handleEdit={handleEdit}
       handleDelete={handleDelete}
       handleUpdate={handleUpdate}
-      showButtons={showButtons}
     />
   );
 };

@@ -335,8 +335,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         <IncomeModal
           handleClose={() => setOpenModal(null)}
           initialValues={
-            (selectedBorrower && incomeData[selectedBorrower.borrowerName]) ||
-            {}
+            selectedBorrower && incomeData[selectedBorrower.borrowerName]
           }
           onSubmit={handleIncomeSubmit}
         />
