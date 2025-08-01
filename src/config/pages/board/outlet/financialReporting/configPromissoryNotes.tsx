@@ -32,7 +32,7 @@ export const titlesFinanacialReporting = [
   },
   {
     id: "tag",
-    titleName: "Estadaaao",
+    titleName: "Estado",
     priority: 4,
   },
 ];
