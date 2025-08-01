@@ -20,6 +20,8 @@ import {
 } from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
+import { useValidateUseCase } from "@hooks/useValidateUseCase";
+import { EPayrollAgreement } from "@services/enum/crediboard";
 
 import {
   infoItems,
@@ -52,18 +54,11 @@ export interface IRequirementsProps {
   businessUnitPublicCode: string;
   creditRequestCode: string;
   isMobile: boolean;
-  hasPermitRejection?: boolean;
 }
 
 export const Requirements = (props: IRequirementsProps) => {
-  const {
-    isMobile,
-    id,
-    user,
-    businessUnitPublicCode,
-    creditRequestCode,
-    hasPermitRejection,
-  } = props;
+  const { isMobile, id, user, businessUnitPublicCode, creditRequestCode } =
+    props;
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -359,7 +354,9 @@ export const Requirements = (props: IRequirementsProps) => {
       setEntryIdToRequirementMap(map);
     }
   }, [rawRequirements]);
-
+  const { disabledButton: canAddRequirements } = useValidateUseCase({
+    useCase: EPayrollAgreement.canAddRequirements,
+  });
   return (
     <>
       <Fieldset
@@ -368,7 +365,7 @@ export const Requirements = (props: IRequirementsProps) => {
           () => setShowAddRequirementModal(true),
           () => setShowAddSystemValidationModal(true)
         )}
-        disabledButton={hasPermitRejection}
+        disabledButton={canAddRequirements}
         heightFieldset="100%"
         hasTable={!error}
         hasError={error ? true : false}
