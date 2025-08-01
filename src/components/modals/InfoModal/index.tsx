@@ -4,7 +4,9 @@ import { Stack, Icon } from "@inubekit/inubekit";
 import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
+import info from "@assets/images/info.svg";
 
+import { texts, altTexts } from "./config";
 import { StyledContainer, StyledUl } from "./styles";
 import { InfoItemComponent } from "./interface";
 
@@ -30,16 +32,20 @@ interface InfoModalProps {
 
 const defaultItems: InfoItem[] = [
   {
-    icon: <img src={check} alt="check" width={16} height={16} />,
-    text: "Cumple",
+    icon: <img src={check} alt={altTexts.check} width={16} height={16} />,
+    text: texts.infoModal.check,
   },
   {
-    icon: <img src={close} alt="close" width={16} height={16} />,
-    text: "No Cumple",
+    icon: <img src={close} alt={altTexts.close} width={16} height={16} />,
+    text: texts.infoModal.close,
   },
   {
-    icon: <img src={remove} alt="remove" width={16} height={16} />,
-    text: "Sin Evaluar",
+    icon: <img src={remove} alt={altTexts.remove} width={16} height={16} />,
+    text: texts.infoModal.remove,
+  },
+  {
+    icon: <img src={info} alt={altTexts.info} width={16} height={16} />,
+    text: texts.infoModal.info,
   },
 ];
 

@@ -1,7 +1,6 @@
 import { Button, IOption, Select, Stack, Text } from "@inubekit/inubekit";
-
-import { IncomeBorrower } from "@components/layout/CreditProspect/incomeDebtor";
 import { IProspect } from "@services/prospects/types";
+import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
 
 import { BaseModal } from "../baseModal";
 import { dataCreditProspect } from "./config";

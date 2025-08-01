@@ -12,7 +12,7 @@ import {
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { ITableFinancialObligationsProps } from "@components/data/TableObligationsFinancial";
+import { ITableFinancialObligationsProps } from "@pages/prospect/components/TableObligationsFinancial";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
 import {
   handleChangeWithCurrency,

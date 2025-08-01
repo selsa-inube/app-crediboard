@@ -1,9 +1,9 @@
 import { Divider, Text, Stack } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
+import { ModalConfig } from "@pages/prospect/components/modals/ConsolidatedCreditModal/config";
 
 import { StyledContainer, StyledInput } from "./styles";
-import { ModalConfig } from "@components/modals/ConsolidatedCreditModal/config";
 
 interface InvestmentCreditCardProps {
   title: string;
