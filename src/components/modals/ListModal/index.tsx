@@ -72,8 +72,7 @@ export interface IListModalProps {
   handleClose: () => void;
   handleSubmit?: () => void;
   onSubmit?: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setUploadedFiles?: React.Dispatch<React.SetStateAction<any>>;
+  setUploadedFiles?: React.Dispatch<React.SetStateAction<IDocumentUpload[]>>;
 }
 
 export const ListModal = (props: IListModalProps) => {

@@ -1,3 +1,4 @@
+import { IProperty } from "@components/data/TableObligationsFinancial/types";
 import { MaritalStatus, EconomicActivity, Schedule } from "@services/enums";
 
 export const getMaritalStatusInSpanish = (
@@ -37,11 +38,12 @@ export const getScheduleInSpanish = (schedule: Schedule): string => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getPropertyValue = (properties: any[], propertyName: string) => {
+export const getPropertyValue = (
+  properties: IProperty[],
+  propertyName: string
+) => {
   return (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    properties.find((prop: any) => prop.propertyName === propertyName)
+    properties.find((prop) => prop.propertyName === propertyName)
       ?.propertyValue || ""
   );
 };

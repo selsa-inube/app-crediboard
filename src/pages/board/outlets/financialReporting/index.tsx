@@ -48,7 +48,7 @@ import { Requirements } from "./Requirements";
 import { Management } from "./management";
 import { PromissoryNotes } from "./PromissoryNotes";
 import { Postingvouchers } from "./Postingvouchers";
-import { IErrorsUnread } from "./types";
+import { IDocumentData, IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
 
 interface IListdataProps {
@@ -128,12 +128,12 @@ export const FinancialReporting = () => {
       );
 
       const dataToMap = Array.isArray(documents) ? documents : documents.value;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const documentsUser = dataToMap.map((dataListDocument: any) => ({
-        id: dataListDocument.documentId,
-        name: dataListDocument.fileName,
-      }));
-
+      const documentsUser = dataToMap.map(
+        (dataListDocument: IDocumentData) => ({
+          id: dataListDocument.documentId,
+          name: dataListDocument.fileName,
+        })
+      );
       setDocument(documentsUser);
       setAttachDocuments(true);
     } catch (error) {

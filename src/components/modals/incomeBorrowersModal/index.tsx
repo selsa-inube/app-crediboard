@@ -31,6 +31,12 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
     setOpenModal,
   } = props;
 
+  const currentBorrower =
+    dataProspect[0]?.borrowers?.find(
+      (borrower) =>
+        borrower.borrowerName === borrowerOptions[selectedIndex]?.value
+    ) || selectedBorrower;
+
   return (
     <BaseModal
       title={dataCreditProspect.incomeSources}
@@ -68,15 +74,9 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
               {dataCreditProspect.edit}
             </Button>
           </Stack>
-          <IncomeBorrower
-            initialIncome={
-              dataProspect[0]?.borrowers?.find(
-                (borrower) =>
-                  borrower.borrowerName ===
-                  borrowerOptions[selectedIndex]?.value
-              ) || selectedBorrower
-            }
-          />
+          {currentBorrower && (
+            <IncomeBorrower initialIncome={currentBorrower} />
+          )}
         </>
       ) : (
         <Stack width="400px">

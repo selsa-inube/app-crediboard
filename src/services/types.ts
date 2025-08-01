@@ -10,7 +10,7 @@ export interface IUsersByCreditRequests {
 export interface IUploadedFile {
   id: string;
   name: string;
-  file?: File;
+  file: File;
 }
 export interface IDeleteCreditRequest {
   creditRequestId: string;

@@ -28,22 +28,9 @@ import { dataReport } from "./config";
 export interface ITableFinancialObligationsProps {
   type?: string;
   id?: string;
-  propertyValue?: string;
-  balance?: string;
-  fee?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialValues?: any;
-  refreshKey?: number;
-  showActions?: boolean;
-  showOnlyEdit?: boolean;
-  showButtons?: boolean;
 }
 
 export interface IDataInformationItem {
-  id?: string;
-  type?: string;
-  balance?: number;
-  fee?: number;
   propertyName?: string;
   propertyValue?: string | string[];
 }
