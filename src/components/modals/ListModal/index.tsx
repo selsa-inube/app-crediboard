@@ -18,13 +18,14 @@ import {
 } from "@inubekit/inubekit";
 
 import { File } from "@components/inputs/File";
-import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
-import { optionFlags } from "@pages/board/outlets/financialReporting/config";
 import { saveDocument } from "@services/creditRequest/command/saveDocument";
 import { validationMessages } from "@validations/validationMessages";
 import { AppContext } from "@context/AppContext";
 import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
+import { StyledItem } from "@pages/prospect/outlets/financialReporting/styles";
+import { optionFlags } from "@pages/prospect/outlets/financialReporting/config";
+import { truncateTextToMaxLength } from "@utils/formatData/text";
 
 import { DocumentViewer } from "../DocumentViewer";
 import {
@@ -125,6 +126,8 @@ export const ListModal = (props: IListModalProps) => {
   const Listdata = (props: IListdataProps) => {
     const { data, icon, onDelete, onPreview } = props;
 
+    const maxLength = isMobile ? 20 : 40;
+
     return (
       <ul
         style={{
@@ -134,7 +137,7 @@ export const ListModal = (props: IListModalProps) => {
       >
         {data?.map((element) => (
           <StyledItem key={element.id}>
-            <Text>{element.name}</Text>
+            <Text>{truncateTextToMaxLength(element.name, maxLength)}</Text>
             <Icon
               icon={icon}
               appearance="dark"

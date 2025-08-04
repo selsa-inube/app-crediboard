@@ -4,12 +4,13 @@ import { FormikValues } from "formik";
 import { Stack, useMediaQuery, Button, Select } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-
+import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
+import { TableFinancialObligations } from "@pages/prospect/components/TableObligationsFinancial";
 import { IProspect } from "@services/prospect/types";
+
 import { ListModal } from "../ListModal";
 import { FinancialObligationModal } from "../financialObligationModal";
-import { dataReport } from "@components/data/TableObligationsFinancial/config";
-import { TableFinancialObligations } from "@components/data/TableObligationsFinancial";
+
 export interface ReportCreditsModalProps {
   handleClose: () => void;
   onChange: (name: string, newValue: string) => void;
@@ -75,7 +76,11 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               onChange={(name, value) => onChange(name, value)}
               size="compact"
             />
-            <Stack alignItems="center" gap="16px">
+            <Stack
+              direction={isMobile ? "column" : "row"}
+              alignItems="center"
+              gap="16px"
+            >
               <Stack>
                 <Button
                   children="Restablecer"
