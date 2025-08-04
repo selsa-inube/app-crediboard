@@ -1,4 +1,4 @@
-import { IProperty } from "@components/data/TableObligationsFinancial/types";
+import { IProperty } from "@pages/prospect/components/TableObligationsFinancial/types";
 import { MaritalStatus, EconomicActivity, Schedule } from "@services/enums";
 
 export const getMaritalStatusInSpanish = (

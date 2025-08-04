@@ -1,4 +1,4 @@
-import { IProperty } from "@components/data/TableObligationsFinancial/types";
+import { IProperty } from "@pages/prospect/components/TableObligationsFinancial/types";
 import { FormikValues } from "formik";
 
 const currencyFormat = (price: number, withCurrencySymbol = true): string => {
