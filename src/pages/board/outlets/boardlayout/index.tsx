@@ -12,7 +12,7 @@ import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 
 import { dataInformationModal } from "./config/board";
 import { BoardLayoutUI } from "./interface";

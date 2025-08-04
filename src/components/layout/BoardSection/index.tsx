@@ -22,7 +22,7 @@ import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { getCanUnpin } from "@utils/configRules/permissions";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 
 import { StyledBoardSection, StyledCollapseIcon } from "./styles";
