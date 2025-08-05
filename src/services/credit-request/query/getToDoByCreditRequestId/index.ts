@@ -12,7 +12,7 @@ export const getToDoByCreditRequestId = async (
 ): Promise<IToDo> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
+  
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
@@ -32,7 +32,7 @@ export const getToDoByCreditRequestId = async (
         `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/${creditRequestId}`,
         options
       );
-
+      
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
@@ -50,6 +50,7 @@ export const getToDoByCreditRequestId = async (
       }
 
       return data;
+
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {

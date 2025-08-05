@@ -82,10 +82,10 @@ export const FinancialReporting = () => {
   const [document, setDocument] = useState<IListdataProps["data"]>([]);
 
   const [dataProspect, setDataProspect] = useState<IProspect>();
-
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
   >([]);
+  const [idProspect, setIdProspect] = useState('');
 
   const { id } = useParams();
   const { user } = useAuth0();
@@ -145,16 +145,17 @@ export const FinancialReporting = () => {
       try {
         const result = await getSearchProspectByCode(
           businessUnitPublicCode,
-          id!
+          idProspect
         );
+        
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
         console.error("Error al obtener los prospectos:", error);
       }
     };
 
-    fetchData();
-  }, [businessUnitPublicCode, id, sentData]);
+    (idProspect && businessUnitPublicCode) && fetchData();
+  }, [businessUnitPublicCode, idProspect, sentData]);
 
   const handleGeneratePDF = () => {
     setTimeout(() => {
@@ -381,6 +382,7 @@ export const FinancialReporting = () => {
                     isMobile={isMobile}
                     id={id!}
                     user={user!.nickname!}
+                    setIdProspect={setIdProspect}
                   />
                 </Stack>
                 <Stack direction="column" height={isMobile ? "auto" : "277px"}>

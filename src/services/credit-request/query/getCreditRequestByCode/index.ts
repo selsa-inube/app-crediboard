@@ -9,7 +9,7 @@ import { mapCreditRequestToEntities } from "./mapper";
 
 export const getCreditRequestByCode = async (
   businessUnitPublicCode: string,
-  creditRequestCode: string,
+  idProspect: string,
   userAccount: string
 ): Promise<ICreditRequest[]> => {
   const maxRetries = maxRetriesServices;
@@ -19,7 +19,7 @@ export const getCreditRequestByCode = async (
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const queryParams = new URLSearchParams({
-        creditRequestCode: creditRequestCode,
+        creditRequestCode: idProspect,
       });
       const options: RequestInit = {
         method: "GET",

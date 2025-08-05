@@ -98,6 +98,7 @@ export interface ICreditRequest {
   unreadNovelties?: string;
   userWhoPinnnedId?: string;
   usersByCreditRequests?: IUsersByCreditRequests;
+  prospectId?: string;
 }
 
 export interface IModeOfDisbursement {
@@ -148,6 +149,7 @@ export interface IToDo {
   stage: string;
   taskToBeDone: string;
   usersByCreditRequestResponse: IStaff[];
+  prospectId: string;
 }
 
 export interface IRequirement {

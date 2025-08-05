@@ -7,7 +7,7 @@ import { IProspect } from "./types";
 
 const getSearchProspectByCode = async (
   businessUnitPublicCode: string,
-  prospectCode: string
+  idProspect: string
 ): Promise<IProspect> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -16,14 +16,11 @@ const getSearchProspectByCode = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-      const queryParams = new URLSearchParams({
-        prospectCode: prospectCode,
-      });
 
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllProspects",
+          "X-Action": "SearchByIdProspect",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -31,7 +28,7 @@ const getSearchProspectByCode = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects?${queryParams.toString()}`,
+        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${idProspect}`,
         options
       );
 
@@ -40,7 +37,7 @@ const getSearchProspectByCode = async (
       if (res.status === 204) {
         throw new Error("No hay tarea disponible.");
       }
-
+      
       const data = await res.json();
 
       if (!res.ok) {
