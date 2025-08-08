@@ -7,8 +7,8 @@ import {
   MdOutlinePictureAsPdf,
   MdOutlineShare,
 } from "react-icons/md";
-
 import { Stack, Icon, Button, IOption } from "@inubekit/inubekit";
+
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import { PaymentCapacity } from "@components/modals/PaymentCapacityModal";
 import { ReciprocityModal } from "@components/modals/ReciprocityModal";
@@ -22,14 +22,14 @@ import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
 import { IProspect } from "@services/prospects/types";
 import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
 import {
-  incomeOptions,
-  menuOptions,
-} from "@pages/prospect/outlets/financialReporting/CommercialManagement/config/config";
-import {
   StyledContainerIcon,
   StyledVerticalDivider,
-} from "@pages/prospect/outlets/financialReporting/CommercialManagement/styles";
-import { CardCommercialManagement } from "@pages/prospect/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
+} from "@pages/board/outlets/financialReporting/CommercialManagement/styles";
+import {
+  incomeOptions,
+  menuOptions,
+} from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
+import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 
 import { dataCreditProspect } from "./config";

@@ -54,7 +54,7 @@ import {
 } from "./styles";
 import { selectCheckOptions } from "./config/select";
 import { IFilterFormValues } from ".";
-import { boardColumns, dataInformationModal } from "./config/board";
+import { boardColumns, dataInformationSearchModal } from "./config/board";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -140,6 +140,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     : voiceSearchConfig.states.instruction;
 
   const [isShowModal, setIsShowModal] = useState(false);
+  const [shouldOpenVoiceModal, setShouldOpenVoiceModal] = useState(false);
   const [isVoiceProcessed, setIsVoiceProcessed] = useState(false);
   const { businessUnitSigla } = useContext(AppContext);
 
@@ -150,6 +151,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const stackRef = useRef<HTMLDivElement>(null);
+
   const startListening = () => {
     resetTranscript();
     setIsVoiceProcessed(false);
@@ -168,6 +170,27 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       stopListening();
     } else {
       startListening();
+    }
+  };
+  const shouldShowTextModalFirst = () => {
+    if (activeOptions.length === 0) return false;
+
+    if (!hasBeenFocused) return true;
+    const currentValue = searchRequestValue.trim();
+    if (currentValue) {
+      const words = currentValue.split(/\s+/).filter((word) => word.length > 0);
+      return words.length > 3;
+    }
+
+    return false;
+  };
+
+  const handleMicrophoneClick = () => {
+    setShouldOpenVoiceModal(true); 
+    if (shouldShowTextModalFirst()) {
+      setIsTextSearchModalOpen(true);
+    } else {
+      setIsShowModal(true);
     }
   };
 
@@ -221,10 +244,15 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       handleSearchRequestsValue(event);
     }
   };
+
   const handleTextfieldFocus = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (isTextSearchModalOpen) {
       return;
     }
+    if (activeOptions.length === 0) {
+      return;
+    }
+
     if (!hasBeenFocused) {
       setIsTextSearchModalOpen(true);
       setHasBeenFocused(true);
@@ -510,9 +538,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   size="26px"
                   appearance="primary"
                   cursorHover
-                  onClick={() => {
-                    setIsShowModal(true);
-                  }}
+                  onClick={handleMicrophoneClick} 
                 />
               </StyledRequestsContainerVoiceSearch>
             )}
@@ -629,25 +655,35 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         </StyledBoardContainer>
         {isTextSearchModalOpen && (
           <BaseModal
-            title="Has ingresado más de 3 palabras"
+            title={dataInformationSearchModal.titleModal}
             width="400px"
-            nextButton={dataInformationModal.button}
-            backButton={"No, retirarlos"}
+            nextButton={dataInformationSearchModal.succesModal}
+            backButton={dataInformationSearchModal.buttonModal}
             handleBack={() => {
-              handleClearFilters(); 
+              handleClearFilters();
               setIsTextSearchModalOpen(false);
+              if (shouldOpenVoiceModal) {
+                setIsShowModal(true); 
+                setShouldOpenVoiceModal(false);
+              }
             }}
             handleNext={() => {
               setIsTextSearchModalOpen(false);
+              if (shouldOpenVoiceModal) {
+                setIsShowModal(true); 
+                setShouldOpenVoiceModal(false);
+              }
             }}
             handleClose={() => {
               setIsTextSearchModalOpen(false);
               setHasBeenFocused(false);
+              if (shouldOpenVoiceModal) {
+                setIsShowModal(true);
+                setShouldOpenVoiceModal(false);
+              }
             }}
           >
-            <Text>
-              ¿Estás seguro de que deseas buscar con esta cantidad de palabras?
-            </Text>
+            <Text>{dataInformationSearchModal.descriptionModal}</Text>
           </BaseModal>
         )}
         {isShowModal &&
@@ -693,6 +729,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
               <Text>{voiceSearchConfig.errors.notSupported.message}</Text>
             </BaseModal>
           ))}
+
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
     </StyledContainerToCenter>

@@ -24,9 +24,9 @@ import { AppContext } from "@context/AppContext";
 import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
 import { IUploadedFile } from "@services/types";
-import { StyledItem } from "@pages/prospect/outlets/financialReporting/styles";
-import { optionFlags } from "@pages/prospect/outlets/financialReporting/config";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
+import { optionFlags } from "@pages/board/outlets/financialReporting/config";
+import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
 
 import { DocumentViewer } from "../DocumentViewer";
 import {

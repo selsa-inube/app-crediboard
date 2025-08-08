@@ -3,9 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { Board } from "@pages/board";
 import { BoardLayout } from "@pages/board/outlets/boardlayout";
-
 import { CreditProfileInfo } from "@pages/board/outlets/creditProfileInfo";
-import { FinancialReporting } from "@pages/prospect/outlets/financialReporting";
+import { FinancialReporting } from "@pages/board/outlets/financialReporting";
 
 function BoardRoutes() {
   return (

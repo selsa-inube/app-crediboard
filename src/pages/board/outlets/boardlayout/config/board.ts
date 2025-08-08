@@ -69,4 +69,16 @@ const dataInformationModal = {
     "No cuenta con los privilegios requeridos para quitar el ancla de esta tarjeta.",
 };
 
-export { boardColumns, dataInformationModal, selectConfig };
+const dataInformationSearchModal = {
+  titleModal: "Filtros aplicados",
+  succesModal: "Sí, mantenerlos",
+  buttonModal: "No, retirarlos",
+  descriptionModal:
+    "Para la búsqueda que está a punto de hacer, ¿Desea mantener los filtros aplicados?",
+};
+export {
+  boardColumns,
+  dataInformationModal,
+  selectConfig,
+  dataInformationSearchModal,
+};
