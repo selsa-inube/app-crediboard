@@ -62,10 +62,6 @@ const selectConfig = (
   fullwidth: true,
 });
 
-const seePinned = {
-  viewPinned: "Ver unicamente los anclados",
-};
-
 const dataInformationModal = {
   tilte: "Información",
   button: "Entendido",
@@ -73,4 +69,4 @@ const dataInformationModal = {
     "No cuenta con los privilegios requeridos para quitar el ancla de esta tarjeta.",
 };
 
-export { boardColumns, seePinned, dataInformationModal, selectConfig };
+export { boardColumns, dataInformationModal, selectConfig };

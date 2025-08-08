@@ -16,7 +16,7 @@ export interface SelectedFiltersProps {
 
 export function useSelectedFilters(
   filters: Filter[],
-  onRemove?: (filterLabel: string) => void
+  onRemove?: (filterId: string) => void
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visibleCount, setVisibleCount] = useState(filters.length);
@@ -76,8 +76,8 @@ export function useSelectedFilters(
   const visibleFilters = filters.slice(0, visibleCount);
   const hiddenFilters = filters.slice(visibleCount);
 
-  const handleRemoveFilter = (label: string) => {
-    if (onRemove) onRemove(label);
+  const handleRemoveFilter = (filterId: string) => {
+    if (onRemove) onRemove(filterId);
   };
 
   return {

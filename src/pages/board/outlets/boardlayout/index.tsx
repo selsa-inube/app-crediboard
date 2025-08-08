@@ -276,17 +276,23 @@ function BoardLayout() {
     setIsMenuOpen(false);
   }, []);
 
-  const handleClearFilters = async () => {
+  const handleClearFilters = async (keepSearchValue = false) => {
     setFilterValues({ assignment: "", status: "" });
     setActiveOptions([]);
+
     setFilters((prev) => ({
       ...prev,
-      searchRequestValue: "",
+      searchRequestValue: keepSearchValue ? prev.searchRequestValue : "",
       showPinnedOnly: false,
       selectOptions: selectCheckOptions,
     }));
-
-    await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+    if (keepSearchValue && filters.searchRequestValue.trim().length >= 3) {
+      await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+        text: filters.searchRequestValue.trim(),
+      });
+    } else {
+      await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+    }
   };
 
   const handleRemoveFilter = async (filterIdToRemove: string) => {
@@ -294,6 +300,29 @@ function BoardLayout() {
       (option) => option.id !== filterIdToRemove
     );
     setActiveOptions(updatedActiveOptions);
+    setFilterValues((prev) => {
+      const newValues = { ...prev };
+      if (newValues.assignment) {
+        const assignmentIds = newValues.assignment
+          .split(",")
+          .filter((id) => id.trim() !== "");
+        const updatedAssignmentIds = assignmentIds.filter(
+          (id) => id !== filterIdToRemove
+        );
+        newValues.assignment = updatedAssignmentIds.join(",");
+      }
+      if (newValues.status) {
+        const statusIds = newValues.status
+          .split(",")
+          .filter((id) => id.trim() !== "");
+        const updatedStatusIds = statusIds.filter(
+          (id) => id !== filterIdToRemove
+        );
+        newValues.status = updatedStatusIds.join(",");
+      }
+
+      return newValues;
+    });
 
     if (updatedActiveOptions.length === 0) {
       setFilters((prev) => ({
@@ -315,26 +344,59 @@ function BoardLayout() {
     });
   };
 
-  const handleSearchRequestsValue = (
+  const handleSearchRequestsValue = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
-
     handleFiltersChange({ searchRequestValue: value });
-    setFilterValues({ assignment: "", status: "" });
-    setActiveOptions([]);
 
     if (value.trim().length >= 3) {
-      fetchBoardData(businessUnitPublicCode, recordsToFetch, {
-        text: value.trim(),
-      });
-    }
+      if (activeOptions.length > 0) {
+        const searchResults = await getCreditRequestInProgress(
+          businessUnitPublicCode,
+          recordsToFetch,
+          userAccount,
+          { text: value.trim() }
+        );
+        const currentFilters = activeOptions
+          .map((filter) => filter.value)
+          .join(",");
+        const filteredResults = await getCreditRequestInProgress(
+          businessUnitPublicCode,
+          recordsToFetch,
+          userAccount,
+          { filter: currentFilters }
+        );
+        const intersection = searchResults.filter((searchItem) =>
+          filteredResults.some(
+            (filterItem) =>
+              filterItem.creditRequestId === searchItem.creditRequestId
+          )
+        );
 
-    if (value.trim().length === 0) {
-      fetchBoardData(businessUnitPublicCode, recordsToFetch);
+        setBoardData((prev) => ({
+          ...prev,
+          boardRequests: intersection,
+        }));
+      } else {
+        fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+          text: value.trim(),
+        });
+      }
+    } else if (value.trim().length === 0) {
+      if (activeOptions.length > 0) {
+        const currentFilters = activeOptions
+          .map((filter) => filter.value)
+          .join(",");
+
+        await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+          filter: currentFilters,
+        });
+      } else {
+        await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+      }
     }
   };
-
   const closeFilterModal = useCallback(() => setIsFilterModalOpen(false), []);
 
   function getFilteredRequests({

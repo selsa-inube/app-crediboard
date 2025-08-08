@@ -50,10 +50,11 @@ import {
   StyledSearch,
   StyledRequestsContainer,
   StyledMic,
+  StyledRequestsContainerVoiceSearch,
 } from "./styles";
 import { selectCheckOptions } from "./config/select";
 import { IFilterFormValues } from ".";
-import { boardColumns, seePinned } from "./config/board";
+import { boardColumns, dataInformationModal } from "./config/board";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -119,9 +120,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
-
+  const [hasBeenFocused, setHasBeenFocused] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(true);
-
+  const [isTextSearchModalOpen, setIsTextSearchModalOpen] = useState(false);
   const capitalizeWords = (text: string) => {
     return text
       .split(" ")
@@ -211,6 +212,34 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     resetTranscript();
     setIsShowModal(false);
     setIsVoiceProcessed(false);
+  };
+
+  const handleTextfieldChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!isTextSearchModalOpen) {
+      handleSearchRequestsValue(event);
+    }
+  };
+  const handleTextfieldFocus = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isTextSearchModalOpen) {
+      return;
+    }
+    if (!hasBeenFocused) {
+      setIsTextSearchModalOpen(true);
+      setHasBeenFocused(true);
+    } else {
+      const currentValue = event.target.value.trim();
+      if (currentValue) {
+        const words = currentValue
+          .split(/\s+/)
+          .filter((word) => word.length > 0);
+
+        if (words.length > 3) {
+          setIsTextSearchModalOpen(true);
+        }
+      }
+    }
   };
 
   useEffect(() => {
@@ -393,7 +422,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   $isMobile={isMobile}
                   $isExpanded={isExpanded}
                   onClick={() => {
-                    if (!isExpanded) setIsExpanded(true);
+                    if (!isExpanded && !isTextSearchModalOpen)
+                      setIsExpanded(true);
                   }}
                 >
                   <Stack width="100%" alignItems="center" gap="8px">
@@ -404,7 +434,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                       size="compact"
                       iconAfter={<MdSearch />}
                       value={searchRequestValue}
-                      onChange={handleSearchRequestsValue}
+                      onChange={handleTextfieldChange}
+                      disabled={isTextSearchModalOpen}
                       fullwidth
                     />
                     <Icon
@@ -458,8 +489,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 filterValues={filterValues}
               />
             )}
+
             {!isMobile && (
-              <Stack width="280px" alignItems="center" gap="8px">
+              <StyledRequestsContainerVoiceSearch $isMobile={isMobile}>
                 <Textfield
                   id="SearchCardsDesktop"
                   name="SearchCardsDesktop"
@@ -467,9 +499,12 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   size="compact"
                   iconAfter={<MdSearch />}
                   value={searchRequestValue}
-                  onChange={handleSearchRequestsValue}
+                  onChange={handleTextfieldChange}
+                  disabled={isTextSearchModalOpen}
                   fullwidth
+                  onFocus={handleTextfieldFocus}
                 />
+
                 <Icon
                   icon={<MdOutlineMicNone />}
                   size="26px"
@@ -479,8 +514,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                     setIsShowModal(true);
                   }}
                 />
-              </Stack>
+              </StyledRequestsContainerVoiceSearch>
             )}
+
             {!isMobile && (
               <StyledRequestsContainer $isMobile={isMobile}>
                 <SelectedFilters
@@ -519,7 +555,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                       appearance="dark"
                       size="24px"
                     />
-                    <Text type="label">{seePinned.viewPinned}</Text>
                     <Toggle
                       id="SeePinned"
                       name="SeePinned"
@@ -592,7 +627,29 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             );
           })}
         </StyledBoardContainer>
-
+        {isTextSearchModalOpen && (
+          <BaseModal
+            title="Has ingresado más de 3 palabras"
+            width="400px"
+            nextButton={dataInformationModal.button}
+            backButton={"No, retirarlos"}
+            handleBack={() => {
+              handleClearFilters(); 
+              setIsTextSearchModalOpen(false);
+            }}
+            handleNext={() => {
+              setIsTextSearchModalOpen(false);
+            }}
+            handleClose={() => {
+              setIsTextSearchModalOpen(false);
+              setHasBeenFocused(false);
+            }}
+          >
+            <Text>
+              ¿Estás seguro de que deseas buscar con esta cantidad de palabras?
+            </Text>
+          </BaseModal>
+        )}
         {isShowModal &&
           (browserSupportsSpeechRecognition ? (
             <BaseModal

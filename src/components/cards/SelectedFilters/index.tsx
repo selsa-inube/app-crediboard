@@ -34,6 +34,7 @@ function SelectedFilters(props: SelectedFiltersProps) {
               label={`${filter.label}`}
               removable={onRemove !== undefined}
               onClose={() => handleRemoveFilter(filter.id)}
+              displayIcon={false}
             />
           ))}
           {hiddenFilters.length > 0 && (
@@ -51,9 +52,7 @@ function SelectedFilters(props: SelectedFiltersProps) {
                           icon={<MdApps />}
                           size="14px"
                         />
-                        <Text size="small">
-                          {`${filter.label}`}
-                        </Text>
+                        <Text size="small">{`${filter.label}`}</Text>
                       </Stack>
                       <Icon
                         appearance="dark"
