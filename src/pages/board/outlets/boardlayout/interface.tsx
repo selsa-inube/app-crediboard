@@ -172,21 +172,42 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       startListening();
     }
   };
+  useEffect(() => {
+    if (activeOptions.length === 0) {
+      setHasBeenFocused(false);
+    }
+  }, [activeOptions.length]);
+  const [lastFilterCount, setLastFilterCount] = useState(0);
+  const [hasShownModalForCurrentFilters, setHasShownModalForCurrentFilters] =
+    useState(false);
+
+  useEffect(() => {
+    if (activeOptions.length > lastFilterCount) {
+      setLastFilterCount(activeOptions.length);
+      setHasShownModalForCurrentFilters(false); 
+    }
+    if (activeOptions.length === 0) {
+      setLastFilterCount(0);
+      setHasShownModalForCurrentFilters(false);
+    }
+  }, [activeOptions.length, lastFilterCount]);
   const shouldShowTextModalFirst = () => {
     if (activeOptions.length === 0) return false;
-
-    if (!hasBeenFocused) return true;
-    const currentValue = searchRequestValue.trim();
-    if (currentValue) {
-      const words = currentValue.split(/\s+/).filter((word) => word.length > 0);
-      return words.length > 3;
+    if (hasShownModalForCurrentFilters) {
+      const currentValue = searchRequestValue.trim();
+      if (currentValue) {
+        const words = currentValue
+          .split(/\s+/)
+          .filter((word) => word.length > 0);
+        return words.length > 1;
+      }
+      return false;
     }
-
-    return false;
+    return true;
   };
 
   const handleMicrophoneClick = () => {
-    setShouldOpenVoiceModal(true); 
+    setShouldOpenVoiceModal(true);
     if (shouldShowTextModalFirst()) {
       setIsTextSearchModalOpen(true);
     } else {
@@ -252,10 +273,10 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     if (activeOptions.length === 0) {
       return;
     }
-
     if (!hasBeenFocused) {
       setIsTextSearchModalOpen(true);
       setHasBeenFocused(true);
+      setHasShownModalForCurrentFilters(true); 
     } else {
       const currentValue = event.target.value.trim();
       if (currentValue) {
@@ -263,9 +284,14 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           .split(/\s+/)
           .filter((word) => word.length > 0);
 
-        if (words.length > 3) {
+        if (words.length > 1) {
           setIsTextSearchModalOpen(true);
+          setHasShownModalForCurrentFilters(true); 
         }
+      } else if (!hasShownModalForCurrentFilters) {
+
+        setIsTextSearchModalOpen(true);
+        setHasShownModalForCurrentFilters(true);
       }
     }
   };
@@ -538,7 +564,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   size="26px"
                   appearance="primary"
                   cursorHover
-                  onClick={handleMicrophoneClick} 
+                  onClick={handleMicrophoneClick}
                 />
               </StyledRequestsContainerVoiceSearch>
             )}
@@ -662,21 +688,22 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             handleBack={() => {
               handleClearFilters();
               setIsTextSearchModalOpen(false);
+              setHasBeenFocused(false);
               if (shouldOpenVoiceModal) {
-                setIsShowModal(true); 
+                setIsShowModal(true);
                 setShouldOpenVoiceModal(false);
               }
             }}
             handleNext={() => {
               setIsTextSearchModalOpen(false);
               if (shouldOpenVoiceModal) {
-                setIsShowModal(true); 
+                setIsShowModal(true);
                 setShouldOpenVoiceModal(false);
               }
             }}
             handleClose={() => {
               setIsTextSearchModalOpen(false);
-              setHasBeenFocused(false);
+              setHasBeenFocused(false); 
               if (shouldOpenVoiceModal) {
                 setIsShowModal(true);
                 setShouldOpenVoiceModal(false);

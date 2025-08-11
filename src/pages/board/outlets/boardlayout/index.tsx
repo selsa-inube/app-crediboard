@@ -141,9 +141,9 @@ function BoardLayout() {
         count: index + 1,
       }));
 
-    const queryFilterString = activeFilteredValues.map(
-      (filter) => filter.value
-    );
+    const queryFilterString = activeFilteredValues
+      .map((filter) => `${filter.value}`)
+      .join("&");
 
     setActiveOptions(activeFilteredValues);
 
@@ -286,6 +286,7 @@ function BoardLayout() {
       showPinnedOnly: false,
       selectOptions: selectCheckOptions,
     }));
+
     if (keepSearchValue && filters.searchRequestValue.trim().length >= 3) {
       await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
         text: filters.searchRequestValue.trim(),
@@ -299,7 +300,9 @@ function BoardLayout() {
     const updatedActiveOptions = activeOptions.filter(
       (option) => option.id !== filterIdToRemove
     );
+
     setActiveOptions(updatedActiveOptions);
+
     setFilterValues((prev) => {
       const newValues = { ...prev };
       if (newValues.assignment) {
@@ -336,31 +339,29 @@ function BoardLayout() {
 
     const updatedFilterString = updatedActiveOptions
       .map((filter) => filter.value)
-      .join(",")
+      .join("&")
       .trim();
-
     await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
       filter: updatedFilterString,
     });
   };
-
   const handleSearchRequestsValue = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
     handleFiltersChange({ searchRequestValue: value });
-
-    if (value.trim().length >= 3) {
+    const trimmedValue = value.trim();
+    if (trimmedValue.length >= 1) {
       if (activeOptions.length > 0) {
+        const currentFilters = activeOptions
+          .map((filter) => filter.value)
+          .join("&");
         const searchResults = await getCreditRequestInProgress(
           businessUnitPublicCode,
           recordsToFetch,
           userAccount,
-          { text: value.trim() }
+          { text: trimmedValue }
         );
-        const currentFilters = activeOptions
-          .map((filter) => filter.value)
-          .join(",");
         const filteredResults = await getCreditRequestInProgress(
           businessUnitPublicCode,
           recordsToFetch,
@@ -380,14 +381,14 @@ function BoardLayout() {
         }));
       } else {
         fetchBoardData(businessUnitPublicCode, recordsToFetch, {
-          text: value.trim(),
+          text: trimmedValue,
         });
       }
-    } else if (value.trim().length === 0) {
+    } else {
       if (activeOptions.length > 0) {
         const currentFilters = activeOptions
           .map((filter) => filter.value)
-          .join(",");
+          .join("&");
 
         await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
           filter: currentFilters,
@@ -397,6 +398,7 @@ function BoardLayout() {
       }
     }
   };
+
   const closeFilterModal = useCallback(() => setIsFilterModalOpen(false), []);
 
   function getFilteredRequests({
