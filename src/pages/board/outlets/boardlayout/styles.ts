@@ -51,9 +51,13 @@ const pulseRing = keyframes`
 const StyledSearch = styled.div<IStyledSearch>`
   cursor: pointer;
   width: ${({ $isMobile, $isExpanded }) => getWidth($isMobile, $isExpanded)};
+  transition: width 0.3s ease-in-out;
 
   & > div > div > div {
     padding-left: ${({ $isMobile }) => ($isMobile ? "9px" : "16px")};
+  }
+  & > div {
+    transition: all 0.3s ease-in-out;
   }
 `;
 

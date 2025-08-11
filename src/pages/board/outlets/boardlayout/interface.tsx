@@ -184,7 +184,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   useEffect(() => {
     if (activeOptions.length > lastFilterCount) {
       setLastFilterCount(activeOptions.length);
-      setHasShownModalForCurrentFilters(false); 
+      setHasShownModalForCurrentFilters(false);
     }
     if (activeOptions.length === 0) {
       setLastFilterCount(0);
@@ -276,7 +276,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     if (!hasBeenFocused) {
       setIsTextSearchModalOpen(true);
       setHasBeenFocused(true);
-      setHasShownModalForCurrentFilters(true); 
+      setHasShownModalForCurrentFilters(true);
     } else {
       const currentValue = event.target.value.trim();
       if (currentValue) {
@@ -286,10 +286,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
 
         if (words.length > 1) {
           setIsTextSearchModalOpen(true);
-          setHasShownModalForCurrentFilters(true); 
+          setHasShownModalForCurrentFilters(true);
         }
       } else if (!hasShownModalForCurrentFilters) {
-
         setIsTextSearchModalOpen(true);
         setHasShownModalForCurrentFilters(true);
       }
@@ -491,17 +490,32 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                       onChange={handleTextfieldChange}
                       disabled={isTextSearchModalOpen}
                       fullwidth
+                      onFocus={handleTextfieldFocus}
                     />
-                    <Icon
-                      icon={<MdOutlineFilterAlt />}
-                      appearance="primary"
-                      variant="outlined"
-                      size="36px"
-                      shape="rectangle"
-                      cursorHover
-                      spacing="wide"
-                      onClick={openFilterModal}
-                    />
+                    {!isExpanded && (
+                      <>
+                        <Icon
+                          icon={<MdOutlineMicNone />}
+                          appearance="primary"
+                          variant="outlined"
+                          size="36px"
+                          shape="rectangle"
+                          cursorHover
+                          spacing="wide"
+                          onClick={handleMicrophoneClick}
+                        />
+                        <Icon
+                          icon={<MdOutlineFilterAlt />}
+                          appearance="primary"
+                          variant="outlined"
+                          size="36px"
+                          shape="rectangle"
+                          cursorHover
+                          spacing="wide"
+                          onClick={openFilterModal}
+                        />
+                      </>
+                    )}
                   </Stack>
                 </StyledSearch>
               </>
@@ -703,7 +717,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             }}
             handleClose={() => {
               setIsTextSearchModalOpen(false);
-              setHasBeenFocused(false); 
+              setHasBeenFocused(false);
               if (shouldOpenVoiceModal) {
                 setIsShowModal(true);
                 setShouldOpenVoiceModal(false);
