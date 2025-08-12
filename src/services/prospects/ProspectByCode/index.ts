@@ -7,7 +7,7 @@ import { IProspect } from "./types";
 
 const getSearchProspectByCode = async (
   businessUnitPublicCode: string,
-  idProspect: string
+  prospectId: string
 ): Promise<IProspect> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -28,7 +28,7 @@ const getSearchProspectByCode = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${idProspect}`,
+        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectId}`,
         options
       );
 
