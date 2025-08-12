@@ -1,5 +1,5 @@
 import { Stack, Text, Tag, Icon } from "@inubekit/inubekit";
-import { MdApps, MdClose } from "react-icons/md";
+import { MdClose } from "react-icons/md";
 
 import {
   StyledContainerFilters,
@@ -41,17 +41,17 @@ function SelectedFilters(props: SelectedFiltersProps) {
             <MoreFiltersWrapper
               onClick={() => setShowHiddenFilters((prev) => !prev)}
             >
-              <Tag appearance="primary" label="..." removable={false} />
+              <Tag
+                appearance="primary"
+                label="..."
+                removable={false}
+                displayIcon={false}
+              />
               {showHiddenFilters && (
                 <StyledHiddenFiltersMenu $isMobile={isMobile}>
                   {hiddenFilters.map((filter, index) => (
                     <HiddenFilterItem key={index}>
                       <Stack gap="4px" alignItems="center">
-                        <Icon
-                          appearance="primary"
-                          icon={<MdApps />}
-                          size="14px"
-                        />
                         <Text size="small">{`${filter.label}`}</Text>
                       </Stack>
                       <Icon
