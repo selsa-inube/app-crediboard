@@ -120,9 +120,25 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
+
   const [hasBeenFocused, setHasBeenFocused] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(true);
   const [isTextSearchModalOpen, setIsTextSearchModalOpen] = useState(false);
+  const [isShowModal, setIsShowModal] = useState(false);
+  const [shouldOpenVoiceModal, setShouldOpenVoiceModal] = useState(false);
+  const [isVoiceProcessed, setIsVoiceProcessed] = useState(false);
+  const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
+  const [lastFilterCount, setLastFilterCount] = useState(0);
+  const [hasShownModalForCurrentFilters, setHasShownModalForCurrentFilters] =
+    useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { addFlag } = useFlag();
+  const { businessUnitSigla } = useContext(AppContext);
+  const businessUnitPublicCode: string =
+    JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const stackRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
   const capitalizeWords = (text: string) => {
     return text
       .split(" ")
@@ -132,26 +148,11 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       })
       .join(" ");
   };
-
   const displayText = listening
     ? capitalizeWords(
         (transcript || voiceSearchConfig.states.listening).replace(/\.+$/, "")
       )
     : voiceSearchConfig.states.instruction;
-
-  const [isShowModal, setIsShowModal] = useState(false);
-  const [shouldOpenVoiceModal, setShouldOpenVoiceModal] = useState(false);
-  const [isVoiceProcessed, setIsVoiceProcessed] = useState(false);
-  const { businessUnitSigla } = useContext(AppContext);
-
-  const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
-  const { addFlag } = useFlag();
-  const businessUnitPublicCode: string =
-    JSON.parse(businessUnitSigla).businessUnitPublicCode;
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const stackRef = useRef<HTMLDivElement>(null);
-
   const startListening = () => {
     resetTranscript();
     setIsVoiceProcessed(false);
@@ -160,7 +161,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       language: speechRecognitionConfig.language,
     });
   };
-
   const stopListening = () => {
     SpeechRecognition.stopListening();
   };
@@ -177,9 +177,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       setHasBeenFocused(false);
     }
   }, [activeOptions.length]);
-  const [lastFilterCount, setLastFilterCount] = useState(0);
-  const [hasShownModalForCurrentFilters, setHasShownModalForCurrentFilters] =
-    useState(false);
 
   useEffect(() => {
     if (activeOptions.length > lastFilterCount) {
@@ -191,14 +188,20 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       setHasShownModalForCurrentFilters(false);
     }
   }, [activeOptions.length, lastFilterCount]);
+
+  const getWordsFromText = (text: string): string[] => {
+    return text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+  };
+
   const shouldShowTextModalFirst = () => {
     if (activeOptions.length === 0) return false;
     if (hasShownModalForCurrentFilters) {
       const currentValue = searchRequestValue.trim();
       if (currentValue) {
-        const words = currentValue
-          .split(/\s+/)
-          .filter((word) => word.length > 0);
+        const words = getWordsFromText(currentValue);
         return words.length > 1;
       }
       return false;
@@ -280,9 +283,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     } else {
       const currentValue = event.target.value.trim();
       if (currentValue) {
-        const words = currentValue
-          .split(/\s+/)
-          .filter((word) => word.length > 0);
+        const words = getWordsFromText(currentValue);
 
         if (words.length > 1) {
           setIsTextSearchModalOpen(true);
@@ -306,7 +307,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             applyVoiceSearch(transcript);
           }
         };
-
         recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
           console.error("Speech recognition error:", event.error);
           if (event.error === "no-speech") {
@@ -318,7 +318,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           }
         };
       }
-
       return () => {
         if (recognition) {
           recognition.onend = null;
@@ -370,8 +369,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   useEffect(() => {
     setIsExpanded(Boolean(searchRequestValue));
   }, [searchRequestValue]);
-
-  const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -447,6 +444,30 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       }
     };
   }, [listening]);
+
+  const openVoiceModalIfNeeded = () => {
+    if (shouldOpenVoiceModal) {
+      setIsShowModal(true);
+      setShouldOpenVoiceModal(false);
+    }
+  };
+  const handleTextSearchModalBack = () => {
+    handleClearFilters();
+    setIsTextSearchModalOpen(false);
+    setHasBeenFocused(false);
+    openVoiceModalIfNeeded();
+  };
+
+  const handleTextSearchModalNext = () => {
+    setIsTextSearchModalOpen(false);
+    openVoiceModalIfNeeded();
+  };
+
+  const handleTextSearchModalClose = () => {
+    setIsTextSearchModalOpen(false);
+    setHasBeenFocused(false);
+    openVoiceModalIfNeeded();
+  };
 
   return (
     <StyledContainerToCenter>
@@ -699,30 +720,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             width="400px"
             nextButton={dataInformationSearchModal.succesModal}
             backButton={dataInformationSearchModal.buttonModal}
-            handleBack={() => {
-              handleClearFilters();
-              setIsTextSearchModalOpen(false);
-              setHasBeenFocused(false);
-              if (shouldOpenVoiceModal) {
-                setIsShowModal(true);
-                setShouldOpenVoiceModal(false);
-              }
-            }}
-            handleNext={() => {
-              setIsTextSearchModalOpen(false);
-              if (shouldOpenVoiceModal) {
-                setIsShowModal(true);
-                setShouldOpenVoiceModal(false);
-              }
-            }}
-            handleClose={() => {
-              setIsTextSearchModalOpen(false);
-              setHasBeenFocused(false);
-              if (shouldOpenVoiceModal) {
-                setIsShowModal(true);
-                setShouldOpenVoiceModal(false);
-              }
-            }}
+            handleBack={handleTextSearchModalBack}
+            handleNext={handleTextSearchModalNext}
+            handleClose={handleTextSearchModalClose}
           >
             <Text>{dataInformationSearchModal.descriptionModal}</Text>
           </BaseModal>
