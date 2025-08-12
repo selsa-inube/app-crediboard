@@ -1,15 +1,21 @@
 import { useContext, useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { MdLogout, MdOutlineChevronRight } from "react-icons/md";
-import { Icon, Grid, useFlag, useMediaQuery, Header } from "@inubekit/inubekit";
+import {
+  Icon,
+  Grid,
+  useFlag,
+  useMediaQuery,
+  Header,
+  Text,
+} from "@inubekit/inubekit";
 
 import { AppContext } from "@context/AppContext";
 import { MenuSection } from "@components/navigation/MenuSection";
 import { MenuUser } from "@components/navigation/MenuUser";
-import { LogoutModal } from "@components/feedback/LogoutModal";
 import { BusinessUnitChange } from "@components/inputs/BusinessUnitChange";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
-import { userMenu } from "@config/menuMainConfiguration";
+import { getUserMenu } from "@config/menuMainConfiguration";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 
 import {
@@ -25,6 +31,7 @@ import {
   StyledFooter,
   StyledPrint,
 } from "./styles";
+import { BaseModal } from "@components/modals/baseModal";
 
 const renderLogo = (imgUrl: string) => {
   return (
@@ -70,6 +77,16 @@ function AppPage() {
   const [selectedClient, setSelectedClient] = useState<string>(
     eventData.businessUnit.abbreviatedName
   );
+
+  // Función para manejar el toggle del modal de logout
+  const handleToggleLogoutModal = () => {
+    setShowLogoutModal(!showLogoutModal);
+    setShowUserMenu(false); // Cierra el menú de usuario cuando se abre el modal
+  };
+
+  // Genera el menú pasando la función del modal
+  const userMenuConfig = getUserMenu(handleToggleLogoutModal);
+
   useEffect(() => {
     const selectUser = document.querySelector("header div div:nth-child(0)");
     const handleToggleuserMenu = () => {
@@ -83,11 +100,6 @@ function AppPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showUserMenu]);
-
-  const handleToggleLogoutModal = () => {
-    setShowLogoutModal(!showLogoutModal);
-    setShowUserMenu(false);
-  };
 
   const handleLogoClick = (businessUnit: IBusinessUnitsPortalStaff) => {
     const selectJSON = JSON.stringify(businessUnit);
@@ -128,7 +140,8 @@ function AppPage() {
                 breakpoint: "848px",
                 client: eventData.businessUnit.abbreviatedName,
               }}
-              menu={userMenu}
+              // Usa la configuración generada dinámicamente
+              menu={userMenuConfig}
             />
           </StyledHeaderContainer>
           <StyledCollapseIcon
@@ -178,12 +191,13 @@ function AppPage() {
             </StyledMenuContainer>
           )}
 
+          {/* Modal de logout con renderizado condicional */}
           {showLogoutModal && (
-            <LogoutModal
-              logoutPath="/logout"
-              handleShowBlanket={handleToggleLogoutModal}
-            />
+            <BaseModal title={"aaa"}>
+              <Text>aaa</Text>
+            </BaseModal>
           )}
+
           <StyledMain>
             <Outlet />
           </StyledMain>

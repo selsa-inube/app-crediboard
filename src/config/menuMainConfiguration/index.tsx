@@ -1,6 +1,19 @@
 import { MdLogout } from "react-icons/md";
 
-const userMenu = [
+const getUserMenu = (handleToggleLogoutModal: () => void) => [
+  {
+    id: "section",
+    title: "",
+    actions: [
+      {
+        id: "logout",
+        title: "Cerrar sesión",
+        action: handleToggleLogoutModal,
+        iconBefore: <MdLogout />,
+      },
+    ],
+    divider: true,
+  },
   {
     id: "section",
     title: "",
@@ -16,4 +29,4 @@ const userMenu = [
   },
 ];
 
-export { userMenu };
+export { getUserMenu };
