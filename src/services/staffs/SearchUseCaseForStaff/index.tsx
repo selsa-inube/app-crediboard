@@ -44,11 +44,7 @@ export const getSearchUseCaseForStaff = async (
       const data = await res.json();
 
       if (!res.ok) {
-        throw {
-          message: "Error al obtener los casos de uso",
-          status: res.status,
-          data,
-        };
+        throw new Error(`Error al obtener los datos: ${res.status}`);
       }
 
       return mapCreditRequestToEntities(data);

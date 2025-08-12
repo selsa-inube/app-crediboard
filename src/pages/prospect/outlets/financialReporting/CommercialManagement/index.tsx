@@ -55,8 +55,7 @@ import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitM
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
-import { useValidateUseCase } from "@hooks/useValidateUseCase";
-import { EPayrollAgreement } from "@services/enum/crediboard";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
@@ -459,7 +458,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   }, [selectedBorrower]);
 
   const { disabledButton: canSendDecision } = useValidateUseCase({
-    useCase: EPayrollAgreement.canSendDecision,
+    useCase: getUseCaseValue("canSendDecision"),
   });
   return (
     <>

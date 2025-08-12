@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 
 import { AppContext } from "@context/AppContext";
+import { EPayrollAgreement } from "@services/enum/crediboard";
+
 const useValidateUseCase = (props: { useCase: string }) => {
   const { useCase } = props;
   const [disabledButton, setDisabledButton] = useState<boolean>(false);
@@ -20,5 +22,7 @@ const useValidateUseCase = (props: { useCase: string }) => {
     disabledButton,
   };
 };
-
-export { useValidateUseCase };
+const getUseCaseValue = (code: string) => {
+  return EPayrollAgreement.find((item) => item.Code === code)?.Value ?? "";
+};
+export { useValidateUseCase, getUseCaseValue };

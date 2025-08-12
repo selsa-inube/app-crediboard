@@ -20,8 +20,7 @@ import {
 } from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
-import { useValidateUseCase } from "@hooks/useValidateUseCase";
-import { EPayrollAgreement } from "@services/enum/crediboard";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 import {
   infoItems,
@@ -355,7 +354,7 @@ export const Requirements = (props: IRequirementsProps) => {
     }
   }, [rawRequirements]);
   const { disabledButton: canAddRequirements } = useValidateUseCase({
-    useCase: EPayrollAgreement.canAddRequirements,
+    useCase: getUseCaseValue("canAddRequirements"),
   });
   return (
     <>

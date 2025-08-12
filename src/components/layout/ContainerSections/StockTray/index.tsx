@@ -4,8 +4,7 @@ import { Stack, Icon, Button, Text } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { ICrediboardData } from "@context/AppContext/types";
-import { useValidateUseCase } from "@hooks/useValidateUseCase";
-import { EPayrollAgreement } from "@services/enum/crediboard";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 import { configButtons, titlesModal } from "../config";
 import { StyledHorizontalDivider, StyledPrint } from "./styled";
@@ -50,23 +49,24 @@ export const StockTray = (props: IStockTrayProps) => {
   const handleInfo = () => {
     setIsModalOpen(true);
   };
+
   const { disabledButton: canViewAttachments } = useValidateUseCase({
-    useCase: EPayrollAgreement.canViewAttachments,
+    useCase: getUseCaseValue("canViewAttachments"),
   });
   const { disabledButton: canReject } = useValidateUseCase({
-    useCase: EPayrollAgreement.canReject,
+    useCase: getUseCaseValue("canReject"),
   });
   const { disabledButton: canCancel } = useValidateUseCase({
-    useCase: EPayrollAgreement.canCancel,
+    useCase: getUseCaseValue("canCancel"),
   });
   const { disabledButton: canPrint } = useValidateUseCase({
-    useCase: EPayrollAgreement.canPrint,
+    useCase: getUseCaseValue("canPrint"),
   });
   const { disabledButton: canAttach } = useValidateUseCase({
-    useCase: EPayrollAgreement.canAttach,
+    useCase: getUseCaseValue("canAttach"),
   });
   const { disabledButton: canManageGuarantees } = useValidateUseCase({
-    useCase: EPayrollAgreement.canManageGuarantees,
+    useCase: getUseCaseValue("canManageGuarantees"),
   });
 
   return (
