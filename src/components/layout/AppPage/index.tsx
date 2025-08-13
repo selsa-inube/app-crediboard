@@ -8,6 +8,7 @@ import {
   useMediaQuery,
   Header,
   Text,
+  Stack,
 } from "@inubekit/inubekit";
 
 import { AppContext } from "@context/AppContext";
@@ -17,6 +18,8 @@ import { BusinessUnitChange } from "@components/inputs/BusinessUnitChange";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 import { getUserMenu } from "@config/menuMainConfiguration";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
+import { BaseModal } from "@components/modals/baseModal";
+import { CardNoveilties } from "@components/cards/CardsNoveilties";
 
 import {
   StyledAppPage,
@@ -30,8 +33,11 @@ import {
   StyledCollapse,
   StyledFooter,
   StyledPrint,
+  StyledCardsContainer,
+  StyledUserImage,
 } from "./styles";
-import { BaseModal } from "@components/modals/baseModal";
+import { noveltiesConfig } from "./config/noveltiesConfig";
+import { emptyNoveltiesConfig } from "./config/erroNovelties";
 
 const renderLogo = (imgUrl: string) => {
   return (
@@ -78,13 +84,11 @@ function AppPage() {
     eventData.businessUnit.abbreviatedName
   );
 
-  // Función para manejar el toggle del modal de logout
   const handleToggleLogoutModal = () => {
     setShowLogoutModal(!showLogoutModal);
-    setShowUserMenu(false); // Cierra el menú de usuario cuando se abre el modal
+    setShowUserMenu(false);
   };
 
-  // Genera el menú pasando la función del modal
   const userMenuConfig = getUserMenu(handleToggleLogoutModal);
 
   useEffect(() => {
@@ -140,7 +144,6 @@ function AppPage() {
                 breakpoint: "848px",
                 client: eventData.businessUnit.abbreviatedName,
               }}
-              // Usa la configuración generada dinámicamente
               menu={userMenuConfig}
             />
           </StyledHeaderContainer>
@@ -190,11 +193,63 @@ function AppPage() {
               />
             </StyledMenuContainer>
           )}
-
-          {/* Modal de logout con renderizado condicional */}
           {showLogoutModal && (
-            <BaseModal title={"aaa"}>
-              <Text>aaa</Text>
+            <BaseModal
+              title={"Novedades"}
+              width="500px"
+              height="700px"
+              initialDivider
+              nextButton="Cerrar"
+              handleClose={() => setShowLogoutModal(false)}
+              handleNext={() => setShowLogoutModal(false)}
+            >
+              <StyledCardsContainer>
+                {noveltiesConfig && noveltiesConfig.length > 0 ? (
+                  noveltiesConfig.map((novelty) => (
+                    <CardNoveilties
+                      key={novelty.id}
+                      userImage={novelty.userImage}
+                      userName={novelty.userName}
+                      dateTime={novelty.dateTime}
+                      referenceCode={novelty.referenceCode}
+                      description={novelty.description}
+                      actionText={novelty.actionText}
+                      onActionClick={novelty.onActionClick}
+                      actionIcon={novelty.actionIcon}
+                    />
+                  ))
+                ) : (
+                  <Stack
+                    direction="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    height="518px"
+                  >
+                    <StyledUserImage
+                      src={emptyNoveltiesConfig.image.src}
+                      alt={emptyNoveltiesConfig.image.alt}
+                    />
+                    <Stack gap="4px" direction="column">
+                      <Text
+                        type="body"
+                        size="large"
+                        appearance="gray"
+                        textAlign="center"
+                      >
+                        {emptyNoveltiesConfig.messages.primary}
+                      </Text>
+                      <Text
+                        type="body"
+                        size="large"
+                        appearance="dark"
+                        textAlign="center"
+                      >
+                        {emptyNoveltiesConfig.messages.secondary}
+                      </Text>
+                    </Stack>
+                  </Stack>
+                )}
+              </StyledCardsContainer>
             </BaseModal>
           )}
 

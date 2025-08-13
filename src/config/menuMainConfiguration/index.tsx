@@ -1,4 +1,4 @@
-import { MdLogout } from "react-icons/md";
+import { MdLogout, MdOutlineMarkunreadMailbox } from "react-icons/md";
 
 const getUserMenu = (handleToggleLogoutModal: () => void) => [
   {
@@ -7,9 +7,9 @@ const getUserMenu = (handleToggleLogoutModal: () => void) => [
     actions: [
       {
         id: "logout",
-        title: "Cerrar sesión",
+        title: "Novedades (5)",
         action: handleToggleLogoutModal,
-        iconBefore: <MdLogout />,
+        iconBefore: <MdOutlineMarkunreadMailbox />,
       },
     ],
     divider: true,
