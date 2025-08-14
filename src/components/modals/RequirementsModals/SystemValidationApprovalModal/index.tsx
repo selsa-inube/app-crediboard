@@ -60,9 +60,9 @@ export function SystemValidationApprovalModal(
     validateOnMount: true,
     onSubmit: async () => {
       try {
-        const requirementPackageId = entryIdToRequirementMap[entryId];
+        const requirementByPackageId = entryIdToRequirementMap[entryId];
 
-        if (!requirementPackageId) return;
+        if (!requirementByPackageId) return;
 
         const payload = {
           modifyJustification: "Status change",
@@ -70,13 +70,13 @@ export function SystemValidationApprovalModal(
             ? getRequirementCode("UNVALIDATED_SYSTEM_VALIDATION")
             : getRequirementCode("IGNORED_BY_THE_USER_SYSTEM_VALIDATION"),
           packageId: rawRequirements[0].packageId,
-          requirementPackageId: requirementPackageId,
+          requirementByPackageId: requirementByPackageId,
           statusChangeJustification: formik.values.observations,
           transactionOperation: "PartialUpdate",
           documentsByRequirement: [
             {
               documentCode: "",
-              requirementPackageId: "",
+              requirementByPackageId: "",
               transactionOperation: "PartialUpdate",
             },
           ],

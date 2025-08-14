@@ -7,7 +7,7 @@ export interface DocumentItem {
 }
 
 interface IRequirementByPackage {
-  requirementPackageId: string;
+  requirementByPackageId: string;
   packageId: string;
   requirementCatalogName: string;
   requirementDate: string;

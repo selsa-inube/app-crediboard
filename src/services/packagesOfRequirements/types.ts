@@ -4,7 +4,7 @@ interface IlistsOfRequirementsByPackage {
   packageId: string;
   requirementCatalogName: string;
   requirementDate: string;
-  requirementPackageId: string;
+  requirementByPackageId: string;
   requirementStatus: string;
   requirementTypeToEvaluate: string;
 }
@@ -13,7 +13,7 @@ export interface ITracesInRequirementsManagement {
   assignedStatus: string;
   justificationForChangeOfStatus: string;
   packageId: string;
-  requirementPackageId: string;
+  requirementByPackageId: string;
   traceDate: string;
   traceId: string;
 }

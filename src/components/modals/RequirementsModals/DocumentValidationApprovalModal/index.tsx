@@ -95,9 +95,9 @@ export function DocumentValidationApprovalModal(
     validateOnMount: true,
     onSubmit: async (values) => {
       try {
-        const requirementPackageId = entryIdToRequirementMap[entryId];
+        const requirementByPackageId = entryIdToRequirementMap[entryId];
 
-        if (!requirementPackageId) return;
+        if (!requirementByPackageId) return;
 
         const selectedIds = values.selectedDocumentIds || {};
         const selectedDocuments = documents.filter(
@@ -121,13 +121,13 @@ export function DocumentValidationApprovalModal(
           modifyJustification: "Status change",
           nextStatusValue,
           packageId: rawRequirements[0]?.packageId,
-          requirementPackageId,
+          requirementByPackageId,
           statusChangeJustification: values.observations,
           transactionOperation: "PartialUpdate",
           documentsByRequirement: [
             {
               documentCode: "",
-              requirementPackageId: "",
+              requirementByPackageId: "",
               transactionOperation: "PartialUpdate",
             },
           ],

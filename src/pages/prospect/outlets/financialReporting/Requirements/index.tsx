@@ -352,7 +352,7 @@ export const Requirements = (props: IRequirementsProps) => {
 
         if (prefix) {
           typeCounters[prefix] += 1;
-          map[`${prefix}-${typeCounters[prefix]}`] = req.requirementPackageId;
+          map[`${prefix}-${typeCounters[prefix]}`] = req.requirementByPackageId;
         }
       });
 

@@ -56,9 +56,9 @@ export function HumanValidationApprovalModal(
     validateOnMount: true,
     onSubmit: async () => {
       try {
-        const requirementPackageId = entryIdToRequirementMap[entryId];
+        const requirementByPackageId = entryIdToRequirementMap[entryId];
 
-        if (!requirementPackageId) return;
+        if (!requirementByPackageId) return;
 
         let nextStatusValue = "";
         if (formik.values.answer === optionsAnswer[0].label) {
@@ -79,13 +79,13 @@ export function HumanValidationApprovalModal(
           modifyJustification: "Status change",
           nextStatusValue,
           packageId: rawRequirements[0].packageId,
-          requirementPackageId: requirementPackageId,
+          requirementByPackageId: requirementByPackageId,
           statusChangeJustification: formik.values.observations,
           transactionOperation: "PartialUpdate",
           documentsByRequirement: [
             {
               documentCode: "",
-              requirementPackageId: "",
+              requirementByPackageId: "",
               transactionOperation: "PartialUpdate",
             },
           ],
