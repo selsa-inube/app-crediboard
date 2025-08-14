@@ -10,6 +10,7 @@ import {
   Text,
   Stack,
 } from "@inubekit/inubekit";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import { AppContext } from "@context/AppContext";
 import { MenuSection } from "@components/navigation/MenuSection";
@@ -20,6 +21,8 @@ import { getUserMenu } from "@config/menuMainConfiguration";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardNoveilties } from "@components/cards/CardsNoveilties";
+import { getUnreadNoveltiesByUser } from "@services/credit-request/query/getUnreadNoveltiesByUser";
+import { IUnreadNoveltiesByUser } from "@services/credit-request/query/getUnreadNoveltiesByUser/types";
 
 import {
   StyledAppPage,
@@ -36,7 +39,6 @@ import {
   StyledCardsContainer,
   StyledUserImage,
 } from "./styles";
-import { noveltiesConfig } from "./config/noveltiesConfig";
 import { emptyNoveltiesConfig } from "./config/erroNovelties";
 
 const renderLogo = (imgUrl: string) => {
@@ -56,9 +58,14 @@ function AppPage() {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const collapseMenuRef = useRef<HTMLDivElement>(null);
   const businessUnitChangeRef = useRef<HTMLDivElement>(null);
-
+  const [noveltiesData, setNoveltiesData] = useState<IUnreadNoveltiesByUser[]>(
+    []
+  );
+  const { user } = useAuth0();
   const navigate = useNavigate();
-
+  const { businessUnitSigla } = useContext(AppContext);
+  const businessUnitPublicCode: string =
+    JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const handleClickOutside = (event: MouseEvent) => {
     if (
       userMenuRef.current &&
@@ -113,6 +120,11 @@ function AppPage() {
     navigate("/");
   };
 
+  const handleNoveltyActionClick = (referenceCode: string) => {
+    navigate(`/extended-card/${referenceCode}`);
+    setShowLogoutModal(false);
+  };
+
   const { addFlag } = useFlag();
 
   const handleFlag = () => {
@@ -131,6 +143,31 @@ function AppPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitsToTheStaff]);
+  const normalizeToTwentyChars = (text: string): string => {
+    if (text.length > 20) {
+      return text.substring(0, 20);
+    }
+    if (text.length < 20) {
+      return text.padEnd(20, " ");
+    }
+    return text;
+  };
+  useEffect(() => {
+    const fetchNoveltiesData = async () => {
+      try {
+        const data = await getUnreadNoveltiesByUser(
+          normalizeToTwentyChars(user?.email || ""),
+          businessUnitPublicCode
+        );
+        setNoveltiesData(data);
+      } catch (error) {
+        console.error("Error fetching novelties:", error);
+      }
+    };
+
+    fetchNoveltiesData();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <StyledAppPage>
@@ -204,18 +241,20 @@ function AppPage() {
               handleNext={() => setShowLogoutModal(false)}
             >
               <StyledCardsContainer>
-                {noveltiesConfig && noveltiesConfig.length > 0 ? (
-                  noveltiesConfig.map((novelty) => (
+                {noveltiesData && noveltiesData.length > 0 ? (
+                  noveltiesData.map((novelty) => (
                     <CardNoveilties
-                      key={novelty.id}
-                      userImage={novelty.userImage}
-                      userName={novelty.userName}
-                      dateTime={novelty.dateTime}
-                      referenceCode={novelty.referenceCode}
-                      description={novelty.description}
-                      actionText={novelty.actionText}
-                      onActionClick={novelty.onActionClick}
-                      actionIcon={novelty.actionIcon}
+                      key={novelty.creditRequestCode}
+                      userImage={""}
+                      userName={novelty.clientName}
+                      dateTime={novelty.executionDate}
+                      referenceCode={novelty.creditRequestCode}
+                      description={emptyNoveltiesConfig.novelties.description}
+                      actionText={emptyNoveltiesConfig.novelties.actionText}
+                      onActionClick={() =>
+                        handleNoveltyActionClick(novelty.creditRequestCode)
+                      }
+                      actionIcon={emptyNoveltiesConfig.novelties.actionIcon}
                     />
                   ))
                 ) : (

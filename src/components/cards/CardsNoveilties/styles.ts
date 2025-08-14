@@ -19,7 +19,7 @@ export const StyledEllipsisText = styled.p`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
-  padding: 0 0 10px 0;
+  padding: 0 0 2px 0;
 `;
 
 export const StyledUserImage = styled.img`
