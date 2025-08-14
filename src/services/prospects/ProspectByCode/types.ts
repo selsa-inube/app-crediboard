@@ -24,13 +24,13 @@ export interface IConsolidatedCredit {
 export interface IOrdinaryInstallmentsForPrincipal {
   numberOfInstallments: number;
   schedule: string;
-  installmentAmountForCapital?: number;
   installmentAmount: number;
+  paymentChannelAbbreviatedName: string;
   gradientRate?: number;
   gradientValue?: number;
   gradientSchedule?: string;
   firstGradientDate?: Date;
-  paymentChannelAbbreviatedName: string;
+  installmentAmountForCapital?: number;
 }
 
 export interface IInstallmentsForInterest {
@@ -56,13 +56,13 @@ export interface ICreditProduct {
   loanAmount: number;
   lineOfCreditAbbreviatedName: string;
   interestRate: number;
-  fixedPoints?: number;
   loanTerm: number;
   schedule: string;
   ordinaryInstallmentsForPrincipal: IOrdinaryInstallmentsForPrincipal[];
   installmentsForInterest?: IInstallmentsForInterest[];
   extraordinaryInstallments?: IExtraordinaryInstallment[];
   acquiredCashFlows?: IAcquiredCashFlow[];
+  fixedPoints?: number;
 }
 
 export interface IOutlay {
@@ -85,7 +85,7 @@ export interface IProspect {
   moneyDestinationAbbreviatedName: string;
   bondValue: number;
   borrowers: IBorrower[];
-  consolidatedCredits?: IConsolidatedCredit[];
   creditProducts: ICreditProduct[];
   outlays: IOutlay[];
+  consolidatedCredits?: IConsolidatedCredit[];
 }
