@@ -1,4 +1,4 @@
-import { ICreditRequest } from "@services/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 
 export const mockRequests: ICreditRequest[] = [
   {

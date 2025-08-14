@@ -6,7 +6,7 @@ import { Stack, useMediaQuery, Button, Select } from "@inubekit/inubekit";
 import { BaseModal } from "@components/modals/baseModal";
 import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { TableFinancialObligations } from "@pages/prospect/components/TableObligationsFinancial";
-import { IProspect } from "@services/prospects/types";
+import { IProspect } from "@services/prospect/types";
 
 import { ListModal } from "../ListModal";
 import { FinancialObligationModal } from "../financialObligationModal";

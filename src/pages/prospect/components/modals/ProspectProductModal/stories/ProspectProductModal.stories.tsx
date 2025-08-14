@@ -11,7 +11,7 @@ import {
   PaymentMethod,
   AmortizationType,
   RateType,
-} from "@services/enums";
+} from "@services/enum/icorebanking-vi-crediboard/schedule";
 
 import { props, parameters } from "./props";
 import { EditProductModal, EditProductModalProps } from "..";

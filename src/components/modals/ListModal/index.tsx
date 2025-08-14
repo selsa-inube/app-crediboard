@@ -18,12 +18,11 @@ import {
 } from "@inubekit/inubekit";
 
 import { File } from "@components/inputs/File";
-import { saveDocument } from "@services/credit-request/command/saveDocument";
+import { saveDocument } from "@services/creditRequest/command/saveDocument";
 import { validationMessages } from "@validations/validationMessages";
 import { AppContext } from "@context/AppContext";
-import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
+import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
-import { IUploadedFile } from "@services/types";
 import { StyledItem } from "@pages/prospect/outlets/financialReporting/styles";
 import { optionFlags } from "@pages/prospect/outlets/financialReporting/config";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
@@ -198,7 +197,7 @@ export const ListModal = (props: IListModalProps) => {
         name: file.name,
         file: file,
       }));
-      setUploadedFiles((prev: IUploadedFile[]) => [
+      setUploadedFiles((prev: IDocumentUpload[]) => [
         ...(prev || []),
         ...newFiles,
       ]);
@@ -234,7 +233,10 @@ export const ListModal = (props: IListModalProps) => {
       name: file.name,
       file,
     }));
-    setUploadedFiles((prev: IUploadedFile[]) => [...(prev || []), ...newFiles]);
+    setUploadedFiles((prev: IDocumentUpload[]) => [
+      ...(prev || []),
+      ...newFiles,
+    ]);
 
     e.dataTransfer.clearData();
   };
@@ -453,7 +455,7 @@ export const ListModal = (props: IListModalProps) => {
                     {listModalData.attachments}
                   </Text>
                   <StyledFileBox>
-                    {uploadedFiles.map((file: IUploadedFile) => (
+                    {uploadedFiles.map((file: IDocumentUpload) => (
                       <File
                         key={file.id}
                         name={file.name}
@@ -461,7 +463,7 @@ export const ListModal = (props: IListModalProps) => {
                           file.file?.size ? formatFileSize(file.file.size) : "-"
                         }
                         onDelete={() => {
-                          setUploadedFiles?.((prev: IUploadedFile[] = []) =>
+                          setUploadedFiles?.((prev: IDocumentUpload[] = []) =>
                             prev.filter((f) => f.id !== file.id)
                           );
                         }}

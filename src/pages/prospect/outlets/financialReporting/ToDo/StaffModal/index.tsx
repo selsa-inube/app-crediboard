@@ -4,16 +4,14 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Stack, useMediaQuery, Select, useFlag } from "@inubekit/inubekit";
 
-import { getCommercialManagerAndAnalyst } from "@services/commercialManagerAndAnalyst";
+import { getCommercialManagerAndAnalyst } from "@services/staff/commercialManagerAndAnalyst";
 
 import { AppContext } from "@context/AppContext";
-import {
-  ICommercialManagerAndAnalyst,
-  ICreditRequests,
-  IToDo,
-} from "@services/types";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { BaseModal } from "@components/modals/baseModal";
+import { IToDo } from "@services/creditRequest/query/types";
+import { ICommercialManagerAndAnalyst } from "@services/staff/types";
+import { ICreditRequests } from "@services/creditRequest/command/types";
 
 import { changeUsersByCreditRequest } from "./utils";
 import { txtFlags } from "../config";

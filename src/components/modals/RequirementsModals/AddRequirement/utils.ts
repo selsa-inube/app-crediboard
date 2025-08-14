@@ -1,5 +1,5 @@
-import { patchOfRequirements } from "@services/patchOfRequirements";
-import { IPatchOfRequirements } from "@services/types";
+import { patchOfRequirements } from "@services/requirementsPackages/patchOfRequirements";
+import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 
 export const saveRequirements = async (
   businessUnitPublicCode: string,
