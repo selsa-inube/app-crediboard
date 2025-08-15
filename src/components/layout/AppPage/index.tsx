@@ -67,6 +67,11 @@ function AppPage() {
   const { businessUnitSigla } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+
+  const getNotificationsCount = (): number => {
+    return noveltiesData && noveltiesData.length > 0 ? noveltiesData.length : 0;
+  };
+
   const handleClickOutside = (event: MouseEvent) => {
     if (
       userMenuRef.current &&
@@ -98,7 +103,10 @@ function AppPage() {
     setShowUserMenu(false);
   };
 
-  const userMenuConfig = getUserMenu(handleToggleLogoutModal);
+  const userMenuConfig = getUserMenu(
+    handleToggleLogoutModal,
+    getNotificationsCount()
+  );
 
   useEffect(() => {
     const selectUser = document.querySelector("header div div:nth-child(0)");
@@ -145,6 +153,7 @@ function AppPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitsToTheStaff]);
+
   const normalizeToTwentyChars = (text: string): string => {
     if (text.length > 20) {
       return text.substring(0, 20);
@@ -154,6 +163,7 @@ function AppPage() {
     }
     return text;
   };
+
   useEffect(() => {
     const fetchNoveltiesData = async () => {
       try {
@@ -183,6 +193,7 @@ function AppPage() {
                 client: eventData.businessUnit.abbreviatedName,
               }}
               menu={userMenuConfig}
+              unreadNotificationsAmount={getNotificationsCount()}
             />
           </StyledHeaderContainer>
           <StyledCollapseIcon

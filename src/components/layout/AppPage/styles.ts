@@ -43,7 +43,8 @@ export const StyledContentImg = styled(Link)`
 `;
 
 export const StyledLogo = styled.img`
-  max-width: 120px;
+  max-width: 90px;
+  transform: translateY(-8px);
 `;
 
 export const StyledHeaderContainer = styled.div`
