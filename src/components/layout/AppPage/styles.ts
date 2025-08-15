@@ -19,6 +19,7 @@ export const StyledCardsContainer = styled.div`
   max-height: 600px;
   overflow-y: auto;
   height: 518px;
+  padding-bottom: 36px;
 `;
 
 export const StyledUserImage = styled.img`

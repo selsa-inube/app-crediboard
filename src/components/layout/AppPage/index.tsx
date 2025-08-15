@@ -23,6 +23,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { CardNoveilties } from "@components/cards/CardsNoveilties";
 import { getUnreadNoveltiesByUser } from "@services/credit-request/query/getUnreadNoveltiesByUser";
 import { IUnreadNoveltiesByUser } from "@services/credit-request/query/getUnreadNoveltiesByUser/types";
+import { formatPrimaryDate } from "@utils/formatData/date";
 
 import {
   StyledAppPage,
@@ -87,6 +88,7 @@ function AppPage() {
   };
 
   const isTablet: boolean = useMediaQuery("(max-width: 1024px)");
+  const isMobile: boolean = useMediaQuery("(max-width: 555px)");
   const [selectedClient, setSelectedClient] = useState<string>(
     eventData.businessUnit.abbreviatedName
   );
@@ -232,7 +234,7 @@ function AppPage() {
           {showLogoutModal && (
             <BaseModal
               title={"Novedades"}
-              width="500px"
+              width={isMobile ? "auto" : "500px"}
               height="700px"
               initialDivider
               nextButton="Cerrar"
@@ -246,7 +248,10 @@ function AppPage() {
                       key={novelty.creditRequestCode}
                       userImage={""}
                       userName={novelty.clientName}
-                      dateTime={novelty.executionDate}
+                      dateTime={formatPrimaryDate(
+                        new Date(novelty.executionDate),
+                        true
+                      )}
                       referenceCode={novelty.creditRequestCode}
                       description={emptyNoveltiesConfig.novelties.description}
                       actionText={emptyNoveltiesConfig.novelties.actionText}
@@ -262,6 +267,7 @@ function AppPage() {
                     alignItems="center"
                     justifyContent="center"
                     height="518px"
+                    width={isMobile ? "300px" : "500px"}
                   >
                     <StyledUserImage
                       src={emptyNoveltiesConfig.image.src}
