@@ -4,7 +4,7 @@ import { CardGray } from "@components/cards/CardGray";
 import { Fieldset } from "@components/data/Fieldset";
 import { getPropertyValue } from "@utils/mappingData/mappings";
 import { currencyFormat } from "@utils/formatData/currency";
-import { IBorrower } from "@services/prospects/types";
+import { IBorrower } from "@services/prospect/types";
 
 import { dataIncomeDebtor } from "./config";
 

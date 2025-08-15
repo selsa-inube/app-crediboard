@@ -8,7 +8,7 @@ import {
   Textarea,
 } from "@inubekit/inubekit";
 
-import { IPatchOfRequirements } from "@services/types";
+import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 import { BaseModal } from "@components/modals/baseModal";
 import { dataAddRequirement } from "@pages/prospect/outlets/financialReporting/Requirements/config";
 

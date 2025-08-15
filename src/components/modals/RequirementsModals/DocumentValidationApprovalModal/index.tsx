@@ -18,9 +18,9 @@ import { Fieldset } from "@components/data/Fieldset";
 import { BaseModal } from "@components/modals/baseModal";
 import { ListModal } from "@components/modals/ListModal";
 import { DocumentViewer } from "@components/modals/DocumentViewer";
-import { getSearchAllDocumentsById } from "@services/credit-request/query/SearchAllDocuments";
-import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
-import { IRequirement } from "@services/types";
+import { getSearchAllDocumentsById } from "@services/creditRequest/query/SearchAllDocuments";
+import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
+import { IRequirement } from "@pages/board/outlets/financialReporting/Requirements/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 

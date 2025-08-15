@@ -3,11 +3,11 @@ import localforage from "localforage";
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
-import { IBorrower, IProspect } from "@services/prospects/types";
 
 import { headers } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
 import { IProperty } from "./types";
+import { IBorrower, IProspect } from "@services/prospect/types";
 
 export interface ITableFinancialObligationsProps {
   type?: string;

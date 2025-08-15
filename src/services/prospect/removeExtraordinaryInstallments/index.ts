@@ -3,9 +3,9 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-import { IExtraordinaryInstallments } from "../types/extraordInaryInstallments";
 
 export const removeExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,

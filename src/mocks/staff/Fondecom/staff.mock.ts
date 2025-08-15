@@ -1,4 +1,4 @@
-import { IStaff } from "@services/types";
+import { IStaff } from "@services/creditRequest/query/types";
 
 export const mockAnalyst: IStaff[] = [
   {

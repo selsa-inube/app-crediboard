@@ -7,13 +7,16 @@ import { CardValues } from "@components/cards/cardValues";
 import { DeleteModal } from "@components/modals/DeleteModal";
 
 import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
-import { getSearchProspectSummaryById } from "@services/prospects/ProspectSummaryById";
+import { getSearchProspectSummaryById } from "@services/prospect/ProspectSummaryById";
 import { AppContext } from "@context/AppContext";
-import { IProspect, ICreditProduct } from "@services/prospects/types";
-import { Schedule } from "@services/enums";
+import {
+  IProspect,
+  ICreditProduct,
+  IProspectSummaryById,
+} from "@services/prospect/types";
+import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { DeductibleExpensesModal } from "@pages/prospect/components/modals/DeductibleExpensesModal";
-import { IProspectSummaryById } from "@services/prospects/ProspectSummaryById/types";
-import { getAllDeductibleExpensesById } from "@services/iProspect/deductibleExpenses";
+import { getAllDeductibleExpensesById } from "@services/prospect/deductibleExpenses";
 import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
 import { dataTableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment/config";
 import { ConsolidatedCredits } from "@pages/prospect/components/modals/ConsolidatedCreditModal";

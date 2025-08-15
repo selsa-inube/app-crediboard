@@ -1,5 +1,9 @@
 import { IProperty } from "@pages/prospect/components/TableObligationsFinancial/types";
-import { MaritalStatus, EconomicActivity, Schedule } from "@services/enums";
+import {
+  MaritalStatus,
+  EconomicActivity,
+  Schedule,
+} from "@services/enum/icorebanking-vi-crediboard/schedule";
 
 export const getMaritalStatusInSpanish = (
   status: keyof typeof MaritalStatus
