@@ -35,10 +35,10 @@ export const mapperProspectResponseToIProspect = (response: IProspect): IProspec
       lineOfCreditAbbreviatedName: product.lineOfCreditAbbreviatedName,
       interestRate: product.interestRate,
       loanTerm: product.loanTerm,
-      schedule: product.schedule,
+      schedule: product.installmentFrequency || '',
       ordinaryInstallmentsForPrincipal: product.ordinaryInstallmentsForPrincipal.map((installment: IOrdinaryInstallmentsForPrincipal): IOrdinaryInstallmentsForPrincipal => ({
         numberOfInstallments: installment.numberOfInstallments,
-        schedule: installment.schedule,
+        schedule: installment.installmentFrequency || '',
         installmentAmount: installment.installmentAmount,
         paymentChannelAbbreviatedName: installment.paymentChannelAbbreviatedName,
       })),

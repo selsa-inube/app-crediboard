@@ -31,6 +31,7 @@ export interface IOrdinaryInstallmentsForPrincipal {
   gradientSchedule?: string;
   firstGradientDate?: Date;
   installmentAmountForCapital?: number;
+  installmentFrequency?: string;
 }
 
 export interface IInstallmentsForInterest {
@@ -63,6 +64,7 @@ export interface ICreditProduct {
   extraordinaryInstallments?: IExtraordinaryInstallment[];
   acquiredCashFlows?: IAcquiredCashFlow[];
   fixedPoints?: number;
+  installmentFrequency?: string;
 }
 
 export interface IOutlay {
@@ -88,4 +90,8 @@ export interface IProspect {
   creditProducts: ICreditProduct[];
   outlays: IOutlay[];
   consolidatedCredits?: IConsolidatedCredit[];
+  creditScore?: number;
+  clientManagerName?: string;
+  clientManagerIdentificationNumber?: string;
+  clientManagerObservation?: string;
 }
