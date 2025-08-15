@@ -72,7 +72,6 @@ export interface ICreditProduct {
   loanAmount: number;
   lineOfCreditAbbreviatedName: string;
   interestRate: number;
-  fixedPoints?: number;
   loanTerm: number;
   schedule: string;
   ordinaryInstallmentsForPrincipal: IOrdinaryInstallmentsForPrincipal[];
@@ -80,6 +79,7 @@ export interface ICreditProduct {
   extraordinaryInstallments?: IExtraordinaryInstallment[];
   acquiredCashFlows?: IAcquiredCashFlow[];
   installmentFrequency?: string;
+  fixedPoints?: number;
 }
 
 export interface IOutlay {
