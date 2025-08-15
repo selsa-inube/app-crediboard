@@ -39,7 +39,7 @@ import {
   StyledCardsContainer,
   StyledUserImage,
 } from "./styles";
-import { emptyNoveltiesConfig } from "./config/erroNovelties";
+import { emptyNoveltiesConfig } from "./config/errorNovelties";
 
 const renderLogo = (imgUrl: string) => {
   return (
@@ -166,8 +166,7 @@ function AppPage() {
     };
 
     fetchNoveltiesData();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user?.email, businessUnitPublicCode]);
 
   return (
     <StyledAppPage>

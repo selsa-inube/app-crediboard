@@ -1,7 +1,9 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { CardNoveilties, ICardNoveilties } from "./index";
 import { MdChevronRight } from "react-icons/md";
+
 import userNovelties from "@assets/images/user.Novelties.jpg";
+
+import { CardNoveilties, ICardNoveilties } from "./index";
 
 export default {
   title: "Components/cards/CardNoveilties",

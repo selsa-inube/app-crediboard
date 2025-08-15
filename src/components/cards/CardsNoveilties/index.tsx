@@ -1,5 +1,6 @@
-import { Divider, Icon, Stack, Text } from "@inubekit/inubekit";
-import { StyledContainer, StyledEllipsisText, StyledUserImage } from "./styles";
+import { Box, Divider, Icon, Stack, Text } from "@inubekit/inubekit";
+
+import { StyledEllipsisText, StyledUserImage } from "./styles";
 
 export interface ICardNoveilties {
   userImage?: string;
@@ -27,7 +28,7 @@ export function CardNoveilties(props: ICardNoveilties) {
   } = props;
 
   return (
-    <StyledContainer>
+    <Box padding="6px">
       <Stack gap="8px">
         <Stack>
           <StyledUserImage src={userImage} alt={userImageAlt} />
@@ -78,6 +79,6 @@ export function CardNoveilties(props: ICardNoveilties) {
           onClick={onActionClick}
         />
       </Stack>
-    </StyledContainer>
+    </Box>
   );
 }

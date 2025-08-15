@@ -1,17 +1,6 @@
 import styled from "styled-components";
 import { inube } from "@inubekit/inubekit";
 
-export const StyledContainer = styled.div`
-  background-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
-  border: 1px solid
-    ${({ theme }) => theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  padding: 6px;
-`;
-
 export const StyledEllipsisText = styled.p`
   display: -webkit-box;
   -webkit-line-clamp: 2;
