@@ -12,6 +12,8 @@ import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/ty
 import { getEnumerators } from "@services/enumerators";
 import { getStaff } from "@services/staff/staffs";
 import { decrypt } from "@utils/encrypt/encrypt";
+import { IStaff } from "@services/staff/types";
+
 
 interface IBusinessUnits {
   businessUnitPublicCode: string;
@@ -51,8 +53,7 @@ function useAppContext() {
     console.error("Error parsing businessUnitSigla: ", error);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getUserPermissions = (IStaff: any) => {
+  const getUserPermissions = (IStaff: IStaff) => {
     const isAdmon =
       IStaff.identificationDocumentNumber === "ca.rincon97@gmail.co";
     return {

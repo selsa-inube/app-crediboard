@@ -827,9 +827,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <IncomeModal
                 handleClose={() => setOpenModal(null)}
                 initialValues={
-                  (selectedBorrower &&
-                    incomeData[selectedBorrower.borrowerName]) ||
-                  {}
+                  selectedBorrower && incomeData[selectedBorrower.borrowerName]
                 }
                 onSubmit={handleIncomeSubmit}
               />
@@ -838,9 +836,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <IncomeModal
                 handleClose={() => setOpenModal(null)}
                 initialValues={
-                  (selectedBorrower &&
-                    incomeData[selectedBorrower.borrowerName]) ||
-                  {}
+                  selectedBorrower && incomeData[selectedBorrower.borrowerName]
                 }
                 onSubmit={handleIncomeSubmit}
               />

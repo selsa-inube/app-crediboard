@@ -1,3 +1,4 @@
+import { IProperty } from "@pages/prospect/components/TableObligationsFinancial/types";
 import {
   MaritalStatus,
   EconomicActivity,
@@ -41,11 +42,12 @@ export const getScheduleInSpanish = (schedule: Schedule): string => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getPropertyValue = (properties: any[], propertyName: string) => {
+export const getPropertyValue = (
+  properties: IProperty[],
+  propertyName: string
+) => {
   return (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    properties.find((prop: any) => prop.propertyName === propertyName)
+    properties.find((prop) => prop.propertyName === propertyName)
       ?.propertyValue || ""
   );
 };

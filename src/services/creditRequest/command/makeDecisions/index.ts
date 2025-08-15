@@ -3,6 +3,8 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+
+import { IMakeDecisionsCreditRequestResponse } from "../types";
 import { IMakeDecisionsCreditRequest } from "../types";
 
 export const makeDecisions = async (
@@ -10,8 +12,7 @@ export const makeDecisions = async (
   userAccount: string,
   makeDecisions: IMakeDecisionsCreditRequest,
   xAction: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
+): Promise<IMakeDecisionsCreditRequestResponse | undefined> => {
   if (!xAction) {
     throw new Error(
       "No se ha definido una acción valida para registrar la calificación de la solicitud de crédito"
@@ -46,7 +47,7 @@ export const makeDecisions = async (
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return res;
+        return;
       }
 
       const data = await res.json();

@@ -1,3 +1,11 @@
+export interface IMakeDecisionsCreditRequestResponse {
+  creditRequestId: string;
+  status: string;
+  humanDecision: string;
+  executionDate: string;
+  justification: string;
+  statusServices?: number;
+}
 export interface IDeleteCreditRequest {
   creditRequestId: string;
   removalJustification: string;

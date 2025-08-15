@@ -79,7 +79,7 @@ export function DecisionModal(props: DecisionModalProps) {
         },
         data.xAction
       );
-      if (response.statusServices === 200) {
+      if (response?.statusServices === 200) {
         navigate("/");
         addFlag({
           title: txtFlags.titleSuccess,
@@ -90,7 +90,7 @@ export function DecisionModal(props: DecisionModalProps) {
       } else {
         addFlag({
           title: txtFlags.titleWarning,
-          description: `${txtFlags.descriptionWarning} ${response.statusServices}`,
+          description: `${txtFlags.descriptionWarning} ${response?.statusServices}`,
           appearance: "warning",
           duration: txtFlags.duration,
         });
@@ -106,10 +106,12 @@ export function DecisionModal(props: DecisionModalProps) {
       onCloseModal?.();
     }
   };
+
   const initialValues: FormValues = {
     textarea: "",
     selectedOptions: [],
   };
+
   return (
     <Formik
       initialValues={initialValues}
