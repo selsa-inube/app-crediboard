@@ -24,14 +24,17 @@ import {
 
 import { SectionOrientation } from "@components/layout/BoardSection/types";
 import { BoardSection } from "@components/layout/BoardSection";
-import { ICreditRequestPinned, ICreditRequest } from "@services/types";
+import {
+  ICreditRequestPinned,
+  ICreditRequest,
+} from "@services/creditRequest/query/types";
 import { IOptionItemCheckedProps } from "@components/inputs/SelectCheck/OptionItem";
 import { ErrorAlert } from "@components/ErrorAlert";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { SelectedFilters } from "@components/cards/SelectedFilters";
 import { FilterRequestModal } from "@components/modals/FilterRequestModal";
-import { getCreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage";
-import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage/types";
+import { getCreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage";
+import { ICreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage/types";
 import { AppContext } from "@context/AppContext";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { totalsKeyBySection } from "@components/layout/BoardSection/config";

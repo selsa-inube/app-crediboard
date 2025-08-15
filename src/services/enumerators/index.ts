@@ -4,7 +4,7 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IEnumerator } from "@services/types";
+import { IEnumerator } from "./types";
 import { mapEnumeratorsEntities } from "./mappers";
 
 export const getEnumerators = async (

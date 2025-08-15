@@ -4,10 +4,10 @@ import { MdOutlineChevronLeft } from "react-icons/md";
 import { Stack, Text, Button, useMediaQuery } from "@inubekit/inubekit";
 
 import { get, getById } from "@mocks/utils/dataMock.service";
-import { ICreditRequest, IRiskScoring } from "@services/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { currencyFormat } from "@utils/formatData/currency";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { AppContext } from "@context/AppContext";
 
 import { CreditBehavior } from "./CreditBehaviorCard";
@@ -25,6 +25,7 @@ import {
   StyledGridPrint,
 } from "./styles";
 import { fieldLabels } from "./config";
+import { IRiskScoring } from "./RiskScoring/types";
 
 export const CreditProfileInfo = () => {
   const [requests, setRequests] = useState({} as ICreditRequest);

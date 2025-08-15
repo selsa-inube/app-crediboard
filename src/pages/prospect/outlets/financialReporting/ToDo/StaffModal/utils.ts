@@ -1,5 +1,5 @@
-import { ICreditRequests } from "@services/types";
-import { patchChangeUsersByCreditRequest } from "@services/credit-request/command/patchChangeUsersByCreditRequest";
+import { ICreditRequests } from "@services/creditRequest/command/types";
+import { patchChangeUsersByCreditRequest } from "@services/creditRequest/command/patchChangeUsersByCreditRequest";
 
 export const changeUsersByCreditRequest = async (
   businessUnitPublicCode: string,

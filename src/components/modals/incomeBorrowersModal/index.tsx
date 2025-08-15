@@ -1,5 +1,5 @@
 import { Button, IOption, Select, Stack, Text } from "@inubekit/inubekit";
-import { IProspect } from "@services/prospects/types";
+import { IProspect } from "@services/prospect/types";
 import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
 
 import { BaseModal } from "../baseModal";
