@@ -47,7 +47,7 @@ const usePortalLogic = () => {
       }
 
       try {
-        const portals = await getStaffPortalsByBusinessManager();
+        const portals = await getStaffPortalsByBusinessManager(rawPortalCode);
         const match = portals.find(
           (p) => p.staffPortalId?.trim() === rawPortalCode
         );
