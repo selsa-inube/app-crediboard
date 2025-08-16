@@ -154,21 +154,11 @@ function AppPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitsToTheStaff]);
 
-  const normalizeToTwentyChars = (text: string): string => {
-    if (text.length > 20) {
-      return text.substring(0, 20);
-    }
-    if (text.length < 20) {
-      return text.padEnd(20, " ");
-    }
-    return text;
-  };
-
   useEffect(() => {
     const fetchNoveltiesData = async () => {
       try {
         const data = await getUnreadNoveltiesByUser(
-          normalizeToTwentyChars(user?.email || ""),
+          user?.email?.substring(0, 20) || "",
           businessUnitPublicCode
         );
         setNoveltiesData(data);

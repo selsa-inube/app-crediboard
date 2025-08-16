@@ -29,7 +29,7 @@ const getUnreadNoveltiesByUser = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_SERVICES_URL_QUERY}/credit-requests`,
+        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests`,
         options
       );
 
