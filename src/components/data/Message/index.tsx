@@ -6,6 +6,7 @@ import {
   Timestamp,
   IconWrapper,
 } from "./styles";
+import { Stack } from "@inubekit/inubekit";
 export interface MessageProps {
   type: "sent" | "received" | "system";
   timestamp: number | string;
@@ -33,7 +34,12 @@ export const Message: React.FC<MessageProps> = ({
             {icon}
           </IconWrapper>
         )}
-        {message}
+        <Stack
+          width="250px"
+          justifyContent={type === "system" ? "center" : "flex-start"}
+        >
+          {message}
+        </Stack>
         {type !== "sent" && (
           <IconWrapper type={type} onClick={onIconClick} role="button">
             {icon}
