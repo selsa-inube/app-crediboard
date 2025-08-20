@@ -1,5 +1,5 @@
 import { Button, IOption, Select, Stack, Text } from "@inubekit/inubekit";
-import { IProspect } from "@services/prospects/types";
+import { IProspect } from "@services/prospect/types";
 import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
 
 import { BaseModal } from "../baseModal";
@@ -29,6 +29,12 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
     handleChange,
     setOpenModal,
   } = props;
+
+  const currentBorrower =
+    dataProspect[0]?.borrowers?.find(
+      (borrower) =>
+        borrower.borrowerName === borrowerOptions[selectedIndex]?.value
+    ) || selectedBorrower;
 
   return (
     <BaseModal
@@ -67,15 +73,9 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
               {dataCreditProspect.edit}
             </Button>
           </Stack>
-          <IncomeBorrower
-            initialIncome={
-              dataProspect[0]?.borrowers?.find(
-                (borrower) =>
-                  borrower.borrowerName ===
-                  borrowerOptions[selectedIndex]?.value
-              ) || selectedBorrower
-            }
-          />
+          {currentBorrower && (
+            <IncomeBorrower initialIncome={currentBorrower} />
+          )}
         </>
       ) : (
         <Stack width="400px">

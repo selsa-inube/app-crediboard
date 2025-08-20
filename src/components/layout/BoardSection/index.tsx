@@ -14,15 +14,15 @@ import {
 } from "@inubekit/inubekit";
 
 import { SummaryCard } from "@components/cards/SummaryCard";
-import { ICreditRequestPinned, ICreditRequest } from "@services/types";
+import { ICreditRequestPinned, ICreditRequest } from "@services/creditRequest/query/types";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
-import { patchChangeTracesToReadById } from "@services/credit-request/command/patchChangeTracesToReadById";
+import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { getCanUnpin } from "@utils/configRules/permissions";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 
 import { StyledBoardSection, StyledCollapseIcon } from "./styles";

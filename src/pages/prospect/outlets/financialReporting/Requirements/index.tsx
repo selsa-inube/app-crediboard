@@ -13,13 +13,14 @@ import { TableBoard } from "@components/data/TableBoard";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { TraceDetailsModal } from "@components/modals/TraceDetailsModal";
 import { IAction, IEntries, ITitle } from "@components/data/TableBoard/types";
-import { CreditRequest, IPatchOfRequirements } from "@services/types";
 import {
   AddRequirementMock,
   AddRequirementMockSistemValidations,
 } from "@mocks/addRequirement";
-import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
+import { getAllPackagesOfRequirementsById } from "@services/requirementsPackages/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
+import { IPatchOfRequirements } from "@services/requirementsPackages/types";
+import { CreditRequest } from "@pages/board/outlets/financialReporting/Requirements/types";
 
 import {
   infoItems,
@@ -410,6 +411,7 @@ export const Requirements = (props: IRequirementsProps) => {
                 },
               ]}
               actionMobileIcon={getActionsMobileIcon()}
+              showUserIconOnTablet={false}
               appearanceTable={{
                 widthTd: !isMobile ? "75%" : "70%",
                 efectzebra: true,

@@ -28,24 +28,12 @@ import { dataReport } from "./config";
 export interface ITableFinancialObligationsProps {
   type?: string;
   id?: string;
-  propertyValue?: string;
-  balance?: string;
-  fee?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialValues?: any;
-  refreshKey?: number;
-  showActions?: boolean;
-  showOnlyEdit?: boolean;
-  showButtons?: boolean;
 }
 
 export interface IDataInformationItem {
-  id?: string;
-  type?: string;
-  balance?: number;
-  fee?: number;
   propertyName?: string;
   propertyValue?: string | string[];
+  id?: string;
 }
 
 interface UIProps {
@@ -55,12 +43,10 @@ interface UIProps {
   loading: boolean;
   visibleHeaders: { key: string; label: string; action?: boolean }[];
   isModalOpenEdit: boolean;
-  setIsModalOpenEdit: (value: boolean) => void;
-  showActions?: boolean;
-  showOnlyEdit?: boolean;
-  showButtons?: boolean;
-  handleEdit: (item: ITableFinancialObligationsProps) => void;
   isMobile: boolean;
+  showOnlyEdit?: boolean;
+  handleEdit: (item: ITableFinancialObligationsProps) => void;
+  setIsModalOpenEdit: (value: boolean) => void;
   handleDelete: (id: string) => void;
   handleUpdate: (
     updatedDebtor: ITableFinancialObligationsProps
@@ -75,8 +61,8 @@ export const TableFinancialObligationsUI = ({
   visibleHeaders,
   isMobile,
   isModalOpenEdit,
-  setIsModalOpenEdit,
   showOnlyEdit,
+  setIsModalOpenEdit,
   handleEdit,
   handleDelete,
   handleUpdate,
@@ -156,13 +142,11 @@ export const TableFinancialObligationsUI = ({
   );
 
   const renderDataRows = () =>
-    // eslint-disable-next-line
-    dataInformation.map((prop: any, rowIndex: number) => {
+    dataInformation.map((prop: IDataInformationItem, rowIndex: number) => {
       let values: string[] = [];
 
       if (typeof prop.propertyValue === "string") {
-        // eslint-disable-next-line
-        values = prop.propertyValue.split(",").map((val: any) => val.trim());
+        values = prop.propertyValue.split(",").map((val: string) => val.trim());
       } else if (Array.isArray(prop.propertyValue)) {
         values = prop.propertyValue.map(String);
       } else {
@@ -183,7 +167,7 @@ export const TableFinancialObligationsUI = ({
                 : currencyFormat(Number(cellData), false);
             }
 
-            const isFromInitialValues = Boolean(prop.property_name);
+            const isFromInitialValues = Boolean(prop.propertyName);
             if (isFromInitialValues && colIndex === values.length - 2) {
               cellData = `${values[colIndex]}/${values[colIndex + 1]}`.trim();
             }
@@ -201,7 +185,9 @@ export const TableFinancialObligationsUI = ({
                       icon={<MdOutlineEdit />}
                       appearance="dark"
                       size="16px"
-                      onClick={() => handleEdit(prop)}
+                      onClick={() =>
+                        handleEdit(prop as ITableFinancialObligationsProps)
+                      }
                       cursorHover
                     />
                     {!showOnlyEdit && (

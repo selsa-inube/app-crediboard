@@ -1,4 +1,4 @@
-import { IMakeDecisionsCreditRequest } from "@services/types";
+import { IMakeDecisionsCreditRequest } from "@services/creditRequest/command/types";
 
 interface IMakeDecisionsCreditRequestWithXAction {
   businessUnit: string;

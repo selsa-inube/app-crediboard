@@ -12,6 +12,21 @@ export const StyledAppPage = styled.div`
   box-sizing: border-box;
 `;
 
+export const StyledCardsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 600px;
+  overflow-y: auto;
+  height: 518px;
+  padding-bottom: 36px;
+`;
+
+export const StyledUserImage = styled.img`
+  width: 225px;
+  height: 225px;
+`;
+
 export const StyledContainer = styled.div`
   display: inherit;
   overflow: hidden;
@@ -28,7 +43,8 @@ export const StyledContentImg = styled(Link)`
 `;
 
 export const StyledLogo = styled.img`
-  max-width: 120px;
+  max-width: 90px;
+  transform: translateY(-8px);
 `;
 
 export const StyledHeaderContainer = styled.div`

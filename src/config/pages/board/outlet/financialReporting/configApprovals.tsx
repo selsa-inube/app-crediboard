@@ -5,8 +5,11 @@ import { Icon, Stack, Tag } from "@inubekit/inubekit";
 import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
+import info from "@assets/images/info.svg";
 import { IEntries } from "@components/data/TableBoard/types";
-import { IApprovals } from "@pages/prospect/outlets/financialReporting/Approvals/types";
+import { IApprovals } from "@services/creditRequest/query/types";
+
+import { approvalsConfig } from "./configApprovalTexts";
 
 const handleData = (data: IEntries) => {
   console.log("function that receives data", data);
@@ -14,21 +17,21 @@ const handleData = (data: IEntries) => {
 
 export const titlesApprovals = [
   {
-    id: "usuarios",
-    titleName: "Usuarios",
+    id: approvalsConfig.ids.users,
+    titleName: approvalsConfig.titles.assignedApprovers,
     priority: 1,
   },
   {
-    id: "tag",
-    titleName: "Decisión",
+    id: approvalsConfig.ids.tag,
+    titleName: approvalsConfig.titles.decision,
     priority: 2,
   },
 ];
 
 export const actionsApprovals = [
   {
-    id: "Error",
-    actionName: "Error",
+    id: approvalsConfig.ids.error,
+    actionName: approvalsConfig.actions.error,
     content: (data: IEntries) => {
       const error = Boolean(data.error);
       return (
@@ -44,8 +47,8 @@ export const actionsApprovals = [
     },
   },
   {
-    id: "notificaciones",
-    actionName: "Notificar",
+    id: approvalsConfig.ids.notifications,
+    actionName: approvalsConfig.actions.notify,
     content: (data: IEntries) => (
       <Icon
         icon={<MdNotificationsNone />}
@@ -54,7 +57,8 @@ export const actionsApprovals = [
         cursorHover
         size="22px"
         disabled={
-          isValidElement(data?.tag) && data?.tag?.props?.label !== "Pendiente"
+          isValidElement(data?.tag) &&
+          data?.tag?.props?.label !== approvalsConfig.status.pending
         }
       />
     ),
@@ -63,7 +67,7 @@ export const actionsApprovals = [
 
 export const actionMobileApprovals = [
   {
-    id: "Error",
+    id: approvalsConfig.ids.error,
     actionName: "",
     content: (data: IEntries) => (
       <Icon
@@ -74,13 +78,14 @@ export const actionMobileApprovals = [
         size="20px"
         onClick={() => handleData(data)}
         disabled={
-          isValidElement(data?.tag) && data?.tag?.props?.label !== "Pendiente"
+          isValidElement(data?.tag) &&
+          data?.tag?.props?.label !== approvalsConfig.status.pending
         }
       />
     ),
   },
   {
-    id: "notificaciones",
+    id: approvalsConfig.ids.notifications,
     actionName: "",
     content: (data: IEntries) => (
       <Icon
@@ -91,7 +96,8 @@ export const actionMobileApprovals = [
         size="20px"
         onClick={() => handleData(data)}
         disabled={
-          isValidElement(data?.tag) && data?.tag?.props?.label !== "Pendiente"
+          isValidElement(data?.tag) &&
+          data?.tag?.props?.label !== approvalsConfig.status.pending
         }
       />
     ),
@@ -104,7 +110,10 @@ export const handleNotificationClick = (
   setShowModal: (showModal: boolean) => void
 ) => {
   const tag = data?.tag;
-  if (isValidElement(tag) && tag.props?.label === "Pendiente") {
+  if (
+    isValidElement(tag) &&
+    tag.props?.label === approvalsConfig.status.pending
+  ) {
     setSelectedData(data);
     setShowModal(true);
   }
@@ -116,7 +125,10 @@ export const handleErrorClick = (
   setShowModal: (showModal: boolean) => void
 ) => {
   const tag = data?.tag;
-  if (isValidElement(tag) && tag.props?.label === "Pendiente") {
+  if (
+    isValidElement(tag) &&
+    tag.props?.label === approvalsConfig.status.pending
+  ) {
     setSelectedData(data);
     setShowModal(true);
   }
@@ -138,9 +150,9 @@ export const desktopActions = (
     actionName: action.actionName,
     content: (data: IEntries) => {
       const handleClick = () => {
-        if (action.id === "notificaciones") {
+        if (action.id === approvalsConfig.ids.notifications) {
           handleNotificationClick(data);
-        } else if (action.id === "Error") {
+        } else if (action.id === approvalsConfig.ids.error) {
           handleErrorClick(data);
         }
       };
@@ -158,9 +170,9 @@ export const getMobileActionsConfig = (
     id: action.id,
     content: (data: IEntries) => {
       const handleClick = () => {
-        if (action.id === "notificaciones") {
+        if (action.id === approvalsConfig.ids.notifications) {
           handleNotificationClickBound(data);
-        } else if (action.id === "Error") {
+        } else if (action.id === approvalsConfig.ids.error) {
           handleErrorClickBound(data);
         }
       };
@@ -170,16 +182,19 @@ export const getMobileActionsConfig = (
 };
 
 const appearanceTag = (label: string) => {
-  if (label === "Aprobado") {
+  if (label === approvalsConfig.status.approved) {
     return "success";
   }
-  if (label === "Pendiente") {
+  if (label === approvalsConfig.status.pending) {
     return "warning";
   }
-  if (label === "GESTION_COMERCIAL") {
+  if (label === approvalsConfig.status.returned) {
     return "help";
   }
-  if (label === "ANALISIS_RIESGO") {
+  if (label === approvalsConfig.status.commercialManagement) {
+    return "help";
+  }
+  if (label === approvalsConfig.status.riskAnalysis) {
     return "dark";
   }
   return "danger";
@@ -188,12 +203,42 @@ const appearanceTag = (label: string) => {
 const getIconByTagStatus = (tagElement: React.ReactElement) => {
   const label = tagElement.props.label;
 
-  if (label === "Aprobado") {
-    return <img src={check} alt="Cumple" width={14} height={14} />;
-  } else if (label === "Pendiente") {
-    return <img src={remove} alt="Sin Evaluar" width={14} height={14} />;
-  } else if (label === "Rechazado") {
-    return <img src={close} alt="No Cumple" width={14} height={14} />;
+  if (label === approvalsConfig.status.approved) {
+    return (
+      <img
+        src={check}
+        alt={approvalsConfig.altTexts.complies}
+        width={14}
+        height={14}
+      />
+    );
+  } else if (label === approvalsConfig.status.pending) {
+    return (
+      <img
+        src={remove}
+        alt={approvalsConfig.altTexts.notEvaluated}
+        width={14}
+        height={14}
+      />
+    );
+  } else if (label === approvalsConfig.status.rejected) {
+    return (
+      <img
+        src={close}
+        alt={approvalsConfig.altTexts.doesNotComply}
+        width={14}
+        height={14}
+      />
+    );
+  } else if (label === approvalsConfig.status.returned) {
+    return (
+      <img
+        src={info}
+        alt={approvalsConfig.altTexts.returned}
+        width={14}
+        height={14}
+      />
+    );
   } else {
     return null;
   }
@@ -202,7 +247,7 @@ const getIconByTagStatus = (tagElement: React.ReactElement) => {
 export const getActionsMobileIcon = () => {
   return [
     {
-      id: "estado",
+      id: approvalsConfig.ids.status,
       actionName: "",
       content: (entry: IEntries) => {
         const tagElement = entry.tag as React.ReactElement;
@@ -224,7 +269,7 @@ export const getActionsMobileIcon = () => {
 export const entriesApprovals = (data: IApprovals[]) => {
   return data.map((entry) => ({
     id: entry?.approverName?.toString(),
-    usuarios: entry?.approverName,
+    [approvalsConfig.ids.users]: entry?.approverName,
     concept: entry?.concept,
     identificationNumber: entry?.approverIdentificationNumber,
     identificationType: entry?.approverIdentificationType,

@@ -7,14 +7,14 @@ import { TableBoard } from "@components/data/TableBoard";
 import { IEntries } from "@components/data/TableBoard/types";
 import { PromissoryNotesModal } from "@components/modals/PromissoryNotesModal";
 import { UnfoundData } from "@components/layout/UnfoundData";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getPayrollDiscountAuthorizationsById } from "@services/credit-request/query/payroll_discount_authorizations";
-import { getPromissoryNotesById } from "@services/credit-request/query/promissory_notes";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { getPayrollDiscountAuthorizationsById } from "@services/creditRequest/query/payroll_discount_authorizations";
+import { getPromissoryNotesById } from "@services/creditRequest/query/promissory_notes";
 import {
+  ICreditRequest,
   IPayrollDiscountAuthorization,
   IPromissoryNotes,
-  ICreditRequest,
-} from "@services/types";
+} from "@services/creditRequest/query/types";
 import { AppContext } from "@context/AppContext";
 
 import {
@@ -185,6 +185,9 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
             }}
             isFirstTable
             infoItems={infoItems}
+            hideSecondColumnOnTablet={false}
+            hideSecondColumnOnMobile={false}
+            showUserIconOnTablet={false}
           />
 
           {showModal && (
