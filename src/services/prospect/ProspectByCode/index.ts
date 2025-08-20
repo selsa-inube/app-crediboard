@@ -3,7 +3,9 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+
 import { IProspect } from "../types";
+import { mapperProspectResponseToIProspect } from "../mapper";
 
 const getSearchProspectByCode = async (
   businessUnitPublicCode: string,
@@ -50,12 +52,12 @@ const getSearchProspectByCode = async (
           data,
         };
       }
-
+      
       if (Array.isArray(data)) {
         return data[0] as IProspect;
       }
-
-      return data;
+      
+      return mapperProspectResponseToIProspect(data);
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {

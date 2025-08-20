@@ -174,7 +174,7 @@ export const TableExtraordinaryInstallment = (
           installmentDate:
             typeof installment.installmentDate === "string"
               ? installment.installmentDate
-              : new Date(installment.installmentDate).toISOString(),
+              : new Date(installment.installmentDate || "").toISOString(),
           installmentAmount: Number(installment.installmentAmount),
           paymentChannelAbbreviatedName: String(
             installment.paymentChannelAbbreviatedName

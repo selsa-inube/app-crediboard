@@ -1,9 +1,9 @@
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { IExtraordinaryInstallment } from "@services/prospect/types";
 
 const mapExtraordinaryInstallmentsEntity = (
-  data: IExtraordinaryInstallments
-): IExtraordinaryInstallments => {
-  const creditRequest: IExtraordinaryInstallments = {
+  data: IExtraordinaryInstallment
+): IExtraordinaryInstallment => {
+  const creditRequest: IExtraordinaryInstallment = {
     creditProductCode: String(data.creditProductCode || ""),
     extraordinaryInstallments: Object(data.extraordinaryInstallments || ""),
     prospectId: String(data.prospectId || ""),
