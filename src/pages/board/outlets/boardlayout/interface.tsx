@@ -2,15 +2,10 @@ import { useContext, useEffect, useRef, useState } from "react";
 import {
   MdOutlineFilterAlt,
   MdOutlineFilterAltOff,
-  MdOutlineMicNone,
   MdOutlinePushPin,
   MdSearch,
-  MdMic,
 } from "react-icons/md";
 import { RxDragHandleVertical, RxDragHandleHorizontal } from "react-icons/rx";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
 import {
   Stack,
   Icon,
@@ -38,13 +33,7 @@ import { ICreditRequestTotalsByStage } from "@services/creditRequest/query/getCr
 import { AppContext } from "@context/AppContext";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { totalsKeyBySection } from "@components/layout/BoardSection/config";
-import { BaseModal } from "@components/modals/baseModal";
 
-import {
-  speechRecognitionConfig,
-  textProcessingConfig,
-  voiceSearchConfig,
-} from "./config/voiceSearch";
 import {
   StyledInputsContainer,
   StyledBoardContainer,
@@ -52,11 +41,10 @@ import {
   StyledError,
   StyledSearch,
   StyledRequestsContainer,
-  StyledMic,
 } from "./styles";
 import { selectCheckOptions } from "./config/select";
 import { IFilterFormValues } from ".";
-import { boardColumns, seePinned } from "./config/board";
+import { boardColumns, boardLayoutData, seePinned } from "./config/board";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -116,33 +104,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     shouldCollapseAll,
   } = props;
 
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
-
   const [showErrorAlert, setShowErrorAlert] = useState(true);
 
-  const capitalizeWords = (text: string) => {
-    return text
-      .split(" ")
-      .map((word) => {
-        if (word.length === 0) return word;
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      })
-      .join(" ");
-  };
-
-  const displayText = listening
-    ? capitalizeWords(
-        (transcript || voiceSearchConfig.states.listening).replace(/\.+$/, "")
-      )
-    : voiceSearchConfig.states.instruction;
-
-  const [isShowModal, setIsShowModal] = useState(false);
-  const [isVoiceProcessed, setIsVoiceProcessed] = useState(false);
   const { businessUnitSigla } = useContext(AppContext);
 
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
@@ -152,119 +115,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const stackRef = useRef<HTMLDivElement>(null);
-  const startListening = () => {
-    resetTranscript();
-    setIsVoiceProcessed(false);
-    SpeechRecognition.startListening({
-      continuous: false,
-      language: speechRecognitionConfig.language,
-    });
-  };
-
-  const stopListening = () => {
-    SpeechRecognition.stopListening();
-  };
-
-  const handleMicClick = () => {
-    if (listening) {
-      stopListening();
-    } else {
-      startListening();
-    }
-  };
-
-  const processTranscript = (text: string) => {
-    let processedText = text.replace(
-      textProcessingConfig.numberSpaceRegex,
-      "$1$2"
-    );
-
-    processedText = processedText
-      .trim()
-      .replace(/[.,;:!?¿¡]+$/g, "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .replace(/\.$/g, "");
-    if (processedText.endsWith(".")) {
-      processedText = processedText.slice(0, -1).trim();
-    }
-    processedText = capitalizeWords(processedText);
-
-    return processedText;
-  };
-
-  const applyVoiceSearch = (transcriptText: string) => {
-    if (transcriptText && transcriptText.trim() !== "" && !isVoiceProcessed) {
-      const processedText = processTranscript(transcriptText);
-      const syntheticEvent = {
-        target: {
-          value: processedText,
-        },
-      } as React.ChangeEvent<HTMLInputElement>;
-
-      handleSearchRequestsValue(syntheticEvent);
-      setIsVoiceProcessed(true);
-      setIsShowModal(false);
-      resetTranscript();
-    }
-  };
-
-  const handleCloseModal = () => {
-    stopListening();
-    resetTranscript();
-    setIsShowModal(false);
-    setIsVoiceProcessed(false);
-  };
-
-  useEffect(() => {
-    if (isShowModal && browserSupportsSpeechRecognition) {
-      startListening();
-
-      const recognition = SpeechRecognition.getRecognition();
-      if (recognition) {
-        recognition.onend = () => {
-          if (transcript && transcript.trim() !== "" && !isVoiceProcessed) {
-            applyVoiceSearch(transcript);
-          }
-        };
-
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-          console.error("Speech recognition error:", event.error);
-          if (event.error === "no-speech") {
-            setTimeout(() => {
-              if (isShowModal && !isVoiceProcessed) {
-                startListening();
-              }
-            }, 1000);
-          }
-        };
-      }
-
-      return () => {
-        if (recognition) {
-          recognition.onend = null;
-          recognition.onerror = null;
-        }
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isShowModal, browserSupportsSpeechRecognition]);
-
-  useEffect(() => {
-    if (
-      transcript &&
-      transcript.trim() !== "" &&
-      isShowModal &&
-      !isVoiceProcessed
-    ) {
-      const timeoutId = setTimeout(() => {
-        applyVoiceSearch(transcript);
-      }, 1500);
-
-      return () => clearTimeout(timeoutId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transcript, isShowModal, isVoiceProcessed]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -361,14 +211,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      if (listening) {
-        SpeechRecognition.stopListening();
-      }
-    };
-  }, [listening]);
-
   return (
     <StyledContainerToCenter>
       <Stack
@@ -378,7 +220,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         {errorLoadingPins && showErrorAlert && (
           <StyledError $isMobile={isMobile}>
             <ErrorAlert
-              message={voiceSearchConfig.errors.loadingPins}
+              message={boardLayoutData.errorLoadingPins}
               onClose={() => setShowErrorAlert(false)}
             />
           </StyledError>
@@ -473,15 +315,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   onChange={handleSearchRequestsValue}
                   fullwidth
                 />
-                <Icon
-                  icon={<MdOutlineMicNone />}
-                  size="26px"
-                  appearance="primary"
-                  cursorHover
-                  onClick={() => {
-                    setIsShowModal(true);
-                  }}
-                />
               </Stack>
             )}
             {!isMobile && (
@@ -499,7 +332,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   disabled={!activeOptions.length}
                   onClick={handleClearFilters}
                 >
-                  {voiceSearchConfig.buttons.remove}
+                  {boardLayoutData.remove}
                 </Button>
                 <Button
                   appearance="primary"
@@ -509,7 +342,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   variant="outlined"
                   onClick={openFilterModal}
                 >
-                  {voiceSearchConfig.buttons.filter}
+                  {boardLayoutData.filter}
                 </Button>
               </StyledRequestsContainer>
             )}
@@ -595,50 +428,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             );
           })}
         </StyledBoardContainer>
-
-        {isShowModal &&
-          (browserSupportsSpeechRecognition ? (
-            <BaseModal
-              title={voiceSearchConfig.modal.title}
-              width={voiceSearchConfig.modal.width}
-              handleClose={handleCloseModal}
-            >
-              <Stack direction="column" gap="24px">
-                <Text type="title" size="large">
-                  {displayText}
-                </Text>
-                {!listening && transcript && (
-                  <Stack justifyContent="center">
-                    <Text type="body" size="large">
-                      {capitalizeWords(transcript.replace(/\.+$/, ""))}
-                    </Text>
-                  </Stack>
-                )}
-                <Stack justifyContent="center">
-                  <StyledMic>
-                    <Icon
-                      icon={listening ? <MdMic /> : <MdOutlineMicNone />}
-                      size="58px"
-                      appearance="primary"
-                      shape="circle"
-                      variant="filled"
-                      spacing="compact"
-                      cursorHover
-                      onClick={handleMicClick}
-                    />
-                  </StyledMic>
-                </Stack>
-              </Stack>
-            </BaseModal>
-          ) : (
-            <BaseModal
-              title={voiceSearchConfig.errors.notSupported.title}
-              width={voiceSearchConfig.modal.width}
-              handleClose={handleCloseModal}
-            >
-              <Text>{voiceSearchConfig.errors.notSupported.message}</Text>
-            </BaseModal>
-          ))}
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
     </StyledContainerToCenter>

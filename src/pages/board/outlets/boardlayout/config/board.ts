@@ -73,4 +73,10 @@ const dataInformationModal = {
     "No cuenta con los privilegios requeridos para quitar el ancla de esta tarjeta.",
 };
 
+export const boardLayoutData = {
+  errorLoadingPins: "Error: No se pudo cargar el estado de los anclados.",
+  remove: "Quitar",
+  filter: "Filtrar",
+};
+
 export { boardColumns, seePinned, dataInformationModal, selectConfig };
