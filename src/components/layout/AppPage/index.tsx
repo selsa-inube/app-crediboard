@@ -1,16 +1,29 @@
 import { useContext, useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { MdLogout, MdOutlineChevronRight } from "react-icons/md";
-import { Icon, Grid, useFlag, useMediaQuery, Header } from "@inubekit/inubekit";
+import {
+  Icon,
+  Grid,
+  useFlag,
+  useMediaQuery,
+  Header,
+  Text,
+  Stack,
+} from "@inubekit/inubekit";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import { AppContext } from "@context/AppContext";
 import { MenuSection } from "@components/navigation/MenuSection";
 import { MenuUser } from "@components/navigation/MenuUser";
-import { LogoutModal } from "@components/feedback/LogoutModal";
 import { BusinessUnitChange } from "@components/inputs/BusinessUnitChange";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
-import { userMenu } from "@config/menuMainConfiguration";
+import { getUserMenu } from "@config/menuMainConfiguration";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
+import { BaseModal } from "@components/modals/baseModal";
+import { CardNoveilties } from "@components/cards/CardsNoveilties";
+import { getUnreadNoveltiesByUser } from "@services/credit-request/query/getUnreadNoveltiesByUser";
+import { IUnreadNoveltiesByUser } from "@services/credit-request/query/getUnreadNoveltiesByUser/types";
+import { formatPrimaryDate } from "@utils/formatData/date";
 
 import {
   StyledAppPage,
@@ -24,7 +37,10 @@ import {
   StyledCollapse,
   StyledFooter,
   StyledPrint,
+  StyledCardsContainer,
+  StyledUserImage,
 } from "./styles";
+import { emptyNoveltiesConfig } from "./config/errorNovelties";
 
 const renderLogo = (imgUrl: string) => {
   return (
@@ -43,8 +59,18 @@ function AppPage() {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const collapseMenuRef = useRef<HTMLDivElement>(null);
   const businessUnitChangeRef = useRef<HTMLDivElement>(null);
-
+  const [noveltiesData, setNoveltiesData] = useState<IUnreadNoveltiesByUser[]>(
+    []
+  );
+  const { user } = useAuth0();
   const navigate = useNavigate();
+  const { businessUnitSigla } = useContext(AppContext);
+  const businessUnitPublicCode: string =
+    JSON.parse(businessUnitSigla).businessUnitPublicCode;
+
+  const getNotificationsCount = (): number => {
+    return noveltiesData && noveltiesData.length > 0 ? noveltiesData.length : 0;
+  };
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -67,9 +93,21 @@ function AppPage() {
   };
 
   const isTablet: boolean = useMediaQuery("(max-width: 1024px)");
+  const isMobile: boolean = useMediaQuery("(max-width: 555px)");
   const [selectedClient, setSelectedClient] = useState<string>(
     eventData.businessUnit.abbreviatedName
   );
+
+  const handleToggleLogoutModal = () => {
+    setShowLogoutModal(!showLogoutModal);
+    setShowUserMenu(false);
+  };
+
+  const userMenuConfig = getUserMenu(
+    handleToggleLogoutModal,
+    getNotificationsCount()
+  );
+
   useEffect(() => {
     const selectUser = document.querySelector("header div div:nth-child(0)");
     const handleToggleuserMenu = () => {
@@ -84,17 +122,17 @@ function AppPage() {
     };
   }, [showUserMenu]);
 
-  const handleToggleLogoutModal = () => {
-    setShowLogoutModal(!showLogoutModal);
-    setShowUserMenu(false);
-  };
-
   const handleLogoClick = (businessUnit: IBusinessUnitsPortalStaff) => {
     const selectJSON = JSON.stringify(businessUnit);
     setBusinessUnitSigla(selectJSON);
     setSelectedClient(businessUnit.abbreviatedName);
     setCollapse(false);
     navigate("/");
+  };
+
+  const handleNoveltyActionClick = (referenceCode: string) => {
+    navigate(`/extended-card/${referenceCode}`);
+    setShowLogoutModal(false);
   };
 
   const { addFlag } = useFlag();
@@ -116,6 +154,22 @@ function AppPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitsToTheStaff]);
 
+  useEffect(() => {
+    const fetchNoveltiesData = async () => {
+      try {
+        const data = await getUnreadNoveltiesByUser(
+          user?.email?.substring(0, 20) || "",
+          businessUnitPublicCode
+        );
+        setNoveltiesData(data);
+      } catch (error) {
+        console.error("Error fetching novelties:", error);
+      }
+    };
+
+    fetchNoveltiesData();
+  }, [user?.email, businessUnitPublicCode]);
+
   return (
     <StyledAppPage>
       <Grid templateRows="auto 1fr" height="100vh" justifyContent="unset">
@@ -128,7 +182,8 @@ function AppPage() {
                 breakpoint: "848px",
                 client: eventData.businessUnit.abbreviatedName,
               }}
-              menu={userMenu}
+              menu={userMenuConfig}
+              unreadNotificationsAmount={getNotificationsCount()}
             />
           </StyledHeaderContainer>
           <StyledCollapseIcon
@@ -177,13 +232,72 @@ function AppPage() {
               />
             </StyledMenuContainer>
           )}
-
           {showLogoutModal && (
-            <LogoutModal
-              logoutPath="/logout"
-              handleShowBlanket={handleToggleLogoutModal}
-            />
+            <BaseModal
+              title={"Novedades"}
+              width={isMobile ? "auto" : "500px"}
+              height="700px"
+              initialDivider
+              nextButton="Cerrar"
+              handleClose={() => setShowLogoutModal(false)}
+              handleNext={() => setShowLogoutModal(false)}
+            >
+              <StyledCardsContainer>
+                {noveltiesData && noveltiesData.length > 0 ? (
+                  noveltiesData.map((novelty) => (
+                    <CardNoveilties
+                      key={novelty.creditRequestCode}
+                      userImage={""}
+                      userName={novelty.clientName}
+                      dateTime={formatPrimaryDate(
+                        new Date(novelty.executionDate),
+                        true
+                      )}
+                      referenceCode={novelty.creditRequestCode}
+                      description={emptyNoveltiesConfig.novelties.description}
+                      actionText={emptyNoveltiesConfig.novelties.actionText}
+                      onActionClick={() =>
+                        handleNoveltyActionClick(novelty.creditRequestCode)
+                      }
+                      actionIcon={emptyNoveltiesConfig.novelties.actionIcon}
+                    />
+                  ))
+                ) : (
+                  <Stack
+                    direction="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    height="518px"
+                    width={isMobile ? "300px" : "500px"}
+                  >
+                    <StyledUserImage
+                      src={emptyNoveltiesConfig.image.src}
+                      alt={emptyNoveltiesConfig.image.alt}
+                    />
+                    <Stack gap="4px" direction="column">
+                      <Text
+                        type="body"
+                        size="large"
+                        appearance="gray"
+                        textAlign="center"
+                      >
+                        {emptyNoveltiesConfig.messages.primary}
+                      </Text>
+                      <Text
+                        type="body"
+                        size="large"
+                        appearance="dark"
+                        textAlign="center"
+                      >
+                        {emptyNoveltiesConfig.messages.secondary}
+                      </Text>
+                    </Stack>
+                  </Stack>
+                )}
+              </StyledCardsContainer>
+            </BaseModal>
           )}
+
           <StyledMain>
             <Outlet />
           </StyledMain>
