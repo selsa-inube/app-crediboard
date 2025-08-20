@@ -299,14 +299,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         direction="column"
         width={isMobile ? "-webkit-fill-available" : "min(100%,1500px)"}
       >
-        {/* {errorLoadingPins && showErrorAlert && (
-          <StyledError $isMobile={isMobile}>
-            <ErrorAlert
-              message={voiceSearchConfig.errors.loadingPins}
-              onClose={() => setShowErrorAlert(false)}
-            />
-          </StyledError>
-        )} */}
         <StyledInputsContainer $isMobile={isMobile}>
           <Stack
             justifyContent="space-between"

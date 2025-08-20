@@ -14,8 +14,8 @@ import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
-
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
+
 import { MappedRequirements } from "./types";
 
 export const dataButton = (
