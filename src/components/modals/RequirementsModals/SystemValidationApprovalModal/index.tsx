@@ -6,7 +6,7 @@ import { Stack, Text, Textarea, Toggle, useFlag } from "@inubekit/inubekit";
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
-import { IRequirement } from "@services/types";
+import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { dataFlags } from "@config/components/flags/flag.config";
 
@@ -20,7 +20,7 @@ interface ISystemValidationApprovalModalProps {
   businessUnitPublicCode: string;
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
-  rawRequirements: IRequirement[];
+  rawRequirements: IPackagesOfRequirementsById[];
   onConfirm?: (values: IApprovalSystem) => void;
   onCloseModal?: () => void;
 }

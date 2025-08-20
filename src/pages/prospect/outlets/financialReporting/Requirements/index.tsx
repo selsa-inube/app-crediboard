@@ -13,13 +13,17 @@ import { TableBoard } from "@components/data/TableBoard";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { TraceDetailsModal } from "@components/modals/TraceDetailsModal";
 import { IAction, IEntries, ITitle } from "@components/data/TableBoard/types";
-import { CreditRequest, IPatchOfRequirements } from "@services/types";
 import {
   AddRequirementMock,
   AddRequirementMockSistemValidations,
 } from "@mocks/addRequirement";
-import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
+import { getAllPackagesOfRequirementsById } from "@services/requirementsPackages/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
+import {
+  IPackagesOfRequirementsById,
+  IPatchOfRequirements,
+} from "@services/requirementsPackages/types";
+import { CreditRequest } from "@pages/board/outlets/financialReporting/Requirements/types";
 
 import {
   infoItems,
@@ -31,12 +35,7 @@ import {
   getActionsMobileIcon,
   questionToBeAskedInModalText,
 } from "./config";
-import {
-  DocumentItem,
-  IRequirement,
-  MappedRequirements,
-  RequirementType,
-} from "./types";
+import { DocumentItem, MappedRequirements, RequirementType } from "./types";
 import { errorMessages } from "../config";
 
 interface IRequirementsData {
@@ -110,7 +109,9 @@ export const Requirements = (props: IRequirementsProps) => {
 
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(false);
-  const [rawRequirements, setRawRequirements] = useState<IRequirement[]>([]);
+  const [rawRequirements, setRawRequirements] = useState<
+    IPackagesOfRequirementsById[]
+  >([]);
   const [justificationRequirement, setJustificationRequirement] = useState(
     dataAddRequirement.descriptionJustification
   );
@@ -132,6 +133,8 @@ export const Requirements = (props: IRequirementsProps) => {
           creditRequestCode
         );
         setRawRequirements(data);
+
+        console.log(data, "data requirements");
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error("No hay requisitos disponibles.");
         }
@@ -145,7 +148,7 @@ export const Requirements = (props: IRequirementsProps) => {
 
         data.forEach((item) => {
           item.requirementsByPackage.forEach((req) => {
-            const type = req.requirementTypeToEvaluate;
+            const type = req.typeOfRequirementToEvaluate;
             const key = req.descriptionUse;
             const value = req.requirementStatus;
 
@@ -289,7 +292,7 @@ export const Requirements = (props: IRequirementsProps) => {
     requirementCatalogName: string;
     descriptionUse: string;
     requirementTypeToEvaluate: string;
-    rawRequirements: IRequirement[];
+    rawRequirements: IPackagesOfRequirementsById[];
     creditRequestCode: string;
   }): IPatchOfRequirements => ({
     packageId: rawRequirements[0]?.packageId,
@@ -348,7 +351,7 @@ export const Requirements = (props: IRequirementsProps) => {
         } as const;
 
         const prefix =
-          prefixMap[req.requirementTypeToEvaluate as keyof typeof prefixMap];
+          prefixMap[req.typeOfRequirementToEvaluate as keyof typeof prefixMap];
 
         if (prefix) {
           typeCounters[prefix] += 1;

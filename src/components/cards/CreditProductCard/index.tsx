@@ -1,4 +1,4 @@
-import { Schedule } from "@services/enums";
+import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 
 import { CreditProductCardUI } from "./interface";
 

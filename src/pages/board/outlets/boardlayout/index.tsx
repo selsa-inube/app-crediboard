@@ -3,16 +3,16 @@ import { MdInfoOutline } from "react-icons/md";
 import { Stack, Icon, Text, useMediaQuery, useFlag } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { ICreditRequest } from "@services/types";
-import { getCreditRequestPinned } from "@services/credit-request/query/isPinned";
-import { getCreditRequestInProgress } from "@services/credit-request/query/getCreditRequestInProgress";
-import { patchChangeAnchorToCreditRequest } from "@services/credit-request/command/anchorCreditRequest";
+import { ICreditRequest } from "@services/creditRequest/query/types";
+import { getCreditRequestPinned } from "@services/creditRequest/query/isPinned";
+import { getCreditRequestInProgress } from "@services/creditRequest/query/getCreditRequestInProgress";
+import { patchChangeAnchorToCreditRequest } from "@services/creditRequest/command/anchorCreditRequest";
 import { AppContext } from "@context/AppContext";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 
 import { dataInformationModal } from "./config/board";
 import { BoardLayoutUI } from "./interface";

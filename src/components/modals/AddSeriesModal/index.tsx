@@ -25,8 +25,8 @@ import { AppContext } from "@context/AppContext";
 import {
   IExtraordinaryInstallment,
   IExtraordinaryInstallments,
-} from "@services/prospect/types/extraordInaryInstallments";
-import { IProspect } from "@services/prospects/types";
+} from "@services/prospect/types";
+import { IProspect } from "@services/prospect/types";
 
 import { dataAddSeriesModal } from "./config";
 import { TextLabels } from "../ExtraordinaryPaymentModal/config";

@@ -3,7 +3,7 @@ import { Stack, Text, SkeletonLine } from "@inubekit/inubekit";
 
 import { CardInfoContainer } from "@components/cards/CardInfoContainer";
 import { StyledDivider } from "@components/cards/SummaryCard/styles";
-import { IRiskScoringRangeRequered } from "@services/types";
+import { IRiskScoringRangeRequered } from "./types";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
 

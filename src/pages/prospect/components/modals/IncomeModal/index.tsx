@@ -2,27 +2,27 @@ import { useState } from "react";
 import { useFlag, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
+import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { SourceIncome } from "@pages/prospect/components/SourceIncome";
 
 import { dataIncomeModal } from "./config";
 
 interface IncomeModalProps {
-  handleClose: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onSubmit: (data: any) => void;
-  openModal?: (state: boolean) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialValues?: any;
+  initialValues?: IIncomeSources;
   disabled?: boolean;
+  handleClose: () => void;
+  onSubmit: (data: IIncomeSources) => void;
+  openModal?: (state: boolean) => void;
 }
 
 export function IncomeModal(props: IncomeModalProps) {
-  const { handleClose, openModal, disabled, initialValues, onSubmit } = props;
+  const { disabled, initialValues, handleClose, openModal, onSubmit } = props;
 
-  const [formData, setFormData] = useState(initialValues);
+  const [formData, setFormData] = useState<IIncomeSources | undefined>(
+    initialValues
+  );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleDataChange = (newData: any) => {
+  const handleDataChange = (newData: IIncomeSources) => {
     setFormData(newData);
   };
 
@@ -31,6 +31,7 @@ export function IncomeModal(props: IncomeModalProps) {
   const { addFlag } = useFlag();
 
   const handleSubmit = () => {
+    if (!formData) return;
     onSubmit(formData);
     handleClose();
     addFlag({
