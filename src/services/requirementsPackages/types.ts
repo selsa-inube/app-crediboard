@@ -5,7 +5,7 @@ interface IlistsOfRequirements {
   requirementStatus: string;
   descriptionEvaluationRequirement: string;
   descriptionUse: string;
-  requirementTypeToEvaluate: string;
+  typeOfRequirementToEvaluate: string;
   transactionOperation: string;
 }
 

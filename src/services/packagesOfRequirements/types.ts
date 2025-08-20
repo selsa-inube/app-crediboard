@@ -6,7 +6,7 @@ interface IlistsOfRequirementsByPackage {
   requirementDate: string;
   requirementByPackageId: string;
   requirementStatus: string;
-  requirementTypeToEvaluate: string;
+  typeOfRequirementToEvaluate: string;
 }
 
 export interface ITracesInRequirementsManagement {

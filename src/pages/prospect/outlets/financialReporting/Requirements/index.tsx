@@ -285,13 +285,13 @@ export const Requirements = (props: IRequirementsProps) => {
   const createInitialRequirementValues = ({
     requirementCatalogName,
     descriptionUse,
-    requirementTypeToEvaluate,
+    typeOfRequirementToEvaluate,
     rawRequirements,
     creditRequestCode,
   }: {
     requirementCatalogName: string;
     descriptionUse: string;
-    requirementTypeToEvaluate: string;
+    typeOfRequirementToEvaluate: string;
     rawRequirements: IPackagesOfRequirementsById[];
     creditRequestCode: string;
   }): IPatchOfRequirements => ({
@@ -308,7 +308,7 @@ export const Requirements = (props: IRequirementsProps) => {
         requirementStatus: "UNVALIDATED",
         descriptionEvaluationRequirement: "Requisitos no evaluados",
         descriptionUse,
-        requirementTypeToEvaluate,
+        typeOfRequirementToEvaluate,
         transactionOperation: "Insert",
       },
     ],
@@ -317,7 +317,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const initialValues = createInitialRequirementValues({
     requirementCatalogName: requirementName,
     descriptionUse: descriptionUseValue,
-    requirementTypeToEvaluate: typeOfRequirementToEvaluated,
+    typeOfRequirementToEvaluate: typeOfRequirementToEvaluated,
     rawRequirements,
     creditRequestCode,
   });
@@ -325,7 +325,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const initialValuesSystemValidation = createInitialRequirementValues({
     requirementCatalogName: justificationRequirement,
     descriptionUse: descriptionUseValues,
-    requirementTypeToEvaluate: "SYSTEM_VALIDATION",
+    typeOfRequirementToEvaluate: "SYSTEM_VALIDATION",
     rawRequirements,
     creditRequestCode,
   });

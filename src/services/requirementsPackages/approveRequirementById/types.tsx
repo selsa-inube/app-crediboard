@@ -22,7 +22,7 @@ interface IRequirementsByPackage {
   requirementStatus: string;
   descriptionEvaluationRequirement: string;
   descriptionUse: string;
-  requirementTypeToEvaluate: string;
+  typeOfRequirementToEvaluate: string;
   statusChangeJustification: string;
   transactionOperation: string;
 }
