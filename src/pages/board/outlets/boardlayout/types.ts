@@ -1,4 +1,7 @@
-import { ICreditRequest, ICreditRequestPinned } from "@services/types";
+import {
+  ICreditRequest,
+  ICreditRequestPinned,
+} from "@services/creditRequest/query/types";
 
 interface IBoardData {
   boardRequests: ICreditRequest[];

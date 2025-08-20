@@ -4,7 +4,7 @@ import { Select, Stack, Text, Textarea, useFlag } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
-import { IRequirement } from "@services/types";
+import { IRequirement } from "@pages/prospect/outlets/financialReporting/Requirements/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { dataFlags } from "@config/components/flags/flag.config";

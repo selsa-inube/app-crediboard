@@ -4,7 +4,7 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { CardGray } from "@components/cards/CardGray";
 import { Fieldset } from "@components/data/Fieldset";
-import { IPledges } from "@services/credit-request/query/guarantees/types";
+import { IPledges } from "@services/creditRequest/query/types";
 
 import { dataPledge } from "./config";
 

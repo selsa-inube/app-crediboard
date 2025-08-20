@@ -1,5 +1,6 @@
-import { IRiskScoring, IRiskScoringRangeRequered } from "@services/types";
-import { MaritalStatus, EconomicActivity } from "@services/enums";
+import { IRiskScoring } from "@pages/board/outlets/creditProfileInfo/RiskScoring/types";
+import { MaritalStatus, EconomicActivity } from "@services/enum/icorebanking-vi-crediboard/schedule";
+import { IRiskScoringRangeRequered } from "@pages/board/outlets/creditProfileInfo/RiskScoring/types";
 
 export const mockRangeRequeredByTheBusinessUnit: IRiskScoringRangeRequered[] = [
   {

@@ -23,7 +23,7 @@ export const MessageContent = styled.div<MessageProps>`
   align-items: center;
   justify-content: ${({ type }) =>
     type === "system" ? "center" : "flex-start"};
-  flex-direction: ${({ type }) => (type === "sent" ? "row" : "row-reverse")};
+  flex-direction: row;
   font-family: Roboto;
   color: ${({ theme }) =>
     theme?.palette?.neutral?.N900 || inube.palette.neutral.N900};

@@ -24,8 +24,8 @@ import {
 import {
   ICreditRequest,
   IModeOfDisbursement,
-  IPaymentChannel,
-} from "@services/types";
+} from "@services/creditRequest/query/types";
+import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
@@ -39,16 +39,16 @@ import { Fieldset } from "@components/data/Fieldset";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { currencyFormat } from "@utils/formatData/currency";
+import { IProspect, ICreditProduct } from "@services/prospect/types";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { getModeOfDisbursement } from "@services/creditRequest/query/getModeOfDisbursement";
 import { CreditProspect } from "@pages/prospect/components/CreditProspect";
-import { IProspect, ICreditProduct } from "@services/prospects/types";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getModeOfDisbursement } from "@services/credit-request/query/getModeOfDisbursement";
 import { AppContext } from "@context/AppContext";
 import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { IExtraordinaryInstallments } from "@services/prospect/types";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitModal";
@@ -830,9 +830,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <IncomeModal
                 handleClose={() => setOpenModal(null)}
                 initialValues={
-                  (selectedBorrower &&
-                    incomeData[selectedBorrower.borrowerName]) ||
-                  {}
+                  selectedBorrower && incomeData[selectedBorrower.borrowerName]
                 }
                 onSubmit={handleIncomeSubmit}
               />
@@ -841,9 +839,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <IncomeModal
                 handleClose={() => setOpenModal(null)}
                 initialValues={
-                  (selectedBorrower &&
-                    incomeData[selectedBorrower.borrowerName]) ||
-                  {}
+                  selectedBorrower && incomeData[selectedBorrower.borrowerName]
                 }
                 onSubmit={handleIncomeSubmit}
               />

@@ -1,4 +1,4 @@
-import { IExtraordinaryPayment } from "@services/types";
+import { IExtraordinaryPayment } from "@components/modals/ExtraordinaryPaymentModal/types";
 
 export const extraordinaryInstallmentMock: IExtraordinaryPayment[] = [
   {
