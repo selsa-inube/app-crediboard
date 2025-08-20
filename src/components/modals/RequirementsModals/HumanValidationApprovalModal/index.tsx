@@ -4,10 +4,11 @@ import { Select, Stack, Text, Textarea, useFlag } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
-import { IRequirement } from "@services/types";
+
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { dataFlags } from "@config/components/flags/flag.config";
+import { IRequirement } from "@pages/board/outlets/financialReporting/Requirements/types";
 
 import { IApprovalHuman } from "../types";
 import { approvalsConfig, optionsAnswer } from "./config";

@@ -82,3 +82,9 @@ export {
   selectConfig,
   dataInformationSearchModal,
 };
+
+export const boardLayoutData = {
+  errorLoadingPins: "Error: No se pudo cargar el estado de los anclados.",
+  remove: "Quitar",
+  filter: "Filtrar",
+};

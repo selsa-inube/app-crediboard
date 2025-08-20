@@ -2,15 +2,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import {
   MdOutlineFilterAlt,
   MdOutlineFilterAltOff,
-  MdOutlineMicNone,
   MdOutlinePushPin,
   MdSearch,
-  MdMic,
 } from "react-icons/md";
 import { RxDragHandleVertical, RxDragHandleHorizontal } from "react-icons/rx";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
+
 import {
   Stack,
   Icon,
@@ -24,37 +20,38 @@ import {
 
 import { SectionOrientation } from "@components/layout/BoardSection/types";
 import { BoardSection } from "@components/layout/BoardSection";
-import { ICreditRequestPinned, ICreditRequest } from "@services/types";
+
 import { IOptionItemCheckedProps } from "@components/inputs/SelectCheck/OptionItem";
-import { ErrorAlert } from "@components/ErrorAlert";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { SelectedFilters } from "@components/cards/SelectedFilters";
 import { FilterRequestModal } from "@components/modals/FilterRequestModal";
-import { getCreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage";
-import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage/types";
+
 import { AppContext } from "@context/AppContext";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { totalsKeyBySection } from "@components/layout/BoardSection/config";
 import { BaseModal } from "@components/modals/baseModal";
-
+import { getCreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage";
+import { ICreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage/types";
 import {
-  speechRecognitionConfig,
-  textProcessingConfig,
-  voiceSearchConfig,
-} from "./config/voiceSearch";
+  ICreditRequest,
+  ICreditRequestPinned,
+} from "@services/creditRequest/query/types";
+
 import {
   StyledInputsContainer,
   StyledBoardContainer,
   StyledContainerToCenter,
-  StyledError,
   StyledSearch,
   StyledRequestsContainer,
-  StyledMic,
   StyledRequestsContainerVoiceSearch,
 } from "./styles";
 import { selectCheckOptions } from "./config/select";
 import { IFilterFormValues } from ".";
-import { boardColumns, dataInformationSearchModal } from "./config/board";
+import {
+  boardColumns,
+  boardLayoutData,
+  dataInformationSearchModal,
+} from "./config/board";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -114,19 +111,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     shouldCollapseAll,
   } = props;
 
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
-
   const [hasBeenFocused, setHasBeenFocused] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(true);
+
   const [isTextSearchModalOpen, setIsTextSearchModalOpen] = useState(false);
-  const [isShowModal, setIsShowModal] = useState(false);
-  const [shouldOpenVoiceModal, setShouldOpenVoiceModal] = useState(false);
-  const [isVoiceProcessed, setIsVoiceProcessed] = useState(false);
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
   const [lastFilterCount, setLastFilterCount] = useState(0);
   const [hasShownModalForCurrentFilters, setHasShownModalForCurrentFilters] =
@@ -139,39 +126,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const stackRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const capitalizeWords = (text: string) => {
-    return text
-      .split(" ")
-      .map((word) => {
-        if (word.length === 0) return word;
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      })
-      .join(" ");
-  };
-  const displayText = listening
-    ? capitalizeWords(
-        (transcript || voiceSearchConfig.states.listening).replace(/\.+$/, "")
-      )
-    : voiceSearchConfig.states.instruction;
-  const startListening = () => {
-    resetTranscript();
-    setIsVoiceProcessed(false);
-    SpeechRecognition.startListening({
-      continuous: false,
-      language: speechRecognitionConfig.language,
-    });
-  };
-  const stopListening = () => {
-    SpeechRecognition.stopListening();
-  };
-
-  const handleMicClick = () => {
-    if (listening) {
-      stopListening();
-    } else {
-      startListening();
-    }
-  };
   useEffect(() => {
     if (activeOptions.length === 0) {
       setHasBeenFocused(false);
@@ -194,71 +148,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       .trim()
       .split(/\s+/)
       .filter((word) => word.length > 0);
-  };
-
-  const shouldShowTextModalFirst = () => {
-    if (activeOptions.length === 0) return false;
-    if (hasShownModalForCurrentFilters) {
-      const currentValue = searchRequestValue.trim();
-      if (currentValue) {
-        const words = getWordsFromText(currentValue);
-        return words.length > 1;
-      }
-      return false;
-    }
-    return true;
-  };
-
-  const handleMicrophoneClick = () => {
-    setShouldOpenVoiceModal(true);
-    if (shouldShowTextModalFirst()) {
-      setIsTextSearchModalOpen(true);
-    } else {
-      setIsShowModal(true);
-    }
-  };
-
-  const processTranscript = (text: string) => {
-    let processedText = text.replace(
-      textProcessingConfig.numberSpaceRegex,
-      "$1$2"
-    );
-
-    processedText = processedText
-      .trim()
-      .replace(/[.,;:!?¿¡]+$/g, "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .replace(/\.$/g, "");
-    if (processedText.endsWith(".")) {
-      processedText = processedText.slice(0, -1).trim();
-    }
-    processedText = capitalizeWords(processedText);
-
-    return processedText;
-  };
-
-  const applyVoiceSearch = (transcriptText: string) => {
-    if (transcriptText && transcriptText.trim() !== "" && !isVoiceProcessed) {
-      const processedText = processTranscript(transcriptText);
-      const syntheticEvent = {
-        target: {
-          value: processedText,
-        },
-      } as React.ChangeEvent<HTMLInputElement>;
-
-      handleSearchRequestsValue(syntheticEvent);
-      setIsVoiceProcessed(true);
-      setIsShowModal(false);
-      resetTranscript();
-    }
-  };
-
-  const handleCloseModal = () => {
-    stopListening();
-    resetTranscript();
-    setIsShowModal(false);
-    setIsVoiceProcessed(false);
   };
 
   const handleTextfieldChange = (
@@ -295,54 +184,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       }
     }
   };
-
-  useEffect(() => {
-    if (isShowModal && browserSupportsSpeechRecognition) {
-      startListening();
-
-      const recognition = SpeechRecognition.getRecognition();
-      if (recognition) {
-        recognition.onend = () => {
-          if (transcript && transcript.trim() !== "" && !isVoiceProcessed) {
-            applyVoiceSearch(transcript);
-          }
-        };
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-          console.error("Speech recognition error:", event.error);
-          if (event.error === "no-speech") {
-            setTimeout(() => {
-              if (isShowModal && !isVoiceProcessed) {
-                startListening();
-              }
-            }, 1000);
-          }
-        };
-      }
-      return () => {
-        if (recognition) {
-          recognition.onend = null;
-          recognition.onerror = null;
-        }
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isShowModal, browserSupportsSpeechRecognition]);
-
-  useEffect(() => {
-    if (
-      transcript &&
-      transcript.trim() !== "" &&
-      isShowModal &&
-      !isVoiceProcessed
-    ) {
-      const timeoutId = setTimeout(() => {
-        applyVoiceSearch(transcript);
-      }, 1500);
-
-      return () => clearTimeout(timeoutId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transcript, isShowModal, isVoiceProcessed]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -437,36 +278,19 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      if (listening) {
-        SpeechRecognition.stopListening();
-      }
-    };
-  }, [listening]);
-
-  const openVoiceModalIfNeeded = () => {
-    if (shouldOpenVoiceModal) {
-      setIsShowModal(true);
-      setShouldOpenVoiceModal(false);
-    }
-  };
   const handleTextSearchModalBack = () => {
     handleClearFilters();
     setIsTextSearchModalOpen(false);
     setHasBeenFocused(false);
-    openVoiceModalIfNeeded();
   };
 
   const handleTextSearchModalNext = () => {
     setIsTextSearchModalOpen(false);
-    openVoiceModalIfNeeded();
   };
 
   const handleTextSearchModalClose = () => {
     setIsTextSearchModalOpen(false);
     setHasBeenFocused(false);
-    openVoiceModalIfNeeded();
   };
 
   return (
@@ -475,14 +299,14 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         direction="column"
         width={isMobile ? "-webkit-fill-available" : "min(100%,1500px)"}
       >
-        {errorLoadingPins && showErrorAlert && (
+        {/* {errorLoadingPins && showErrorAlert && (
           <StyledError $isMobile={isMobile}>
             <ErrorAlert
               message={voiceSearchConfig.errors.loadingPins}
               onClose={() => setShowErrorAlert(false)}
             />
           </StyledError>
-        )}
+        )} */}
         <StyledInputsContainer $isMobile={isMobile}>
           <Stack
             justifyContent="space-between"
@@ -515,16 +339,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                     />
                     {!isExpanded && (
                       <>
-                        <Icon
-                          icon={<MdOutlineMicNone />}
-                          appearance="primary"
-                          variant="outlined"
-                          size="36px"
-                          shape="rectangle"
-                          cursorHover
-                          spacing="wide"
-                          onClick={handleMicrophoneClick}
-                        />
                         <Icon
                           icon={<MdOutlineFilterAlt />}
                           appearance="primary"
@@ -593,14 +407,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   fullwidth
                   onFocus={handleTextfieldFocus}
                 />
-
-                <Icon
-                  icon={<MdOutlineMicNone />}
-                  size="26px"
-                  appearance="primary"
-                  cursorHover
-                  onClick={handleMicrophoneClick}
-                />
               </StyledRequestsContainerVoiceSearch>
             )}
 
@@ -619,7 +425,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   disabled={!activeOptions.length}
                   onClick={handleClearFilters}
                 >
-                  {voiceSearchConfig.buttons.remove}
+                  {boardLayoutData.remove}
                 </Button>
                 <Button
                   appearance="primary"
@@ -629,7 +435,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   variant="outlined"
                   onClick={openFilterModal}
                 >
-                  {voiceSearchConfig.buttons.filter}
+                  {boardLayoutData.filter}
                 </Button>
               </StyledRequestsContainer>
             )}
@@ -727,50 +533,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             <Text>{dataInformationSearchModal.descriptionModal}</Text>
           </BaseModal>
         )}
-        {isShowModal &&
-          (browserSupportsSpeechRecognition ? (
-            <BaseModal
-              title={voiceSearchConfig.modal.title}
-              width={voiceSearchConfig.modal.width}
-              handleClose={handleCloseModal}
-            >
-              <Stack direction="column" gap="24px">
-                <Text type="title" size="large">
-                  {displayText}
-                </Text>
-                {!listening && transcript && (
-                  <Stack justifyContent="center">
-                    <Text type="body" size="large">
-                      {capitalizeWords(transcript.replace(/\.+$/, ""))}
-                    </Text>
-                  </Stack>
-                )}
-                <Stack justifyContent="center">
-                  <StyledMic>
-                    <Icon
-                      icon={listening ? <MdMic /> : <MdOutlineMicNone />}
-                      size="58px"
-                      appearance="primary"
-                      shape="circle"
-                      variant="filled"
-                      spacing="compact"
-                      cursorHover
-                      onClick={handleMicClick}
-                    />
-                  </StyledMic>
-                </Stack>
-              </Stack>
-            </BaseModal>
-          ) : (
-            <BaseModal
-              title={voiceSearchConfig.errors.notSupported.title}
-              width={voiceSearchConfig.modal.width}
-              handleClose={handleCloseModal}
-            >
-              <Text>{voiceSearchConfig.errors.notSupported.message}</Text>
-            </BaseModal>
-          ))}
-
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
     </StyledContainerToCenter>

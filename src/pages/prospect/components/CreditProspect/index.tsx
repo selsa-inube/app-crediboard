@@ -15,12 +15,11 @@ import { ReciprocityModal } from "@components/modals/ReciprocityModal";
 import { ScoreModal } from "@components/modals/FrcModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
-import { IPaymentChannel } from "@services/types";
+import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { addCreditProduct } from "@mocks/utils/addCreditProductMock.service";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
-import { IProspect } from "@services/prospects/types";
-import { IExtraordinaryInstallments } from "@services/prospect/types/extraordInaryInstallments";
+import { IProspect } from "@services/prospect/types";
 import {
   StyledContainerIcon,
   StyledVerticalDivider,
@@ -30,6 +29,7 @@ import {
   menuOptions,
 } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
+import { IExtraordinaryInstallments } from "@services/prospect/types";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 
 import { dataCreditProspect } from "./config";
@@ -335,8 +335,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         <IncomeModal
           handleClose={() => setOpenModal(null)}
           initialValues={
-            (selectedBorrower && incomeData[selectedBorrower.borrowerName]) ||
-            {}
+            selectedBorrower && incomeData[selectedBorrower.borrowerName]
           }
           onSubmit={handleIncomeSubmit}
         />

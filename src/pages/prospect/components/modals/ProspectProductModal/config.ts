@@ -4,7 +4,7 @@ import {
   PaymentMethod,
   AmortizationType,
   RateType,
-} from "@services/enums";
+} from "@services/enum/icorebanking-vi-crediboard/schedule";
 
 const creditLineOptions = [
   {

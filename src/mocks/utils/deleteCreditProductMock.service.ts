@@ -1,5 +1,5 @@
 import { updateActive } from "@mocks/utils/dataMock.service";
-import { ICreditProduct } from "@services/prospects/types";
+import { ICreditProduct } from "@services/prospect/types";
 
 export async function deleteCreditProductMock(
   id: string,

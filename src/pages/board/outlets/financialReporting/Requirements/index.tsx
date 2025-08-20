@@ -13,13 +13,13 @@ import { TableBoard } from "@components/data/TableBoard";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { TraceDetailsModal } from "@components/modals/TraceDetailsModal";
 import { IAction, IEntries, ITitle } from "@components/data/TableBoard/types";
-import { CreditRequest, IPatchOfRequirements } from "@services/types";
 import {
   AddRequirementMock,
   AddRequirementMockSistemValidations,
 } from "@mocks/addRequirement";
-import { getAllPackagesOfRequirementsById } from "@services/packagesOfRequirements";
+import { getAllPackagesOfRequirementsById } from "@services/requirementsPackages/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
+import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 
 import {
   infoItems,
@@ -136,7 +136,7 @@ export const Requirements = (props: IRequirementsProps) => {
           throw new Error("No hay requisitos disponibles.");
         }
 
-        const mapped: CreditRequest = {
+        const mapped: MappedRequirements = {
           credit_request_id: data[0].uniqueReferenceNumber,
           SYSTEM_VALIDATION: {},
           DOCUMENT: {},

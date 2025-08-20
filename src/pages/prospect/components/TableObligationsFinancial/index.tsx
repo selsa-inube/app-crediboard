@@ -4,9 +4,10 @@ import { useMediaQuery } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
 
-import { convertObligationsToProperties, headers } from "./config";
+import { headers } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
 import { IProperty } from "./types";
+import { IBorrower, IProspect } from "@services/prospect/types";
 
 export interface ITableFinancialObligationsProps {
   type?: string;
@@ -14,8 +15,7 @@ export interface ITableFinancialObligationsProps {
   propertyValue?: string;
   balance?: string;
   fee?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialValues?: any;
+  initialValues?: IProspect[];
   refreshKey?: number;
   showActions?: boolean;
   showOnlyEdit?: boolean;
@@ -25,7 +25,7 @@ export interface ITableFinancialObligationsProps {
 export const TableFinancialObligations = (
   props: ITableFinancialObligationsProps
 ) => {
-  const { refreshKey, initialValues, showActions, showButtons } = props;
+  const { refreshKey, initialValues, showActions } = props;
   const [loading, setLoading] = useState(true);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [selectedDebtor, setSelectedDebtor] =
@@ -72,22 +72,15 @@ export const TableFinancialObligations = (
 
     if (data && data.length > 0) {
       const borrowerList = Array.isArray(data[0]?.borrowers)
-        ? data[0]?.borrowers
-        : data;
+        ? (data[0]?.borrowers as IBorrower[])
+        : [];
 
       const financialObligationsFromProps =
         borrowerList?.[0]?.borrowerProperties?.filter(
           (prop: IProperty) => prop.propertyName === "FinancialObligation"
         ) || [];
-      const obligations = data?.[0]?.obligations || [];
-      const obligationsConverted = Array.isArray(obligations)
-        ? convertObligationsToProperties(obligations)
-        : [];
 
-      setExtraDebtors([
-        ...financialObligationsFromProps,
-        ...obligationsConverted,
-      ]);
+      setExtraDebtors([...financialObligationsFromProps]);
     } else {
       setExtraDebtors([]);
     }
@@ -141,7 +134,6 @@ export const TableFinancialObligations = (
       handleEdit={handleEdit}
       handleDelete={handleDelete}
       handleUpdate={handleUpdate}
-      showButtons={showButtons}
     />
   );
 };
