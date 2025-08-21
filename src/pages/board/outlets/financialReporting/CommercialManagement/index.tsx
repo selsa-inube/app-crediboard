@@ -55,6 +55,7 @@ import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitM
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
@@ -83,7 +84,6 @@ interface ComercialManagementProps {
   id: string;
   isPrint?: boolean;
   hideContactIcons?: boolean;
-  hasPermitRejection?: boolean;
   requestValue?: IPaymentChannel[];
 }
 
@@ -97,7 +97,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     id,
     hideContactIcons,
     prospectData,
-    hasPermitRejection,
+
     sentData,
     setSentData,
     setRequestValue,
@@ -457,6 +457,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBorrower]);
 
+  const { disabledButton: canSendDecision } = useValidateUseCase({
+    useCase: getUseCaseValue("canSendDecision"),
+  });
   return (
     <>
       <Fieldset
@@ -557,7 +560,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                               type="button"
                               spacing="compact"
                               variant="outlined"
-                              disabled={hasPermitRejection ? false : true}
+                              disabled={canSendDecision}
                               onClick={() => {
                                 handleDisbursement();
                                 handleOpenModal("disbursementModal");
@@ -565,7 +568,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             >
                               {tittleOptions.titleDisbursement}
                             </Button>
-                            {!hasPermitRejection && (
+                            {canSendDecision && (
                               <Icon
                                 icon={<MdOutlineInfo />}
                                 appearance="primary"

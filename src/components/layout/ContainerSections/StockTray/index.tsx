@@ -4,6 +4,7 @@ import { Stack, Icon, Button, Text } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { ICrediboardData } from "@context/AppContext/types";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 import { configButtons, titlesModal } from "../config";
 import { StyledHorizontalDivider, StyledPrint } from "./styled";
@@ -42,12 +43,31 @@ interface IStockTrayProps {
 }
 
 export const StockTray = (props: IStockTrayProps) => {
-  const { navigation, eventData, isMobile, actionButtons } = props;
+  const { navigation, isMobile, actionButtons } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInfo = () => {
     setIsModalOpen(true);
   };
+
+  const { disabledButton: canViewAttachments } = useValidateUseCase({
+    useCase: getUseCaseValue("canViewAttachments"),
+  });
+  const { disabledButton: canReject } = useValidateUseCase({
+    useCase: getUseCaseValue("canReject"),
+  });
+  const { disabledButton: canCancel } = useValidateUseCase({
+    useCase: getUseCaseValue("canCancel"),
+  });
+  const { disabledButton: canPrint } = useValidateUseCase({
+    useCase: getUseCaseValue("canPrint"),
+  });
+  const { disabledButton: canAttach } = useValidateUseCase({
+    useCase: getUseCaseValue("canAttach"),
+  });
+  const { disabledButton: canManageGuarantees } = useValidateUseCase({
+    useCase: getUseCaseValue("canManageGuarantees"),
+  });
 
   return (
     <Stack
@@ -86,14 +106,12 @@ export const StockTray = (props: IStockTrayProps) => {
               <Stack gap="2px" alignItems="center">
                 <Button
                   spacing="compact"
-                  disabled={
-                    eventData?.user.staff.useCases.canReject ? false : true
-                  }
+                  disabled={canReject}
                   onClick={actionButtons?.buttons?.buttonReject?.OnClick}
                 >
                   {configButtons.buttons.buttonReject.label}
                 </Button>
-                {!eventData?.user.staff.useCases.canReject && (
+                {canReject && (
                   <Icon
                     icon={<MdOutlineInfo />}
                     appearance="primary"
@@ -106,14 +124,12 @@ export const StockTray = (props: IStockTrayProps) => {
               <Stack gap="2px" alignItems="center">
                 <Button
                   spacing="compact"
-                  disabled={
-                    eventData?.user.staff.useCases.canCancel ? false : true
-                  }
+                  disabled={canCancel}
                   onClick={actionButtons?.buttons?.buttonCancel.OnClick}
                 >
                   {configButtons.buttons.buttonCancel.label}
                 </Button>
-                {!eventData?.user.staff.useCases.canCancel && (
+                {canCancel && (
                   <Icon
                     icon={<MdOutlineInfo />}
                     appearance="primary"
@@ -126,14 +142,12 @@ export const StockTray = (props: IStockTrayProps) => {
               <Stack gap="2px" alignItems="center">
                 <Button
                   spacing="compact"
-                  disabled={
-                    eventData?.user.staff.useCases.canPrint ? false : true
-                  }
+                  disabled={canPrint}
                   onClick={actionButtons?.buttons.buttonPrint.OnClick}
                 >
                   {configButtons.buttons.buttonPrint.label}
                 </Button>
-                {!eventData?.user.staff.useCases.canPrint && (
+                {canPrint && (
                   <Icon
                     icon={<MdOutlineInfo />}
                     appearance="primary"
@@ -150,14 +164,12 @@ export const StockTray = (props: IStockTrayProps) => {
                 <Button
                   spacing="compact"
                   variant="outlined"
-                  disabled={
-                    eventData?.user.staff.useCases.canAttach ? false : true
-                  }
+                  disabled={canAttach}
                   onClick={actionButtons?.buttonsOutlined?.buttonAttach.OnClick}
                 >
                   {configButtons.buttonsOutlined.buttonAttach.label}
                 </Button>
-                {!eventData?.user.staff.useCases.canAttach && (
+                {canAttach && (
                   <Icon
                     icon={<MdOutlineInfo />}
                     appearance="primary"
@@ -171,18 +183,14 @@ export const StockTray = (props: IStockTrayProps) => {
                 <Button
                   spacing="compact"
                   variant="outlined"
-                  disabled={
-                    eventData?.user.staff.useCases.canViewAttachments
-                      ? false
-                      : true
-                  }
+                  disabled={canViewAttachments}
                   onClick={
                     actionButtons?.buttonsOutlined.buttonViewAttachments.OnClick
                   }
                 >
                   {configButtons.buttonsOutlined.buttonViewAttachments.label}
                 </Button>
-                {!eventData?.user.staff.useCases.canViewAttachments && (
+                {canViewAttachments && (
                   <Icon
                     icon={<MdOutlineInfo />}
                     appearance="primary"
@@ -197,18 +205,14 @@ export const StockTray = (props: IStockTrayProps) => {
                 <Button
                   spacing="compact"
                   variant="outlined"
-                  disabled={
-                    eventData?.user.staff.useCases.canManageGuarantees
-                      ? false
-                      : true
-                  }
+                  disabled={canManageGuarantees}
                   onClick={
                     actionButtons?.buttonsOutlined.buttonWarranty.OnClick
                   }
                 >
                   {configButtons.buttonsOutlined.buttonWarranty.label}
                 </Button>
-                {!eventData?.user.staff.useCases.canManageGuarantees && (
+                {canManageGuarantees && (
                   <Icon
                     icon={<MdOutlineInfo />}
                     appearance="primary"
