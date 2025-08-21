@@ -14,8 +14,9 @@ import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
-import { CreditRequest } from "@pages/board/outlets/financialReporting/Requirements/types";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
+
+import { MappedRequirements } from "./types";
 
 export const dataButton = (
   onClick: () => void,
@@ -269,7 +270,7 @@ const generateTag = (value: string): JSX.Element => {
   }
 };
 
-export const maperEntries = (data: CreditRequest): IEntries[][] => {
+export const maperEntries = (data: MappedRequirements): IEntries[][] => {
   const result: IEntries[][] = [];
 
   const systemValidations: IEntries[] = Object.entries(

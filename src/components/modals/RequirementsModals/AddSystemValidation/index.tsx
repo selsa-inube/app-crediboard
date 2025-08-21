@@ -5,8 +5,8 @@ import { Stack, useMediaQuery, Select } from "@inubekit/inubekit";
 import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
-import { dataAddRequirement } from "@pages/prospect/outlets/financialReporting/Requirements/config";
 import { IRequirement } from "@pages/board/outlets/financialReporting/Requirements/types";
+import { dataAddRequirement } from "@pages/board/outlets/financialReporting/Requirements/config";
 
 import { IOptionsSelect } from "../types";
 import { requirementJustificationMap, validationMessages } from "./config";
