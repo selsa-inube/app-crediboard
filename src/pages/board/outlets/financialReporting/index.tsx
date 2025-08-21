@@ -366,9 +366,6 @@ export const FinancialReporting = () => {
                     id={id!}
                     hideContactIcons={true}
                     prospectData={dataProspect!}
-                    hasPermitRejection={
-                      eventData.user.staff.useCases.canSendDecision
-                    }
                     sentData={null}
                     setSentData={setSentData}
                     setRequestValue={setRequestValue}
@@ -397,9 +394,6 @@ export const FinancialReporting = () => {
                     user={user!.email!}
                     businessUnitPublicCode={businessUnitPublicCode}
                     creditRequestCode={data.creditRequestCode!}
-                    hasPermitRejection={
-                      eventData.user.staff.useCases.canAddRequirements
-                    }
                   />
                 </Stack>
                 <Stack direction="column">

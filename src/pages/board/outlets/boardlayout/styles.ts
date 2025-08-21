@@ -51,9 +51,13 @@ const pulseRing = keyframes`
 const StyledSearch = styled.div<IStyledSearch>`
   cursor: pointer;
   width: ${({ $isMobile, $isExpanded }) => getWidth($isMobile, $isExpanded)};
+  transition: width 0.3s ease-in-out;
 
   & > div > div > div {
     padding-left: ${({ $isMobile }) => ($isMobile ? "9px" : "16px")};
+  }
+  & > div {
+    transition: all 0.3s ease-in-out;
   }
 `;
 
@@ -83,6 +87,7 @@ export const StyledMic = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 60px;
 
   &::before {
     content: "";
@@ -105,8 +110,8 @@ export const StyledRequestsContainer = styled.div<IStyledInputsContainer>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 688px;
-
+  width: 807px;
+  height: 50px;
   ${({ $isMobile, theme }) =>
     !$isMobile &&
     `
@@ -115,6 +120,22 @@ export const StyledRequestsContainer = styled.div<IStyledInputsContainer>`
       border-radius: 8px;
       border: 1px solid ${theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};
     `}
+`;
+
+export const StyledRequestsContainerVoiceSearch = styled.div<IStyledInputsContainer>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 360px;
+  height: 50px;
+  ${({ $isMobile, theme }) =>
+    !$isMobile &&
+    `
+      padding: 12px ;
+      gap:  16px ;
+      border-radius: 8px;
+      border: 1px solid ${theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};
+    `};
 `;
 
 interface IStyledError {
