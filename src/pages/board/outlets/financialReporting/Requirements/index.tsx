@@ -20,7 +20,6 @@ import {
 import { getAllPackagesOfRequirementsById } from "@services/requirementsPackages/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
 import { IPatchOfRequirements } from "@services/requirementsPackages/types";
-import { CreditRequest } from "@pages/board/outlets/financialReporting/Requirements/types";
 
 import {
   infoItems,
@@ -131,7 +130,7 @@ export const Requirements = (props: IRequirementsProps) => {
           throw new Error("No hay requisitos disponibles.");
         }
 
-        const mapped: CreditRequest = {
+        const mapped: MappedRequirements = {
           credit_request_id: data[0].uniqueReferenceNumber,
           SYSTEM_VALIDATION: {},
           DOCUMENT: {},
