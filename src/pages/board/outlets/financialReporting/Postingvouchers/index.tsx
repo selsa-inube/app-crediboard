@@ -39,7 +39,6 @@ export const Postingvouchers = (props: IApprovalsProps) => {
 
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-
   const fetchCreditRequest = useCallback(async () => {
     try {
       const data = await getCreditRequestByCode(
@@ -49,6 +48,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
+
       console.error(error);
       errorObserver.notify({
         id: "Management",
