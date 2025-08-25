@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import localforage from "localforage";
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
+import { updateProspect } from "@services/prospect/updateProspect";
+import { removeProspect } from "@services/prospect/removeProspect";
+import { IBorrower, IProspect } from "@services/prospect/types";
 
 import { headers } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
 import { IProperty } from "./types";
-import { IBorrower, IProspect } from "@services/prospect/types";
 
 export interface ITableFinancialObligationsProps {
+  businessUnitPublicCode?: string;
   type?: string;
   id?: string;
   propertyValue?: string;
@@ -25,7 +27,7 @@ export interface ITableFinancialObligationsProps {
 export const TableFinancialObligations = (
   props: ITableFinancialObligationsProps
 ) => {
-  const { refreshKey, initialValues, showActions } = props;
+  const { refreshKey, initialValues, showActions, businessUnitPublicCode } = props;
   const [loading, setLoading] = useState(true);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [selectedDebtor, setSelectedDebtor] =
@@ -91,7 +93,9 @@ export const TableFinancialObligations = (
       const updatedDebtors = extraDebtors.filter((debtor) => debtor.id !== id);
       setExtraDebtors(updatedDebtors);
 
-      await localforage.setItem("financial_obligation", updatedDebtors);
+      if (businessUnitPublicCode) {
+        await removeProspect(businessUnitPublicCode, id);
+      }
 
       console.log(`Debtor with ID ${id} deleted successfully.`);
     } catch (error) {
@@ -107,7 +111,12 @@ export const TableFinancialObligations = (
         debtor.id === updatedDebtor.id ? updatedDebtor : debtor
       );
       setExtraDebtors(updatedDebtors);
-      await localforage.setItem("financial_obligation", updatedDebtors);
+
+      if (businessUnitPublicCode) {
+        const updatedDebtors = extraDebtors.filter((debtor) => debtor.id !== updatedDebtor.id);
+        await updateProspect(businessUnitPublicCode, updatedDebtors);
+      }
+      
       setIsModalOpenEdit(false);
     } catch (error) {
       console.error("Error updating debtor:", error);

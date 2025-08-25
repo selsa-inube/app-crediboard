@@ -115,3 +115,7 @@ export interface IProspectSummaryById {
   totalRegularInstallments: number;
   totalConsolidatedAmount: number;
 }
+
+export interface IProspectId {
+  prospectId: string;
+}
