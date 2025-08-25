@@ -1,8 +1,11 @@
 export interface IExtraordinaryInstallment {
-  installmentAmount: number;
-  installmentDate: string;
-  paymentChannelAbbreviatedName: string;
+  installmentAmount?: number;
+  installmentDate?: string;
+  paymentChannelAbbreviatedName?: string;
   id?: string;
+  creditProductCode?: string;
+  extraordinaryInstallments?: IExtraordinaryInstallment[];
+  prospectId?: string;
 }
 export interface IExtraordinaryInstallments {
   creditProductCode: string;
@@ -41,14 +44,15 @@ export interface IConsolidatedCredit {
 
 export interface IOrdinaryInstallmentsForPrincipal {
   numberOfInstallments: number;
-  schedule: string;
-  installmentAmountForCapital: number;
   installmentAmount: number;
-  gradientRate: number;
-  gradientValue: number;
-  gradientSchedule: string;
-  firstGradientDate: Date;
   paymentChannelAbbreviatedName: string;
+  schedule?: string;
+  installmentAmountForCapital?: number;
+  gradientRate?: number;
+  gradientValue?: number;
+  gradientSchedule?: string;
+  firstGradientDate?: Date;
+  installmentFrequency?: string;
 }
 
 export interface IInstallmentsForInterest {
@@ -68,13 +72,14 @@ export interface ICreditProduct {
   loanAmount: number;
   lineOfCreditAbbreviatedName: string;
   interestRate: number;
-  fixedPoints: number;
   loanTerm: number;
   schedule: string;
   ordinaryInstallmentsForPrincipal: IOrdinaryInstallmentsForPrincipal[];
-  installmentsForInterest: IInstallmentsForInterest[];
-  extraordinaryInstallments: IExtraordinaryInstallment[];
-  acquiredCashFlows: IAcquiredCashFlow[];
+  installmentsForInterest?: IInstallmentsForInterest[];
+  extraordinaryInstallments?: IExtraordinaryInstallment[];
+  acquiredCashFlows?: IAcquiredCashFlow[];
+  installmentFrequency?: string;
+  fixedPoints?: number;
 }
 
 export interface IOutlay {

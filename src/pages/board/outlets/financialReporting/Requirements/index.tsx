@@ -23,7 +23,6 @@ import {
   IPackagesOfRequirementsById,
   IPatchOfRequirements,
 } from "@services/requirementsPackages/types";
-import { CreditRequest } from "@pages/board/outlets/financialReporting/Requirements/types";
 
 import {
   infoItems,
@@ -37,6 +36,7 @@ import {
 } from "./config";
 import { DocumentItem, MappedRequirements, RequirementType } from "./types";
 import { errorMessages } from "../config";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 interface IRequirementsData {
   id: string;
@@ -51,18 +51,11 @@ export interface IRequirementsProps {
   businessUnitPublicCode: string;
   creditRequestCode: string;
   isMobile: boolean;
-  hasPermitRejection?: boolean;
 }
 
 export const Requirements = (props: IRequirementsProps) => {
-  const {
-    isMobile,
-    id,
-    user,
-    businessUnitPublicCode,
-    creditRequestCode,
-    hasPermitRejection,
-  } = props;
+  const { isMobile, id, user, businessUnitPublicCode, creditRequestCode } =
+    props;
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -134,12 +127,11 @@ export const Requirements = (props: IRequirementsProps) => {
         );
         setRawRequirements(data);
 
-        console.log(data, "data requirements");
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error("No hay requisitos disponibles.");
         }
 
-        const mapped: CreditRequest = {
+        const mapped: MappedRequirements = {
           credit_request_id: data[0].uniqueReferenceNumber,
           SYSTEM_VALIDATION: {},
           DOCUMENT: {},
@@ -362,7 +354,9 @@ export const Requirements = (props: IRequirementsProps) => {
       setEntryIdToRequirementMap(map);
     }
   }, [rawRequirements]);
-
+  const { disabledButton: canAddRequirements } = useValidateUseCase({
+    useCase: getUseCaseValue("canAddRequirements"),
+  });
   return (
     <>
       <Fieldset
@@ -371,7 +365,7 @@ export const Requirements = (props: IRequirementsProps) => {
           () => setShowAddRequirementModal(true),
           () => setShowAddSystemValidationModal(true)
         )}
-        disabledButton={hasPermitRejection}
+        disabledButton={canAddRequirements}
         heightFieldset="100%"
         hasTable={!error}
         hasError={error ? true : false}

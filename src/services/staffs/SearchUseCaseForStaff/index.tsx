@@ -3,61 +3,51 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { ICreditRequest } from "../types";
 
-import { mapCreditRequestToEntities } from "./mapper";
+import { mapCreditRequestToEntities } from "./mappers";
 
-export const getCreditRequestByCode = async (
-  businessUnitPublicCode: string,
-  idProspect: string,
+export const getSearchUseCaseForStaff = async (
+  businessUnitCode: string,
+  businessManagerCode: string,
   userAccount: string
-): Promise<ICreditRequest[]> => {
+): Promise<string[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const queryParams = new URLSearchParams({
-        creditRequestCode: idProspect,
+        businessUnitCode: businessUnitCode || "",
+        businessManagerCode: businessManagerCode || "",
       });
+
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllCreditRequestsInProgress",
-          "X-Business-Unit": businessUnitPublicCode,
+          "X-Action": "SearchUseCaseForStaff",
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
         },
         signal: controller.signal,
       };
 
-      const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests?${queryParams.toString()}`,
-        options
-      );
+      const url = `${environment.IVITE_IPORTAL_STAFF_QUERY_PROCESS_SERVICE}/staffs/?${queryParams.toString()}`;
 
+      const res = await fetch(url, options);
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
         return [];
       }
-
       const data = await res.json();
 
       if (!res.ok) {
-        throw {
-          message: "Error al obtener los ",
-          status: res.status,
-          data,
-        };
+        throw new Error(`Error al obtener los datos: ${res.status}`);
       }
 
-      const normalizedCredit = Array.isArray(data)
-        ? mapCreditRequestToEntities(data)
-        : [];
-
-      return normalizedCredit;
+      return mapCreditRequestToEntities(data);
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(

@@ -21,15 +21,15 @@ import { addCreditProduct } from "@mocks/utils/addCreditProductMock.service";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
 import { IProspect } from "@services/prospect/types";
 import {
-  incomeOptions,
-  menuOptions,
-} from "@pages/prospect/outlets/financialReporting/CommercialManagement/config/config";
-import {
   StyledContainerIcon,
   StyledVerticalDivider,
-} from "@pages/prospect/outlets/financialReporting/CommercialManagement/styles";
+} from "@pages/board/outlets/financialReporting/CommercialManagement/styles";
+import {
+  incomeOptions,
+  menuOptions,
+} from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
+import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
-import { CardCommercialManagement } from "@pages/prospect/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 
 import { dataCreditProspect } from "./config";

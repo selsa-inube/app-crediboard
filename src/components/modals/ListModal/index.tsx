@@ -23,9 +23,9 @@ import { validationMessages } from "@validations/validationMessages";
 import { AppContext } from "@context/AppContext";
 import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
-import { StyledItem } from "@pages/prospect/outlets/financialReporting/styles";
-import { optionFlags } from "@pages/prospect/outlets/financialReporting/config";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
+import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
+import { optionFlags } from "@pages/board/outlets/financialReporting/config";
 
 import { DocumentViewer } from "../DocumentViewer";
 import {

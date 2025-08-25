@@ -83,10 +83,10 @@ export const FinancialReporting = () => {
   const [document, setDocument] = useState<IListdataProps["data"]>([]);
 
   const [dataProspect, setDataProspect] = useState<IProspect>();
-
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
   >([]);
+  const [idProspect, setIdProspect] = useState('');
 
   const { id } = useParams();
   const { user } = useAuth0();
@@ -146,16 +146,17 @@ export const FinancialReporting = () => {
       try {
         const result = await getSearchProspectByCode(
           businessUnitPublicCode,
-          id!
+          idProspect
         );
+        
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
         console.error("Error al obtener los prospectos:", error);
       }
     };
 
-    fetchData();
-  }, [businessUnitPublicCode, id, sentData]);
+    (idProspect && businessUnitPublicCode) && fetchData();
+  }, [businessUnitPublicCode, idProspect, sentData]);
 
   const handleGeneratePDF = () => {
     setTimeout(() => {
@@ -365,9 +366,6 @@ export const FinancialReporting = () => {
                     id={id!}
                     hideContactIcons={true}
                     prospectData={dataProspect!}
-                    hasPermitRejection={
-                      eventData.user.staff.useCases.canSendDecision
-                    }
                     sentData={null}
                     setSentData={setSentData}
                     setRequestValue={setRequestValue}
@@ -382,6 +380,7 @@ export const FinancialReporting = () => {
                     isMobile={isMobile}
                     id={id!}
                     user={user!.nickname!}
+                    setIdProspect={setIdProspect}
                   />
                 </Stack>
                 <Stack direction="column" height={isMobile ? "auto" : "277px"}>
@@ -395,9 +394,6 @@ export const FinancialReporting = () => {
                     user={user!.email!}
                     businessUnitPublicCode={businessUnitPublicCode}
                     creditRequestCode={data.creditRequestCode!}
-                    hasPermitRejection={
-                      eventData.user.staff.useCases.canAddRequirements
-                    }
                   />
                 </Stack>
                 <Stack direction="column">

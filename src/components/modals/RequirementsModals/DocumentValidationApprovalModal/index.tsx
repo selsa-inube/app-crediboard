@@ -20,14 +20,14 @@ import { ListModal } from "@components/modals/ListModal";
 import { DocumentViewer } from "@components/modals/DocumentViewer";
 import { getSearchAllDocumentsById } from "@services/creditRequest/query/SearchAllDocuments";
 import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
-import { IRequirement } from "@pages/board/outlets/financialReporting/Requirements/types";
+import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
+import { dataFlags } from "@config/components/flags/flag.config";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
 import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
 import { StyledScroll } from "./styles";
-import { dataFlags } from "@config/components/flags/flag.config";
 
 interface IDocumentValidationApprovalModalsProps {
   isMobile: boolean;
@@ -39,7 +39,7 @@ interface IDocumentValidationApprovalModalsProps {
   seenDocuments: string[];
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
-  rawRequirements: IRequirement[];
+  rawRequirements: IPackagesOfRequirementsById[];
   setSeenDocuments: React.Dispatch<React.SetStateAction<string[]>>;
   onConfirm?: (values: IApprovalDocumentaries) => void;
   onCloseModal?: () => void;

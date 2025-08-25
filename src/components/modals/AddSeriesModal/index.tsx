@@ -110,7 +110,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         setAddModal(selected);
         setInstallmentState((prev) => ({
           ...prev,
-          installmentDate: dateString || selected.installmentDate,
+          installmentDate: (dateString || selected.installmentDate) ?? "",
         }));
       } else if (setInstallmentState) {
         setInstallmentState((prev) => ({
