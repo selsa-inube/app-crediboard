@@ -4,11 +4,10 @@ import { Select, Stack, Text, Textarea, useFlag } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
-
+import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { dataFlags } from "@config/components/flags/flag.config";
-import { IRequirement } from "@pages/board/outlets/financialReporting/Requirements/types";
 
 import { IApprovalHuman } from "../types";
 import { approvalsConfig, optionsAnswer } from "./config";
@@ -19,7 +18,7 @@ interface IHumanValidationApprovalModalProps {
   businessUnitPublicCode: string;
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
-  rawRequirements: IRequirement[];
+  rawRequirements: IPackagesOfRequirementsById[];
   onConfirm?: (values: IApprovalHuman) => void;
   onCloseModal?: () => void;
 }
@@ -57,9 +56,9 @@ export function HumanValidationApprovalModal(
     validateOnMount: true,
     onSubmit: async () => {
       try {
-        const requirementPackageId = entryIdToRequirementMap[entryId];
+        const requirementByPackageId = entryIdToRequirementMap[entryId];
 
-        if (!requirementPackageId) return;
+        if (!requirementByPackageId) return;
 
         let nextStatusValue = "";
         if (formik.values.answer === optionsAnswer[0].label) {
@@ -80,13 +79,13 @@ export function HumanValidationApprovalModal(
           modifyJustification: "Status change",
           nextStatusValue,
           packageId: rawRequirements[0].packageId,
-          requirementPackageId: requirementPackageId,
+          requirementByPackageId: requirementByPackageId,
           statusChangeJustification: formik.values.observations,
           transactionOperation: "PartialUpdate",
           documentsByRequirement: [
             {
               documentCode: "",
-              requirementPackageId: "",
+              requirementByPackageId: "",
               transactionOperation: "PartialUpdate",
             },
           ],

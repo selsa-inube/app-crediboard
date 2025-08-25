@@ -5,7 +5,7 @@ import { Stack, useMediaQuery, Select } from "@inubekit/inubekit";
 import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
-import { IRequirement } from "@pages/board/outlets/financialReporting/Requirements/types";
+import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { dataAddRequirement } from "@pages/board/outlets/financialReporting/Requirements/config";
 
 import { IOptionsSelect } from "../types";
@@ -21,7 +21,7 @@ export interface IRequirements {
   buttonText: string;
   justificationRequirement: string;
   setJustificationRequirement: React.Dispatch<React.SetStateAction<string>>;
-  rawRequirements?: IRequirement[];
+  rawRequirements?: IPackagesOfRequirementsById[];
   requirementName?: string;
   descriptionUseValues?: string;
   typeOfRequirementToEvaluated?: string;

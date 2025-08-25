@@ -13,7 +13,7 @@ const patchOfRequirements = async (
     const options: RequestInit = {
       method: "PATCH",
       headers: {
-        "X-Action": "UpdatePackageOfRequirementsToManage",
+        "X-Action": "UpdatePackageOfRequirements",
         "X-Business-Unit": businessUnitPublicCode,
         "Content-type": "application/json; charset=UTF-8",
       },

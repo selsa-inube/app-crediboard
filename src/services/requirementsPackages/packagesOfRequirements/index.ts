@@ -23,7 +23,7 @@ const getAllPackagesOfRequirementsById = async (
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllPackagesOfRequirementsToManage",
+          "X-Action": "SearchAllPackagesOfRequirements",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },

@@ -1,6 +1,6 @@
 interface IDocumentsByRequirement {
   documentCode: string;
-  requirementPackageId: string;
+  requirementByPackageId: string;
   transactionOperation: string;
 }
 
@@ -8,21 +8,21 @@ export interface IapproveRequirement {
   modifyJustification: string;
   nextStatusValue: string;
   packageId: string;
-  requirementPackageId: string;
+  requirementByPackageId: string;
   statusChangeJustification: string;
   transactionOperation: string;
   documentsByRequirement: IDocumentsByRequirement[];
 }
 
 interface IRequirementsByPackage {
-  requirementPackageId: string;
+  requirementByPackageId: string;
   packageId: string;
   requirementCatalogName: string;
   requirementDate: string;
   requirementStatus: string;
   descriptionEvaluationRequirement: string;
   descriptionUse: string;
-  requirementTypeToEvaluate: string;
+  typeOfRequirementToEvaluate: string;
   statusChangeJustification: string;
   transactionOperation: string;
 }

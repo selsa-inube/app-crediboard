@@ -19,7 +19,10 @@ import {
 } from "@mocks/addRequirement";
 import { getAllPackagesOfRequirementsById } from "@services/requirementsPackages/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
-import { IPatchOfRequirements } from "@services/requirementsPackages/types";
+import {
+  IPackagesOfRequirementsById,
+  IPatchOfRequirements,
+} from "@services/requirementsPackages/types";
 
 import {
   infoItems,
@@ -31,12 +34,7 @@ import {
   getActionsMobileIcon,
   questionToBeAskedInModalText,
 } from "./config";
-import {
-  DocumentItem,
-  IRequirement,
-  MappedRequirements,
-  RequirementType,
-} from "./types";
+import { DocumentItem, MappedRequirements, RequirementType } from "./types";
 import { errorMessages } from "../config";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
@@ -104,7 +102,9 @@ export const Requirements = (props: IRequirementsProps) => {
 
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(false);
-  const [rawRequirements, setRawRequirements] = useState<IRequirement[]>([]);
+  const [rawRequirements, setRawRequirements] = useState<
+    IPackagesOfRequirementsById[]
+  >([]);
   const [justificationRequirement, setJustificationRequirement] = useState(
     dataAddRequirement.descriptionJustification
   );
@@ -126,6 +126,7 @@ export const Requirements = (props: IRequirementsProps) => {
           creditRequestCode
         );
         setRawRequirements(data);
+
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error("No hay requisitos disponibles.");
         }
@@ -139,7 +140,7 @@ export const Requirements = (props: IRequirementsProps) => {
 
         data.forEach((item) => {
           item.requirementsByPackage.forEach((req) => {
-            const type = req.requirementTypeToEvaluate;
+            const type = req.typeOfRequirementToEvaluate;
             const key = req.descriptionUse;
             const value = req.requirementStatus;
 
@@ -276,14 +277,14 @@ export const Requirements = (props: IRequirementsProps) => {
   const createInitialRequirementValues = ({
     requirementCatalogName,
     descriptionUse,
-    requirementTypeToEvaluate,
+    typeOfRequirementToEvaluate,
     rawRequirements,
     creditRequestCode,
   }: {
     requirementCatalogName: string;
     descriptionUse: string;
-    requirementTypeToEvaluate: string;
-    rawRequirements: IRequirement[];
+    typeOfRequirementToEvaluate: string;
+    rawRequirements: IPackagesOfRequirementsById[];
     creditRequestCode: string;
   }): IPatchOfRequirements => ({
     packageId: rawRequirements[0]?.packageId,
@@ -299,7 +300,7 @@ export const Requirements = (props: IRequirementsProps) => {
         requirementStatus: "UNVALIDATED",
         descriptionEvaluationRequirement: "Requisitos no evaluados",
         descriptionUse,
-        requirementTypeToEvaluate,
+        typeOfRequirementToEvaluate,
         transactionOperation: "Insert",
       },
     ],
@@ -308,7 +309,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const initialValues = createInitialRequirementValues({
     requirementCatalogName: requirementName,
     descriptionUse: descriptionUseValue,
-    requirementTypeToEvaluate: typeOfRequirementToEvaluated,
+    typeOfRequirementToEvaluate: typeOfRequirementToEvaluated,
     rawRequirements,
     creditRequestCode,
   });
@@ -316,7 +317,7 @@ export const Requirements = (props: IRequirementsProps) => {
   const initialValuesSystemValidation = createInitialRequirementValues({
     requirementCatalogName: justificationRequirement,
     descriptionUse: descriptionUseValues,
-    requirementTypeToEvaluate: "SYSTEM_VALIDATION",
+    typeOfRequirementToEvaluate: "SYSTEM_VALIDATION",
     rawRequirements,
     creditRequestCode,
   });
@@ -342,11 +343,11 @@ export const Requirements = (props: IRequirementsProps) => {
         } as const;
 
         const prefix =
-          prefixMap[req.requirementTypeToEvaluate as keyof typeof prefixMap];
+          prefixMap[req.typeOfRequirementToEvaluate as keyof typeof prefixMap];
 
         if (prefix) {
           typeCounters[prefix] += 1;
-          map[`${prefix}-${typeCounters[prefix]}`] = req.requirementPackageId;
+          map[`${prefix}-${typeCounters[prefix]}`] = req.requirementByPackageId;
         }
       });
 

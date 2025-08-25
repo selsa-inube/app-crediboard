@@ -1,14 +1,3 @@
-interface IlistsOfRequirementsByPackage {
-  descriptionEvaluationRequirement: string;
-  descriptionUse: string;
-  packageId: string;
-  requirementCatalogName: string;
-  requirementDate: string;
-  requirementPackageId: string;
-  requirementStatus: string;
-  requirementTypeToEvaluate: string;
-}
-
 interface IlistsOfRequirements {
   packageId: string;
   requirementCatalogName: string;
@@ -16,7 +5,7 @@ interface IlistsOfRequirements {
   requirementStatus: string;
   descriptionEvaluationRequirement: string;
   descriptionUse: string;
-  requirementTypeToEvaluate: string;
+  typeOfRequirementToEvaluate: string;
   transactionOperation: string;
 }
 
@@ -29,20 +18,24 @@ export interface ITracesInRequirementsManagement {
   traceId: string;
 }
 
-export interface IPackagesOfRequirementsById {
-  requirementsByPackage: IlistsOfRequirementsByPackage[];
-  packageDate: string;
-  packageDescription: string;
+interface IRequirementByPackage {
+  requirementByPackageId: string;
   packageId: string;
-  tracesInRequirementsManagement: ITracesInRequirementsManagement[];
+  requirementCatalogName: string;
+  requirementDate: string;
+  requirementStatus: string;
+  descriptionEvaluationRequirement: string;
+  descriptionUse: string;
+  typeOfRequirementToEvaluate: string;
+  statusChangeJustification?: string;
+}
+
+export interface IPackagesOfRequirementsById {
+  packageId: string;
+  packageDate: string;
   uniqueReferenceNumber: string;
-  requirementCatalogName?: string;
-  requirementDate?: string;
-  requirementStatus?: string;
-  descriptionEvaluationRequirement?: string;
-  descriptionUse?: string;
-  requirementTypeToEvaluate?: string;
-  transactionOperation?: string;
+  packageDescription: string;
+  requirementsByPackage: IRequirementByPackage[];
 }
 
 export interface IPatchOfRequirements {
