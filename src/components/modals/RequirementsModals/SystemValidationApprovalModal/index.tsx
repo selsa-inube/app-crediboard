@@ -6,7 +6,7 @@ import { Stack, Text, Textarea, Toggle, useFlag } from "@inubekit/inubekit";
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
-import { IRequirement } from "@pages/prospect/outlets/financialReporting/Requirements/types";
+import { IRequirement } from "@pages/board/outlets/financialReporting/Requirements/types";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { dataFlags } from "@config/components/flags/flag.config";
 

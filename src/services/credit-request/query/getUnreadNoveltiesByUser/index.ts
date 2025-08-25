@@ -3,11 +3,12 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";
-export const getApprovalsById = async (
-  businessUnitPublicCode: string,
-  creditRequestId: string
-): Promise<IApprovals> => {
+import { IUnreadNoveltiesByUser } from "./types";
+
+const getUnreadNoveltiesByUser = async (
+  userAccount: string,
+  businessUnitPublicCode: string
+): Promise<IUnreadNoveltiesByUser[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -19,7 +20,8 @@ export const getApprovalsById = async (
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllApprovalsById",
+          "X-Action": "GetUnreadNoveltiesByUser",
+          "X-User-Name": userAccount,
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -27,38 +29,41 @@ export const getApprovalsById = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/approvals/${creditRequestId}`,
+        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests`,
         options
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay aprobaciones disponibles.");
+        throw new Error("No hay tarea disponible.");
       }
 
       const data = await res.json();
-
       if (!res.ok) {
         throw {
-          message: "Error al obtener las aprobaciones.",
+          message: "Error al obtener la tarea.",
           status: res.status,
           data,
         };
       }
 
-      return data;
+      if (Array.isArray(data)) {
+        return data;
+      } else {
+        return [data];
+      }
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se logro obtener las aprobaciones"
+          "Todos los intentos fallaron. No se pudo obtener la tarea."
         );
       }
     }
   }
 
-  throw new Error(
-    "No se logro obtener las aprobaciones después de varios intentos."
-  );
+  throw new Error("No se pudo obtener la tarea después de varios intentos.");
 };
+
+export { getUnreadNoveltiesByUser };

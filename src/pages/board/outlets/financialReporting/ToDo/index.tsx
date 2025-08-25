@@ -50,10 +50,11 @@ interface ToDoProps {
   isMobile?: boolean;
   user: string;
   id: string;
+  setIdProspect: (idProspect: string) => void;
 }
 
 function ToDo(props: ToDoProps) {
-  const { icon, button, isMobile, id } = props;
+  const { icon, button, isMobile, id, setIdProspect } = props;
 
   const { approverid } = useParams();
 
@@ -114,6 +115,7 @@ function ToDo(props: ToDoProps) {
           id,
           userAccount
         );
+        
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
         console.error(error);
@@ -138,7 +140,10 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           requests.creditRequestId
         );
+
         setTaskData(data);
+        data.prospectId && setIdProspect(data.prospectId);
+
       } catch (error) {
         console.error(error);
         errorObserver.notify({
@@ -151,7 +156,7 @@ function ToDo(props: ToDoProps) {
     };
 
     fetchToDoData();
-  }, [businessUnitPublicCode, requests?.creditRequestId]);
+  }, [businessUnitPublicCode, requests?.creditRequestId, setIdProspect]);
 
   useEffect(() => {
     if (taskData?.usersByCreditRequestResponse) {

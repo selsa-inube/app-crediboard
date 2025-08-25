@@ -100,6 +100,7 @@ export interface IToDo {
   stage: string;
   taskToBeDone: string;
   usersByCreditRequestResponse: IStaff[];
+  prospectId: string;
 }
 
 export interface IMortgages {

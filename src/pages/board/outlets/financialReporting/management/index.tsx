@@ -225,7 +225,6 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   icon={<MdAttachFile />}
                   onClick={() => setShowAttachments(true)}
                 />
-
                 <Textfield
                   id="text"
                   placeholder="Ej.: Escriba su mensaje"
