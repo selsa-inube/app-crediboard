@@ -291,11 +291,11 @@ export function CreditProspect(props: ICreditProspectProps) {
           balanceOfContributions={4000000}
           accordingToRegulation={2}
           assignedQuota={1000000}
+          numRegulations={2}
         />
       )}
       {openModal === "scoreModal" && (
         <ScoreModal
-          title="Score Details"
           handleClose={() => setOpenModal(null)}
           subTitle="Your Financial Score"
           totalScore={150}
@@ -306,6 +306,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           economicActivity={118}
           monthlyIncome={3000000}
           maxIndebtedness={50000000}
+          incomeScore={5.56}
+          maxLimit={22000000}
+          totalPortafolio={10000000}
         />
       )}
       {currentModal === "editProductModal" && (

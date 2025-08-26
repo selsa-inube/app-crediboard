@@ -1,9 +1,11 @@
 export const creditLimitTexts = {
   close: "Cerrar",
-  maxPaymentCapacity: "Cupo máximo según capacidad de pago",
-  maxReciprocity: "Cupo máximo por reciprocidad",
-  maxDebtFRC: "Endeudamiento máximo x FRC",
-  assignedLimit: "Cupo individual asignado",
+  maxPaymentCapacity: "Tope máx. para Crédito vacacional",
+  maxReciprocity: "Monto máx. según reciprocidad",
+  maxDebtFRC: "Monto máx. según capacidad de pago",
+  maxIndebtedness: "Endeudamiento máx. x análisis de riesgo",
+  maxAmount: "Monto máximo utilizable",
+  assignedLimit: "Monto máx. personalizado por U.N..",
   maxUsableLimit: "Cupo máximo utilizable",
   maxUsableQuote: (
     <>
@@ -12,5 +14,4 @@ export const creditLimitTexts = {
   ),
   currentPortfolio: "(-) Cartera vigente",
   availableLimitWithoutGuarantee: "Cupo disponible sin garantía",
-  closeButton: "Actualizar",
 };
