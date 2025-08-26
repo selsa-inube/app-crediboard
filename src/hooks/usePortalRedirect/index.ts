@@ -47,19 +47,17 @@ const usePortalLogic = () => {
       }
 
       try {
-        const portals = await getStaffPortalsByBusinessManager();
-        const match = portals.find(
-          (p) => p.staffPortalId?.trim() === rawPortalCode
-        );
+        const portals = await getStaffPortalsByBusinessManager(rawPortalCode);
 
-        if (!match) {
+        if (!portals || portals.length === 0) {
           setCodeError(1001);
           setLoading(false);
           return;
         }
+        const portalData = portals[0];
+        setPortalData(portalData);
 
-        setPortalData(match);
-        const { businessManagerId } = match;
+        const { businessManagerId } = portalData;
 
         if (!businessManagerId) {
           setCodeError(1002);

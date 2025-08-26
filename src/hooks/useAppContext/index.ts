@@ -14,8 +14,6 @@ import { getStaff } from "@services/staff/staffs";
 import { decrypt } from "@utils/encrypt/encrypt";
 import { getSearchUseCaseForStaff } from "@services/staffs/SearchUseCaseForStaff";
 
-
-
 interface IBusinessUnits {
   businessUnitPublicCode: string;
   abbreviatedName: string;
@@ -56,13 +54,12 @@ function useAppContext() {
     console.error("Error parsing businessUnitSigla: ", error);
   }
 
-
-
-
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
-        const staffData = await getStaff();
+        const userIdentifier = user?.email?.substring(0, 20);
+        if (!userIdentifier) return;
+        const staffData = await getStaff(userIdentifier);
         if (!staffData.length) return;
       } catch (error) {
         console.error("Error fetching staff data:", error);
@@ -150,9 +147,10 @@ function useAppContext() {
   ]);
 
   useEffect(() => {
-    validateConsultation().then((data) => {
+    validateConsultation(portalCode).then((data) => {
       setPortalData(data);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
