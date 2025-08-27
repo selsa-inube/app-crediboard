@@ -33,7 +33,8 @@ export interface ITableFinancialObligationsProps {
 export interface IDataInformationItem {
   propertyName?: string;
   propertyValue?: string | string[];
-  id?: string;
+  id?: number;
+  borrowerIdentificationNumber?: string;
 }
 
 interface UIProps {
@@ -45,9 +46,9 @@ interface UIProps {
   isModalOpenEdit: boolean;
   isMobile: boolean;
   showOnlyEdit?: boolean;
-  handleEdit: (item: ITableFinancialObligationsProps) => void;
+  handleEdit: (item: ITableFinancialObligationsProps, index: number) => void;
   setIsModalOpenEdit: (value: boolean) => void;
-  handleDelete: (id: string) => void;
+  handleDelete: (id: number, borrowerIdentificationNumber: string) => void;
   handleUpdate: (
     updatedDebtor: ITableFinancialObligationsProps
   ) => Promise<void>;
@@ -68,7 +69,8 @@ export const TableFinancialObligationsUI = ({
   handleUpdate,
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
-
+  console.log("selectedDebtor: ", selectedDebtor);
+  console.log("dataInformation: ", dataInformation);
   const {
     handleStartPage,
     handlePrevPage,
@@ -186,7 +188,7 @@ export const TableFinancialObligationsUI = ({
                       appearance="dark"
                       size="16px"
                       onClick={() =>
-                        handleEdit(prop as ITableFinancialObligationsProps)
+                        handleEdit(prop as ITableFinancialObligationsProps, rowIndex)
                       }
                       cursorHover
                     />
@@ -196,10 +198,8 @@ export const TableFinancialObligationsUI = ({
                         appearance="danger"
                         size="16px"
                         onClick={() => {
-                          if (selectedDebtor) {
-                            handleDelete(selectedDebtor.id as string);
-                            setIsDeleteModal(false);
-                          }
+                          handleDelete(rowIndex as number, prop.borrowerIdentificationNumber as string);
+                          setIsDeleteModal(false);
                         }}
                         cursorHover
                       />
@@ -219,7 +219,7 @@ export const TableFinancialObligationsUI = ({
 
   if (loading) {
     content = renderLoadingRow();
-  } else if (extraDebtors.length === 0) {
+  } else if (dataInformation.length === 0) {
     content = renderNoDataRow();
   } else {
     content = renderDataRows();
@@ -266,10 +266,10 @@ export const TableFinancialObligationsUI = ({
             nextButton={dataReport.delete}
             backButton={dataReport.cancel}
             handleNext={() => {
-              if (selectedDebtor) {
-                handleDelete(selectedDebtor.id as string);
+/*               if (selectedDebtor) {
+                handleDelete(selectedDebtor.id as number);
                 setIsDeleteModal(false);
-              }
+              } */
             }}
             handleClose={() => setIsDeleteModal(false)}
           >

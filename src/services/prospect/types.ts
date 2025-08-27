@@ -22,6 +22,7 @@ export interface IAllDeductibleExpensesById {
 export interface IBorrowerProperty {
   propertyName: string;
   propertyValue: string;
+  borrowerIdentificationNumber?: string;
 }
 
 export interface IBorrower {

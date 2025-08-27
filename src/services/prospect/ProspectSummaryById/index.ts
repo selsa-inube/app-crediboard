@@ -31,7 +31,7 @@ const getSearchProspectSummaryById = async (
         `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectCode}`,
         options
       );
-
+      console.log("-----prospectCode------------ ", prospectCode);
       clearTimeout(timeoutId);
 
       if (res.status === 204) {

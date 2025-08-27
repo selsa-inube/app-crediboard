@@ -784,6 +784,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setSentData={setSentData}
                   setRequestValue={setRequestValue}
                   businessUnitPublicCode={businessUnitPublicCode}
+                  setDataProspect={setDataProspect}
                 />
               )}
             </Stack>
