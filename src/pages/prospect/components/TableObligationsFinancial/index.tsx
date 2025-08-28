@@ -4,7 +4,7 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import { currencyFormat } from "@utils/formatData/currency";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { IBorrower, IProspect, IBorrowerProperty } from "@services/prospect/types";
-import { optionsSelect } from "@/components/modals/ReportCreditsModal/index.tsx";
+import { optionsSelect, IFinancialObligation } from "@/components/modals/ReportCreditsModal/index.tsx";
 import { getSearchProspectByCode } from "@services/prospect/ProspectByCode";
 
 import { headers } from "./config";
@@ -27,12 +27,13 @@ export interface ITableFinancialObligationsProps {
   selectedBorrower?: optionsSelect;
   borrowerIdentificationNumber?: string;
   indexOnTable?: number;
+  newObligation?: IFinancialObligation;
 }
 
 export const TableFinancialObligations = (
   props: ITableFinancialObligationsProps
 ) => {
-  const { refreshKey, showActions, businessUnitPublicCode = "fondecom", prospectId = "67f7e8f52c014414fca8b52d", selectedBorrower } = props;
+  const { refreshKey, showActions, businessUnitPublicCode = "fondecom", prospectId = "67f7e8f52c014414fca8b52d", selectedBorrower, newObligation } = props;
 
   const [dataProspect, setDataProspect] = useState<IProspect[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -80,6 +81,12 @@ export const TableFinancialObligations = (
       setBorrowersListFinancialObligation(financialObligationBorrowers);
     }
   }, [selectedBorrower, dataProspect]);
+
+  useEffect(() => {
+    if (newObligation) {
+      saveNewObligation();
+    }
+  }, [newObligation]);
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
@@ -182,7 +189,7 @@ export const TableFinancialObligations = (
       indexBorrower,
       indexProperty
     } = findFinancialObligation(indexPropertyOnTable, borrowerIdentificationNumber);
-    
+
     const borrowerToUpdate = newContentTable[0].borrowers[indexBorrower];
 
     const originalPropertyValue = borrowerToUpdate.borrowerProperties[indexProperty].propertyValue;
@@ -220,6 +227,74 @@ export const TableFinancialObligations = (
 
     return listsBorrowers;
   }
+  const addFinancialObligation = (newObligation: IFinancialObligation) => {
+    if (!dataProspect || !selectedBorrower?.value) {
+      console.error("No se puede añadir la obligación: faltan datos del prospecto o el deudor no está seleccionado.");
+      return null;
+    }
+
+    const [paidFees, totalFees] = newObligation.feePaid.split('/');
+    const newPropertyValue = [
+      newObligation.type,
+      newObligation.balance,
+      newObligation.fee,
+      newObligation.entity,
+      newObligation.payment,
+      newObligation.idUser, // TOCA EL DEL USUARIIOOO
+      paidFees,
+      totalFees,
+    ].join(',');
+
+    const newProperty: IBorrowerProperty = {
+      propertyName: 'FinancialObligation',
+      propertyValue: newPropertyValue,
+    };
+
+    const newContentTable = structuredClone(dataProspect);
+
+    const borrowerIndex = newContentTable[0].borrowers.findIndex(
+      (borrower) => borrower.borrowerIdentificationNumber === selectedBorrower.value
+    );
+
+    if (borrowerIndex === -1) {
+      console.error("Deudor seleccionado no encontrado.");
+      return null;
+    }
+
+    const borrowerToUpdate = newContentTable[0].borrowers[borrowerIndex];
+
+    let lastObligationIndex = -1;
+    for (let i = borrowerToUpdate.borrowerProperties.length - 1; i >= 0; i--) {
+      if (borrowerToUpdate.borrowerProperties[i].propertyName === 'FinancialObligation') {
+        lastObligationIndex = i;
+        break;
+      }
+    }
+
+    if (lastObligationIndex !== -1) {
+      borrowerToUpdate.borrowerProperties.splice(lastObligationIndex + 1, 0, newProperty);
+    } else {
+      borrowerToUpdate.borrowerProperties.push(newProperty);
+    }
+
+    return newContentTable;
+  };
+
+  const saveNewObligation = async () => {
+    try {
+      if (!newObligation) return;
+
+      const newContentTable = addFinancialObligation(newObligation);
+
+      if (!newContentTable) return;
+
+      await updateProspect(businessUnitPublicCode, newContentTable[0]);
+
+      setDataProspect(newContentTable);
+    } catch (error) {
+      console.error("Error al guardar la nueva obligación financiera: ", error);
+    }
+  };
 
   const findFinancialObligation = (indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
     let indexBorrower = 0;
