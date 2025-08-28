@@ -148,7 +148,7 @@ export const FinancialReporting = () => {
           businessUnitPublicCode,
           idProspect
         );
-        
+
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
         console.error("Error al obtener los prospectos:", error);
@@ -159,15 +159,42 @@ export const FinancialReporting = () => {
   }, [businessUnitPublicCode, idProspect, sentData]);
 
   const handleGeneratePDF = () => {
-    setTimeout(() => {
+    console.log("handleGeneratePDF.... ");
+    setTimeout(async () => {
       generatePDF(
         dataCommercialManagementRef,
         "Gestión Comercial",
         "Gestión Comercial",
         { top: 10, bottom: 10, left: 10, right: 10 }
       );
+      await testShare();
     }, 1000);
   };
+
+  const testShare = async () => {
+    try {
+      console.log("sharing documente");
+      const pdfBlob = await generatePDF(
+        dataCommercialManagementRef,
+        "Gestión Comercial",
+        "Gestión Comercial",
+        { top: 10, bottom: 10, left: 10, right: 10 },
+        true
+      );
+
+      if (pdfBlob) {
+        const pdfFile = new File([pdfBlob], "reporte.pdf", { type: 'application/pdf' });
+
+        await navigator.share({
+          files: [pdfFile],
+          title: 'reporte para compartir',
+          text: 'este es el reporte para compartir',
+        });
+      }
+    } catch (error) {
+      console.error("No se pudo generar o compartir el PDF: ", error);
+    }
+  }
 
   const handleActions = configHandleactions({
     buttonReject: () => setShowRejectModal(true),
@@ -355,10 +382,15 @@ export const FinancialReporting = () => {
           }
         >
           <>
+          <div ref={dataCommercialManagementRef}>
+            hola
+          </div>
             <Stack direction="column" gap="20px">
               <Stack direction="column">
                 <Stack direction="column">
+
                   <ComercialManagement
+                    
                     print={handleGeneratePDF}
                     data={data}
                     collapse={collapse}

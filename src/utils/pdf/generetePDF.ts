@@ -5,52 +5,64 @@ export const generatePDF = (
   elementPrint: React.RefObject<HTMLDivElement>,
   customTitle = "",
   titlePDF = "document",
-  margins?: { top: number; bottom: number; left: number; right: number }
-) => {
-  if (elementPrint.current === null) return;
+  margins?: { top: number; bottom: number; left: number; right: number },
+  getAsBlob = false
+): Promise<void | Blob> => {
+  return new Promise((resolve, reject) => {
+    console.log("generate pdf----", elementPrint);
+    if (elementPrint.current === null) {
+      return reject(new Error("El elemento para generar el PDF no fue encontrado."));
+    }
 
-  const pdf = new jsPDF({ orientation: "landscape", format: "a4" });
+    const pdf = new jsPDF({ orientation: "landscape", format: "a4" });
 
-  const titleFontSize = 16;
+    const titleFontSize = 16;
 
-  html2canvas(elementPrint.current)
-    .then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
+    html2canvas(elementPrint.current)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
 
-      if (margins) {
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const imgProps = {
-          width: canvas.width,
-          height: canvas.height,
-        };
-        const contentWidth = pdfWidth - margins.left - margins.right;
-        const contentHeight = (imgProps.height * contentWidth) / imgProps.width;
+        if (margins) {
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const imgProps = {
+            width: canvas.width,
+            height: canvas.height,
+          };
+          const contentWidth = pdfWidth - margins.left - margins.right;
+          const contentHeight = (imgProps.height * contentWidth) / imgProps.width;
 
-        const position = margins.top + titleFontSize + 10;
+          const position = margins.top + titleFontSize + 10;
 
-        pdf.setFontSize(titleFontSize);
-        pdf.text(customTitle, margins.left, margins.top + titleFontSize);
+          pdf.setFontSize(titleFontSize);
+          pdf.text(customTitle, margins.left, margins.top + titleFontSize);
 
-        pdf.addImage(
-          imgData,
-          "PNG",
-          margins.left,
-          position,
-          contentWidth,
-          contentHeight
-        );
-      } else {
-        const position = titleFontSize + 20;
+          pdf.addImage(
+            imgData,
+            "PNG",
+            margins.left,
+            position,
+            contentWidth,
+            contentHeight
+          );
+        } else {
+          const position = titleFontSize + 20;
 
-        pdf.setFontSize(titleFontSize);
-        pdf.text(customTitle, 10, position);
+          pdf.setFontSize(titleFontSize);
+          pdf.text(customTitle, 10, position);
 
-        pdf.addImage(imgData, "PNG", 10, position + 10, 100, 100);
-      }
+          pdf.addImage(imgData, "PNG", 10, position + 10, 100, 100);
+        }
 
-      pdf.save(titlePDF);
-    })
-    .catch((error) => {
-      console.error("Error al generar el PDF:", error);
-    });
+        if (getAsBlob) {
+          const pdfBlob = pdf.output('blob');
+          resolve(pdfBlob);
+        } else {
+          pdf.save(titlePDF);
+          resolve();
+        }
+      })
+      .catch((error) => {
+        console.error("Error al generar el PDF:", error);
+      });
+  })
 };
