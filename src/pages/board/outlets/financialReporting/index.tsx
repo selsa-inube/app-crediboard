@@ -35,7 +35,7 @@ import {
 
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";
-import { configHandleactions, optionButtons } from "./config";
+import { configHandleactions, optionButtons, labelsAndValuesShare } from "./config";
 import {
   StyledMarginPrint,
   StyledPageBreak,
@@ -159,12 +159,11 @@ export const FinancialReporting = () => {
   }, [businessUnitPublicCode, idProspect, sentData]);
 
   const handleGeneratePDF = () => {
-    console.log("handleGeneratePDF.... ");
     setTimeout(async () => {
       generatePDF(
         dataCommercialManagementRef,
-        "Gestión Comercial",
-        "Gestión Comercial",
+        labelsAndValuesShare.titleOnPdf,
+        labelsAndValuesShare.titleOnPdf,
         { top: 10, bottom: 10, left: 10, right: 10 }
       );
     }, 1);
@@ -172,22 +171,21 @@ export const FinancialReporting = () => {
 
   const generateAndSharePdf = async () => {
     try {
-      console.log("sharing documente");
       const pdfBlob = await generatePDF(
         dataCommercialManagementRef,
-        "Gestión Comercial",
-        "Gestión Comercial",
+        labelsAndValuesShare.titleOnPdf,
+        labelsAndValuesShare.titleOnPdf,
         { top: 10, bottom: 10, left: 10, right: 10 },
         true
       );
 
       if (pdfBlob) {
-        const pdfFile = new File([pdfBlob], "reporte.pdf", { type: 'application/pdf' });
+        const pdfFile = new File([pdfBlob], labelsAndValuesShare.fileName, { type: 'application/pdf' });
 
         await navigator.share({
           files: [pdfFile],
-          title: 'reporte para compartir',
-          text: 'este es el reporte para compartir',
+          title: labelsAndValuesShare.titleOnPdf,
+          text: labelsAndValuesShare.text,
         });
       }
     } catch (error) {

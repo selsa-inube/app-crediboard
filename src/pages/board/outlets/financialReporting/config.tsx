@@ -195,3 +195,10 @@ export const errorMessages = {
     button: "Volver a intentar",
   },
 };
+
+export const labelsAndValuesShare = {
+  titleOnPdf: "Gestión Comercial",
+  fileName: "reporte_comercial.pdf",
+  text: "Reporte Comercial para compartir",
+
+}
