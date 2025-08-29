@@ -9,7 +9,6 @@ export const generatePDF = (
   getAsBlob = false
 ): Promise<void | Blob> => {
   return new Promise((resolve, reject) => {
-    console.log("generate pdf----", elementPrint);
     if (elementPrint.current === null) {
       return reject(new Error("El elemento para generar el PDF no fue encontrado."));
     }
@@ -20,7 +19,7 @@ export const generatePDF = (
 
     html2canvas(elementPrint.current)
       .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
+        const imgData = canvas.toDataURL("image/png", 0.8);
 
         if (margins) {
           const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -38,11 +37,13 @@ export const generatePDF = (
 
           pdf.addImage(
             imgData,
-            "PNG",
+            "JPEG",
             margins.left,
             position,
             contentWidth,
-            contentHeight
+            contentHeight,
+            undefined,
+            "FAST"
           );
         } else {
           const position = titleFontSize + 20;
@@ -50,7 +51,16 @@ export const generatePDF = (
           pdf.setFontSize(titleFontSize);
           pdf.text(customTitle, 10, position);
 
-          pdf.addImage(imgData, "PNG", 10, position + 10, 100, 100);
+          pdf.addImage(
+            imgData,
+            "JPEG",
+            10,
+            position + 10,
+            100,
+            100,
+            undefined,
+            "FAST"
+          );
         }
 
         if (getAsBlob) {

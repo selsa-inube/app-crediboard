@@ -167,11 +167,10 @@ export const FinancialReporting = () => {
         "Gestión Comercial",
         { top: 10, bottom: 10, left: 10, right: 10 }
       );
-      await testShare();
-    }, 1000);
+    }, 1);
   };
 
-  const testShare = async () => {
+  const generateAndSharePdf = async () => {
     try {
       console.log("sharing documente");
       const pdfBlob = await generatePDF(
@@ -356,165 +355,164 @@ export const FinancialReporting = () => {
   };
 
   return (
-    <StyledMarginPrint $isMobile={isMobile}>
-      <Stack direction="column">
-        <Stack justifyContent="center" alignContent="center">
-          <StyledToast $isMobile={isMobile}>
-            {errorsService.map((error) => (
-              <ErrorAlert
-                key={error.id}
-                message={error.message.toString()}
-                onClose={() => handleCloseErrorService(error.id)}
-                isMobile={isMobile}
-              />
-            ))}
-          </StyledToast>
-        </Stack>
-        <ContainerSections
-          isMobile={isMobile}
-          stockTray={
-            <StockTray
-              isMobile={isMobile}
-              actionButtons={handleActions}
-              navigation={() => navigation("/")}
-              eventData={eventData}
-            />
-          }
-        >
-          <>
-          <div ref={dataCommercialManagementRef}>
-            hola
-          </div>
-            <Stack direction="column" gap="20px">
-              <Stack direction="column">
-                <Stack direction="column">
-
-                  <ComercialManagement
-                    
-                    print={handleGeneratePDF}
-                    data={data}
-                    collapse={collapse}
-                    setCollapse={setCollapse}
-                    id={id!}
-                    hideContactIcons={true}
-                    prospectData={dataProspect!}
-                    sentData={null}
-                    setSentData={setSentData}
-                    setRequestValue={setRequestValue}
-                    requestValue={requestValue}
-                  />
-                </Stack>
-              </Stack>
-              <StyledScreenPrint $isMobile={isMobile}>
-                <Stack direction="column">
-                  <ToDo
-                    icon={infoIcon}
-                    isMobile={isMobile}
-                    id={id!}
-                    user={user!.nickname!}
-                    setIdProspect={setIdProspect}
-                  />
-                </Stack>
-                <Stack direction="column" height={isMobile ? "auto" : "277px"}>
-                  <Approvals user={id!} isMobile={isMobile} id={id!} />
-                </Stack>
-                <Stack direction="column" height={isMobile ? "auto" : "340px"}>
-                  <StyledPageBreak />
-                  <Requirements
-                    isMobile={isMobile}
-                    id={data.creditRequestId!}
-                    user={user!.email!}
-                    businessUnitPublicCode={businessUnitPublicCode}
-                    creditRequestCode={data.creditRequestCode!}
-                  />
-                </Stack>
-                <Stack direction="column">
-                  <Management id={id!} isMobile={isMobile} />
-                </Stack>
-                <Stack direction="column" height={isMobile ? "auto" : "163px"}>
-                  <StyledPageBreak />
-                  <PromissoryNotes id={id!} isMobile={isMobile} />
-                </Stack>
-                <Stack direction="column" height={isMobile ? "auto" : "163px"}>
-                  <Postingvouchers user={id!} id={id!} isMobile={isMobile} />
-                </Stack>
-                <StyledPageBreak />
-                <StyledPageBreak />
-              </StyledScreenPrint>
-            </Stack>
-            {showAttachments && (
-              <ListModal
-                title="Adjuntar"
-                handleClose={() => setShowAttachments(false)}
-                optionButtons={optionButtons}
-                buttonLabel="Guardar"
-                id={data.creditRequestId!}
-                isViewing={false}
-                uploadedFiles={uploadedFiles}
-                setUploadedFiles={setUploadedFiles}
-              />
-            )}
-            {attachDocuments && (
-              <ListModal
-                title="Ver Adjuntos"
-                handleClose={() => setAttachDocuments(false)}
-                buttonLabel="Cerrar"
-                id={data.creditRequestId!}
-                isViewing={true}
-                dataDocument={document}
-              />
-            )}
-          </>
-        </ContainerSections>
-        {showRejectModal && (
-          <TextAreaModal
-            title="Rechazar"
-            buttonText="Confirmar"
-            inputLabel="Motivo del Rechazo."
-            inputPlaceholder="Describa el motivo del Rechazo."
-            onCloseModal={() => setShowRejectModal(false)}
-            handleNext={() => {
-              handleSubmit();
-              setShowRejectModal(false);
-              navigation("/");
-            }}
-            onChange={(event) => setRemovalJustification(event.target.value)}
-          />
-        )}
-        {showGuarantee && (
-          <OfferedGuaranteeModal
-            handleClose={() => setShowGuarantee(false)}
+    <div ref={dataCommercialManagementRef}>
+      <StyledMarginPrint $isMobile={isMobile}>
+        <Stack direction="column">
+          <Stack justifyContent="center" alignContent="center">
+            <StyledToast $isMobile={isMobile}>
+              {errorsService.map((error) => (
+                <ErrorAlert
+                  key={error.id}
+                  message={error.message.toString()}
+                  onClose={() => handleCloseErrorService(error.id)}
+                  isMobile={isMobile}
+                />
+              ))}
+            </StyledToast>
+          </Stack>
+          <ContainerSections
             isMobile={isMobile}
-            prospectData={dataProspect!}
-            businessUnitPublicCode={businessUnitPublicCode}
-            requestId={data.creditRequestId!}
-          />
-        )}
-        {showCancelModal && (
-          <TextAreaModal
-            title="Anular"
-            buttonText="Confirmar"
-            inputLabel="Motivo de la anulación."
-            inputPlaceholder="Describa el motivo de la anulación."
-            onCloseModal={() => setShowCancelModal(false)}
-            handleNext={() => {
-              handleDeleteCreditRequest();
-              setShowCancelModal(false);
-            }}
-            onChange={(e) => setRemovalJustification(e.target.value)}
-          />
-        )}
-        {showMenu && isMobile && (
-          <MobileMenu
-            onClose={() => setShowMenu(false)}
-            onReject={hanleOnReject}
-            onCancel={handleOnCancel}
-            onAttach={handleOnAttach}
-            onViewAttachments={handleOnViewAttachments}
-            onGuarantee={() => setShowGuarantee(true)}
-          />
-        )}
-      </Stack>
-    </StyledMarginPrint>
+            stockTray={
+              <StockTray
+                isMobile={isMobile}
+                actionButtons={handleActions}
+                navigation={() => navigation("/")}
+                eventData={eventData}
+              />
+            }
+          >
+            <>
+              <Stack direction="column" gap="20px">
+                <Stack direction="column">
+                  <Stack direction="column">
+
+                    <ComercialManagement
+                      generateAndSharePdf={generateAndSharePdf}
+                      print={handleGeneratePDF}
+                      data={data}
+                      collapse={collapse}
+                      setCollapse={setCollapse}
+                      id={id!}
+                      hideContactIcons={true}
+                      prospectData={dataProspect!}
+                      sentData={null}
+                      setSentData={setSentData}
+                      setRequestValue={setRequestValue}
+                      requestValue={requestValue}
+                    />
+                  </Stack>
+                </Stack>
+                <StyledScreenPrint $isMobile={isMobile}>
+                  <Stack direction="column">
+                    <ToDo
+                      icon={infoIcon}
+                      isMobile={isMobile}
+                      id={id!}
+                      user={user!.nickname!}
+                      setIdProspect={setIdProspect}
+                    />
+                  </Stack>
+                  <Stack direction="column" height={isMobile ? "auto" : "277px"}>
+                    <Approvals user={id!} isMobile={isMobile} id={id!} />
+                  </Stack>
+                  <Stack direction="column" height={isMobile ? "auto" : "340px"}>
+                    <StyledPageBreak />
+                    <Requirements
+                      isMobile={isMobile}
+                      id={data.creditRequestId!}
+                      user={user!.email!}
+                      businessUnitPublicCode={businessUnitPublicCode}
+                      creditRequestCode={data.creditRequestCode!}
+                    />
+                  </Stack>
+                  <Stack direction="column">
+                    <Management id={id!} isMobile={isMobile} />
+                  </Stack>
+                  <Stack direction="column" height={isMobile ? "auto" : "163px"}>
+                    <StyledPageBreak />
+                    <PromissoryNotes id={id!} isMobile={isMobile} />
+                  </Stack>
+                  <Stack direction="column" height={isMobile ? "auto" : "163px"}>
+                    <Postingvouchers user={id!} id={id!} isMobile={isMobile} />
+                  </Stack>
+                  <StyledPageBreak />
+                  <StyledPageBreak />
+                </StyledScreenPrint>
+              </Stack>
+              {showAttachments && (
+                <ListModal
+                  title="Adjuntar"
+                  handleClose={() => setShowAttachments(false)}
+                  optionButtons={optionButtons}
+                  buttonLabel="Guardar"
+                  id={data.creditRequestId!}
+                  isViewing={false}
+                  uploadedFiles={uploadedFiles}
+                  setUploadedFiles={setUploadedFiles}
+                />
+              )}
+              {attachDocuments && (
+                <ListModal
+                  title="Ver Adjuntos"
+                  handleClose={() => setAttachDocuments(false)}
+                  buttonLabel="Cerrar"
+                  id={data.creditRequestId!}
+                  isViewing={true}
+                  dataDocument={document}
+                />
+              )}
+            </>
+          </ContainerSections>
+          {showRejectModal && (
+            <TextAreaModal
+              title="Rechazar"
+              buttonText="Confirmar"
+              inputLabel="Motivo del Rechazo."
+              inputPlaceholder="Describa el motivo del Rechazo."
+              onCloseModal={() => setShowRejectModal(false)}
+              handleNext={() => {
+                handleSubmit();
+                setShowRejectModal(false);
+                navigation("/");
+              }}
+              onChange={(event) => setRemovalJustification(event.target.value)}
+            />
+          )}
+          {showGuarantee && (
+            <OfferedGuaranteeModal
+              handleClose={() => setShowGuarantee(false)}
+              isMobile={isMobile}
+              prospectData={dataProspect!}
+              businessUnitPublicCode={businessUnitPublicCode}
+              requestId={data.creditRequestId!}
+            />
+          )}
+          {showCancelModal && (
+            <TextAreaModal
+              title="Anular"
+              buttonText="Confirmar"
+              inputLabel="Motivo de la anulación."
+              inputPlaceholder="Describa el motivo de la anulación."
+              onCloseModal={() => setShowCancelModal(false)}
+              handleNext={() => {
+                handleDeleteCreditRequest();
+                setShowCancelModal(false);
+              }}
+              onChange={(e) => setRemovalJustification(e.target.value)}
+            />
+          )}
+          {showMenu && isMobile && (
+            <MobileMenu
+              onClose={() => setShowMenu(false)}
+              onReject={hanleOnReject}
+              onCancel={handleOnCancel}
+              onAttach={handleOnAttach}
+              onViewAttachments={handleOnViewAttachments}
+              onGuarantee={() => setShowGuarantee(true)}
+            />
+          )}
+        </Stack>
+      </StyledMarginPrint>
+    </div>
   );
 };
