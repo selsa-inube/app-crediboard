@@ -1,37 +1,42 @@
-import { useState } from "react";
-import { mockFinancialObligation } from "@mocks/add-prospect/financial-obligation/financialobligation.mock";
+import { useMemo } from "react";
 
-export const usePagination = () => {
-  const [currentPage, setCurrentPage] = useState(0);
+import { IDataInformationItem } from "./interface";
 
-  const pageLength = 5;
-  const totalRecords = mockFinancialObligation.length;
-  const totalPages = Math.ceil(totalRecords / pageLength);
+const ROWS_PER_PAGE = 5;
 
+export const usePagination = (dataInformation: IDataInformationItem[], setCurrentPage: React.Dispatch<React.SetStateAction<number>>, currentPage: number) => {
+  const totalRecords = dataInformation.length;
+
+  if(totalRecords <= ROWS_PER_PAGE){
+    setCurrentPage(0)
+  }
+  
+  let paginatedData: IDataInformationItem[] = [];
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(totalRecords / ROWS_PER_PAGE) || 1;
+  }, [totalRecords, ROWS_PER_PAGE]);
+  
   const handleStartPage = () => setCurrentPage(0);
   const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 0));
-  const handleNextPage = () =>
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
   const handleEndPage = () => setCurrentPage(totalPages - 1);
 
-  const firstEntryInPage = currentPage * pageLength;
-  const lastEntryInPage = Math.min(firstEntryInPage + pageLength, totalRecords);
+  const startIndex = currentPage * ROWS_PER_PAGE; 
+  const endIndex = Math.min(startIndex + ROWS_PER_PAGE, totalRecords);
 
-  const currentData = mockFinancialObligation.slice(
-    firstEntryInPage,
-    lastEntryInPage
-  );
+  paginatedData = dataInformation.slice(startIndex, endIndex);
 
   return {
+    setCurrentPage,
     currentPage,
-    totalRecords,
+    paginatedData,
     totalPages,
     handleStartPage,
     handlePrevPage,
     handleNextPage,
     handleEndPage,
-    firstEntryInPage,
-    lastEntryInPage,
-    currentData,
+    startIndex,
+    endIndex
   };
 };

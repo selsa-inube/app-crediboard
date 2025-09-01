@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { MdAdd, MdCached } from "react-icons/md";
 import { FormikValues } from "formik";
-import { Stack, useMediaQuery, Button, Select } from "@inubekit/inubekit";
+import { Stack, useMediaQuery, Button, Select, Text } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
@@ -18,6 +18,7 @@ export interface ReportCreditsModalProps {
   debtor: string;
   prospectData?: IProspect[];
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
+  businessUnitPublicCode: string;
 }
 
 export interface optionsSelect {
@@ -38,7 +39,7 @@ export interface IFinancialObligation {
 }
 
 export function ReportCreditsModal(props: ReportCreditsModalProps) {
-  const { handleClose, prospectData } = props;
+  const { handleClose, prospectData, businessUnitPublicCode } = props;
   const [loading, setLoading] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -84,9 +85,9 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     if (!prospectData) return;
 
     const listsBorrowers = prospectData[0].borrowers?.filter((borrower) => {
-        if (borrower[parameter] === value) {
-          return borrower;
-        }
+      if (borrower[parameter] === value) {
+        return borrower;
+      }
     });
 
     return listsBorrowers[0];
@@ -138,16 +139,33 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             direction={isMobile ? "column" : "row"}
             gap="16px"
           >
-            <Select
-              id="income"
-              name="deudor"
-              label="Deudor"
-              placeholder="Seleccione una opción"
-              options={optionsBorrowers || []}
-              value={selectedBorrower?.value || ""}
-              onChange={(name, value) => onChangeSelect(name, value)}
-              size="compact"
-            />
+            {
+              optionsBorrowers && optionsBorrowers.length > 1 ?
+                <Select
+                  id="income"
+                  name="deudor"
+                  label="Deudor"
+                  placeholder="Seleccione una opción"
+                  options={optionsBorrowers || []}
+                  value={selectedBorrower?.value || ""}
+                  onChange={(name, value) => onChangeSelect(name, value)}
+                  size="compact"
+                />
+                :
+                <Stack
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Text
+                    appearance="dark"
+                    as="h2"
+                  >
+                    {optionsBorrowers[0].label}
+                  </Text>
+                </Stack>
+            }
+
             <Stack
               direction={isMobile ? "column" : "row"}
               alignItems="center"
@@ -199,8 +217,9 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         <TableFinancialObligations
           showActions={true}
           selectedBorrower={selectedBorrower}
-          prospectId={prospectData[0]?.prospectId || ""}
+          prospectId={prospectData?.[0]?.prospectId || ""}
           newObligation={newObligation}
+          businessUnitPublicCode={businessUnitPublicCode}
         />
       </Stack>
     </BaseModal>

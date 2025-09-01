@@ -815,6 +815,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 handleClose={handleCloseModal}
                 prospectData={prospectData ? [prospectData] : undefined}
                 options={incomeOptions}
+                businessUnitPublicCode={businessUnitPublicCode}
               />
             )}
             {currentModal === "extraPayments" && (

@@ -52,11 +52,14 @@ interface UIProps {
   handleUpdate: (
     updatedDebtor: ITableFinancialObligationsProps
   ) => Promise<void>;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  currentPage: number;
+  setGotEndPage: React.Dispatch<React.SetStateAction<boolean>>
+  gotEndPage: boolean
 }
 
 export const TableFinancialObligationsUI = ({
   dataInformation,
-  extraDebtors,
   loading,
   selectedDebtor,
   visibleHeaders,
@@ -67,17 +70,28 @@ export const TableFinancialObligationsUI = ({
   handleEdit,
   handleDelete,
   handleUpdate,
+  setCurrentPage,
+  currentPage,
+  setGotEndPage,
+  gotEndPage
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
-  console.log("selectedDebtor: ", selectedDebtor);
-  console.log("dataInformation: ", dataInformation);
+
   const {
     handleStartPage,
     handlePrevPage,
     handleNextPage,
     handleEndPage,
-    firstEntryInPage,
-  } = usePagination();
+    startIndex,
+    endIndex,
+    paginatedData,
+    totalPages
+  } = usePagination(dataInformation, setCurrentPage, currentPage);
+
+  if (gotEndPage) {
+    setCurrentPage(totalPages);
+    setGotEndPage(false);
+  }
 
   const getValueFromProperty = (
     value: string | number | string[] | undefined,
@@ -104,6 +118,8 @@ export const TableFinancialObligationsUI = ({
     0
   );
 
+  const ROWS_PER_PAGE = 5;
+
   const renderHeaders = () => {
     return visibleHeaders.map((header, index) =>
       loading ? (
@@ -123,8 +139,8 @@ export const TableFinancialObligationsUI = ({
     );
   };
 
-  const renderLoadingRow = () => (
-    <Tr>
+  const renderLoadingRow = (key: number) => (
+    <Tr key={key}>
       {visibleHeaders.map((_, index) => (
         <Td key={index} type="custom">
           <SkeletonLine />
@@ -135,7 +151,7 @@ export const TableFinancialObligationsUI = ({
 
   const renderNoDataRow = () => (
     <Tr>
-      <Td colSpan={visibleHeaders.length} align="center" type="custom">
+      <Td colSpan={visibleHeaders.length} align="center" type="custom" height={245}>
         <Text size="large" type="label" appearance="gray" textAlign="center">
           {dataReport.noData}
         </Text>
@@ -144,7 +160,8 @@ export const TableFinancialObligationsUI = ({
   );
 
   const renderDataRows = () =>
-    dataInformation.map((prop: IDataInformationItem, rowIndex: number) => {
+    paginatedData.map((prop: IDataInformationItem, index: number) => {
+      const rowIndex = (currentPage - 1) * ROWS_PER_PAGE + index;
       let values: string[] = [];
 
       if (typeof prop.propertyValue === "string") {
@@ -177,7 +194,7 @@ export const TableFinancialObligationsUI = ({
             return (
               <Td
                 key={colIndex}
-                appearance={rowIndex % 2 === 0 ? "light" : "dark"}
+                appearance={"light"}
                 type={header.action ? "custom" : "text"}
                 align={isCurrency ? "right" : "center"}
               >
@@ -188,7 +205,7 @@ export const TableFinancialObligationsUI = ({
                       appearance="dark"
                       size="16px"
                       onClick={() =>
-                        handleEdit(prop as ITableFinancialObligationsProps, rowIndex)
+                        handleEdit(prop as ITableFinancialObligationsProps, prop.id as number)
                       }
                       cursorHover
                     />
@@ -198,7 +215,7 @@ export const TableFinancialObligationsUI = ({
                         appearance="danger"
                         size="16px"
                         onClick={() => {
-                          handleDelete(rowIndex as number, prop.borrowerIdentificationNumber as string);
+                          handleDelete(prop.id as number, prop.borrowerIdentificationNumber as string);
                           setIsDeleteModal(false);
                         }}
                         cursorHover
@@ -215,15 +232,53 @@ export const TableFinancialObligationsUI = ({
       );
     });
 
-  let content;
+  const MIN_ROWS = 5;
 
-  if (loading) {
-    content = renderLoadingRow();
-  } else if (dataInformation.length === 0) {
-    content = renderNoDataRow();
-  } else {
-    content = renderDataRows();
-  }
+  const renderTbodyContent = () => {
+    if (loading) {
+      return Array.from({ length: MIN_ROWS }).map((_, index) =>
+        renderLoadingRow(index)
+      );
+    }
+
+    if (dataInformation.length === 0) {
+      return renderNoDataRow();
+    }
+
+    const dataRows = renderDataRows();
+    const emptyRowsCount = ROWS_PER_PAGE - paginatedData.length;
+
+    if (emptyRowsCount > 0) {
+      const emptyRows = Array.from({ length: emptyRowsCount }).map((_, index) => {
+        const rowIndex = paginatedData.length + index;
+        const globalRowIndex = (currentPage - 1) * ROWS_PER_PAGE + rowIndex;
+
+        return renderEmptyRow(globalRowIndex);
+      });
+
+      return (
+        <>
+          {dataRows}
+          {emptyRows}
+        </>
+      );
+    }
+
+    return dataRows;
+  };
+
+  const renderEmptyRow = (rowIndex: number) => (
+    <Tr key={`empty-${rowIndex}`} border="left">
+      {visibleHeaders.map((_, colIndex) => (
+        <Td
+          key={`empty-cell-${rowIndex}-${colIndex}`}
+          appearance={"light"}
+        >
+          &nbsp;
+        </Td>
+      ))}
+    </Tr>
+  );
 
   return (
     <Stack direction="column" width="100%" gap="16px">
@@ -231,14 +286,14 @@ export const TableFinancialObligationsUI = ({
         <Thead>
           <Tr>{renderHeaders()}</Tr>
         </Thead>
-        <Tbody>{content}</Tbody>
+        <Tbody>{renderTbodyContent()}</Tbody>
         {!loading && dataInformation.length > 0 && (
           <Tfoot>
             <Tr border="bottom">
               <Td colSpan={visibleHeaders.length} type="custom" align="center">
                 <Pagination
-                  firstEntryInPage={firstEntryInPage}
-                  lastEntryInPage={dataInformation.length}
+                  firstEntryInPage={startIndex}
+                  lastEntryInPage={endIndex}
                   totalRecords={dataInformation.length}
                   handleStartPage={handleStartPage}
                   handlePrevPage={handlePrevPage}
@@ -265,12 +320,6 @@ export const TableFinancialObligationsUI = ({
             title={dataReport.deletion}
             nextButton={dataReport.delete}
             backButton={dataReport.cancel}
-            handleNext={() => {
-/*               if (selectedDebtor) {
-                handleDelete(selectedDebtor.id as number);
-                setIsDeleteModal(false);
-              } */
-            }}
             handleClose={() => setIsDeleteModal(false)}
           >
             <Stack width="400px">

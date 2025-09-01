@@ -350,6 +350,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           debtor={form.borrower}
           prospectData={prospectData ? [prospectData] : undefined}
           setDataProspect={setDataProspect}
+          businessUnitPublicCode={businessUnitPublicCode}
         />
       )}
       {currentModal === "extraPayments" && (

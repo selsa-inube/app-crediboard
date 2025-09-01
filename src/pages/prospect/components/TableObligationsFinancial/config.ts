@@ -69,3 +69,5 @@ export function convertObligationsToProperties(
     ].join(", "),
   }));
 }
+
+export const ROWS_PER_PAGE = 5;
