@@ -87,7 +87,6 @@ export const TableFinancialObligations = (
   }, [selectedBorrower, dataProspect]);
 
   useEffect(() => {
-    console.log("newObligation: ", newObligation);
     if (newObligation) {
       saveNewObligation();
     }

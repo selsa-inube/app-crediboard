@@ -13,7 +13,6 @@ export const updateProspect = async (
 ): Promise<IProspect | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-  console.log("===================prospect ", prospect);
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();

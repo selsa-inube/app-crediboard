@@ -23,7 +23,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { currencyFormat } from "@utils/formatData/currency";
 
 import { usePagination } from "./utils";
-import { dataReport } from "./config";
+import { dataReport, ROWS_PER_PAGE } from "./config";
 
 export interface ITableFinancialObligationsProps {
   type?: string;
@@ -117,8 +117,6 @@ export const TableFinancialObligationsUI = ({
     (sum, item) => sum + getValueFromProperty(item.propertyValue, 2),
     0
   );
-
-  const ROWS_PER_PAGE = 5;
 
   const renderHeaders = () => {
     return visibleHeaders.map((header, index) =>
@@ -232,11 +230,9 @@ export const TableFinancialObligationsUI = ({
       );
     });
 
-  const MIN_ROWS = 5;
-
   const renderTbodyContent = () => {
     if (loading) {
-      return Array.from({ length: MIN_ROWS }).map((_, index) =>
+      return Array.from({ length: ROWS_PER_PAGE }).map((_, index) =>
         renderLoadingRow(index)
       );
     }

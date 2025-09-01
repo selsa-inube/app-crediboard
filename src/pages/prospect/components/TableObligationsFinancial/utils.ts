@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 
 import { IDataInformationItem } from "./interface";
-
-const ROWS_PER_PAGE = 5;
+import { ROWS_PER_PAGE } from "./config";
 
 export const usePagination = (dataInformation: IDataInformationItem[], setCurrentPage: React.Dispatch<React.SetStateAction<number>>, currentPage: number) => {
   const totalRecords = dataInformation.length;

@@ -118,9 +118,6 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   const handleSaveNewObligation = (obligation: IFinancialObligation) => {
     setNewObligation(obligation);
   }
-  console.log("getOptionsSelect: ", getOptionsSelect());
-  console.log("prospectData: ", prospectData)
-  console.log("selectedBorrower: ", selectedBorrower);
 
   return (
     <BaseModal
