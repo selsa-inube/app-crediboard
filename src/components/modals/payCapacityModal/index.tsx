@@ -72,6 +72,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
             selectedTab={currentTab}
             tabs={tabsToRender}
             onChange={onChange}
+            scroll={isMobile}
           />
           {currentTab === "ordinary" && (
             <Stack direction="column" gap="16px">
@@ -174,7 +175,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                     {paymentCapacityData.maxValueAmount}
                   </Text>
                   <Stack direction="column" alignItems="center">
-                    <Stack alignItems="center" gap="4px">
+                    <Stack alignItems="center" gap="6px">
                       <Text
                         type="headline"
                         size="small"

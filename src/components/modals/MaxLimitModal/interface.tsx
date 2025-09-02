@@ -100,7 +100,7 @@ export const MaxLimitModalUI = (props: IMaxLimitModalUIProps) => {
                 type="headline"
                 size="large"
               >
-                ${loading ? "Cargando..." : currencyFormat(maxAmount, false)}
+                {loading ? incomeModalConfig.load : `$${currencyFormat(maxAmount, false)}`}
               </Text>
               <Text appearance="gray" size="small">
                 {incomeModalConfig.maxAmount}

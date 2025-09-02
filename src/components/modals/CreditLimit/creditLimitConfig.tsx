@@ -5,7 +5,7 @@ export const creditLimitTexts = {
   maxDebtFRC: "Monto máx. según capacidad de pago",
   maxIndebtedness: "Endeudamiento máx. x análisis de riesgo",
   maxAmount: "Monto máximo utilizable",
-  assignedLimit: "Monto máx. personalizado por U.N..",
+  assignedLimit: "Monto máx. personalizado por U.N.",
   maxUsableLimit: "Cupo máximo utilizable",
   maxUsableQuote: (
     <>

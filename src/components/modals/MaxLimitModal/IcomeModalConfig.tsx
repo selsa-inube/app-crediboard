@@ -38,4 +38,5 @@ export const incomeModalConfig = {
     </>
   ),
   maxAmount: "Monto máximo disponible para la línea de crédito",
+  load: "Cargando..."
 };

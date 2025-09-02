@@ -6,6 +6,12 @@ export const StyledTable = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
 
+  th,
+  td {
+    word-break: break-word;
+    text-align: center;
+  }
+
   &::-webkit-scrollbar {
     width: 8px;
     border-radius: 8px;
