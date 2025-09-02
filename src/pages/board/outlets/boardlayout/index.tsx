@@ -42,7 +42,7 @@ function BoardLayout() {
 
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 1439px)");
 
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
