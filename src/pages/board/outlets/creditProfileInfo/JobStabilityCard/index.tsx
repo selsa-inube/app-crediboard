@@ -6,6 +6,10 @@ import { StyledDivider } from "@components/cards/SummaryCard/styles";
 import { currencyFormat } from "@utils/formatData/currency";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
+import { useEffect, useState } from "react";
+import { getLaborStabilityByCustomerId } from "@services/creditRequest/query/getLaborStabilityByCustomerId";
+import { ILaborStabilityByCustomerId } from "@services/creditRequest/query/getLaborStabilityByCustomerId/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 
 interface JobStabilityCardProps {
   companySeniority: number;
@@ -14,22 +18,44 @@ interface JobStabilityCardProps {
   isMobile?: boolean;
   dataCreditProfile: boolean;
   setCreditProfile: (stade: boolean) => void;
+  requests: ICreditRequest;
+  businessUnitPublicCode: string;
 }
 
 export function JobStabilityCard(props: JobStabilityCardProps) {
   const {
-    companySeniority,
-    stabilityIndex,
     estimatedCompensation,
     isMobile,
     dataCreditProfile,
     setCreditProfile,
+    requests,
+    businessUnitPublicCode,
   } = props;
 
   const handleRetry = () => {
     setCreditProfile(false);
   };
-  
+  const [laborStabilityByCustomerId, setLaborStabilityByCustomerId] = useState<
+    ILaborStabilityByCustomerId[]
+  >([]);
+
+  useEffect(() => {
+    const fetchLaborStabilityByCustomerId = async () => {
+      try {
+        const data = await getLaborStabilityByCustomerId(
+          businessUnitPublicCode,
+          requests.clientIdentificationNumber
+        );
+        setLaborStabilityByCustomerId(data);
+      } catch (error) {
+        console.error("Error fetching novelties:", error);
+      }
+    };
+
+    fetchLaborStabilityByCustomerId();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <CardInfoContainer
       title="Estabilidad Laboral"
@@ -59,7 +85,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {companySeniority} años
+                {laborStabilityByCustomerId[0]?.laborSeniorityYears} años
               </Text>
             </Stack>
           </Stack>
@@ -77,9 +103,11 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
                   type="headline"
                   size={isMobile ? "small" : "medium"}
                 >
-                  {stabilityIndex}
+                  {laborStabilityByCustomerId[0]?.jobStabilityIndex}
                 </Text>
-                <Text size={isMobile ? "small" : "medium"}>/1000</Text>
+                <Text size={isMobile ? "small" : "medium"}>
+                  /{laborStabilityByCustomerId[0]?.jobStabilityIndexTotal}
+                </Text>
               </Stack>
             </Stack>
           </Stack>
@@ -98,7 +126,12 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
               >
                 {estimatedCompensation === 0
                   ? "$ 0"
-                  : currencyFormat(estimatedCompensation)}
+                  : currencyFormat(
+                      Number(
+                        laborStabilityByCustomerId[0]
+                          ?.estimatedContractTerminationPayment
+                      ) || 0
+                    )}
               </Text>
             </Stack>
           </Stack>
