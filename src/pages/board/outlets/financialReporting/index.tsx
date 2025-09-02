@@ -189,7 +189,7 @@ export const FinancialReporting = () => {
         });
       }
     } catch (error) {
-      console.error("No se pudo generar o compartir el PDF: ", error);
+      console.error(error);
     }
   }
 

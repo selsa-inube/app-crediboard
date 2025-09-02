@@ -72,7 +72,7 @@ export const generatePDF = (
         }
       })
       .catch((error) => {
-        console.error("Error al generar el PDF:", error);
+        console.error(error);
       });
   })
 };
