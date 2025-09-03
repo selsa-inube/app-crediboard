@@ -47,7 +47,7 @@ const usePortalLogic = () => {
       }
 
       try {
-        const portals = await getStaffPortalsByBusinessManager();
+        const portals = await getStaffPortalsByBusinessManager(rawPortalCode);
         const match = portals.find(
           (p) => p.staffPortalId?.trim() === rawPortalCode
         );
@@ -59,9 +59,9 @@ const usePortalLogic = () => {
         }
 
         setPortalData(match);
-        const { businessManagerId } = match;
+        const { businessManagerCode } = match;
 
-        if (!businessManagerId) {
+        if (!businessManagerCode) {
           setCodeError(1002);
           setLoading(false);
           return;
@@ -72,7 +72,7 @@ const usePortalLogic = () => {
           return;
         }
 
-        const manager = await getBusinessManagers(businessManagerId);
+        const manager = await getBusinessManagers(businessManagerCode);
         setBusinessManager(manager);
         setLoading(false);
       } catch (error) {

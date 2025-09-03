@@ -14,8 +14,6 @@ import { getStaff } from "@services/staff/staffs";
 import { decrypt } from "@utils/encrypt/encrypt";
 import { getSearchUseCaseForStaff } from "@services/staffs/SearchUseCaseForStaff";
 
-
-
 interface IBusinessUnits {
   businessUnitPublicCode: string;
   abbreviatedName: string;
@@ -55,9 +53,6 @@ function useAppContext() {
   } catch (error) {
     console.error("Error parsing businessUnitSigla: ", error);
   }
-
-
-
 
   useEffect(() => {
     const fetchStaffData = async () => {
@@ -150,9 +145,10 @@ function useAppContext() {
   ]);
 
   useEffect(() => {
-    validateConsultation().then((data) => {
+    validateConsultation(portalCode).then((data) => {
       setPortalData(data);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -162,7 +158,7 @@ function useAppContext() {
     );
     const foundBusiness = portalDataFiltered.find(
       (bussines) => bussines
-    )?.businessManagerId;
+    )?.businessManagerCode;
 
     if (portalDataFiltered.length > 0 && foundBusiness) {
       validateBusinessManagers(foundBusiness).then((data) => {
@@ -183,7 +179,7 @@ function useAppContext() {
         ...prev.portal,
         abbreviatedName: portalDataFiltered?.abbreviatedName || "",
         staffPortalCatalogId: portalDataFiltered?.staffPortalId || "",
-        businessManagerId: portalDataFiltered?.businessManagerId || "",
+        businessManagerId: portalDataFiltered?.businessManagerCode || "",
         publicCode: portalDataFiltered?.publicCode || "",
       },
       businessManager: {
