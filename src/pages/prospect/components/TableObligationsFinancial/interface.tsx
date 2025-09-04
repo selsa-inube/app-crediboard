@@ -21,9 +21,10 @@ import { EditFinancialObligationModal } from "@components/modals/editFinancialOb
 import { NewPrice } from "@components/modals/ReportCreditsModal/components/newPrice";
 import { BaseModal } from "@components/modals/baseModal";
 import { currencyFormat } from "@utils/formatData/currency";
+import { DeleteModal } from "@components/modals/DeleteModal";
 
 import { usePagination } from "./utils";
-import { dataReport, ROWS_PER_PAGE } from "./config";
+import { dataReport, ROWS_PER_PAGE} from "./config";
 
 export interface ITableFinancialObligationsProps {
   type?: string;
@@ -55,7 +56,9 @@ interface UIProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
   setGotEndPage: React.Dispatch<React.SetStateAction<boolean>>
-  gotEndPage: boolean
+  gotEndPage: boolean;
+  showDeleteModal: boolean;
+  setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const TableFinancialObligationsUI = ({
@@ -73,9 +76,12 @@ export const TableFinancialObligationsUI = ({
   setCurrentPage,
   currentPage,
   setGotEndPage,
-  gotEndPage
+  gotEndPage,
+  showDeleteModal,
+  setShowDeleteModal
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(null);
 
   const {
     handleStartPage,
@@ -212,10 +218,9 @@ export const TableFinancialObligationsUI = ({
                         icon={<MdDeleteOutline />}
                         appearance="danger"
                         size="16px"
-                        onClick={() => {
-                          handleDelete(prop.id as number, prop.borrowerIdentificationNumber as string);
-                          setIsDeleteModal(false);
-                        }}
+                        onClick={() => 
+                          handleDeleteModal(prop)
+                        }
                         cursorHover
                       />
                     )}
@@ -276,73 +281,93 @@ export const TableFinancialObligationsUI = ({
     </Tr>
   );
 
+  const handleDeleteModal = (itemToDelete: IDataInformationItem) => {
+    setDataToDelete(itemToDelete); 
+    setShowDeleteModal(true);
+  }
+
   return (
-    <Stack direction="column" width="100%" gap="16px">
-      <Table tableLayout="auto">
-        <Thead>
-          <Tr>{renderHeaders()}</Tr>
-        </Thead>
-        <Tbody>{renderTbodyContent()}</Tbody>
-        {!loading && dataInformation.length > 0 && (
-          <Tfoot>
-            <Tr border="bottom">
-              <Td colSpan={visibleHeaders.length} type="custom" align="center">
-                <Pagination
-                  firstEntryInPage={startIndex}
-                  lastEntryInPage={endIndex}
-                  totalRecords={dataInformation.length}
-                  handleStartPage={handleStartPage}
-                  handlePrevPage={handlePrevPage}
-                  handleNextPage={handleNextPage}
-                  handleEndPage={handleEndPage}
-                />
-              </Td>
-            </Tr>
-          </Tfoot>
-        )}
-        {isModalOpenEdit && selectedDebtor && (
-          <EditFinancialObligationModal
-            title={`${dataReport.edit} ${selectedDebtor.type || ""}`}
-            onCloseModal={() => setIsModalOpenEdit(false)}
-            onConfirm={async (updatedDebtor) => {
-              await handleUpdate(updatedDebtor);
-            }}
-            initialValues={selectedDebtor}
-            confirmButtonText={dataReport.save}
-          />
-        )}
-        {isDeleteModal && (
-          <BaseModal
-            title={dataReport.deletion}
-            nextButton={dataReport.delete}
-            backButton={dataReport.cancel}
-            handleClose={() => setIsDeleteModal(false)}
-          >
-            <Stack width="400px">
-              <Text>{dataReport.content}</Text>
-            </Stack>
-          </BaseModal>
-        )}
-      </Table>
-      <Stack
-        gap="48px"
-        direction={!isMobile ? "row" : "column"}
-        justifyContent="center"
-      >
-        {loading ? (
-          <SkeletonLine />
-        ) : (
-          <NewPrice
-            value={totalBalance}
-            label={dataReport.descriptionTotalBalance}
-          />
-        )}
-        {loading ? (
-          <SkeletonLine />
-        ) : (
-          <NewPrice value={totalFee} label={dataReport.descriptionTotalFee} />
-        )}
+    <>
+      <Stack direction="column" width="100%" gap="16px">
+        <Table tableLayout="auto">
+          <Thead>
+            <Tr>{renderHeaders()}</Tr>
+          </Thead>
+          <Tbody>{renderTbodyContent()}</Tbody>
+          {!loading && dataInformation.length > 0 && (
+            <Tfoot>
+              <Tr border="bottom">
+                <Td colSpan={visibleHeaders.length} type="custom" align="center">
+                  <Pagination
+                    firstEntryInPage={startIndex}
+                    lastEntryInPage={endIndex}
+                    totalRecords={dataInformation.length}
+                    handleStartPage={handleStartPage}
+                    handlePrevPage={handlePrevPage}
+                    handleNextPage={handleNextPage}
+                    handleEndPage={handleEndPage}
+                  />
+                </Td>
+              </Tr>
+            </Tfoot>
+          )}
+          {isModalOpenEdit && selectedDebtor && (
+            <EditFinancialObligationModal
+              title={`${dataReport.edit} ${selectedDebtor.type || ""}`}
+              onCloseModal={() => setIsModalOpenEdit(false)}
+              onConfirm={async (updatedDebtor) => {
+                await handleUpdate(updatedDebtor);
+              }}
+              initialValues={selectedDebtor}
+              confirmButtonText={dataReport.save}
+            />
+          )}
+          {isDeleteModal && (
+            <BaseModal
+              title={dataReport.deletion}
+              nextButton={dataReport.delete}
+              backButton={dataReport.cancel}
+              handleClose={() => setIsDeleteModal(false)}
+            >
+              <Stack width="400px">
+                <Text>{dataReport.content}</Text>
+              </Stack>
+            </BaseModal>
+          )}
+        </Table>
+        <Stack
+          gap="48px"
+          direction={!isMobile ? "row" : "column"}
+          justifyContent="center"
+        >
+          {loading ? (
+            <SkeletonLine />
+          ) : (
+            <NewPrice
+              value={totalBalance}
+              label={dataReport.descriptionTotalBalance}
+            />
+          )}
+          {loading ? (
+            <SkeletonLine />
+          ) : (
+            <NewPrice value={totalFee} label={dataReport.descriptionTotalFee} />
+          )}
+        </Stack>
       </Stack>
-    </Stack>
+      {showDeleteModal && (
+        <DeleteModal
+          handleClose={() => setShowDeleteModal(false)}
+          handleDelete={() => {
+            if (dataToDelete) {
+              handleDelete(dataToDelete.id as number, dataToDelete.borrowerIdentificationNumber as string);
+            }
+
+            setShowDeleteModal(false);
+          }}
+          TextDelete={dataReport.content}
+        />
+      )}
+    </>
   );
 };

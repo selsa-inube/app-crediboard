@@ -45,7 +45,7 @@ const validateCurrencyField = (
 const handleChangeWithCurrency = (
   formik: FormikValues,
   e: React.ChangeEvent<HTMLInputElement>,
-  optionNameForm?: string
+  optionNameForm?: string | ""
 ) => {
   const parsedValue = parseCurrencyString(e.target.value);
   const formattedValue = isNaN(parsedValue) ? "" : parsedValue;

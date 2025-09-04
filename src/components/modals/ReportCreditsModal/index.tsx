@@ -10,6 +10,7 @@ import { IProspect, IBorrower } from "@services/prospect/types";
 
 import { ListModal } from "../ListModal";
 import { FinancialObligationModal } from "../financialObligationModal";
+import { defaultOptionsSelect, configSelect } from "./config"
 
 export interface ReportCreditsModalProps {
   handleClose: () => void;
@@ -55,6 +56,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     payment: "",
     feePaid: "",
     term: "",
+    idUser: ""
   };
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       );
     }
 
-    setOptionsBorrowers(getOptionsSelect() || []);
+    setOptionsBorrowers(getOptionsSelect() || [defaultOptionsSelect]);
 
     return () => clearTimeout(timeout);
   }, []);
@@ -140,9 +142,9 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               optionsBorrowers && optionsBorrowers.length > 1 ?
                 <Select
                   id="income"
-                  name="deudor"
-                  label="Deudor"
-                  placeholder="Seleccione una opción"
+                  name={configSelect.name}
+                  label={configSelect.label}
+                  placeholder={configSelect.placeholder}
                   options={optionsBorrowers || []}
                   value={selectedBorrower?.value || ""}
                   onChange={(name, value) => onChangeSelect(name, value)}

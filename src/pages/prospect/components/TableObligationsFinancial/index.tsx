@@ -4,7 +4,7 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import { currencyFormat } from "@utils/formatData/currency";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { IBorrower, IProspect, IBorrowerProperty } from "@services/prospect/types";
-import { optionsSelect, IFinancialObligation } from "@/components/modals/ReportCreditsModal/index.tsx";
+import { optionsSelect, IFinancialObligation } from "@components/modals/ReportCreditsModal/index.tsx";
 import { getSearchProspectByCode } from "@services/prospect/ProspectByCode";
 
 import { headers, ROWS_PER_PAGE } from "./config";
@@ -48,6 +48,7 @@ export const TableFinancialObligations = (
   const [borrowersListFinancialObligation, setBorrowersListFinancialObligation] = useState<IBorrowerProperty[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [gotEndPage, setGotEndPage] = useState(false);
+  const [showDeleteModal,setShowDeleteModal] = useState(false);
 
   const handleEdit = (debtor: ITableFinancialObligationsProps, index: number) => {
     let balance = "";
@@ -126,21 +127,18 @@ export const TableFinancialObligations = (
   }, [refreshKey, dataProspect]);
 
   const handleDelete = async (id: number, borrowerIdentificationNumber: string) => {
-    try {
+      setShowDeleteModal(true);
       const newContentTable = deleteFinancialObligation(id, borrowerIdentificationNumber);
 
       if (!newContentTable) return;
 
       await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
 
-      if (setDataProspect === undefined) throw new Error("setDataProspect is not defined");
+      if (setDataProspect === undefined) return;
 
       setDataProspect(newContentTable);
 
       moveBeforePage();
-    } catch (error) {
-      console.error("Failed to delete debtor:", error);
-    }
   };
 
   const deleteFinancialObligation = (indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
@@ -375,6 +373,8 @@ export const TableFinancialObligations = (
       setCurrentPage={setCurrentPage}
       gotEndPage={gotEndPage}
       setGotEndPage={setGotEndPage}
+      showDeleteModal={showDeleteModal}
+      setShowDeleteModal={setShowDeleteModal}
     />
   );
 };

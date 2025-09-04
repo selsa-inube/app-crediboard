@@ -65,7 +65,7 @@ export const removeProspect = async (
                     };
                 }
                 throw new Error(
-                    "Todos los intentos fallaron. No se pudo obtener el portafolio de obligaciones.",
+                    "Todos los intentos fallaron. No se pudo obtener el prospect",
                 );
             }
         }
