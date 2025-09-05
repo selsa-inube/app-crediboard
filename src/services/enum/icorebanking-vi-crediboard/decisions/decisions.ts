@@ -59,11 +59,6 @@ export const decisions = [
     Value: "Soportes Inválidos",
     Description: "Los soportes y/o las garantías NO son válidos.",
     I18nAttribute: "DM_ENUM_EDECISIONS_SOPORTES_INVALIDOS",
-    nonCompliantDocuments: [
-      "Payroll_discount_authorization", 
-      "Promissory_note", 
-      "Warranties"
-    ]
   },
   {
     Code: "SOPORTES_POS_NO_RECIBIDOS",

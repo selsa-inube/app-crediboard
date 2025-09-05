@@ -66,9 +66,9 @@ export const txtOthersOptions = {
   txtNoSelect: "No se seleccionó una decisión disponible.",
 };
 export const soporteInvalidOptions = [
-  { id: "1", label: "Firma de pagares", value: "op1" },
-  { id: "2", label: "Firma de libranza", value: "op2" },
-  { id: "3", label: "Gestión de garantías.", value: "op3" },
+  { id: "1", label: "Firma de pagares", value: "Payroll_discount_authorization" },
+  { id: "2", label: "Firma de libranza", value: "Promissory_note" },
+  { id: "3", label: "Gestión de garantías.", value: "Warranties" },
 ];
 
 export const txtTaskQuery = {

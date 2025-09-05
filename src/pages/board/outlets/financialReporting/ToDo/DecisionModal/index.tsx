@@ -13,7 +13,6 @@ import {
 import { BaseModal } from "@components/modals/baseModal";
 import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
-import { decisions } from "@services/enum/icorebanking-vi-crediboard/decisions/decisions";
 
 import { IMakeDecisionsCreditRequestWithXAction, IMakeDecisionsPayload } from "./types";
 import { StyledContainerTextField } from "./styles";
@@ -82,8 +81,11 @@ export function DecisionModal(props: DecisionModalProps) {
   }
 
   const realNamesEnumNonCompliantDocuments = (selectedOptions: number[]) => {
-    let valuesFromEnum = selectedOptions.map(
-      (option) => decisions[9].nonCompliantDocuments?.[option]
+    let valuesFromEnum: string[] = [];
+
+    selectedOptions.map((option) => {
+      valuesFromEnum.push(soporteInvalidOptions[option].value);
+    }
     );
 
     return valuesFromEnum;
