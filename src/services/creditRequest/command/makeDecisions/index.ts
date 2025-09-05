@@ -26,7 +26,6 @@ export const makeDecisions = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-
       const options: RequestInit = {
         method: "PATCH",
         headers: {

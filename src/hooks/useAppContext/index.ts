@@ -57,7 +57,9 @@ function useAppContext() {
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
-        const staffData = await getStaff();
+        const userIdentifier = user?.email?.substring(0, 20);
+        if (!userIdentifier) return;
+        const staffData = await getStaff(userIdentifier);
         if (!staffData.length) return;
       } catch (error) {
         console.error("Error fetching staff data:", error);

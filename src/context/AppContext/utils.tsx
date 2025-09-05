@@ -17,5 +17,4 @@ const validateConsultation = async (
   const newData = await getStaffPortalsByBusinessManager(staffPortalId);
   return newData;
 };
-
 export { validateBusinessManagers, validateConsultation };
