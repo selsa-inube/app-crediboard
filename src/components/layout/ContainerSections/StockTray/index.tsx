@@ -49,24 +49,15 @@ export const StockTray = (props: IStockTrayProps) => {
   const handleInfo = () => {
     setIsModalOpen(true);
   };
-
-  const { disabledButton: canViewAttachments } = useValidateUseCase({
-    useCase: getUseCaseValue("canViewAttachments"),
-  });
   const { disabledButton: canReject } = useValidateUseCase({
     useCase: getUseCaseValue("canReject"),
   });
   const { disabledButton: canCancel } = useValidateUseCase({
     useCase: getUseCaseValue("canCancel"),
   });
-  const { disabledButton: canPrint } = useValidateUseCase({
-    useCase: getUseCaseValue("canPrint"),
-  });
+
   const { disabledButton: canAttach } = useValidateUseCase({
     useCase: getUseCaseValue("canAttach"),
-  });
-  const { disabledButton: canManageGuarantees } = useValidateUseCase({
-    useCase: getUseCaseValue("canManageGuarantees"),
   });
 
   return (
@@ -142,20 +133,10 @@ export const StockTray = (props: IStockTrayProps) => {
               <Stack gap="2px" alignItems="center">
                 <Button
                   spacing="compact"
-                  disabled={canPrint}
                   onClick={actionButtons?.buttons.buttonPrint.OnClick}
                 >
                   {configButtons.buttons.buttonPrint.label}
                 </Button>
-                {canPrint && (
-                  <Icon
-                    icon={<MdOutlineInfo />}
-                    appearance="primary"
-                    size="16px"
-                    cursorHover
-                    onClick={handleInfo}
-                  />
-                )}
               </Stack>
             </Stack>
             <StyledHorizontalDivider />
@@ -183,44 +164,24 @@ export const StockTray = (props: IStockTrayProps) => {
                 <Button
                   spacing="compact"
                   variant="outlined"
-                  disabled={canViewAttachments}
                   onClick={
                     actionButtons?.buttonsOutlined.buttonViewAttachments.OnClick
                   }
                 >
                   {configButtons.buttonsOutlined.buttonViewAttachments.label}
                 </Button>
-                {canViewAttachments && (
-                  <Icon
-                    icon={<MdOutlineInfo />}
-                    appearance="primary"
-                    size="16px"
-                    cursorHover
-                    onClick={handleInfo}
-                  />
-                )}
               </Stack>
               <StyledHorizontalDivider />
               <Stack gap="2px" alignItems="center">
                 <Button
                   spacing="compact"
                   variant="outlined"
-                  disabled={canManageGuarantees}
                   onClick={
                     actionButtons?.buttonsOutlined.buttonWarranty.OnClick
                   }
                 >
                   {configButtons.buttonsOutlined.buttonWarranty.label}
                 </Button>
-                {canManageGuarantees && (
-                  <Icon
-                    icon={<MdOutlineInfo />}
-                    appearance="primary"
-                    size="16px"
-                    cursorHover
-                    onClick={handleInfo}
-                  />
-                )}
               </Stack>
             </Stack>
           </Stack>
