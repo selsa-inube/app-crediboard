@@ -14,13 +14,13 @@ import { BaseModal } from "@components/modals/baseModal";
 import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
 
-import { IMakeDecisionsCreditRequestWithXAction } from "./types";
+import { IMakeDecisionsCreditRequestWithXAction, IMakeDecisionsPayload } from "./types";
 import { StyledContainerTextField } from "./styles";
 import { soporteInvalidOptions, txtFlags, txtOthersOptions } from "./../config";
 
 interface FormValues {
   textarea: string;
-  selectedOptions?: string[];
+  selectedOptions?: string;
 }
 
 export interface DecisionModalProps {
@@ -63,22 +63,52 @@ export function DecisionModal(props: DecisionModalProps) {
     textarea: readOnly
       ? Yup.string()
       : Yup.string()
-          .max(maxLength, validationMessages.maxCharacters(maxLength))
-          .required(validationMessages.required),
+        .max(maxLength, validationMessages.maxCharacters(maxLength))
+        .required(validationMessages.required),
   });
 
-  const sendData = async (value: string) => {
+  const handleNonCompliantDocuments = (formValues: FormValues): string[] => {
+    let selectedOptions: string[] | number[] = [];
+
+    if (formValues.selectedOptions) {
+      selectedOptions = formValues.selectedOptions.split(",");
+      selectedOptions?.shift();
+    }
+
+    selectedOptions = selectedOptions.map(option => parseInt(`${option}`) - 1);
+
+    return realNamesEnumNonCompliantDocuments(selectedOptions) as string[];
+  }
+
+  const realNamesEnumNonCompliantDocuments = (selectedOptions: number[]) => {
+    let valuesFromEnum: string[] = [];
+
+    selectedOptions.map((option) => {
+      valuesFromEnum.push(soporteInvalidOptions[option].value);
+    }
+    );
+
+    return valuesFromEnum;
+  }
+  const sendData = async (formValues: FormValues) => {
     try {
+      const makeDecisionsPayload: IMakeDecisionsPayload = {
+        creditRequestId: data.makeDecision.creditRequestId,
+        humanDecision: data.makeDecision.humanDecision,
+        justification: formValues.textarea,
+      };
+
+      if (formValues.selectedOptions && data.xAction === "DisapproveLegalDocumentsAndWarranties") {
+        makeDecisionsPayload["nonCompliantDocuments"] = handleNonCompliantDocuments(formValues);
+      }
+
       const response = await makeDecisions(
         data.businessUnit,
         data.user,
-        {
-          creditRequestId: data.makeDecision.creditRequestId,
-          humanDecision: data.makeDecision.humanDecision,
-          justification: value,
-        },
+        makeDecisionsPayload,
         data.xAction
       );
+
       if (response?.statusServices === 200) {
         navigate("/");
         addFlag({
@@ -109,7 +139,7 @@ export function DecisionModal(props: DecisionModalProps) {
 
   const initialValues: FormValues = {
     textarea: "",
-    selectedOptions: [],
+    selectedOptions: "",
   };
 
   return (
@@ -122,7 +152,7 @@ export function DecisionModal(props: DecisionModalProps) {
       ) => {
         onSubmit?.(values);
         setSubmitting(false);
-        sendData(values.textarea);
+        sendData(values);
       }}
     >
       {({ errors, touched, handleSubmit, values }) => (
