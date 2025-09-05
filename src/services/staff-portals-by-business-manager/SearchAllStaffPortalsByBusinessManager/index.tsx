@@ -23,6 +23,7 @@ const getStaffPortalsByBusinessManager = async (
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
 
+
       const options: RequestInit = {
         method: "GET",
         headers: {
@@ -52,7 +53,7 @@ const getStaffPortalsByBusinessManager = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los datos del operador."
+          "Todos los intentos fallaron. No se pudieron obtener los datos del operador.",
         );
       }
     }

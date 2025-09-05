@@ -14,7 +14,10 @@ import { BaseModal } from "@components/modals/baseModal";
 import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
 
-import { IMakeDecisionsCreditRequestWithXAction, IMakeDecisionsPayload } from "./types";
+import {
+  IMakeDecisionsCreditRequestWithXAction,
+  IMakeDecisionsPayload,
+} from "./types";
 import { StyledContainerTextField } from "./styles";
 import { soporteInvalidOptions, txtFlags, txtOthersOptions } from "./../config";
 
@@ -63,8 +66,8 @@ export function DecisionModal(props: DecisionModalProps) {
     textarea: readOnly
       ? Yup.string()
       : Yup.string()
-        .max(maxLength, validationMessages.maxCharacters(maxLength))
-        .required(validationMessages.required),
+          .max(maxLength, validationMessages.maxCharacters(maxLength))
+          .required(validationMessages.required),
   });
 
   const handleNonCompliantDocuments = (formValues: FormValues): string[] => {
@@ -75,21 +78,22 @@ export function DecisionModal(props: DecisionModalProps) {
       selectedOptions?.shift();
     }
 
-    selectedOptions = selectedOptions.map(option => parseInt(`${option}`) - 1);
+    selectedOptions = selectedOptions.map(
+      (option) => parseInt(`${option}`) - 1
+    );
 
     return realNamesEnumNonCompliantDocuments(selectedOptions) as string[];
-  }
+  };
 
   const realNamesEnumNonCompliantDocuments = (selectedOptions: number[]) => {
-    let valuesFromEnum: string[] = [];
+    const valuesFromEnum: string[] = [];
 
     selectedOptions.map((option) => {
       valuesFromEnum.push(soporteInvalidOptions[option].value);
-    }
-    );
+    });
 
     return valuesFromEnum;
-  }
+  };
   const sendData = async (formValues: FormValues) => {
     try {
       const makeDecisionsPayload: IMakeDecisionsPayload = {
@@ -98,8 +102,12 @@ export function DecisionModal(props: DecisionModalProps) {
         justification: formValues.textarea,
       };
 
-      if (formValues.selectedOptions && data.xAction === "DisapproveLegalDocumentsAndWarranties") {
-        makeDecisionsPayload["nonCompliantDocuments"] = handleNonCompliantDocuments(formValues);
+      if (
+        formValues.selectedOptions &&
+        data.xAction === "DisapproveLegalDocumentsAndWarranties"
+      ) {
+        makeDecisionsPayload["nonCompliantDocuments"] =
+          handleNonCompliantDocuments(formValues);
       }
 
       const response = await makeDecisions(
