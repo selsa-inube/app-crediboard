@@ -71,3 +71,15 @@ export function convertObligationsToProperties(
 }
 
 export const ROWS_PER_PAGE = 5;
+
+export const errorMessages = {
+  save: {
+    title: "Error al guardar.",
+    description: "Error al guardar la nueva obligación financiera.",
+  },
+  update: {
+    title: "Error al actualizar.",
+    description: "Error al actualizar la obligación financiera.",
+
+  }
+};

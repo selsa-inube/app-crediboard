@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMediaQuery } from "@inubekit/inubekit";
+import { useMediaQuery, useFlag } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
 import { updateProspect } from "@services/prospect/updateProspect";
@@ -7,7 +7,7 @@ import { IBorrower, IProspect, IBorrowerProperty } from "@services/prospect/type
 import { optionsSelect, IFinancialObligation } from "@components/modals/ReportCreditsModal/index.tsx";
 import { getSearchProspectByCode } from "@services/prospect/ProspectByCode";
 
-import { headers, ROWS_PER_PAGE } from "./config";
+import { headers, ROWS_PER_PAGE, errorMessages } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
 import { IProperty } from "./types";
 
@@ -48,7 +48,7 @@ export const TableFinancialObligations = (
   const [borrowersListFinancialObligation, setBorrowersListFinancialObligation] = useState<IBorrowerProperty[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [gotEndPage, setGotEndPage] = useState(false);
-  const [showDeleteModal,setShowDeleteModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleEdit = (debtor: ITableFinancialObligationsProps, index: number) => {
     let balance = "";
@@ -98,6 +98,16 @@ export const TableFinancialObligations = (
   }, [selectedBorrower]);
 
   const isMobile = useMediaQuery("(max-width:880px)");
+  const { addFlag } = useFlag();
+
+  const handleFlag = (description: string, typeError: string) => {
+    addFlag({
+      title: typeError,
+      description: description,
+      appearance: "danger",
+      duration: 5000,
+    });
+  };
 
   const visibleHeaders = isMobile
     ? headers.filter(
@@ -127,18 +137,18 @@ export const TableFinancialObligations = (
   }, [refreshKey, dataProspect]);
 
   const handleDelete = async (id: number, borrowerIdentificationNumber: string) => {
-      setShowDeleteModal(true);
-      const newContentTable = deleteFinancialObligation(id, borrowerIdentificationNumber);
+    setShowDeleteModal(true);
+    const newContentTable = deleteFinancialObligation(id, borrowerIdentificationNumber);
 
-      if (!newContentTable) return;
+    if (!newContentTable) return;
 
-      await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
+    await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
 
-      if (setDataProspect === undefined) return;
+    if (setDataProspect === undefined) return;
 
-      setDataProspect(newContentTable);
+    setDataProspect(newContentTable);
 
-      moveBeforePage();
+    moveBeforePage();
   };
 
   const deleteFinancialObligation = (indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
@@ -190,7 +200,7 @@ export const TableFinancialObligations = (
 
       setIsModalOpenEdit(false);
     } catch (error) {
-      console.error("Error al actualizar la obligación financiera: ", error);
+      handleFlag(errorMessages.update.description, errorMessages.update.title);
     }
   };
 
@@ -263,7 +273,7 @@ export const TableFinancialObligations = (
       newObligation.fee,
       newObligation.entity,
       newObligation.payment,
-      newObligation.idUser, 
+      newObligation.idUser,
       paidFees,
       totalFees,
     ].join(',');
@@ -320,7 +330,7 @@ export const TableFinancialObligations = (
       setDataProspect(newContentTable);
 
     } catch (error) {
-      console.error("Error al guardar la nueva obligación financiera: ", error);
+      handleFlag(errorMessages.save.description, errorMessages.save.title);
     }
   };
 
