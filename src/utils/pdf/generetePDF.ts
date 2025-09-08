@@ -1,6 +1,10 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
+import { useFlag } from "@inubekit/inubekit";
+
+import { errorMessages } from "./config";
+
 export const generatePDF = (
   elementPrint: React.RefObject<HTMLDivElement>,
   customTitle = "",
@@ -16,6 +20,8 @@ export const generatePDF = (
     const pdf = new jsPDF({ orientation: "landscape", format: "a4" });
 
     const titleFontSize = 16;
+
+    const { addFlag } = useFlag();
 
     html2canvas(elementPrint.current)
       .then((canvas) => {
@@ -71,8 +77,13 @@ export const generatePDF = (
           resolve();
         }
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
+        addFlag({
+          title: errorMessages.generate.titleCard,
+          description: errorMessages.generate.description,
+          appearance: "danger",
+          duration: 5000,
+        });
       });
   })
 };

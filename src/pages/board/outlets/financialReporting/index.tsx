@@ -35,7 +35,7 @@ import {
 
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";
-import { configHandleactions, optionButtons, labelsAndValuesShare } from "./config";
+import { configHandleactions, optionButtons, labelsAndValuesShare, errorMessages } from "./config";
 import {
   StyledMarginPrint,
   StyledPageBreak,
@@ -169,6 +169,15 @@ export const FinancialReporting = () => {
     }, 1);
   };
 
+  const handleFlag = (description: string, typeError: string) => {
+    addFlag({
+      title: typeError,
+      description: description,
+      appearance: "danger",
+      duration: 5000,
+    });
+  };
+
   const generateAndSharePdf = async () => {
     try {
       const pdfBlob = await generatePDF(
@@ -189,7 +198,7 @@ export const FinancialReporting = () => {
         });
       }
     } catch (error) {
-      console.error(error);
+      handleFlag(errorMessages.share.description, errorMessages.share.titleCard);
     }
   }
 
