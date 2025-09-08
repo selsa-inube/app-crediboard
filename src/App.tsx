@@ -9,6 +9,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { FlagProvider } from "@inubekit/inubekit";
 
 import { AppContext, AppContextProvider } from "@context/AppContext";
+import { EnumProvider } from "@context/EnumContext";
 import { usePortalLogic } from "@hooks/usePortalRedirect";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { AppPage } from "@components/layout/AppPage";
@@ -63,7 +64,9 @@ function App() {
     <AppContextProvider>
       <FlagProvider>
         <GlobalStyles />
-        <RouterProvider router={router} />
+        <EnumProvider>
+          <RouterProvider router={router} />
+        </EnumProvider>
       </FlagProvider>
     </AppContextProvider>
   );
