@@ -21,8 +21,8 @@ import { getUserMenu } from "@config/menuMainConfiguration";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardNoveilties } from "@components/cards/CardsNoveilties";
-import { getUnreadNoveltiesByUser } from "@services/credit-request/query/getUnreadNoveltiesByUser";
-import { IUnreadNoveltiesByUser } from "@services/credit-request/query/getUnreadNoveltiesByUser/types";
+import { IUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnreadNoveltiesByUser/types";
+import { getUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnreadNoveltiesByUser";
 import { formatPrimaryDate } from "@utils/formatData/date";
 
 import {

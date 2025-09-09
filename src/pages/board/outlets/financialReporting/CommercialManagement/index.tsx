@@ -9,7 +9,6 @@ import {
   MdOutlineShare,
   MdOutlineVideocam,
   MdOutlinePayments,
-  MdOutlineInfo,
 } from "react-icons/md";
 
 import {
@@ -55,7 +54,6 @@ import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitM
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
-import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
@@ -458,9 +456,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBorrower]);
 
-  const { disabledButton: canSendDecision } = useValidateUseCase({
-    useCase: getUseCaseValue("canSendDecision"),
-  });
   return (
     <>
       <Fieldset
@@ -561,7 +556,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                               type="button"
                               spacing="compact"
                               variant="outlined"
-                              disabled={canSendDecision}
                               onClick={() => {
                                 handleDisbursement();
                                 handleOpenModal("disbursementModal");
@@ -569,15 +563,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             >
                               {tittleOptions.titleDisbursement}
                             </Button>
-                            {canSendDecision && (
-                              <Icon
-                                icon={<MdOutlineInfo />}
-                                appearance="primary"
-                                size="16px"
-                                cursorHover
-                                onClick={() => setInfoModal(true)}
-                              />
-                            )}
                           </Stack>
                         </Stack>
                       </StyledPrint>
@@ -788,6 +773,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   businessUnitPublicCode={businessUnitPublicCode}
                   pdfFunction={print}
                   generateAndSharePdf={generateAndSharePdf}
+                  setDataProspect={setDataProspect}
                 />
               )}
             </Stack>
@@ -818,6 +804,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 handleClose={handleCloseModal}
                 prospectData={prospectData ? [prospectData] : undefined}
                 options={incomeOptions}
+                businessUnitPublicCode={businessUnitPublicCode}
               />
             )}
             {currentModal === "extraPayments" && (

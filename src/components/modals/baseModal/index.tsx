@@ -14,11 +14,11 @@ import { validationMessages } from "@validations/validationMessages";
 
 import { StyledContainer, StyledContainerClose } from "./styles";
 import { dataBaseModal } from "./config";
+import { Appearance, Variant } from "./types";
 
 export interface IBaseModalProps {
   title: string;
   children: JSX.Element | JSX.Element[];
-  nextButton?: string;
   handleNext?: () => void;
   handleBack?: () => void;
   handleClose?: () => void;
@@ -30,6 +30,9 @@ export interface IBaseModalProps {
   iconAfterNext?: React.JSX.Element;
   iconBeforeback?: React.JSX.Element;
   iconAfterback?: React.JSX.Element;
+  apparenceNext?: Appearance;
+  variantNext?: Variant;
+  nextButton?: string;
   backButton?: string;
   initialDivider?: boolean;
   finalDivider?: boolean;
@@ -52,6 +55,8 @@ export function BaseModal(props: IBaseModalProps) {
     iconAfterNext,
     iconBeforeback,
     iconAfterback,
+    apparenceNext = "primary",
+    variantNext = "filled",
     backButton = "",
     initialDivider = true,
     finalDivider = false,
@@ -113,6 +118,8 @@ export function BaseModal(props: IBaseModalProps) {
                 disabled={disabledNext}
                 iconAfter={iconAfterNext}
                 iconBefore={iconBeforeNext}
+                appearance={apparenceNext}
+                variant={variantNext}
               >
                 {nextButton}
               </Button>

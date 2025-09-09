@@ -57,9 +57,9 @@ const usePortalLogic = () => {
         const portalData = portals[0];
         setPortalData(portalData);
 
-        const { businessManagerId } = portalData;
+        const { businessManagerCode } = portalData;
 
-        if (!businessManagerId) {
+        if (!businessManagerCode) {
           setCodeError(1002);
           setLoading(false);
           return;
@@ -70,7 +70,7 @@ const usePortalLogic = () => {
           return;
         }
 
-        const manager = await getBusinessManagers(businessManagerId);
+        const manager = await getBusinessManagers(businessManagerCode);
         setBusinessManager(manager);
         setLoading(false);
       } catch (error) {

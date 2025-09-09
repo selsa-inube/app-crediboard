@@ -399,7 +399,7 @@ function ToDo(props: ToDoProps) {
                     type="submit"
                     fullwidth={isMobile}
                     spacing="compact"
-                    disabled={!hasPermitSend ? true : false}
+                    disabled={false}
                   >
                     {button?.label || txtLabels.buttonText}
                   </Button>

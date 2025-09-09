@@ -347,6 +347,8 @@ export const CreditProfileInfo = () => {
             isMobile={isMobile}
             dataCreditProfile={dataCreditProfile}
             setCreditProfile={setCreditProfile}
+            requests={requests}
+            businessUnitPublicCode={businessUnitPublicCode}
           />
           <PaymentCapacity
             availableValue={payment_capacity.available_value}

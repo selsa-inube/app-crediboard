@@ -42,7 +42,7 @@ function BoardLayout() {
 
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 1439px)");
 
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
@@ -64,7 +64,7 @@ function BoardLayout() {
   const errorData = mockErrorBoard[0];
 
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
-  const [recordsToFetch, setRecordsToFetch] = useState(79);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filterValues, setFilterValues] = useState<IFilterFormValues>({
     assignment: "",
     status: "",
@@ -72,34 +72,39 @@ function BoardLayout() {
 
   const fetchBoardData = async (
     businessUnitPublicCode: string,
-    limit: number,
-    searchParam?: { filter?: string; text?: string }
+    page: number,
+    searchParam?: { filter?: string; text?: string },
+    append: boolean = false
   ) => {
     try {
       const [boardRequestsResult, requestsPinnedResult] =
         await Promise.allSettled([
           getCreditRequestInProgress(
             businessUnitPublicCode,
-            limit,
+            page,
             userAccount,
             searchParam
           ),
-          getCreditRequestPinned(businessUnitPublicCode),
+          page === 1
+            ? getCreditRequestPinned(businessUnitPublicCode)
+            : Promise.resolve([]),
         ]);
 
       if (boardRequestsResult.status === "fulfilled") {
         setBoardData((prevState) => ({
           ...prevState,
-          boardRequests: boardRequestsResult.value,
+          boardRequests: append
+            ? [...prevState.boardRequests, ...boardRequestsResult.value]
+            : boardRequestsResult.value,
         }));
       }
 
-      if (requestsPinnedResult.status === "fulfilled") {
+      if (requestsPinnedResult.status === "fulfilled" && page === 1) {
         setBoardData((prevState) => ({
           ...prevState,
           requestsPinned: requestsPinnedResult.value,
         }));
-      } else {
+      } else if (requestsPinnedResult.status === "rejected" && page === 1) {
         handleFlag(errorData.Summary[0], errorData.Summary[1]);
       }
     } catch (error) {
@@ -112,14 +117,30 @@ function BoardLayout() {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 3)
       return;
 
-    fetchBoardData(businessUnitPublicCode, recordsToFetch);
+    fetchBoardData(businessUnitPublicCode, 1);
+    setCurrentPage(1);
 
     fetchValidationRulesData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, recordsToFetch]);
+  }, [businessUnitPublicCode]);
 
   const handleLoadMoreData = () => {
-    setRecordsToFetch((prev) => prev + 50);
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+
+    let searchParam;
+
+    if (activeOptions.length > 0) {
+      searchParam = {
+        filter: activeOptions.map((filter) => filter.value).join("&"),
+      };
+    } else if (filters.searchRequestValue.trim().length >= 3) {
+      searchParam = { text: filters.searchRequestValue.trim() };
+    } else {
+      searchParam = undefined;
+    }
+
+    fetchBoardData(businessUnitPublicCode, nextPage, searchParam, true);
   };
   const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
   const handleApplyFilters = async (values: IFilterFormValues) => {
@@ -146,8 +167,9 @@ function BoardLayout() {
       .join("&");
 
     setActiveOptions(activeFilteredValues);
+    setCurrentPage(1);
 
-    await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+    await fetchBoardData(businessUnitPublicCode, 1, {
       filter: `${queryFilterString}`,
     });
 
@@ -261,7 +283,8 @@ function BoardLayout() {
           creditRequestId,
           isPinned
         );
-        await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+        await fetchBoardData(businessUnitPublicCode, 1);
+        setCurrentPage(1);
       } else {
         setIsOpenModal(true);
         return;
@@ -279,6 +302,7 @@ function BoardLayout() {
   const handleClearFilters = async (keepSearchValue = false) => {
     setFilterValues({ assignment: "", status: "" });
     setActiveOptions([]);
+    setCurrentPage(1);
 
     setFilters((prev) => ({
       ...prev,
@@ -288,11 +312,11 @@ function BoardLayout() {
     }));
 
     if (keepSearchValue && filters.searchRequestValue.trim().length >= 3) {
-      await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+      await fetchBoardData(businessUnitPublicCode, 1, {
         text: filters.searchRequestValue.trim(),
       });
     } else {
-      await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+      await fetchBoardData(businessUnitPublicCode, 1);
     }
   };
 
@@ -302,6 +326,7 @@ function BoardLayout() {
     );
 
     setActiveOptions(updatedActiveOptions);
+    setCurrentPage(1);
 
     setFilterValues((prev) => {
       const newValues = { ...prev };
@@ -333,7 +358,7 @@ function BoardLayout() {
         selectOptions: selectCheckOptions,
       }));
 
-      await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+      await fetchBoardData(businessUnitPublicCode, 1);
       return;
     }
 
@@ -341,16 +366,19 @@ function BoardLayout() {
       .map((filter) => filter.value)
       .join("&")
       .trim();
-    await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+    await fetchBoardData(businessUnitPublicCode, 1, {
       filter: updatedFilterString,
     });
   };
+
   const handleSearchRequestsValue = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
     handleFiltersChange({ searchRequestValue: value });
     const trimmedValue = value.trim();
+    setCurrentPage(1);
+
     if (trimmedValue.length >= 1) {
       if (activeOptions.length > 0) {
         const currentFilters = activeOptions
@@ -358,13 +386,13 @@ function BoardLayout() {
           .join("&");
         const searchResults = await getCreditRequestInProgress(
           businessUnitPublicCode,
-          recordsToFetch,
+          1,
           userAccount,
           { text: trimmedValue }
         );
         const filteredResults = await getCreditRequestInProgress(
           businessUnitPublicCode,
-          recordsToFetch,
+          1,
           userAccount,
           { filter: currentFilters }
         );
@@ -380,7 +408,7 @@ function BoardLayout() {
           boardRequests: intersection,
         }));
       } else {
-        fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+        fetchBoardData(businessUnitPublicCode, 1, {
           text: trimmedValue,
         });
       }
@@ -390,11 +418,11 @@ function BoardLayout() {
           .map((filter) => filter.value)
           .join("&");
 
-        await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+        await fetchBoardData(businessUnitPublicCode, 1, {
           filter: currentFilters,
         });
       } else {
-        await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+        await fetchBoardData(businessUnitPublicCode, 1);
       }
     }
   };

@@ -160,7 +160,7 @@ function useAppContext() {
     );
     const foundBusiness = portalDataFiltered.find(
       (bussines) => bussines
-    )?.businessManagerId;
+    )?.businessManagerCode;
 
     if (portalDataFiltered.length > 0 && foundBusiness) {
       validateBusinessManagers(foundBusiness).then((data) => {
@@ -181,7 +181,7 @@ function useAppContext() {
         ...prev.portal,
         abbreviatedName: portalDataFiltered?.abbreviatedName || "",
         staffPortalCatalogId: portalDataFiltered?.staffPortalId || "",
-        businessManagerId: portalDataFiltered?.businessManagerId || "",
+        businessManagerId: portalDataFiltered?.businessManagerCode || "",
         publicCode: portalDataFiltered?.publicCode || "",
       },
       businessManager: {
