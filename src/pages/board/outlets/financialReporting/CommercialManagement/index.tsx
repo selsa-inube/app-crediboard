@@ -79,6 +79,7 @@ interface ComercialManagementProps {
     React.SetStateAction<IPaymentChannel[] | undefined>
   >;
   print: () => void;
+  generateAndSharePdf: () => void;
   id: string;
   isPrint?: boolean;
   hideContactIcons?: boolean;
@@ -95,7 +96,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     id,
     hideContactIcons,
     prospectData,
-
+    generateAndSharePdf,
     sentData,
     setSentData,
     setRequestValue,
@@ -726,6 +727,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           appearance="primary"
                           size="24px"
                           cursorHover
+                          onClick={async () => await generateAndSharePdf()}
                         />
                         <Icon
                           icon={<MdOutlineMoreVert />}
@@ -769,6 +771,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setSentData={setSentData}
                   setRequestValue={setRequestValue}
                   businessUnitPublicCode={businessUnitPublicCode}
+                  pdfFunction={print}
+                  generateAndSharePdf={generateAndSharePdf}
                   setDataProspect={setDataProspect}
                 />
               )}

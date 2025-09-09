@@ -194,4 +194,17 @@ export const errorMessages = {
     description: "No hay comprobantes contables asociados a esta solicitud.",
     button: "Volver a intentar",
   },
+  share: {
+    titleCard: "Compartir",
+    title: "No se encontraron documentos",
+    description: "No hay documentos disponibles para compartir.",
+    button: "Volver a intentar",
+  },
 };
+
+export const labelsAndValuesShare = {
+  titleOnPdf: "Gestión Comercial",
+  fileName: "reporte_comercial.pdf",
+  text: "Reporte Comercial para compartir",
+
+}

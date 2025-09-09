@@ -62,6 +62,8 @@ interface ICreditProspectProps {
   showMenu: () => void;
   handleChange: (name: string, newValue: string) => void;
   handleIncomeSubmit: (values: IIncomeSources) => void;
+  pdfFunction: () => void;
+  generateAndSharePdf: () => void;
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
 }
 
@@ -83,6 +85,8 @@ export function CreditProspect(props: ICreditProspectProps) {
     showMenu,
     handleChange,
     handleIncomeSubmit,
+    pdfFunction,
+    generateAndSharePdf,
     setDataProspect,
   } = props;
 
@@ -177,6 +181,11 @@ export function CreditProspect(props: ICreditProspectProps) {
     }
   };
 
+  const handlePdfGeneration = () => {
+    print()
+    pdfFunction()
+  }
+
   return (
     <Stack direction="column" gap="24px">
       {!isMobile && (
@@ -231,13 +240,13 @@ export function CreditProspect(props: ICreditProspectProps) {
                     size="24px"
                     disabled={!isPrint}
                     cursorHover
-                    onClick={print}
+                    onClick={()=> handlePdfGeneration()}
                   />
                   <Icon
                     icon={<MdOutlineShare />}
                     appearance="primary"
                     size="24px"
-                    onClick={() => setShowShareModal(true)}
+                    onClick={async () => await generateAndSharePdf()}
                     cursorHover
                   />
                   <StyledVerticalDivider />
