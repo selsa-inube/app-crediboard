@@ -21,9 +21,10 @@ import { EditFinancialObligationModal } from "@components/modals/editFinancialOb
 import { NewPrice } from "@components/modals/ReportCreditsModal/components/newPrice";
 import { BaseModal } from "@components/modals/baseModal";
 import { currencyFormat } from "@utils/formatData/currency";
+import { DeleteModal } from "@components/modals/DeleteModal";
 
 import { usePagination } from "./utils";
-import { dataReport } from "./config";
+import { dataReport, ROWS_PER_PAGE} from "./config";
 
 export interface ITableFinancialObligationsProps {
   type?: string;
@@ -33,7 +34,8 @@ export interface ITableFinancialObligationsProps {
 export interface IDataInformationItem {
   propertyName?: string;
   propertyValue?: string | string[];
-  id?: string;
+  id?: number;
+  borrowerIdentificationNumber?: string;
 }
 
 interface UIProps {
@@ -45,17 +47,22 @@ interface UIProps {
   isModalOpenEdit: boolean;
   isMobile: boolean;
   showOnlyEdit?: boolean;
-  handleEdit: (item: ITableFinancialObligationsProps) => void;
+  handleEdit: (item: ITableFinancialObligationsProps, index: number) => void;
   setIsModalOpenEdit: (value: boolean) => void;
-  handleDelete: (id: string) => void;
+  handleDelete: (id: number, borrowerIdentificationNumber: string) => void;
   handleUpdate: (
     updatedDebtor: ITableFinancialObligationsProps
   ) => Promise<void>;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  currentPage: number;
+  setGotEndPage: React.Dispatch<React.SetStateAction<boolean>>
+  gotEndPage: boolean;
+  showDeleteModal: boolean;
+  setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const TableFinancialObligationsUI = ({
   dataInformation,
-  extraDebtors,
   loading,
   selectedDebtor,
   visibleHeaders,
@@ -66,16 +73,31 @@ export const TableFinancialObligationsUI = ({
   handleEdit,
   handleDelete,
   handleUpdate,
+  setCurrentPage,
+  currentPage,
+  setGotEndPage,
+  gotEndPage,
+  showDeleteModal,
+  setShowDeleteModal
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(null);
 
   const {
     handleStartPage,
     handlePrevPage,
     handleNextPage,
     handleEndPage,
-    firstEntryInPage,
-  } = usePagination();
+    startIndex,
+    endIndex,
+    paginatedData,
+    totalPages
+  } = usePagination(dataInformation, setCurrentPage, currentPage);
+
+  if (gotEndPage) {
+    setCurrentPage(totalPages);
+    setGotEndPage(false);
+  }
 
   const getValueFromProperty = (
     value: string | number | string[] | undefined,
@@ -121,8 +143,8 @@ export const TableFinancialObligationsUI = ({
     );
   };
 
-  const renderLoadingRow = () => (
-    <Tr>
+  const renderLoadingRow = (key: number) => (
+    <Tr key={key}>
       {visibleHeaders.map((_, index) => (
         <Td key={index} type="custom">
           <SkeletonLine />
@@ -133,7 +155,7 @@ export const TableFinancialObligationsUI = ({
 
   const renderNoDataRow = () => (
     <Tr>
-      <Td colSpan={visibleHeaders.length} align="center" type="custom">
+      <Td colSpan={visibleHeaders.length} align="center" type="custom" height={245}>
         <Text size="large" type="label" appearance="gray" textAlign="center">
           {dataReport.noData}
         </Text>
@@ -142,7 +164,8 @@ export const TableFinancialObligationsUI = ({
   );
 
   const renderDataRows = () =>
-    dataInformation.map((prop: IDataInformationItem, rowIndex: number) => {
+    paginatedData.map((prop: IDataInformationItem, index: number) => {
+      const rowIndex = (currentPage - 1) * ROWS_PER_PAGE + index;
       let values: string[] = [];
 
       if (typeof prop.propertyValue === "string") {
@@ -175,7 +198,7 @@ export const TableFinancialObligationsUI = ({
             return (
               <Td
                 key={colIndex}
-                appearance={rowIndex % 2 === 0 ? "light" : "dark"}
+                appearance={"light"}
                 type={header.action ? "custom" : "text"}
                 align={isCurrency ? "right" : "center"}
               >
@@ -186,7 +209,7 @@ export const TableFinancialObligationsUI = ({
                       appearance="dark"
                       size="16px"
                       onClick={() =>
-                        handleEdit(prop as ITableFinancialObligationsProps)
+                        handleEdit(prop as ITableFinancialObligationsProps, prop.id as number)
                       }
                       cursorHover
                     />
@@ -195,12 +218,9 @@ export const TableFinancialObligationsUI = ({
                         icon={<MdDeleteOutline />}
                         appearance="danger"
                         size="16px"
-                        onClick={() => {
-                          if (selectedDebtor) {
-                            handleDelete(selectedDebtor.id as string);
-                            setIsDeleteModal(false);
-                          }
-                        }}
+                        onClick={() => 
+                          handleDeleteModal(prop)
+                        }
                         cursorHover
                       />
                     )}
@@ -215,89 +235,139 @@ export const TableFinancialObligationsUI = ({
       );
     });
 
-  let content;
+  const renderTbodyContent = () => {
+    if (loading) {
+      return Array.from({ length: ROWS_PER_PAGE }).map((_, index) =>
+        renderLoadingRow(index)
+      );
+    }
 
-  if (loading) {
-    content = renderLoadingRow();
-  } else if (extraDebtors.length === 0) {
-    content = renderNoDataRow();
-  } else {
-    content = renderDataRows();
+    if (dataInformation.length === 0) {
+      return renderNoDataRow();
+    }
+
+    const dataRows = renderDataRows();
+    const emptyRowsCount = ROWS_PER_PAGE - paginatedData.length;
+
+    if (emptyRowsCount > 0) {
+      const emptyRows = Array.from({ length: emptyRowsCount }).map((_, index) => {
+        const rowIndex = paginatedData.length + index;
+        const globalRowIndex = (currentPage - 1) * ROWS_PER_PAGE + rowIndex;
+
+        return renderEmptyRow(globalRowIndex);
+      });
+
+      return (
+        <>
+          {dataRows}
+          {emptyRows}
+        </>
+      );
+    }
+
+    return dataRows;
+  };
+
+  const renderEmptyRow = (rowIndex: number) => (
+    <Tr key={`empty-${rowIndex}`} border="left">
+      {visibleHeaders.map((_, colIndex) => (
+        <Td
+          key={`empty-cell-${rowIndex}-${colIndex}`}
+          appearance={"light"}
+        >
+          &nbsp;
+        </Td>
+      ))}
+    </Tr>
+  );
+
+  const handleDeleteModal = (itemToDelete: IDataInformationItem) => {
+    setDataToDelete(itemToDelete); 
+    setShowDeleteModal(true);
   }
 
   return (
-    <Stack direction="column" width="100%" gap="16px">
-      <Table tableLayout="auto">
-        <Thead>
-          <Tr>{renderHeaders()}</Tr>
-        </Thead>
-        <Tbody>{content}</Tbody>
-        {!loading && dataInformation.length > 0 && (
-          <Tfoot>
-            <Tr border="bottom">
-              <Td colSpan={visibleHeaders.length} type="custom" align="center">
-                <Pagination
-                  firstEntryInPage={firstEntryInPage}
-                  lastEntryInPage={dataInformation.length}
-                  totalRecords={dataInformation.length}
-                  handleStartPage={handleStartPage}
-                  handlePrevPage={handlePrevPage}
-                  handleNextPage={handleNextPage}
-                  handleEndPage={handleEndPage}
-                />
-              </Td>
-            </Tr>
-          </Tfoot>
-        )}
-        {isModalOpenEdit && selectedDebtor && (
-          <EditFinancialObligationModal
-            title={`${dataReport.edit} ${selectedDebtor.type || ""}`}
-            onCloseModal={() => setIsModalOpenEdit(false)}
-            onConfirm={async (updatedDebtor) => {
-              await handleUpdate(updatedDebtor);
-            }}
-            initialValues={selectedDebtor}
-            confirmButtonText={dataReport.save}
-          />
-        )}
-        {isDeleteModal && (
-          <BaseModal
-            title={dataReport.deletion}
-            nextButton={dataReport.delete}
-            backButton={dataReport.cancel}
-            handleNext={() => {
-              if (selectedDebtor) {
-                handleDelete(selectedDebtor.id as string);
-                setIsDeleteModal(false);
-              }
-            }}
-            handleClose={() => setIsDeleteModal(false)}
-          >
-            <Stack width="400px">
-              <Text>{dataReport.content}</Text>
-            </Stack>
-          </BaseModal>
-        )}
-      </Table>
-      <Stack
-        gap="48px"
-        direction={!isMobile ? "row" : "column"}
-        justifyContent="center"
-      >
-        {loading ? (
-          <SkeletonLine />
-        ) : (
-          <NewPrice
-            value={totalBalance}
-            label={dataReport.descriptionTotalBalance}
-          />
-        )}
-        {loading ? (
-          <SkeletonLine />
-        ) : (
-          <NewPrice value={totalFee} label={dataReport.descriptionTotalFee} />
-        )}
+    <>
+      <Stack direction="column" width="100%" gap="16px">
+        <Table tableLayout="auto">
+          <Thead>
+            <Tr>{renderHeaders()}</Tr>
+          </Thead>
+          <Tbody>{renderTbodyContent()}</Tbody>
+          {!loading && dataInformation.length > 0 && (
+            <Tfoot>
+              <Tr border="bottom">
+                <Td colSpan={visibleHeaders.length} type="custom" align="center">
+                  <Pagination
+                    firstEntryInPage={startIndex}
+                    lastEntryInPage={endIndex}
+                    totalRecords={dataInformation.length}
+                    handleStartPage={handleStartPage}
+                    handlePrevPage={handlePrevPage}
+                    handleNextPage={handleNextPage}
+                    handleEndPage={handleEndPage}
+                  />
+                </Td>
+              </Tr>
+            </Tfoot>
+          )}
+          {isModalOpenEdit && selectedDebtor && (
+            <EditFinancialObligationModal
+              title={`${dataReport.edit} ${selectedDebtor.type || ""}`}
+              onCloseModal={() => setIsModalOpenEdit(false)}
+              onConfirm={async (updatedDebtor) => {
+                await handleUpdate(updatedDebtor);
+              }}
+              initialValues={selectedDebtor}
+              confirmButtonText={dataReport.save}
+            />
+          )}
+          {isDeleteModal && (
+            <BaseModal
+              title={dataReport.deletion}
+              nextButton={dataReport.delete}
+              backButton={dataReport.cancel}
+              handleClose={() => setIsDeleteModal(false)}
+            >
+              <Stack width="400px">
+                <Text>{dataReport.content}</Text>
+              </Stack>
+            </BaseModal>
+          )}
+        </Table>
+        <Stack
+          gap="48px"
+          direction={!isMobile ? "row" : "column"}
+          justifyContent="center"
+        >
+          {loading ? (
+            <SkeletonLine />
+          ) : (
+            <NewPrice
+              value={totalBalance}
+              label={dataReport.descriptionTotalBalance}
+            />
+          )}
+          {loading ? (
+            <SkeletonLine />
+          ) : (
+            <NewPrice value={totalFee} label={dataReport.descriptionTotalFee} />
+          )}
+        </Stack>
       </Stack>
-    </Stack>
+      {showDeleteModal && (
+        <DeleteModal
+          handleClose={() => setShowDeleteModal(false)}
+          handleDelete={() => {
+            if (dataToDelete) {
+              handleDelete(dataToDelete.id as number, dataToDelete.borrowerIdentificationNumber as string);
+            }
+
+            setShowDeleteModal(false);
+          }}
+          TextDelete={dataReport.content}
+        />
+      )}
+    </>
   );
 };

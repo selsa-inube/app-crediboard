@@ -769,6 +769,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setSentData={setSentData}
                   setRequestValue={setRequestValue}
                   businessUnitPublicCode={businessUnitPublicCode}
+                  setDataProspect={setDataProspect}
                 />
               )}
             </Stack>
@@ -799,6 +800,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 handleClose={handleCloseModal}
                 prospectData={prospectData ? [prospectData] : undefined}
                 options={incomeOptions}
+                businessUnitPublicCode={businessUnitPublicCode}
               />
             )}
             {currentModal === "extraPayments" && (

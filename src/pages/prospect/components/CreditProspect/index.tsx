@@ -62,6 +62,7 @@ interface ICreditProspectProps {
   showMenu: () => void;
   handleChange: (name: string, newValue: string) => void;
   handleIncomeSubmit: (values: IIncomeSources) => void;
+  setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
 }
 
 export function CreditProspect(props: ICreditProspectProps) {
@@ -82,6 +83,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     showMenu,
     handleChange,
     handleIncomeSubmit,
+    setDataProspect,
   } = props;
 
   const [modalHistory, setModalHistory] = useState<string[]>([]);
@@ -350,6 +352,8 @@ export function CreditProspect(props: ICreditProspectProps) {
           onChange={onChanges}
           debtor={form.borrower}
           prospectData={prospectData ? [prospectData] : undefined}
+          setDataProspect={setDataProspect}
+          businessUnitPublicCode={businessUnitPublicCode}
         />
       )}
       {currentModal === "extraPayments" && (

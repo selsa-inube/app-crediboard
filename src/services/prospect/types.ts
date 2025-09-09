@@ -22,6 +22,7 @@ export interface IAllDeductibleExpensesById {
 export interface IBorrowerProperty {
   propertyName: string;
   propertyValue: string;
+  borrowerIdentificationNumber?: string;
 }
 
 export interface IBorrower {
@@ -114,4 +115,8 @@ export interface IProspectSummaryById {
   netAmountToDisburse: number;
   totalRegularInstallments: number;
   totalConsolidatedAmount: number;
+}
+
+export interface IProspectId {
+  prospectId: string;
 }
