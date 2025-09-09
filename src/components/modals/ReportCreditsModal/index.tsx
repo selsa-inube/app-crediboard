@@ -59,24 +59,6 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     idUser: ""
   };
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-
-    const mainBorrower = filterListBorrowers("borrowerType", "MainBorrower");
-
-    if (mainBorrower) {
-      setSelectedBorrower(
-        buildObjectSelection(mainBorrower.borrowerName, mainBorrower.borrowerIdentificationNumber)
-      );
-    }
-
-    setOptionsBorrowers(getOptionsSelect() || [defaultOptionsSelect]);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const handleCloseModal = () => {
@@ -102,6 +84,24 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       return buildObjectSelection(borrower.borrowerName, borrower.borrowerIdentificationNumber);
     })
   }
+
+    useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
+    const mainBorrower = filterListBorrowers("borrowerType", "MainBorrower");
+
+    if (mainBorrower) {
+      setSelectedBorrower(
+        buildObjectSelection(mainBorrower.borrowerName, mainBorrower.borrowerIdentificationNumber)
+      );
+    }
+
+    setOptionsBorrowers(getOptionsSelect() || [defaultOptionsSelect]);
+
+    return () => clearTimeout(timeout);
+  }, [filterListBorrowers, getOptionsSelect]);
 
   const onChangeSelect = (name: string, value: string) => {
     setSelectedBorrower(

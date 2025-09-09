@@ -86,7 +86,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     handleChange,
     handleIncomeSubmit,
     pdfFunction,
-    generateAndSharePdf
+    generateAndSharePdf,
     setDataProspect,
   } = props;
 
