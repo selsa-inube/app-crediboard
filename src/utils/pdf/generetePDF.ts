@@ -5,50 +5,38 @@ export const generatePDF = (
   elementPrint: React.RefObject<HTMLDivElement>,
   customTitle = "",
   titlePDF = "document",
-  margins?: { top: number; bottom: number; left: number; right: number }
+  margins = { top: 40, bottom: 20, left: 20, right: 20 }
 ) => {
   if (elementPrint.current === null) return;
 
-  const pdf = new jsPDF({ orientation: "landscape", format: "a4" });
-
-  const titleFontSize = 16;
-
-  html2canvas(elementPrint.current)
+  return html2canvas(elementPrint.current)
     .then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4" });
 
-      if (margins) {
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const imgProps = {
-          width: canvas.width,
-          height: canvas.height,
-        };
-        const contentWidth = pdfWidth - margins.left - margins.right;
-        const contentHeight = (imgProps.height * contentWidth) / imgProps.width;
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      
+      const contentWidth = pdfWidth - margins.left - margins.right;
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
 
-        const position = margins.top + titleFontSize + 10;
+      const titleFontSize = 16;
+      const titlePosition = margins.top;
 
-        pdf.setFontSize(titleFontSize);
-        pdf.text(customTitle, margins.left, margins.top + titleFontSize);
+      pdf.setFontSize(titleFontSize);
+      pdf.text(customTitle, margins.left, titlePosition);
 
-        pdf.addImage(
-          imgData,
-          "PNG",
-          margins.left,
-          position,
-          contentWidth,
-          contentHeight
-        );
-      } else {
-        const position = titleFontSize + 20;
+      const imagePosition = titlePosition + 10;
+      
+      pdf.addImage(
+        imgData,
+        "PNG",
+        margins.left,
+        imagePosition,
+        contentWidth,
+        contentHeight
+      );
 
-        pdf.setFontSize(titleFontSize);
-        pdf.text(customTitle, 10, position);
-
-        pdf.addImage(imgData, "PNG", 10, position + 10, 100, 100);
-      }
-
-      pdf.save(titlePDF);
+      pdf.save(`${titlePDF}.pdf`);
     })
     .catch((error) => {
       console.error("Error al generar el PDF:", error);

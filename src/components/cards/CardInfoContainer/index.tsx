@@ -20,24 +20,26 @@ export const CardInfoContainer = (props: CardInfoContainerProps) => {
   } = props;
 
   return (
-    <Stack direction="column" width="100%">
-      <Stack gap="8px" alignItems="center">
-        <Icon
-          icon={icon}
-          appearance="primary"
-          size={isMobile ? "35px" : "40px"}
-        />
-        <Text type="title" size={"large"} appearance="primary" ellipsis>
-          {title}
-        </Text>
-      </Stack>
+    <div className="pdf-card" style={{ width: "100%", minHeight: "100%", display: "flex" }}>
+      <Stack direction="column" width="100%">
+        <Stack gap="8px" alignItems="center">
+          <Icon
+            icon={icon}
+            appearance="primary"
+            size={isMobile ? "35px" : "40px"}
+          />
+          <Text type="title" size={"large"} appearance="primary" ellipsis>
+            {title}
+          </Text>
+        </Stack>
 
-      <StyledContainerCardInfo
-        $containerHeight={heightCardInfoContainer}
-        $isMobile={isMobile}
-      >
-        {children}
-      </StyledContainerCardInfo>
-    </Stack>
+        <StyledContainerCardInfo
+          $containerHeight={heightCardInfoContainer}
+          $isMobile={isMobile}
+        >
+          {children}
+        </StyledContainerCardInfo>
+      </Stack>
+    </div>
   );
 };
