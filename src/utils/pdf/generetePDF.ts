@@ -1,17 +1,14 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-import { IFlag } from "@inubekit/inubekit";
-
-import { errorMessages } from "./config";
-
 export const generatePDF = (
   elementPrint: React.RefObject<HTMLDivElement>,
   customTitle = "",
   titlePDF = "document",
-  margins?: { top: number; bottom: number; left: number; right: number },
   getAsBlob = false,
-  addFlag?: (options: Omit<IFlag, "id">) => void 
+  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>,
+  margins?: { top: number; bottom: number; left: number; right: number }
+  
 ): Promise<void | Blob> => {
   return new Promise((resolve, reject) => {
     if (elementPrint.current === null) {
@@ -77,15 +74,7 @@ export const generatePDF = (
         }
       })
       .catch(() => {
-
-        if (addFlag)
-          
-        addFlag({
-          title: errorMessages.generate.titleCard,
-          description: errorMessages.generate.description,
-          appearance: "danger",
-          duration: 5000,
-        });
+        setShowErrorModal(true);
       });
   })
 };

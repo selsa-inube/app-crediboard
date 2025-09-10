@@ -197,7 +197,7 @@ export const errorMessages = {
   share: {
     titleCard: "Compartir",
     title: "No se encontraron documentos",
-    description: "No hay documentos disponibles para compartir.",
+    description: "Error al generar el documento para compartir.",
     button: "Volver a intentar",
   },
 };

@@ -32,6 +32,7 @@ import {
   IProspect,
   IExtraordinaryInstallments,
 } from "@services/prospect/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";
@@ -76,7 +77,7 @@ export const FinancialReporting = () => {
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const { addFlag } = useFlag();
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const [showGuarantee, setShowGuarantee] = useState(false);
 
@@ -105,6 +106,8 @@ export const FinancialReporting = () => {
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
+  const { addFlag } = useFlag();
 
   useEffect(() => {
     getCreditRequestByCode(businessUnitPublicCode, id!, userAccount)
@@ -164,20 +167,11 @@ export const FinancialReporting = () => {
         dataCommercialManagementRef,
         labelsAndValuesShare.titleOnPdf,
         labelsAndValuesShare.titleOnPdf,
-        { top: 10, bottom: 10, left: 10, right: 10 },
         false,
-        addFlag
+        setShowErrorModal,
+        { top: 10, bottom: 10, left: 10, right: 10 },
       );
     }, 1);
-  };
-
-  const handleFlag = (description: string, typeError: string) => {
-    addFlag({
-      title: typeError,
-      description: description,
-      appearance: "danger",
-      duration: 5000,
-    });
   };
 
   const generateAndSharePdf = async () => {
@@ -186,8 +180,9 @@ export const FinancialReporting = () => {
         dataCommercialManagementRef,
         labelsAndValuesShare.titleOnPdf,
         labelsAndValuesShare.titleOnPdf,
+        true,
+        setShowErrorModal,
         { top: 10, bottom: 10, left: 10, right: 10 },
-        true
       );
 
       if (pdfBlob) {
@@ -200,7 +195,7 @@ export const FinancialReporting = () => {
         });
       }
     } catch (error) {
-      handleFlag(errorMessages.share.description, errorMessages.share.titleCard);
+      setShowErrorModal(true);
     }
   }
 
@@ -287,12 +282,7 @@ export const FinancialReporting = () => {
           user?.email ?? ""
         );
       } catch (error) {
-        addFlag({
-          title: textFlagsUsers.titleError,
-          description: textFlagsUsers.descriptionError,
-          appearance: "danger",
-          duration: 5000,
-        });
+        setShowErrorModal(true);
       } finally {
         handleToggleModal();
       }
@@ -362,6 +352,10 @@ export const FinancialReporting = () => {
   const handleToggleModal = () => {
     setShowModal(!showModal);
   };
+
+  const handleErrorModal = () => {
+    setShowErrorModal(!showErrorModal);
+  }
 
   return (
     <div ref={dataCommercialManagementRef}>
@@ -522,6 +516,13 @@ export const FinancialReporting = () => {
           )}
         </Stack>
       </StyledMarginPrint>
+      { showErrorModal && (
+        <ErrorModal
+          message={errorMessages.share.description}
+          handleClose={handleErrorModal}
+        />
+      )
+      }
     </div>
   );
 };
