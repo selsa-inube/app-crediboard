@@ -2,7 +2,8 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 export const generateMultiPagePDF = (
-  containerRef: React.RefObject<HTMLDivElement>
+  containerRef: React.RefObject<HTMLDivElement>,
+  getAsBlob: boolean = false
 ) => {
   const originalElement = containerRef.current;
   if (!originalElement) {
@@ -12,18 +13,18 @@ export const generateMultiPagePDF = (
   const clonedElement = originalElement.cloneNode(true) as HTMLElement;
 
   const printContainer = document.createElement("div");
-  
+
   printContainer.style.position = 'absolute';
   printContainer.style.left = '-9999px';
   printContainer.style.top = '0px';
 
   clonedElement.classList.add('force-desktop-layout');
-  
+
   printContainer.appendChild(clonedElement);
   document.body.appendChild(printContainer);
 
   const IMAGE_QUALITY = 1;
-  let pdfPromise;
+  let pdfPromise: Promise<void | Blob> = Promise.resolve();;
 
   try {
     pdfPromise = html2canvas(clonedElement, {
@@ -39,22 +40,26 @@ export const generateMultiPagePDF = (
       const contentHeight = (canvas.height * contentWidth) / canvas.width;
 
       pdf.addImage(imgData, 'PNG', margin.left, margin.top, contentWidth, contentHeight);
-      
-      const blob = pdf.output('blob');
-      const url = URL.createObjectURL(blob);
 
-      window.open(url, '_blank');
+      const blob = pdf.output('blob');
+      if (getAsBlob) {
+        return blob;
+      } else {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        return;
+      };
     });
 
   } finally {
     const cleanup = () => document.body.removeChild(printContainer);
-    
+
     if (pdfPromise) {
       pdfPromise.finally(cleanup);
     } else {
       cleanup();
     }
   }
-  
+
   return pdfPromise || Promise.resolve();
 };

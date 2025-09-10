@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Stack, useFlag, useMediaQuery } from "@inubekit/inubekit";
@@ -18,7 +18,6 @@ import { ICreditRequest } from "@services/creditRequest/query/types";
 import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { getUnreadErrorsById } from "@services/creditRequest/command/unreadErrors";
 import { getSearchAllDocumentsById } from "@services/creditRequest/query/SearchAllDocuments";
-import { generatePDF } from "@utils/pdf/generetePDF";
 import { AppContext } from "@context/AppContext";
 import { patchAssignAccountManager } from "@services/creditRequest/command/patchAssignAccountManager";
 import { lateRejectionOfACreditRequest } from "@services/creditRequest/command/lateRejectionCreditRequest";
@@ -95,8 +94,6 @@ export const FinancialReporting = () => {
 
   const isMobile: boolean = useMediaQuery("(max-width: 880px)");
 
-  const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
-
   const [errorsService, setErrorsService] = useState<IErrorService[]>([]);
   const [removalJustification, setRemovalJustification] = useState("");
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -157,17 +154,6 @@ export const FinancialReporting = () => {
 
     (idProspect && businessUnitPublicCode) && fetchData();
   }, [businessUnitPublicCode, idProspect, sentData]);
-
-  const handleGeneratePDF = () => {
-    setTimeout(() => {
-      generatePDF(
-        dataCommercialManagementRef,
-        "Gestión Comercial",
-        "Gestión Comercial",
-        { top: 10, bottom: 10, left: 10, right: 10 }
-      );
-    }, 1000);
-  };
 
   const handleActions = configHandleactions({
     buttonReject: () => setShowRejectModal(true),
@@ -359,7 +345,6 @@ export const FinancialReporting = () => {
               <Stack direction="column">
                 <Stack direction="column">
                   <ComercialManagement
-                    print={handleGeneratePDF}
                     data={data}
                     collapse={collapse}
                     setCollapse={setCollapse}

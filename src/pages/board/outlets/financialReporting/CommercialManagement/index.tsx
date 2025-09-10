@@ -80,7 +80,6 @@ interface ComercialManagementProps {
   setRequestValue: React.Dispatch<
     React.SetStateAction<IPaymentChannel[] | undefined>
   >;
-  print: () => void;
   id: string;
   isPrint?: boolean;
   hideContactIcons?: boolean;
@@ -90,7 +89,6 @@ interface ComercialManagementProps {
 export const ComercialManagement = (props: ComercialManagementProps) => {
   const {
     data,
-    print,
     isPrint = false,
     collapse,
     setCollapse,
