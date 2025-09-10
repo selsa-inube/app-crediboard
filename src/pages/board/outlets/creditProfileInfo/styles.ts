@@ -42,7 +42,6 @@ export const GlobalPdfStyles = createGlobalStyle`
     .force-desktop-layout {
     width: 1600px !important;
   }
-
 `;
 
 export const StyledNoPrint = styled.div`

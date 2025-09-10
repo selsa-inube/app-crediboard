@@ -220,14 +220,12 @@ export const CreditProfileInfo = () => {
 
     document.body.classList.add('cursor-wait');
 
-    // 2. Encuentra y deshabilita TODOS los botones de imprimir
     const printButtons = document.querySelectorAll<HTMLButtonElement>('.print-button');
     printButtons.forEach(button => button.disabled = true);
 
     const elementsToHide = element.querySelectorAll(".no-print");
     elementsToHide.forEach((el) => el.classList.add("hidden-for-pdf"));
 
-    // 3. Usa setTimeout para que el navegador actualice la UI (cursor y botón)
     setTimeout(() => {
       generateMultiPagePDF(
         printRef
@@ -237,7 +235,6 @@ export const CreditProfileInfo = () => {
         elementsToHide.forEach((el) => el.classList.remove("hidden-for-pdf"));
       });
     }, 0);
-
 
   };
 

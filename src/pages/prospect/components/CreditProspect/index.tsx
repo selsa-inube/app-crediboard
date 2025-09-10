@@ -243,7 +243,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                   <StyledVerticalDivider />
                 </Stack>
               )}
-{/*               <MenuProspect
+{              <MenuProspect
                 only
                 options={menuOptions(
                   handleOpenModal,
@@ -254,7 +254,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                   )
                 )}
                 onMouseLeave={showMenu}
-              /> */}
+              />}
             </StyledContainerIcon>
           </Stack>
         </StyledPrint>
