@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MdOutlineAdd,
@@ -32,6 +32,7 @@ import {
   capitalizeFirstLetter,
   capitalizeFirstLetterEachWord,
 } from "@utils/formatData/text";
+import { generateMultiPagePDF } from "@utils/pdf/generateMultiPagePDF";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { DisbursementModal } from "@components/modals/DisbursementModal";
 import { Fieldset } from "@components/data/Fieldset";
@@ -55,6 +56,7 @@ import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
 
+import { GlobalPdfStyles } from "../../creditProfileInfo/styles.ts";
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
 import { incomeOptions, menuOptions, tittleOptions } from "./config/config";
@@ -122,6 +124,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   );
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const printRef = useRef<HTMLDivElement>(null);
 
   const [form, setForm] = useState({
     borrower: "",
@@ -455,8 +458,35 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBorrower]);
 
+    const handlePrint = () => {
+      console.log("handlePrint");
+      const element = printRef.current;
+      if (!element) return;
+  
+      document.body.classList.add('cursor-wait');
+  
+      const printButtons = document.querySelectorAll<HTMLButtonElement>('.print-button');
+      printButtons.forEach(button => button.disabled = true);
+  
+      const elementsToHide = element.querySelectorAll(".no-print");
+      elementsToHide.forEach((el) => el.classList.add("hidden-for-pdf"));
+  
+      setTimeout(() => {
+        generateMultiPagePDF(
+          printRef
+        ).finally(() => {
+          document.body.classList.remove('cursor-wait');
+          printButtons.forEach(button => button.disabled = false);
+          elementsToHide.forEach((el) => el.classList.remove("hidden-for-pdf"));
+        });
+      }, 0);
+  
+    };
+
   return (
     <>
+    <div ref={printRef}>
+      <GlobalPdfStyles />
       <Fieldset
         title={errorMessages.comercialManagement.titleCard}
         descriptionTitle={errorMessages.comercialManagement.descriptionCard}
@@ -719,7 +749,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           size="24px"
                           disabled={isPrint}
                           cursorHover
-                          onClick={print}
+                          onClick={handlePrint}
                         />
                         <Icon
                           icon={<MdOutlineShare />}
@@ -769,6 +799,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setSentData={setSentData}
                   setRequestValue={setRequestValue}
                   businessUnitPublicCode={businessUnitPublicCode}
+                  handlePrint={handlePrint}
                 />
               )}
             </Stack>
@@ -867,6 +898,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
           </StyledFieldset>
         )}
       </Fieldset>
+
+      </div>
     </>
   );
 };

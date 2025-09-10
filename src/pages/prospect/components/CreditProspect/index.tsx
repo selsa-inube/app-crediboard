@@ -62,6 +62,7 @@ interface ICreditProspectProps {
   showMenu: () => void;
   handleChange: (name: string, newValue: string) => void;
   handleIncomeSubmit: (values: IIncomeSources) => void;
+  handlePrint: () => void;
 }
 
 export function CreditProspect(props: ICreditProspectProps) {
@@ -82,6 +83,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     showMenu,
     handleChange,
     handleIncomeSubmit,
+    handlePrint
   } = props;
 
   const [modalHistory, setModalHistory] = useState<string[]>([]);
@@ -229,7 +231,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                     size="24px"
                     disabled={!isPrint}
                     cursorHover
-                    onClick={print}
+                    onClick={handlePrint}
                   />
                   <Icon
                     icon={<MdOutlineShare />}
@@ -241,7 +243,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                   <StyledVerticalDivider />
                 </Stack>
               )}
-              <MenuProspect
+{/*               <MenuProspect
                 only
                 options={menuOptions(
                   handleOpenModal,
@@ -252,7 +254,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                   )
                 )}
                 onMouseLeave={showMenu}
-              />
+              /> */}
             </StyledContainerIcon>
           </Stack>
         </StyledPrint>

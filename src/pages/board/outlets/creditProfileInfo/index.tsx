@@ -9,7 +9,6 @@ import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { currencyFormat } from "@utils/formatData/currency";
 import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { AppContext } from "@context/AppContext";
-import { generatePDF } from "@utils/pdf/generetePDF";
 import { generateMultiPagePDF } from "@utils/pdf/generateMultiPagePDF";
 
 import { CreditBehavior } from "./CreditBehaviorCard";
@@ -22,7 +21,7 @@ import {
   StyledContainerToCenter,
   StyledUl,
   StyledLi,
-  StyledPrint,
+  GlobalPdfStyles,
   StyledNoPrint,
   StyledGridPrint,
 } from "./styles";
@@ -231,8 +230,7 @@ export const CreditProfileInfo = () => {
     // 3. Usa setTimeout para que el navegador actualice la UI (cursor y botón)
     setTimeout(() => {
       generateMultiPagePDF(
-        printRef,
-        `perfil-credito-${requests?.clientIdentificationNumber || id}`
+        printRef
       ).finally(() => {
         document.body.classList.remove('cursor-wait');
         printButtons.forEach(button => button.disabled = false);
@@ -245,7 +243,7 @@ export const CreditProfileInfo = () => {
 
   return (
     <div ref={printRef}>
-      <StyledPrint>
+      <GlobalPdfStyles />
         <StyledContainerToCenter>
           <div className="pdf-header">
             <Stack direction="column">
@@ -449,7 +447,6 @@ export const CreditProfileInfo = () => {
             />
           </StyledGridPrint>
         </StyledContainerToCenter>
-      </StyledPrint>
     </div>
   );
 };

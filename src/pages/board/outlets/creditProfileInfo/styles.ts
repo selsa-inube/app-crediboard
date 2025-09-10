@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { DefaultTheme } from "styled-components";
 import { inube } from "@inubekit/inubekit";
 
@@ -38,15 +38,11 @@ export const StyledUl = styled.ul<IStyledUl>`
   gap: 4px;
 `;
 
-export const StyledPrint = styled.div`
-  @media print {
-    @page {
-      size: landscape;
-    }
-    * {
-      zoom: 0.9;
-    }
+export const GlobalPdfStyles = createGlobalStyle`
+    .force-desktop-layout {
+    width: 1600px !important;
   }
+
 `;
 
 export const StyledNoPrint = styled.div`

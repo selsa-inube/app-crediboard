@@ -2,61 +2,59 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 export const generateMultiPagePDF = (
-  containerRef: React.RefObject<HTMLDivElement>,
-  titlePDF = "document"
+  containerRef: React.RefObject<HTMLDivElement>
 ) => {
-  const elementToPrint = containerRef.current;
-  if (!elementToPrint) {
+  const originalElement = containerRef.current;
+  if (!originalElement) {
     return Promise.resolve();
   };
 
-  const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: "a4" });
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = pdf.internal.pageSize.getHeight();
-  const margin = { top: 40, bottom: 40, left: 20, right: 20 };
-  const contentWidth = pdfWidth - margin.left - margin.right;
-  let currentY = margin.top; 
+  const clonedElement = originalElement.cloneNode(true) as HTMLElement;
 
-  const IMAGE_QUALITY = 0.75;
+  const printContainer = document.createElement("div");
+  
+  printContainer.style.position = 'absolute';
+  printContainer.style.left = '-9999px';
+  printContainer.style.top = '0px';
 
-  const headerElement = elementToPrint.querySelector<HTMLElement>(".pdf-header");
-  const cardElements = Array.from(elementToPrint.querySelectorAll<HTMLElement>(".pdf-card"));
+  clonedElement.classList.add('force-desktop-layout');
+  
+  printContainer.appendChild(clonedElement);
+  document.body.appendChild(printContainer);
 
-  const headerPromise = headerElement
-    ? html2canvas(headerElement, { scale: 2 })
-    : Promise.resolve(null);
+  const IMAGE_QUALITY = 1;
+  let pdfPromise;
 
-  return headerPromise
-    .then((canvas) => {
-      if (canvas) {
-        const imgData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
-        pdf.addImage(imgData, "JPEG", margin.left, currentY, contentWidth, imgHeight);
-        currentY += imgHeight + 20;
-      }
+  try {
+    pdfPromise = html2canvas(clonedElement, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png', IMAGE_QUALITY);
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: 'a4' });
 
-      return cardElements.reduce((promiseChain, card) => {
-        return promiseChain.then(() => {
-          return html2canvas(card, { scale: 3 }).then((cardCanvas) => {
-            const imgData = cardCanvas.toDataURL("image/jpeg", IMAGE_QUALITY);
-            const cardHeight = (cardCanvas.height * contentWidth) / cardCanvas.width;
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const margin = { left: 20, right: 20, top: 20, bottom: 20 };
+      const contentWidth = pdfWidth - margin.left - margin.right;
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
 
-            if (currentY + cardHeight > pdfHeight - margin.bottom) {
-              pdf.addPage();
-              currentY = margin.top;
-            }
+      pdf.addImage(imgData, 'PNG', margin.left, margin.top, contentWidth, contentHeight);
+      
+      const blob = pdf.output('blob');
+      const url = URL.createObjectURL(blob);
 
-            pdf.addImage(imgData, "JPEG", margin.left, currentY, contentWidth, cardHeight);
-            currentY += cardHeight + 15;
-          });
-        });
-      }, Promise.resolve());
-    })
-    .then(() => {
-      pdf.save(`${titlePDF}.pdf`);
-    })
-    .catch((error) => {
-      console.error("Error durante la generación del PDF:", error);
-      throw error;
+      window.open(url, '_blank');
     });
+
+  } finally {
+    const cleanup = () => document.body.removeChild(printContainer);
+    
+    if (pdfPromise) {
+      pdfPromise.finally(cleanup);
+    } else {
+      cleanup();
+    }
+  }
+  
+  return pdfPromise || Promise.resolve();
 };
