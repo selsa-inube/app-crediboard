@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-import { useFlag } from "@inubekit/inubekit";
+import { IFlag } from "@inubekit/inubekit";
 
 import { errorMessages } from "./config";
 
@@ -10,7 +10,8 @@ export const generatePDF = (
   customTitle = "",
   titlePDF = "document",
   margins?: { top: number; bottom: number; left: number; right: number },
-  getAsBlob = false
+  getAsBlob = false,
+  addFlag?: (options: Omit<IFlag, "id">) => void 
 ): Promise<void | Blob> => {
   return new Promise((resolve, reject) => {
     if (elementPrint.current === null) {
@@ -20,8 +21,6 @@ export const generatePDF = (
     const pdf = new jsPDF({ orientation: "landscape", format: "a4" });
 
     const titleFontSize = 16;
-
-    const { addFlag } = useFlag();
 
     html2canvas(elementPrint.current)
       .then((canvas) => {
@@ -78,6 +77,9 @@ export const generatePDF = (
         }
       })
       .catch(() => {
+
+        if (addFlag)
+          
         addFlag({
           title: errorMessages.generate.titleCard,
           description: errorMessages.generate.description,

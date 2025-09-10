@@ -164,7 +164,9 @@ export const FinancialReporting = () => {
         dataCommercialManagementRef,
         labelsAndValuesShare.titleOnPdf,
         labelsAndValuesShare.titleOnPdf,
-        { top: 10, bottom: 10, left: 10, right: 10 }
+        { top: 10, bottom: 10, left: 10, right: 10 },
+        false,
+        addFlag
       );
     }, 1);
   };
@@ -179,6 +181,7 @@ export const FinancialReporting = () => {
   };
 
   const generateAndSharePdf = async () => {
+    console.log("generateAndSharePdf");
     try {
       const pdfBlob = await generatePDF(
         dataCommercialManagementRef,
@@ -198,6 +201,7 @@ export const FinancialReporting = () => {
         });
       }
     } catch (error) {
+      console.error(error);
       handleFlag(errorMessages.share.description, errorMessages.share.titleCard);
     }
   }
