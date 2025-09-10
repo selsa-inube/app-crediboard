@@ -181,7 +181,6 @@ export const FinancialReporting = () => {
   };
 
   const generateAndSharePdf = async () => {
-    console.log("generateAndSharePdf");
     try {
       const pdfBlob = await generatePDF(
         dataCommercialManagementRef,
@@ -201,7 +200,6 @@ export const FinancialReporting = () => {
         });
       }
     } catch (error) {
-      console.error(error);
       handleFlag(errorMessages.share.description, errorMessages.share.titleCard);
     }
   }
