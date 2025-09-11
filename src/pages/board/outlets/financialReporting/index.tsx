@@ -78,6 +78,7 @@ export const FinancialReporting = () => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const [showGuarantee, setShowGuarantee] = useState(false);
 
@@ -282,6 +283,7 @@ export const FinancialReporting = () => {
           user?.email ?? ""
         );
       } catch (error) {
+        setMessageError(errorMessages.share.description);
         setShowErrorModal(true);
       } finally {
         handleToggleModal();
@@ -518,7 +520,7 @@ export const FinancialReporting = () => {
       </StyledMarginPrint>
       { showErrorModal && (
         <ErrorModal
-          message={errorMessages.share.description}
+          message={messageError}
           handleClose={handleErrorModal}
         />
       )

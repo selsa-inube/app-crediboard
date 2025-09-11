@@ -16,7 +16,7 @@ export function ErrorModal(props: IErrorModalProps) {
   return (
     <BaseModal
       title={errorModalConfig.title}
-      nextButton={errorModalConfig.understand}
+      nextButton={errorModalConfig.understood}
       handleNext={handleClose}
       handleClose={handleClose}
       width={isMobile ? "300px" : "450px"}
@@ -31,7 +31,7 @@ export function ErrorModal(props: IErrorModalProps) {
           size="68px"
         />
         <Text type="body" size="large" weight="bold">
-          {errorModalConfig.sorry}
+          {errorModalConfig.excuses}
         </Text>
         <Text type="body" size="large" appearance="gray">
           {message}
