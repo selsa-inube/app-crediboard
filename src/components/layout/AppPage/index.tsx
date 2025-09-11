@@ -10,7 +10,6 @@ import {
   Text,
   Stack,
 } from "@inubekit/inubekit";
-import { useAuth0 } from "@auth0/auth0-react";
 
 import { AppContext } from "@context/AppContext";
 import { MenuSection } from "@components/navigation/MenuSection";
@@ -62,7 +61,6 @@ function AppPage() {
   const [noveltiesData, setNoveltiesData] = useState<IUnreadNoveltiesByUser[]>(
     []
   );
-  const { user } = useAuth0();
   const navigate = useNavigate();
   const { businessUnitSigla } = useContext(AppContext);
   const businessUnitPublicCode: string =
@@ -158,7 +156,7 @@ function AppPage() {
     const fetchNoveltiesData = async () => {
       try {
         const data = await getUnreadNoveltiesByUser(
-          user?.email?.substring(0, 20) || "",
+          eventData.user.identificationDocumentNumber || "",
           businessUnitPublicCode
         );
         setNoveltiesData(data);
@@ -168,7 +166,7 @@ function AppPage() {
     };
 
     fetchNoveltiesData();
-  }, [user?.email, businessUnitPublicCode]);
+  }, [eventData.user.identificationDocumentNumber, businessUnitPublicCode]);
 
   return (
     <StyledAppPage>

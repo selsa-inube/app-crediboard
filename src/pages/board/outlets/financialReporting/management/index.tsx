@@ -227,7 +227,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                 />
                 <Textfield
                   id="text"
-                  placeholder="Ej.: Escriba su mensaje"
+                  placeholder="Ej.: Escribe tu mensaje"
                   fullwidth
                   value={newMessage}
                   onChange={handleInputChange}

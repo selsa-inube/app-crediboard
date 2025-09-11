@@ -1,3 +1,3 @@
 export const dataFilters = {
-  withoutFilters: "Sin filtros aún.",
+  withoutFilters: "No tienes filtros aplicados.",
 };

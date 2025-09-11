@@ -14,6 +14,13 @@ interface IBusinessManager {
   urlBrand: string;
   urlLogo: string;
 }
+export interface IUsers {
+  username: string;
+  id: string;
+  company: string;
+  urlImgPerfil: string;
+  nickname: string;
+}
 interface IPreferences {
   boardOrientation: SectionOrientation;
   showPinnedOnly: boolean;
@@ -61,6 +68,7 @@ interface IUser {
   userName: string;
   staff: IStaff;
   preferences: IPreferences;
+  identificationDocumentNumber?: string;
 }
 
 interface IBusinessUnit {

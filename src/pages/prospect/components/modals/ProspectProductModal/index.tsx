@@ -100,7 +100,7 @@ function EditProductModal(props: EditProductModalProps) {
                 name="creditLine"
                 id="creditLine"
                 size="compact"
-                placeholder="Seleccione una opción"
+                placeholder="Selecciona una opción"
                 options={creditLineOptions}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) => formik.setFieldValue(name, value)}
@@ -131,7 +131,7 @@ function EditProductModal(props: EditProductModalProps) {
                 name="paymentMethod"
                 id="paymentMethod"
                 size="compact"
-                placeholder="Seleccione una opción"
+                placeholder="Selecciona una opción"
                 options={paymentMethodOptions}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) => formik.setFieldValue(name, value)}
@@ -143,7 +143,7 @@ function EditProductModal(props: EditProductModalProps) {
                 name="paymentCycle"
                 id="paymentCycle"
                 size="compact"
-                placeholder="Seleccione una opción"
+                placeholder="Selecciona una opción"
                 options={paymentCycleOptions}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) => formik.setFieldValue(name, value)}
@@ -155,7 +155,7 @@ function EditProductModal(props: EditProductModalProps) {
                 name="firstPaymentCycle"
                 id="firstPaymentCycle"
                 size="compact"
-                placeholder="Seleccione una opción"
+                placeholder="Selecciona una opción"
                 options={firstPaymentCycleOptions}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) => formik.setFieldValue(name, value)}
@@ -167,7 +167,7 @@ function EditProductModal(props: EditProductModalProps) {
                 name="termInMonths"
                 id="termInMonths"
                 size="compact"
-                placeholder="Seleccione una opción"
+                placeholder="Selecciona una opción"
                 options={termInMonthsOptions}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) => formik.setFieldValue(name, value)}
@@ -179,7 +179,7 @@ function EditProductModal(props: EditProductModalProps) {
                 name="amortizationType"
                 id="amortizationType"
                 size="compact"
-                placeholder="Seleccione una opción"
+                placeholder="Selecciona una opción"
                 options={amortizationTypeOptions}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) => formik.setFieldValue(name, value)}
@@ -211,7 +211,7 @@ function EditProductModal(props: EditProductModalProps) {
                 name="rateType"
                 id="rateType"
                 size="compact"
-                placeholder="Seleccione una opción"
+                placeholder="Selecciona una opción"
                 options={rateTypeOptions}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) => formik.setFieldValue(name, value)}

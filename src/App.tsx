@@ -1,11 +1,11 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
 } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+import { jwtDecode } from "jwt-decode";
 import { FlagProvider } from "@inubekit/inubekit";
 
 import { AppContext, AppContextProvider } from "@context/AppContext";
@@ -14,16 +14,19 @@ import { ErrorPage } from "@components/layout/ErrorPage";
 import { AppPage } from "@components/layout/AppPage";
 import { GlobalStyles } from "@styles/global";
 import { Login } from "@pages/login";
-import { environment } from "@config/environment";
 import { initializeDataDB } from "@mocks/utils/initializeDataDB";
 import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
+import { useIAuth } from "@context/AuthContext/useAuthContext";
+import { IUsers } from "@context/AppContext/types";
+import { usePostUserAccountsData } from "@hooks/usePostUserAccountsData";
 
 function LogOut() {
   localStorage.clear();
-  const { logout } = useAuth0();
-  logout({ logoutParams: { returnTo: environment.GOOGLE_REDIRECT_URI } });
+  sessionStorage.clear();
+  const { logout } = useIAuth();
+  logout();
   return <AppPage />;
 }
 
@@ -49,8 +52,34 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  const { codeError, loading } = usePortalLogic();
+  const { codeError, loading, businessManager } = usePortalLogic();
+  const { setUser } = useIAuth();
 
+  const { data: userAccountsData } = usePostUserAccountsData(
+    businessManager.clientId,
+    businessManager.clientSecret
+  );
+  useEffect(() => {
+    if (userAccountsData?.idToken) {
+      const decoded = jwtDecode<{
+        identificationNumber: string;
+        names: string;
+        surNames: string;
+        userAccount: string;
+        consumerApplicationCode: string;
+      }>(userAccountsData.idToken);
+
+      const mappedUser: IUsers = {
+        id: decoded.identificationNumber,
+        username: `${decoded.names} ${decoded.surNames}`,
+        nickname: decoded.userAccount,
+        company: decoded.consumerApplicationCode,
+        urlImgPerfil: "",
+      };
+
+      setUser(mappedUser);
+    }
+  }, [userAccountsData, setUser]);
   if (loading) {
     return <LoadingAppUI />;
   }

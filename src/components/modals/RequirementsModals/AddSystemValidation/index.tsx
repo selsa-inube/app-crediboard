@@ -128,7 +128,7 @@ export function AddSystemValidation(props: IRequirements) {
                 label={dataAddRequirement.labelPaymentMethod}
                 placeholder={
                   options.Requirement.length > 0
-                    ? "Seleccione una opción"
+                    ? "Selecciona una opción"
                     : "No hay disponibles"
                 }
                 options={options.Requirement}

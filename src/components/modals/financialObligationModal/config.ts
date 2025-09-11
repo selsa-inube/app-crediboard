@@ -73,7 +73,7 @@ const dataInputs = {
   labelType: "Tipo",
   labelEntity: "Entidad",
   labelPayment: "Medio de pago",
-  palaceHolderSelect: "Seleccione una opción",
+  palaceHolderSelect: "Selecciona una opción",
   labelFee: "Cuota",
   palaceHolderFee: "Valor de la cuota",
   labelBalance: "Saldo",

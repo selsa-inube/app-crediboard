@@ -115,7 +115,7 @@ function ToDo(props: ToDoProps) {
           id,
           userAccount
         );
-        
+
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
         console.error(error);
@@ -143,7 +143,6 @@ function ToDo(props: ToDoProps) {
 
         setTaskData(data);
         data.prospectId && setIdProspect(data.prospectId);
-
       } catch (error) {
         console.error(error);
         errorObserver.notify({
@@ -382,7 +381,7 @@ function ToDo(props: ToDoProps) {
                   name="decision"
                   label="Decisión"
                   value={decisionValue.decision}
-                  placeholder="Seleccione una opción"
+                  placeholder="Selecciona una opción"
                   size="compact"
                   options={taskDecisions || []}
                   onChange={onChangeDecision}
