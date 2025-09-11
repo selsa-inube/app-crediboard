@@ -390,7 +390,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 <Textfield
                   id="SearchCardsDesktop"
                   name="SearchCardsDesktop"
-                  placeholder="Cuál es tu palabra clave?"
+                  placeholder="Palabra clave"
                   size="compact"
                   iconAfter={<MdSearch />}
                   value={searchRequestValue}

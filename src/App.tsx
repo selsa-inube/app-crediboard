@@ -14,7 +14,6 @@ import { ErrorPage } from "@components/layout/ErrorPage";
 import { AppPage } from "@components/layout/AppPage";
 import { GlobalStyles } from "@styles/global";
 import { Login } from "@pages/login";
-import { environment } from "@config/environment";
 import { initializeDataDB } from "@mocks/utils/initializeDataDB";
 import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
@@ -23,12 +22,11 @@ import { useIAuth } from "@context/AuthContext/useAuthContext";
 import { IUsers } from "@context/AppContext/types";
 import { usePostUserAccountsData } from "@hooks/usePostUserAccountsData";
 
-
 function LogOut() {
   localStorage.clear();
   sessionStorage.clear();
   const { logout } = useIAuth();
-  logout({ logoutParams: { returnTo: environment.GOOGLE_REDIRECT_URI } });
+  logout();
   return <AppPage />;
 }
 
