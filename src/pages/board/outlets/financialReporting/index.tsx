@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import { Stack, useFlag, useMediaQuery } from "@inubekit/inubekit";
 
+import { useIAuth } from "@context/AuthContext/useAuthContext";
 import { OfferedGuaranteeModal } from "@components/modals/OfferedGuaranteeModal";
 import { ErrorAlert } from "@components/ErrorAlert";
 import { ContainerSections } from "@components/layout/ContainerSections";
@@ -36,7 +37,12 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";
-import { configHandleactions, optionButtons, labelsAndValuesShare, errorMessages } from "./config";
+import {
+  configHandleactions,
+  optionButtons,
+  labelsAndValuesShare,
+  errorMessages,
+} from "./config";
 import {
   StyledMarginPrint,
   StyledPageBreak,
@@ -88,10 +94,10 @@ export const FinancialReporting = () => {
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
   >([]);
-  const [idProspect, setIdProspect] = useState('');
+  const [idProspect, setIdProspect] = useState("");
 
   const { id } = useParams();
-  const { user } = useAuth0();
+  const { user } = useIAuth();
 
   const navigation = useNavigate();
 
@@ -121,13 +127,12 @@ export const FinancialReporting = () => {
   }, [id, businessUnitPublicCode, userAccount]);
 
   const fetchAndShowDocuments = async () => {
-    if (!data?.creditRequestId || !user?.email || !businessUnitPublicCode)
-      return;
+    if (!data?.creditRequestId || !user?.id || !businessUnitPublicCode) return;
 
     try {
       const documents = await getSearchAllDocumentsById(
         data.creditRequestId,
-        user.email,
+        user.id,
         businessUnitPublicCode
       );
 
@@ -159,7 +164,7 @@ export const FinancialReporting = () => {
       }
     };
 
-    (idProspect && businessUnitPublicCode) && fetchData();
+    idProspect && businessUnitPublicCode && fetchData();
   }, [businessUnitPublicCode, idProspect, sentData]);
 
   const handleGeneratePDF = () => {
@@ -170,7 +175,7 @@ export const FinancialReporting = () => {
         labelsAndValuesShare.titleOnPdf,
         false,
         setShowErrorModal,
-        { top: 10, bottom: 10, left: 10, right: 10 },
+        { top: 10, bottom: 10, left: 10, right: 10 }
       );
     }, 1);
   };
@@ -183,11 +188,13 @@ export const FinancialReporting = () => {
         labelsAndValuesShare.titleOnPdf,
         true,
         setShowErrorModal,
-        { top: 10, bottom: 10, left: 10, right: 10 },
+        { top: 10, bottom: 10, left: 10, right: 10 }
       );
 
       if (pdfBlob) {
-        const pdfFile = new File([pdfBlob], labelsAndValuesShare.fileName, { type: 'application/pdf' });
+        const pdfFile = new File([pdfBlob], labelsAndValuesShare.fileName, {
+          type: "application/pdf",
+        });
 
         await navigator.share({
           files: [pdfFile],
@@ -198,7 +205,7 @@ export const FinancialReporting = () => {
     } catch (error) {
       setShowErrorModal(true);
     }
-  }
+  };
 
   const handleActions = configHandleactions({
     buttonReject: () => setShowRejectModal(true),
@@ -245,7 +252,7 @@ export const FinancialReporting = () => {
     try {
       await lateRejectionOfACreditRequest(
         data?.creditRequestId || "",
-        user?.email || "",
+        user?.id || "",
         businessUnitPublicCode,
         "RECHAZAR_SOLICITUD", // o "RECHAZO_HUMANO"
         removalJustification
@@ -274,13 +281,13 @@ export const FinancialReporting = () => {
   };
   useEffect(() => {
     const fetchData = async () => {
-      if (!data?.creditRequestId || !businessUnitPublicCode || !user?.email)
+      if (!data?.creditRequestId || !businessUnitPublicCode || !user?.id)
         return;
       try {
         await patchAssignAccountManager(
           data?.creditRequestId ?? "",
           businessUnitPublicCode,
-          user?.email ?? ""
+          user?.id ?? ""
         );
       } catch (error) {
         setMessageError(errorMessages.share.description);
@@ -292,7 +299,7 @@ export const FinancialReporting = () => {
 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.creditRequestId, businessUnitPublicCode, user?.email]);
+  }, [data?.creditRequestId, businessUnitPublicCode, user?.id]);
 
   const fetchErrors = async () => {
     if (!data?.creditRequestId || !businessUnitPublicCode) return;
@@ -357,7 +364,7 @@ export const FinancialReporting = () => {
 
   const handleErrorModal = () => {
     setShowErrorModal(!showErrorModal);
-  }
+  };
 
   return (
     <div ref={dataCommercialManagementRef}>
@@ -390,7 +397,6 @@ export const FinancialReporting = () => {
               <Stack direction="column" gap="20px">
                 <Stack direction="column">
                   <Stack direction="column">
-
                     <ComercialManagement
                       generateAndSharePdf={generateAndSharePdf}
                       print={handleGeneratePDF}
@@ -417,15 +423,21 @@ export const FinancialReporting = () => {
                       setIdProspect={setIdProspect}
                     />
                   </Stack>
-                  <Stack direction="column" height={isMobile ? "auto" : "277px"}>
+                  <Stack
+                    direction="column"
+                    height={isMobile ? "auto" : "277px"}
+                  >
                     <Approvals user={id!} isMobile={isMobile} id={id!} />
                   </Stack>
-                  <Stack direction="column" height={isMobile ? "auto" : "340px"}>
+                  <Stack
+                    direction="column"
+                    height={isMobile ? "auto" : "340px"}
+                  >
                     <StyledPageBreak />
                     <Requirements
                       isMobile={isMobile}
                       id={data.creditRequestId!}
-                      user={user!.email!}
+                      user={user!.id!}
                       businessUnitPublicCode={businessUnitPublicCode}
                       creditRequestCode={data.creditRequestCode!}
                     />
@@ -433,11 +445,17 @@ export const FinancialReporting = () => {
                   <Stack direction="column">
                     <Management id={id!} isMobile={isMobile} />
                   </Stack>
-                  <Stack direction="column" height={isMobile ? "auto" : "163px"}>
+                  <Stack
+                    direction="column"
+                    height={isMobile ? "auto" : "163px"}
+                  >
                     <StyledPageBreak />
                     <PromissoryNotes id={id!} isMobile={isMobile} />
                   </Stack>
-                  <Stack direction="column" height={isMobile ? "auto" : "163px"}>
+                  <Stack
+                    direction="column"
+                    height={isMobile ? "auto" : "163px"}
+                  >
                     <Postingvouchers user={id!} id={id!} isMobile={isMobile} />
                   </Stack>
                   <StyledPageBreak />
@@ -473,7 +491,7 @@ export const FinancialReporting = () => {
               title="Rechazar"
               buttonText="Confirmar"
               inputLabel="Motivo del Rechazo."
-              inputPlaceholder="Describa el motivo del Rechazo."
+              inputPlaceholder="Describe el motivo del Rechazo."
               onCloseModal={() => setShowRejectModal(false)}
               handleNext={() => {
                 handleSubmit();
@@ -497,7 +515,7 @@ export const FinancialReporting = () => {
               title="Anular"
               buttonText="Confirmar"
               inputLabel="Motivo de la anulación."
-              inputPlaceholder="Describa el motivo de la anulación."
+              inputPlaceholder="Describe el motivo de la anulación."
               onCloseModal={() => setShowCancelModal(false)}
               handleNext={() => {
                 handleDeleteCreditRequest();
@@ -518,13 +536,9 @@ export const FinancialReporting = () => {
           )}
         </Stack>
       </StyledMarginPrint>
-      { showErrorModal && (
-        <ErrorModal
-          message={messageError}
-          handleClose={handleErrorModal}
-        />
-      )
-      }
+      {showErrorModal && (
+        <ErrorModal message={messageError} handleClose={handleErrorModal} />
+      )}
     </div>
   );
 };

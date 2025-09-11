@@ -14,7 +14,6 @@ import { dataAddRequirement } from "@pages/board/outlets/financialReporting/Requ
 
 import { IOptionsSelect } from "../types";
 
-
 export interface IRequirement {
   optionsRequirement: IOptionsSelect[];
   creditRequestCode: string;
@@ -127,7 +126,7 @@ export function AddRequirement(props: IRequirement) {
                 label={dataAddRequirement.labelPaymentMethod}
                 placeholder={
                   options.Requirement.length > 0
-                    ? "Seleccione una opción"
+                    ? "Selecciona una opción"
                     : "No hay disponibles"
                 }
                 options={options.Requirement}

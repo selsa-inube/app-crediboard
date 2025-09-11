@@ -5,7 +5,6 @@ import {
   MdDeleteOutline,
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   Stack,
   Icon,
@@ -103,9 +102,7 @@ export const ListModal = (props: IListModalProps) => {
   const isMobile = useMediaQuery("(max-width: 700px)");
   const dragCounter = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { businessUnitSigla } = useContext(AppContext);
-
-  const { user } = useAuth0();
+  const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const [pendingFiles, setPendingFiles] = useState<
@@ -262,7 +259,7 @@ export const ListModal = (props: IListModalProps) => {
             id,
             abbreviatedName,
             fileData.file,
-            user?.email ?? ""
+            eventData.user.identificationDocumentNumber || ""
           );
         }
 
@@ -290,7 +287,7 @@ export const ListModal = (props: IListModalProps) => {
     try {
       const documentData = await getSearchDocumentById(
         id,
-        user?.email ?? "",
+        eventData.user.identificationDocumentNumber || "",
         businessUnitPublicCode
       );
       const fileUrl = URL.createObjectURL(documentData);

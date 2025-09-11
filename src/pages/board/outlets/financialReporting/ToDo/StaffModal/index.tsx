@@ -242,7 +242,7 @@ export function StaffModal(props: StaffModalProps) {
                 label="Gestor Comercial"
                 placeholder={
                   options.commercialManager.length > 0
-                    ? "Seleccione una opción"
+                    ? "Selecciona una opción"
                     : "No hay gestores disponibles"
                 }
                 options={options.commercialManager}
@@ -259,7 +259,7 @@ export function StaffModal(props: StaffModalProps) {
                 label="Analista"
                 placeholder={
                   options.analyst.length > 0
-                    ? "Seleccione una opción"
+                    ? "Selecciona una opción"
                     : "No hay analistas disponibles"
                 }
                 options={options.analyst}

@@ -54,7 +54,7 @@ const selectConfig = (
   label: "Filtrado por",
   id: "FilterRequests",
   name: "FilterRequests",
-  placeholder: "Seleccione una opción",
+  placeholder: "Selecciona una opción",
   options: selectOptions,
   onChangeCheck: handleSelectCheckChange,
   value: "",
@@ -85,6 +85,6 @@ export {
 
 export const boardLayoutData = {
   errorLoadingPins: "Error: No se pudo cargar el estado de los anclados.",
-  remove: "Quitar",
-  filter: "Filtrar",
+  remove: "Elimina",
+  filter: "Filtra",
 };

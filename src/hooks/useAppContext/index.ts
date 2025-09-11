@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 
 import { IStaffPortalByBusinessManager } from "@services/staff-portals-by-business-manager/types";
-import { IBusinessManagers } from "@services/businessManager/types";
 import {
   validateBusinessManagers,
   validateConsultation,
@@ -13,6 +11,8 @@ import { getEnumerators } from "@services/enumerators";
 import { getStaff } from "@services/staff/staffs";
 import { decrypt } from "@utils/encrypt/encrypt";
 import { getSearchUseCaseForStaff } from "@services/staffs/SearchUseCaseForStaff";
+import { useIAuth } from "@context/AuthContext/useAuthContext";
+import { IBusinessManagers } from "@services/businessManager/types";
 
 interface IBusinessUnits {
   businessUnitPublicCode: string;
@@ -22,7 +22,7 @@ interface IBusinessUnits {
 }
 
 function useAppContext() {
-  const { user } = useAuth0();
+  const { user } = useIAuth();
   const [portalData, setPortalData] = useState<IStaffPortalByBusinessManager[]>(
     []
   );
@@ -53,11 +53,23 @@ function useAppContext() {
   } catch (error) {
     console.error("Error parsing businessUnitSigla: ", error);
   }
-
+  useEffect(() => {
+    if (user) {
+      setEventData((prev) => ({
+        ...prev,
+        user: {
+          ...prev.user,
+          userAccount: user.username || "",
+          userName: user.nickname || "",
+          identificationDocumentNumber: user.id || "",
+        },
+      }));
+    }
+  }, [user]);
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
-        const userIdentifier = user?.email?.substring(0, 20);
+        const userIdentifier = user?.username;
         if (!userIdentifier) return;
         const staffData = await getStaff(userIdentifier);
         if (!staffData.length) return;
@@ -66,10 +78,10 @@ function useAppContext() {
       }
     };
 
-    if (user?.email) {
+    if (user?.username) {
       fetchStaffData();
     }
-  }, [user?.email]);
+  }, [user?.username]);
 
   const [eventData, setEventData] = useState<ICrediboardData>({
     portal: {
@@ -91,8 +103,8 @@ function useAppContext() {
       urlLogo: businessUnit?.urlLogo || "",
     },
     user: {
-      userAccount: user?.email || "",
-      userName: user?.name || "",
+      userAccount: user?.username || "",
+      userName: user?.nickname || "",
       staff: {
         biologicalSex: "",
         birthDay: "",
@@ -124,7 +136,8 @@ function useAppContext() {
     if (
       !eventData.businessUnit.abbreviatedName ||
       !eventData.businessManager.publicCode ||
-      !eventData.user.userAccount
+      !eventData?.user?.identificationDocumentNumber ||
+      ""
     ) {
       return;
     }
@@ -133,7 +146,7 @@ function useAppContext() {
         const staffUseCaseData = await getSearchUseCaseForStaff(
           eventData.businessUnit.abbreviatedName,
           eventData.businessManager.publicCode,
-          eventData.user.userAccount.substring(0, 20)
+          eventData?.user?.identificationDocumentNumber || ""
         );
         setStaffUseCases(staffUseCaseData);
       } catch (error) {
@@ -143,7 +156,7 @@ function useAppContext() {
   }, [
     eventData.businessUnit.abbreviatedName,
     eventData.businessManager.publicCode,
-    eventData.user.userAccount,
+    eventData?.user?.identificationDocumentNumber || "",
   ]);
 
   useEffect(() => {

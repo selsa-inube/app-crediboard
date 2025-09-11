@@ -147,7 +147,7 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
               </Stack>
               <Checkpicker
                 label="Filtrado por"
-                placeholder="Selecciona de la lista"
+                placeholder="Selecciona el campo que deseas"
                 name="assignment"
                 id="assignment"
                 values={formik.values.assignment}

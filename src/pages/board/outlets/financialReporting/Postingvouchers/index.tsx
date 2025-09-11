@@ -1,4 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Stack } from "@inubekit/inubekit";
 
@@ -11,6 +10,7 @@ import { IEntries } from "@components/data/TableBoard/types";
 import { UnfoundData } from "@components/layout/UnfoundData";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
+import { useIAuth } from "@context/AuthContext/useAuthContext";
 
 import {
   actionsPostingvouchers,
@@ -26,7 +26,7 @@ interface IApprovalsProps {
 }
 export const Postingvouchers = (props: IApprovalsProps) => {
   const { id, isMobile } = props;
-  const { user } = useAuth0();
+  const { user } = useIAuth();
   const [error, setError] = useState(false);
   const [positionsAccountingVouchers, setPositionsAccountingVouchers] =
     useState<IAccountingVouchers[]>([]);
@@ -48,7 +48,6 @@ export const Postingvouchers = (props: IApprovalsProps) => {
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
-
       console.error(error);
       errorObserver.notify({
         id: "Management",
