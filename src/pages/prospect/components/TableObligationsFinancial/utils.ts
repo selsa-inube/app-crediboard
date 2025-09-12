@@ -14,7 +14,7 @@ export const usePagination = (dataInformation: IDataInformationItem[], setCurren
 
   const totalPages = useMemo(() => {
     return Math.ceil(totalRecords / ROWS_PER_PAGE) || 1;
-  }, [totalRecords, ROWS_PER_PAGE]);
+  }, [totalRecords]);
   
   const handleStartPage = () => setCurrentPage(0);
   const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 0));
