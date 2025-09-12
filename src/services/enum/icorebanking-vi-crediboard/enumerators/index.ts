@@ -9,6 +9,8 @@ import { EnumeratorsResponse } from "./types";
 
 export const getEnumerators = async (
   businessUnitPublicCode: string,
+  xAction: string,
+  path: string
 ): Promise< EnumeratorsResponse | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -19,15 +21,15 @@ export const getEnumerators = async (
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "GetAllEnums",
+          "X-Action": xAction,
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
         signal: controller.signal,
       };
-      console.log(businessUnitPublicCode);
+      
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/enumerators`,
+        `${environment.ICOREBANKING_API_URL_QUERY}${path}`,
         options,
       );
 
@@ -46,7 +48,7 @@ export const getEnumerators = async (
           data,
         };
       }
-
+      console.log("data: ", data);
       return data;
     } catch (error) {
       if (attempt === maxRetries) {

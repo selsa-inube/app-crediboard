@@ -1,20 +1,27 @@
-import { createContext, useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import { getEnumerators } from "@services/enum/icorebanking-vi-crediboard/enumerators";
 import { EnumeratorsResponse } from '@services/enum/icorebanking-vi-crediboard/enumerators/types';
 
-import { IEnumContextType, EnumProviderProps, TransformedEnums } from './types';
-
-export const EnumContext = createContext<IEnumContextType>({} as IEnumContextType);
+import { EnumContext } from './context'; 
+import { EnumProviderProps, TransformedEnums } from './types';
+import { paths } from "./config";
 
 export const EnumProvider = ({ children }: EnumProviderProps) => {
     const [enums, setEnums] = useState({});
+    const [language, setLanguage] = useState("");
 
-    const browserLanguage = navigator.language;
-    const splitLanguage = browserLanguage.split("-");
+    useEffect(() => {
+        const browserLanguage = navigator.language;
+        const splitLanguage = browserLanguage.split("-");
+
+        if (splitLanguage.length === 2) {
+            setLanguage(splitLanguage[0]);
+        }
+    }, []);
 
     const getEnums = useCallback(async (businessUnitPublicCode: string) => {
-        const data: EnumeratorsResponse | null = await getEnumerators(businessUnitPublicCode);
+        const data: EnumeratorsResponse | null = await getEnumerators(businessUnitPublicCode, paths.moneyDestination.xAction, paths.moneyDestination.path);
 
         if (!data) {
             setEnums({});
@@ -25,8 +32,8 @@ export const EnumProvider = ({ children }: EnumProviderProps) => {
             const enumItems: Record<string, string> = {};
 
             data[enumName].forEach(item => {
-                const translatedText = item.I18nDescription?.[splitLanguage[0]];
-                enumItems[item.Code] = translatedText || "";
+                const translatedText = item.i18nValue?.[language];
+                enumItems[item.code] = translatedText || "";
             });
 
             transformedEnums[enumName] = enumItems;
@@ -35,7 +42,7 @@ export const EnumProvider = ({ children }: EnumProviderProps) => {
 
         setEnums(transformedEnums);
 
-    }, [browserLanguage]);
+    }, [language]);
 
     const contextValue = {
         enums,
