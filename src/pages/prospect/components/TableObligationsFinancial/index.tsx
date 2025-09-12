@@ -278,7 +278,7 @@ export const TableFinancialObligations = (
     } else {
       setExtraDebtors([]);
     }
-  }, [refreshKey, dataProspect, businessUnitPublicCode, prospectId]);
+  }, [refreshKey, dataProspect]);
 
   const handleDelete = async (id: number, borrowerIdentificationNumber: string) => {
     setShowDeleteModal(true);
