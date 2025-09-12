@@ -231,7 +231,7 @@ export const TableFinancialObligations = (
     });
 
     return () => clearTimeout(timeout);
-  }, [filterListBorrowersFinancialObligation, businessUnitPublicCode, prospectId]);
+  }, [businessUnitPublicCode, prospectId]);
 
   useEffect(() => {
     const financialObligationBorrowers = filterListBorrowersFinancialObligation();
