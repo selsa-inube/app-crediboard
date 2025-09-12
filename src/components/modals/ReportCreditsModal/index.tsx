@@ -93,6 +93,10 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     })
   }, [prospectData, buildObjectSelection]);
 
+  const handleObligationProcessed = () => {
+  setNewObligation(undefined);
+};
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setLoading(false);
@@ -219,6 +223,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           prospectId={prospectData?.[0]?.prospectId || ""}
           newObligation={newObligation}
           businessUnitPublicCode={businessUnitPublicCode}
+          onObligationProcessed={handleObligationProcessed}
         />
       </Stack>
     </BaseModal>

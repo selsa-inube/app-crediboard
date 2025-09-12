@@ -30,12 +30,13 @@ export interface ITableFinancialObligationsProps {
   newObligation?: IFinancialObligation;
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>>;
   currentPage?: number;
+  onObligationProcessed?: () => void;
 }
 
 export const TableFinancialObligations = (
   props: ITableFinancialObligationsProps
 ) => {
-  const { refreshKey, showActions, businessUnitPublicCode, prospectId, selectedBorrower, newObligation } = props;
+  const { refreshKey, showActions, businessUnitPublicCode, prospectId, selectedBorrower, newObligation, onObligationProcessed } = props;
 
   const [dataProspect, setDataProspect] = useState<IProspect[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,8 +50,9 @@ export const TableFinancialObligations = (
   const [currentPage, setCurrentPage] = useState(0);
   const [gotEndPage, setGotEndPage] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isProcessingObligation, setIsProcessingObligation] = useState(false);
 
-  const handleEdit = (debtor: ITableFinancialObligationsProps, index: number) => {
+  const handleEdit = useCallback((debtor: ITableFinancialObligationsProps, index: number) => {
     let balance = "";
     let fee = "";
 
@@ -67,7 +69,7 @@ export const TableFinancialObligations = (
       indexOnTable: index
     });
     setIsModalOpenEdit(true);
-  };
+  }, []);
 
   const filterListBorrowersFinancialObligation = useCallback(() => {
     if (!dataProspect) return;
@@ -162,7 +164,7 @@ export const TableFinancialObligations = (
     });
   }, [addFlag]);
 
-  const findFinancialObligation = (indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
+  const findFinancialObligation = useCallback((indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
     let indexBorrower = 0;
     let indexPropertyFinancialObligation = -1;
     let indexProperty = 0;
@@ -191,12 +193,14 @@ export const TableFinancialObligations = (
     return {
       indexBorrower,
       indexProperty
-    };
-  }
+    }
+  }, [dataProspect]);
 
   const saveNewObligation = useCallback(async () => {
     try {
-      if (!newObligation) return;
+      if (!newObligation || isProcessingObligation) return;
+
+      setIsProcessingObligation(true);
 
       const newContentTable = addFinancialObligation(newObligation);
 
@@ -210,18 +214,33 @@ export const TableFinancialObligations = (
 
       setDataProspect(newContentTable);
 
+      if (onObligationProcessed) {
+        onObligationProcessed();
+      }
+
     } catch (error) {
+      setIsProcessingObligation(false);
       handleFlag(errorMessages.save.description, errorMessages.save.title);
+    } finally {
+      setIsProcessingObligation(false);
     }
   }, [
     newObligation,
+    isProcessingObligation,
     addFinancialObligation,
     businessUnitPublicCode,
     borrowersListFinancialObligation.length,
     setGotEndPage,
     setDataProspect,
-    handleFlag
+    handleFlag,
+    onObligationProcessed
   ]);
+
+  useEffect(() => {
+    if (newObligation && !isProcessingObligation) {
+      saveNewObligation();
+    }
+  }, [newObligation, saveNewObligation, isProcessingObligation]);
 
   useEffect(() => {
     const timeout = setTimeout(() => setLoading(false), 500);
@@ -280,75 +299,7 @@ export const TableFinancialObligations = (
     }
   }, [refreshKey, dataProspect]);
 
-  const handleDelete = async (id: number, borrowerIdentificationNumber: string) => {
-    setShowDeleteModal(true);
-    const newContentTable = deleteFinancialObligation(id, borrowerIdentificationNumber);
-
-    if (!newContentTable) return;
-
-    await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
-
-    if (setDataProspect === undefined) return;
-
-    setDataProspect(newContentTable);
-
-    moveBeforePage();
-  };
-
-  const deleteFinancialObligation = (indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
-    const {
-      indexBorrower,
-      indexProperty
-    } = findFinancialObligation(indexPropertyOnTable, borrowerIdentificationNumber);
-
-    const newContentTable = structuredClone(dataProspect);
-
-    if (!setDataProspect || !newContentTable) return;
-
-    newContentTable[0].borrowers[indexBorrower].borrowerProperties.splice(indexProperty, 1);
-
-    return newContentTable;
-
-  }
-
-  const moveBeforePage = () => {
-    const totalPages = Math.ceil(borrowersListFinancialObligation.length / ROWS_PER_PAGE) || 1;
-    const isTheLastRegisterOnPage = (totalPages - 1) === currentPage && ((borrowersListFinancialObligation.length % ROWS_PER_PAGE - 1) === 0);
-
-    if ((totalPages - 1) === currentPage && isTheLastRegisterOnPage) {
-      setCurrentPage(prev => prev - 1);
-    }
-  };
-  const handleUpdate = async (
-    updatedBorrower: ITableFinancialObligationsProps
-  ) => {
-    try {
-      if (
-        !updatedBorrower.borrowerIdentificationNumber ||
-        updatedBorrower.fee === undefined ||
-        updatedBorrower.balance === undefined
-      ) return;
-
-      const newContentTable = editFinancialObligation(
-        updatedBorrower.indexOnTable as number,
-        updatedBorrower.borrowerIdentificationNumber,
-        updatedBorrower.fee.toString(),
-        updatedBorrower.balance.toString()
-      );
-
-      if (!newContentTable) return;
-
-      await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
-
-      setDataProspect(newContentTable);
-
-      setIsModalOpenEdit(false);
-    } catch (error) {
-      handleFlag(errorMessages.update.description, errorMessages.update.title);
-    }
-  };
-
-  const editFinancialObligation = (
+  const editFinancialObligation = useCallback((
     indexPropertyOnTable: number,
     borrowerIdentificationNumber: string,
     newFee: string,
@@ -375,7 +326,84 @@ export const TableFinancialObligations = (
 
     borrowerToUpdate.borrowerProperties[indexProperty].propertyValue = originalValues.join(",");
     return newContentTable;
-  };
+  }, [dataProspect, findFinancialObligation]);
+
+  const moveBeforePage = useCallback(() => {
+
+    const totalPages = Math.ceil(borrowersListFinancialObligation.length / ROWS_PER_PAGE) || 1;
+    const isTheLastRegisterOnPage = (totalPages - 1) === currentPage && ((borrowersListFinancialObligation.length % ROWS_PER_PAGE - 1) === 0);
+
+    if ((totalPages - 1) === currentPage && isTheLastRegisterOnPage) {
+      setCurrentPage(prev => prev - 1);
+    }
+  }, [borrowersListFinancialObligation.length, currentPage]);
+
+  const deleteFinancialObligation = useCallback((indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
+    const {
+      indexBorrower,
+      indexProperty
+    } = findFinancialObligation(indexPropertyOnTable, borrowerIdentificationNumber);
+
+    const newContentTable = structuredClone(dataProspect);
+
+    if (!setDataProspect || !newContentTable) return;
+
+    newContentTable[0].borrowers[indexBorrower].borrowerProperties.splice(indexProperty, 1);
+
+    return newContentTable;
+
+  }, [
+    dataProspect,
+    findFinancialObligation
+  ]);
+
+  const handleDelete = useCallback(async (id: number, borrowerIdentificationNumber: string) => {
+    setShowDeleteModal(true);
+    const newContentTable = deleteFinancialObligation(id, borrowerIdentificationNumber);
+
+    if (!newContentTable) return;
+
+    await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
+
+    if (setDataProspect === undefined) return;
+
+    setDataProspect(newContentTable);
+
+    moveBeforePage();
+  }, [
+    businessUnitPublicCode,
+    deleteFinancialObligation,
+    moveBeforePage
+  ]);
+
+  const handleUpdate = useCallback(async (
+    updatedBorrower: ITableFinancialObligationsProps
+  ) => {
+    try {
+      if (
+        !updatedBorrower.borrowerIdentificationNumber ||
+        updatedBorrower.fee === undefined ||
+        updatedBorrower.balance === undefined
+      ) return;
+
+      const newContentTable = editFinancialObligation(
+        updatedBorrower.indexOnTable as number,
+        updatedBorrower.borrowerIdentificationNumber,
+        updatedBorrower.fee.toString(),
+        updatedBorrower.balance.toString()
+      );
+
+      if (!newContentTable) return;
+
+      await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
+
+      setDataProspect(newContentTable);
+
+      setIsModalOpenEdit(false);
+    } catch (error) {
+      handleFlag(errorMessages.update.description, errorMessages.update.title);
+    }
+  }, [editFinancialObligation, businessUnitPublicCode, handleFlag]);
 
   return (
     <TableFinancialObligationsUI
