@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useMediaQuery, useFlag } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
@@ -69,6 +69,160 @@ export const TableFinancialObligations = (
     setIsModalOpenEdit(true);
   };
 
+  const filterListBorrowersFinancialObligation = useCallback(() => {
+    if (!dataProspect) return;
+
+    const listsBorrowers: IBorrowerProperty[] = [];
+    let countIndex = 0;
+
+    dataProspect[0].borrowers.map((borrower) => {
+      if (borrower.borrowerIdentificationNumber !== selectedBorrower?.value) return;
+
+      borrower.borrowerProperties.map((property) => {
+        if (property.propertyName === "FinancialObligation") {
+          listsBorrowers.push({
+            id: countIndex,
+            propertyName: borrower.borrowerName,
+            propertyValue: property.propertyValue,
+            borrowerIdentificationNumber: borrower.borrowerIdentificationNumber
+          } as IBorrowerProperty);
+
+          countIndex++;
+
+          return borrower;
+        }
+      });
+    });
+
+    return listsBorrowers;
+  }, [dataProspect, selectedBorrower?.value]);
+
+  const addFinancialObligation = useCallback((newObligation: IFinancialObligation) => {
+
+    if (!dataProspect || !selectedBorrower?.value) {
+      console.error("No se puede añadir la obligación: faltan datos del prospecto o el deudor no está seleccionado.");
+      return null;
+    }
+
+    const [paidFees, totalFees] = newObligation.feePaid.split('/');
+    const newPropertyValue = [
+      newObligation.type,
+      newObligation.balance,
+      newObligation.fee,
+      newObligation.entity,
+      newObligation.payment,
+      newObligation.idUser,
+      paidFees,
+      totalFees,
+    ].join(',');
+
+    const newProperty: IBorrowerProperty = {
+      propertyName: 'FinancialObligation',
+      propertyValue: newPropertyValue,
+    };
+
+    const newContentTable = structuredClone(dataProspect);
+
+    const borrowerIndex = newContentTable[0].borrowers.findIndex(
+      (borrower) => borrower.borrowerIdentificationNumber === selectedBorrower.value
+    );
+
+    if (borrowerIndex === -1) {
+      console.error("Deudor seleccionado no encontrado.");
+      return null;
+    }
+
+    const borrowerToUpdate = newContentTable[0].borrowers[borrowerIndex];
+
+    let lastObligationIndex = -1;
+    for (let i = borrowerToUpdate.borrowerProperties.length - 1; i >= 0; i--) {
+      if (borrowerToUpdate.borrowerProperties[i].propertyName === 'FinancialObligation') {
+        lastObligationIndex = i;
+        break;
+      }
+    }
+
+    if (lastObligationIndex !== -1) {
+      borrowerToUpdate.borrowerProperties.splice(lastObligationIndex + 1, 0, newProperty);
+    } else {
+      borrowerToUpdate.borrowerProperties.push(newProperty);
+    }
+
+    return newContentTable;
+  }, [dataProspect, selectedBorrower?.value]);
+
+  const { addFlag } = useFlag();
+
+  const handleFlag = useCallback((description: string, typeError: string) => {
+    addFlag({
+      title: typeError,
+      description: description,
+      appearance: "danger",
+      duration: 5000,
+    });
+  }, [addFlag]);
+
+  const findFinancialObligation = (indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
+    let indexBorrower = 0;
+    let indexPropertyFinancialObligation = -1;
+    let indexProperty = 0;
+
+    if (!dataProspect) return { indexBorrower, indexProperty };
+
+    dataProspect[0].borrowers.map((borrower, index) => {
+      if (borrower.borrowerIdentificationNumber === borrowerIdentificationNumber) {
+        indexBorrower = index;
+
+        borrower.borrowerProperties.map((property, indexPropertyMap) => {
+          if (property.propertyName === "FinancialObligation") {
+            indexPropertyFinancialObligation++;
+          }
+
+          if (
+            property.propertyName === "FinancialObligation" &&
+            indexPropertyFinancialObligation === indexPropertyOnTable
+          ) {
+            indexProperty = indexPropertyMap;
+          }
+        })
+      }
+    });
+
+    return {
+      indexBorrower,
+      indexProperty
+    };
+  }
+
+  const saveNewObligation = useCallback(async () => {
+    try {
+      if (!newObligation) return;
+
+      const newContentTable = addFinancialObligation(newObligation);
+
+      if (!newContentTable) return;
+
+      await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
+
+      if ((borrowersListFinancialObligation.length % ROWS_PER_PAGE) === 0) {
+        setGotEndPage(true);
+      }
+
+      setDataProspect(newContentTable);
+
+    } catch (error) {
+      handleFlag(errorMessages.save.description, errorMessages.save.title);
+    }
+  }, [
+    newObligation,
+    addFinancialObligation,
+    businessUnitPublicCode,
+    borrowersListFinancialObligation.length,
+    setGotEndPage,
+    setDataProspect,
+    handleFlag
+  ]);
+
   useEffect(() => {
     const timeout = setTimeout(() => setLoading(false), 500);
 
@@ -77,7 +231,7 @@ export const TableFinancialObligations = (
     });
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [filterListBorrowersFinancialObligation, businessUnitPublicCode, prospectId]);
 
   useEffect(() => {
     const financialObligationBorrowers = filterListBorrowersFinancialObligation();
@@ -85,29 +239,19 @@ export const TableFinancialObligations = (
     if (financialObligationBorrowers) {
       setBorrowersListFinancialObligation(financialObligationBorrowers);
     }
-  }, [selectedBorrower, dataProspect]);
+  }, [selectedBorrower, dataProspect, filterListBorrowersFinancialObligation]);
 
   useEffect(() => {
     if (newObligation) {
       saveNewObligation();
     }
-  }, [newObligation]);
+  }, [newObligation, saveNewObligation]);
 
   useEffect(() => {
     setCurrentPage(0);
   }, [selectedBorrower]);
 
   const isMobile = useMediaQuery("(max-width:880px)");
-  const { addFlag } = useFlag();
-
-  const handleFlag = (description: string, typeError: string) => {
-    addFlag({
-      title: typeError,
-      description: description,
-      appearance: "danger",
-      duration: 5000,
-    });
-  };
 
   const visibleHeaders = isMobile
     ? headers.filter(
@@ -134,7 +278,7 @@ export const TableFinancialObligations = (
     } else {
       setExtraDebtors([]);
     }
-  }, [refreshKey, dataProspect]);
+  }, [refreshKey, dataProspect, businessUnitPublicCode, prospectId]);
 
   const handleDelete = async (id: number, borrowerIdentificationNumber: string) => {
     setShowDeleteModal(true);
@@ -232,139 +376,6 @@ export const TableFinancialObligations = (
     borrowerToUpdate.borrowerProperties[indexProperty].propertyValue = originalValues.join(",");
     return newContentTable;
   };
-
-  const filterListBorrowersFinancialObligation = () => {
-    if (!dataProspect) return;
-
-    let listsBorrowers: IBorrowerProperty[] = [];
-    let countIndex = 0;
-
-    dataProspect[0].borrowers.map((borrower) => {
-      if (borrower.borrowerIdentificationNumber !== selectedBorrower?.value) return;
-
-      borrower.borrowerProperties.map((property) => {
-        if (property.propertyName === "FinancialObligation") {
-          listsBorrowers.push({
-            id: countIndex,
-            propertyName: borrower.borrowerName,
-            propertyValue: property.propertyValue,
-            borrowerIdentificationNumber: borrower.borrowerIdentificationNumber
-          } as IBorrowerProperty);
-
-          countIndex++;
-
-          return borrower;
-        }
-      });
-    });
-
-    return listsBorrowers;
-  }
-  const addFinancialObligation = (newObligation: IFinancialObligation) => {
-    if (!dataProspect || !selectedBorrower?.value) {
-      console.error("No se puede añadir la obligación: faltan datos del prospecto o el deudor no está seleccionado.");
-      return null;
-    }
-
-    const [paidFees, totalFees] = newObligation.feePaid.split('/');
-    const newPropertyValue = [
-      newObligation.type,
-      newObligation.balance,
-      newObligation.fee,
-      newObligation.entity,
-      newObligation.payment,
-      newObligation.idUser,
-      paidFees,
-      totalFees,
-    ].join(',');
-
-    const newProperty: IBorrowerProperty = {
-      propertyName: 'FinancialObligation',
-      propertyValue: newPropertyValue,
-    };
-
-    const newContentTable = structuredClone(dataProspect);
-
-    const borrowerIndex = newContentTable[0].borrowers.findIndex(
-      (borrower) => borrower.borrowerIdentificationNumber === selectedBorrower.value
-    );
-
-    if (borrowerIndex === -1) {
-      console.error("Deudor seleccionado no encontrado.");
-      return null;
-    }
-
-    const borrowerToUpdate = newContentTable[0].borrowers[borrowerIndex];
-
-    let lastObligationIndex = -1;
-    for (let i = borrowerToUpdate.borrowerProperties.length - 1; i >= 0; i--) {
-      if (borrowerToUpdate.borrowerProperties[i].propertyName === 'FinancialObligation') {
-        lastObligationIndex = i;
-        break;
-      }
-    }
-
-    if (lastObligationIndex !== -1) {
-      borrowerToUpdate.borrowerProperties.splice(lastObligationIndex + 1, 0, newProperty);
-    } else {
-      borrowerToUpdate.borrowerProperties.push(newProperty);
-    }
-
-    return newContentTable;
-  };
-
-  const saveNewObligation = async () => {
-    try {
-      if (!newObligation) return;
-
-      const newContentTable = addFinancialObligation(newObligation);
-
-      if (!newContentTable) return;
-
-      await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
-
-      if ((borrowersListFinancialObligation.length % ROWS_PER_PAGE) === 0) {
-        setGotEndPage(true);
-      }
-
-      setDataProspect(newContentTable);
-
-    } catch (error) {
-      handleFlag(errorMessages.save.description, errorMessages.save.title);
-    }
-  };
-
-  const findFinancialObligation = (indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
-    let indexBorrower = 0;
-    let indexPropertyFinancialObligation = -1;
-    let indexProperty = 0;
-
-    if (!dataProspect) return { indexBorrower, indexProperty };
-
-    dataProspect[0].borrowers.map((borrower, index) => {
-      if (borrower.borrowerIdentificationNumber === borrowerIdentificationNumber) {
-        indexBorrower = index;
-
-        borrower.borrowerProperties.map((property, indexPropertyMap) => {
-          if (property.propertyName === "FinancialObligation") {
-            indexPropertyFinancialObligation++;
-          }
-
-          if (
-            property.propertyName === "FinancialObligation" &&
-            indexPropertyFinancialObligation === indexPropertyOnTable
-          ) {
-            indexProperty = indexPropertyMap;
-          }
-        })
-      }
-    });
-
-    return {
-      indexBorrower,
-      indexProperty
-    };
-  }
 
   return (
     <TableFinancialObligationsUI

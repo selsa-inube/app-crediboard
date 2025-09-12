@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MdAdd, MdCached } from "react-icons/md";
 import { FormikValues } from "formik";
 import { Stack, useMediaQuery, Button, Select, Text } from "@inubekit/inubekit";
@@ -65,7 +65,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     setOpenModal(false);
   };
 
-  const filterListBorrowers = (parameter: keyof IBorrower, value: string) => {
+  const filterListBorrowers = useCallback((parameter: keyof IBorrower, value: string) => {
     if (!prospectData) return;
 
     const listsBorrowers = prospectData[0].borrowers?.filter((borrower) => {
@@ -74,18 +74,26 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       }
     });
 
-    return listsBorrowers[0];
-  };
+    return listsBorrowers?.[0];
+  }, [prospectData]);
 
-  const getOptionsSelect = () => {
+    const buildObjectSelection = useCallback((name: string, value: string) => {
+    return {
+      id: value,
+      label: name,
+      value: value
+    }
+  }, []);
+
+  const getOptionsSelect = useCallback(() => {
     if (!prospectData) return;
 
     return prospectData[0].borrowers?.map((borrower) => {
       return buildObjectSelection(borrower.borrowerName, borrower.borrowerIdentificationNumber);
     })
-  }
+  }, [prospectData, buildObjectSelection]);
 
-    useEffect(() => {
+  useEffect(() => {
     const timeout = setTimeout(() => {
       setLoading(false);
     }, 500);
@@ -101,20 +109,12 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     setOptionsBorrowers(getOptionsSelect() || [defaultOptionsSelect]);
 
     return () => clearTimeout(timeout);
-  }, [filterListBorrowers, getOptionsSelect]);
+  }, [filterListBorrowers, getOptionsSelect, buildObjectSelection]);
 
   const onChangeSelect = (name: string, value: string) => {
     setSelectedBorrower(
       buildObjectSelection(name, value)
     );
-  }
-
-  const buildObjectSelection = (name: string, value: string) => {
-    return {
-      id: value,
-      label: name,
-      value: value
-    }
   }
 
   const handleSaveNewObligation = (obligation: IFinancialObligation) => {
@@ -160,7 +160,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                     appearance="dark"
                     as="h2"
                   >
-                    {optionsBorrowers[0].label}
+                    {optionsBorrowers[0]?.label}
                   </Text>
                 </Stack>
             }
