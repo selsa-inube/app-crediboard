@@ -457,7 +457,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   }, [selectedBorrower]);
 
     const handlePrint = () => {
-      console.log("handlePrint");
       const element = printRef.current;
       if (!element) return;
   
