@@ -23,6 +23,8 @@ import {
   StyledPrint,
   StyledNoPrint,
   StyledGridPrint,
+  StylePrintListMobile,
+  StyledPrintListMobileShow,
 } from "./styles";
 import { fieldLabels } from "./config";
 import { IRiskScoring } from "./RiskScoring/types";
@@ -232,47 +234,98 @@ export const CreditProfileInfo = () => {
                     >
                       {fieldLabels.back}
                     </Button>
-                    <Button spacing="compact" variant="filled">
+                    <Button spacing="compact" variant="filled" onClick={() => print()}>
                       {fieldLabels.print}
                     </Button>
                   </Stack>
                 </StyledNoPrint>
-                <Stack direction="column" alignItems="center">
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="bold"
+                <StylePrintListMobile>
+                  <Stack direction="column" alignItems="center">
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="bold"
+                    >
+                      {fieldLabels.creditProfile}
+                    </Text>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="normal"
+                    >
+                      {requests.clientName
+                        ? capitalizeFirstLetterEachWord(requests.clientName)
+                        : ""}
+                    </Text>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="normal"
+                    >
+                      {`CC: ${requests.clientIdentificationNumber}`}
+                    </Text>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="bold"
+                    >
+                      {currencyFormat(requests.loanAmount)}
+                    </Text>
+                  </Stack>
+                </StylePrintListMobile>
+                <StyledPrintListMobileShow>
+                  <Stack
+                    justifyContent="space-between"
+                    alignItems="center"
+                    margin={!isMobile ? "16px" : "20px 40px"}
+                    gap="16px"
                   >
-                    {fieldLabels.creditProfile}
-                  </Text>
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="normal"
-                  >
-                    {requests.clientName
-                      ? capitalizeFirstLetterEachWord(requests.clientName)
-                      : ""}
-                  </Text>
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="normal"
-                  >
-                    {`CC: ${requests.clientIdentificationNumber}`}
-                  </Text>
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="bold"
-                  >
-                    {currencyFormat(requests.loanAmount)}
-                  </Text>
-                </Stack>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="bold"
+                    >
+                      {fieldLabels.creditProfile}
+                    </Text>
+                    <StyledUl>
+                      <StyledLi>
+                        <Text
+                          type="title"
+                          size="medium"
+                          appearance="gray"
+                          weight="normal"
+                        >
+                          {requests.clientName
+                            ? capitalizeFirstLetterEachWord(requests.clientName)
+                            : ""}
+                        </Text>
+                      </StyledLi>
+                      <StyledLi>
+                        <Text
+                          type="title"
+                          size="medium"
+                          appearance="gray"
+                          weight="normal"
+                        >
+                          {`CC: ${requests.clientIdentificationNumber}`}
+                        </Text>
+                      </StyledLi>
+                    </StyledUl>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="bold"
+                    >
+                      {currencyFormat(requests.loanAmount)}
+                    </Text>
+                  </Stack>
+                </StyledPrintListMobileShow>
               </Stack>
             ) : (
               <>
