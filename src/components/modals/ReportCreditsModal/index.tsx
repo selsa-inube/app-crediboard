@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { MdAdd, MdCached } from "react-icons/md";
 import { FormikValues } from "formik";
-import { Stack, useMediaQuery, Button, Select } from "@inubekit/inubekit";
+import { Stack, useMediaQuery, Button, Select, Text } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { TableFinancialObligations } from "@pages/prospect/components/TableObligationsFinancial";
-import { IProspect } from "@services/prospect/types";
+import { IProspect, IBorrower } from "@services/prospect/types";
 
 import { ListModal } from "../ListModal";
 import { FinancialObligationModal } from "../financialObligationModal";
+import { defaultOptionsSelect, configSelect } from "./config"
 
 export interface ReportCreditsModalProps {
   handleClose: () => void;
@@ -17,13 +18,35 @@ export interface ReportCreditsModalProps {
   options: { id: string; label: string; value: string }[];
   debtor: string;
   prospectData?: IProspect[];
+  setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
+  businessUnitPublicCode: string;
+}
+
+export interface optionsSelect {
+  id: string;
+  label: string;
+  value: string;
+}
+
+export interface IFinancialObligation {
+  balance: number;
+  entity: string;
+  fee: number;
+  feePaid: string;
+  idUser: number;
+  payment: string;
+  term: number;
+  type: string;
 }
 
 export function ReportCreditsModal(props: ReportCreditsModalProps) {
-  const { handleClose, onChange, options, debtor, prospectData } = props;
+  const { handleClose, prospectData, businessUnitPublicCode } = props;
   const [loading, setLoading] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [selectedBorrower, setSelectedBorrower] = useState<optionsSelect>();
+  const [optionsBorrowers, setOptionsBorrowers] = useState<optionsSelect[]>([]);
+  const [newObligation, setNewObligation] = useState<IFinancialObligation>();
 
   const initialValues: FormikValues = {
     type: "",
@@ -33,21 +56,70 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     payment: "",
     feePaid: "",
     term: "",
+    idUser: ""
   };
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const handleCloseModal = () => {
     setOpenModal(false);
   };
+
+  const filterListBorrowers = (parameter: keyof IBorrower, value: string) => {
+    if (!prospectData) return;
+
+    const listsBorrowers = prospectData[0].borrowers?.filter((borrower) => {
+      if (borrower[parameter] === value) {
+        return borrower;
+      }
+    });
+
+    return listsBorrowers[0];
+  };
+
+  const getOptionsSelect = () => {
+    if (!prospectData) return;
+
+    return prospectData[0].borrowers?.map((borrower) => {
+      return buildObjectSelection(borrower.borrowerName, borrower.borrowerIdentificationNumber);
+    })
+  }
+
+    useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
+    const mainBorrower = filterListBorrowers("borrowerType", "MainBorrower");
+
+    if (mainBorrower) {
+      setSelectedBorrower(
+        buildObjectSelection(mainBorrower.borrowerName, mainBorrower.borrowerIdentificationNumber)
+      );
+    }
+
+    setOptionsBorrowers(getOptionsSelect() || [defaultOptionsSelect]);
+
+    return () => clearTimeout(timeout);
+  }, [filterListBorrowers, getOptionsSelect]);
+
+  const onChangeSelect = (name: string, value: string) => {
+    setSelectedBorrower(
+      buildObjectSelection(name, value)
+    );
+  }
+
+  const buildObjectSelection = (name: string, value: string) => {
+    return {
+      id: value,
+      label: name,
+      value: value
+    }
+  }
+
+  const handleSaveNewObligation = (obligation: IFinancialObligation) => {
+    setNewObligation(obligation);
+  }
 
   return (
     <BaseModal
@@ -66,16 +138,33 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             direction={isMobile ? "column" : "row"}
             gap="16px"
           >
-            <Select
-              id="income"
-              name="deudor"
-              label="Deudor"
-              placeholder="Seleccione una opción"
-              options={options}
-              value={debtor}
-              onChange={(name, value) => onChange(name, value)}
-              size="compact"
-            />
+            {
+              optionsBorrowers && optionsBorrowers.length > 1 ?
+                <Select
+                  id="income"
+                  name={configSelect.name}
+                  label={configSelect.label}
+                  placeholder={configSelect.placeholder}
+                  options={optionsBorrowers || []}
+                  value={selectedBorrower?.value || ""}
+                  onChange={(name, value) => onChangeSelect(name, value)}
+                  size="compact"
+                />
+                :
+                <Stack
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Text
+                    appearance="dark"
+                    as="h2"
+                  >
+                    {optionsBorrowers[0].label}
+                  </Text>
+                </Stack>
+            }
+
             <Stack
               direction={isMobile ? "column" : "row"}
               alignItems="center"
@@ -118,7 +207,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             <FinancialObligationModal
               title="Agregar obligaciones"
               onCloseModal={handleCloseModal}
-              onConfirm={() => console.log("ok")}
+              onConfirm={(values) => handleSaveNewObligation(values as IFinancialObligation)}
               initialValues={initialValues}
               confirmButtonText="Agregar"
             />
@@ -126,7 +215,10 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         </Stack>
         <TableFinancialObligations
           showActions={true}
-          initialValues={prospectData}
+          selectedBorrower={selectedBorrower}
+          prospectId={prospectData?.[0]?.prospectId || ""}
+          newObligation={newObligation}
+          businessUnitPublicCode={businessUnitPublicCode}
         />
       </Stack>
     </BaseModal>

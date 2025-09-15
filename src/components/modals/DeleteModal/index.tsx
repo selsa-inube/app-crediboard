@@ -7,7 +7,7 @@ import { DeleteData } from "./config";
 export interface IDeleteModalProps {
   TextDelete: string;
   handleClose: () => void;
-  handleDelete?: () => void;
+  handleDelete?: (id?: number, borrowerIdentificationNumber?: string) => void;
 }
 
 export function DeleteModal(props: IDeleteModalProps) {

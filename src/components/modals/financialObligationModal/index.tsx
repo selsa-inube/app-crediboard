@@ -63,6 +63,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
         return value !== undefined && term !== undefined ? value < term : true;
       }),
     term: Yup.number().required(""),
+    idUser: Yup.number().required(""),
   });
 
   const handleFormSubmit = async (values: FormikValues) => {

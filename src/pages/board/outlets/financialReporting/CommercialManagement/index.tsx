@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MdOutlineAdd,
@@ -9,6 +9,7 @@ import {
   MdOutlineShare,
   MdOutlineVideocam,
   MdOutlinePayments,
+  MdOutlineInfo,
 } from "react-icons/md";
 
 import {
@@ -32,7 +33,6 @@ import {
   capitalizeFirstLetter,
   capitalizeFirstLetterEachWord,
 } from "@utils/formatData/text";
-import { generateMultiPagePDF } from "@utils/pdf/generateMultiPagePDF";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { DisbursementModal } from "@components/modals/DisbursementModal";
 import { Fieldset } from "@components/data/Fieldset";
@@ -55,8 +55,8 @@ import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitM
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
-import { GlobalPdfStyles } from "../../creditProfileInfo/styles.ts";
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
 import { incomeOptions, menuOptions, tittleOptions } from "./config/config";
@@ -80,6 +80,7 @@ interface ComercialManagementProps {
   setRequestValue: React.Dispatch<
     React.SetStateAction<IPaymentChannel[] | undefined>
   >;
+  print: () => void;
   id: string;
   isPrint?: boolean;
   hideContactIcons?: boolean;
@@ -89,6 +90,7 @@ interface ComercialManagementProps {
 export const ComercialManagement = (props: ComercialManagementProps) => {
   const {
     data,
+    print,
     isPrint = false,
     collapse,
     setCollapse,
@@ -122,7 +124,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   );
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const printRef = useRef<HTMLDivElement>(null);
 
   const [form, setForm] = useState({
     borrower: "",
@@ -456,34 +457,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBorrower]);
 
-    const handlePrint = () => {
-      const element = printRef.current;
-      if (!element) return;
-  
-      document.body.classList.add('cursor-wait');
-  
-      const printButtons = document.querySelectorAll<HTMLButtonElement>('.print-button');
-      printButtons.forEach(button => button.disabled = true);
-  
-      const elementsToHide = element.querySelectorAll(".no-print");
-      elementsToHide.forEach((el) => el.classList.add("hidden-for-pdf"));
-  
-      setTimeout(() => {
-        generateMultiPagePDF(
-          printRef
-        ).finally(() => {
-          document.body.classList.remove('cursor-wait');
-          printButtons.forEach(button => button.disabled = false);
-          elementsToHide.forEach((el) => el.classList.remove("hidden-for-pdf"));
-        });
-      }, 0);
-  
-    };
-
+  const { disabledButton: canSendDecision } = useValidateUseCase({
+    useCase: getUseCaseValue("canSendDecision"),
+  });
   return (
     <>
-    <div ref={printRef}>
-      <GlobalPdfStyles />
       <Fieldset
         title={errorMessages.comercialManagement.titleCard}
         descriptionTitle={errorMessages.comercialManagement.descriptionCard}
@@ -582,6 +560,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                               type="button"
                               spacing="compact"
                               variant="outlined"
+                              disabled={canSendDecision}
                               onClick={() => {
                                 handleDisbursement();
                                 handleOpenModal("disbursementModal");
@@ -589,6 +568,15 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             >
                               {tittleOptions.titleDisbursement}
                             </Button>
+                            {canSendDecision && (
+                              <Icon
+                                icon={<MdOutlineInfo />}
+                                appearance="primary"
+                                size="16px"
+                                cursorHover
+                                onClick={() => setInfoModal(true)}
+                              />
+                            )}
                           </Stack>
                         </Stack>
                       </StyledPrint>
@@ -746,7 +734,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           size="24px"
                           disabled={isPrint}
                           cursorHover
-                          onClick={handlePrint}
+                          onClick={print}
                         />
                         <Icon
                           icon={<MdOutlineShare />}
@@ -796,7 +784,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setSentData={setSentData}
                   setRequestValue={setRequestValue}
                   businessUnitPublicCode={businessUnitPublicCode}
-                  handlePrint={handlePrint}
+                  pdfFunction={()=>{}}
+                  generateAndSharePdf={()=>{}}
                 />
               )}
             </Stack>
@@ -827,6 +816,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 handleClose={handleCloseModal}
                 prospectData={prospectData ? [prospectData] : undefined}
                 options={incomeOptions}
+                businessUnitPublicCode=""
               />
             )}
             {currentModal === "extraPayments" && (
@@ -895,8 +885,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
           </StyledFieldset>
         )}
       </Fieldset>
-
-      </div>
     </>
   );
 };
