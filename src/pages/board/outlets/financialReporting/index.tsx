@@ -176,52 +176,51 @@ export const FinancialReporting = () => {
   }, [businessUnitPublicCode, idProspect, sentData]);
 
   const generateAndSharePdf = async () => {
-  setPdfState({ isGenerating: true, blob: null, showShareModal: false });
-  
-  try {
-    const pdfBlob = await generatePDF(
-      dataCommercialManagementRef,
-      labelsAndValuesShare.titleOnPdf,
-      setShowErrorModal,
-      true
-    );
-    
-    if (pdfBlob) {
-      // PDF generado exitosamente, mostrar modal/opciones para compartir
-      setPdfState({ 
-        isGenerating: false, 
-        blob: pdfBlob, 
-        showShareModal: true 
-      });
+    setPdfState({ isGenerating: true, blob: null, showShareModal: false });
+
+    try {
+      const pdfBlob = await generatePDF(
+        dataCommercialManagementRef,
+        labelsAndValuesShare.titleOnPdf,
+        setShowErrorModal,
+        true
+      );
+
+      if (pdfBlob) {
+        setPdfState({
+          isGenerating: false,
+          blob: pdfBlob,
+          showShareModal: true
+        });
+      }
+
+    } catch (error) {
+      setPdfState({ isGenerating: false, blob: null, showShareModal: false });
+      setMessageError(errorMessages.share.description);
+      setShowErrorModal(true);
     }
-    
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-    setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-    setShowErrorModal(true);
-  }
-};
+  };
 
-const handleSharePdf = async () => {
-  if (!pdfState.blob) return;
-  
-  try {
-    const pdfFile = new File([pdfState.blob], labelsAndValuesShare.fileName, {
-      type: "application/pdf",
-    });
+  const handleSharePdf = async () => {
+    if (!pdfState.blob) return;
 
-    await navigator.share({
-      files: [pdfFile],
-      title: labelsAndValuesShare.titleOnPdf,
-      text: labelsAndValuesShare.text,
-    });
-    
-    setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-    
-  } catch (error) {
-    console.error("Error sharing:", error);
-  }
-};
+    try {
+      const pdfFile = new File([pdfState.blob], labelsAndValuesShare.fileName, {
+        type: "application/pdf",
+      });
+
+      await navigator.share({
+        files: [pdfFile],
+        title: labelsAndValuesShare.titleOnPdf,
+        text: labelsAndValuesShare.text,
+      });
+
+      setPdfState({ isGenerating: false, blob: null, showShareModal: false });
+
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
 
   const handleActions = configHandleactions({
     buttonReject: () => setShowRejectModal(true),
@@ -306,8 +305,7 @@ const handleSharePdf = async () => {
           user?.id ?? ""
         );
       } catch (error) {
-        setMessageError(errorMessages.share.description);
-        setShowErrorModal(true);
+        setMessageError(errorMessages.getData.description);
       } finally {
         handleToggleModal();
       }
@@ -573,21 +571,21 @@ const handleSharePdf = async () => {
       {showErrorModal && (
         <ErrorModal message={messageError} handleClose={handleErrorModal} />
       )}
-      { pdfState.isGenerating &&
+      {pdfState.isGenerating &&
         <Blanket>
           <StyledContainerSpinner>
-          <Spinner size="large" />
-          <Text size="large" weight="bold">
-            Generando PDF...
+            <Spinner size="large" />
+            <Text size="large" weight="bold">
+              Generando PDF...
             </Text>
           </StyledContainerSpinner>
         </Blanket>
       }
       {
         pdfState.showShareModal && pdfState.blob &&
-        <ShareModal 
-          isMobile={isMobile} 
-          handleClose={handleSharePdfModal} 
+        <ShareModal
+          isMobile={isMobile}
+          handleClose={handleSharePdfModal}
           handleNext={handleSharePdf}
         />
       }

@@ -200,6 +200,12 @@ export const errorMessages = {
     description: "Error al generar el documento para compartir.",
     button: "Volver a intentar",
   },
+  getData: {
+    title: "Error al cargar los datos",
+    description:
+      "Hubo un problema al cargar los datos. Por favor, inténtelo de nuevo más tarde.",
+    button: "Volver a intentar",
+  }
 };
 
 export const labelsAndValuesShare = {
