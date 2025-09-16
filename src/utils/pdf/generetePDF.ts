@@ -41,8 +41,8 @@ export const generatePDF = async (
     const margin = 15;
     const contentWidth = pdfWidth - margin * 2;
     
-    for (let i = 0; i < blocks.length; i++) {
-      const block = blocks[i];
+    for (let index = 0; index < blocks.length; index++) {
+      const block = blocks[index];
       const canvas = await html2canvas(block, { 
         scale: 0.8,
         useCORS: false,
@@ -51,7 +51,7 @@ export const generatePDF = async (
       const imgData = canvas.toDataURL("image/jpeg", 1);
       const contentHeight = (canvas.height * contentWidth) / canvas.width;
 
-      if (i > 0) {
+      if (index > 0) {
         pdf.addPage();
       }
 
@@ -71,7 +71,6 @@ export const generatePDF = async (
       pdf.save(`${titlePDF}.pdf`);
     }
   } catch (error) {
-    console.error("Error generating PDF:", error);
     setShowErrorModal(true);
     return Promise.reject(error);
   } finally {

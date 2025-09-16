@@ -218,7 +218,9 @@ export const FinancialReporting = () => {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
 
     } catch (error) {
-      console.error("Error sharing:", error);
+      setPdfState({ isGenerating: false, blob: null, showShareModal: false });
+      setMessageError(errorMessages.share.description);
+      setShowErrorModal(true)
     }
   };
 
@@ -576,7 +578,7 @@ export const FinancialReporting = () => {
           <StyledContainerSpinner>
             <Spinner size="large" />
             <Text size="large" weight="bold">
-              Generando PDF...
+              {errorMessages.share.spinner}
             </Text>
           </StyledContainerSpinner>
         </Blanket>

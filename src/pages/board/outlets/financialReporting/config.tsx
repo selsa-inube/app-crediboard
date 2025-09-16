@@ -199,6 +199,7 @@ export const errorMessages = {
     title: "No se encontraron documentos",
     description: "Error al generar el documento para compartir.",
     button: "Volver a intentar",
+    spinner: "Generando PDF...",
   },
   getData: {
     title: "Error al cargar los datos",
