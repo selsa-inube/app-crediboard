@@ -1,80 +1,80 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-export const generatePDF = (
+export const generatePDF = async (
   elementPrint: React.RefObject<HTMLDivElement>,
-  customTitle = "",
-  titlePDF = "document",
-  getAsBlob = false,
+  titlePDF = "documento",
   setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>,
-  margins?: { top: number; bottom: number; left: number; right: number }
-  
-): Promise<void | Blob> => {
-  return new Promise((resolve, reject) => {
-    if (elementPrint.current === null) {
-      return reject(new Error("El elemento para generar el PDF no fue encontrado."));
+  getAsBlob = true
+): Promise<Blob | void> => {
+  const originalElement = elementPrint.current;
+
+  if (!originalElement) {
+    setShowErrorModal(true);
+    return;
+  }
+
+  const offscreenContainer = document.createElement("div");
+  offscreenContainer.style.position = "absolute";
+  offscreenContainer.style.left = "-9999px";
+  offscreenContainer.style.width = "1200px";
+
+  const clonedElement = originalElement.cloneNode(true) as HTMLElement;
+  offscreenContainer.appendChild(clonedElement);
+  document.body.appendChild(offscreenContainer);
+
+  try {
+    const blocks = offscreenContainer.querySelectorAll<HTMLElement>(".pdf-block");
+
+    if (blocks.length === 0) {
+      setShowErrorModal(true);
+      return;
     }
 
-    const pdf = new jsPDF({ orientation: "landscape", format: "a4" });
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
 
-    const titleFontSize = 16;
-
-    html2canvas(elementPrint.current)
-      .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png", 0.8);
-
-        if (margins) {
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const imgProps = {
-            width: canvas.width,
-            height: canvas.height,
-          };
-          const contentWidth = pdfWidth - margins.left - margins.right;
-          const contentHeight = (imgProps.height * contentWidth) / imgProps.width;
-
-          const position = margins.top + titleFontSize + 10;
-
-          pdf.setFontSize(titleFontSize);
-          pdf.text(customTitle, margins.left, margins.top + titleFontSize);
-
-          pdf.addImage(
-            imgData,
-            "JPEG",
-            margins.left,
-            position,
-            contentWidth,
-            contentHeight,
-            undefined,
-            "FAST"
-          );
-        } else {
-          const position = titleFontSize + 20;
-
-          pdf.setFontSize(titleFontSize);
-          pdf.text(customTitle, 10, position);
-
-          pdf.addImage(
-            imgData,
-            "JPEG",
-            10,
-            position + 10,
-            100,
-            100,
-            undefined,
-            "FAST"
-          );
-        }
-
-        if (getAsBlob) {
-          const pdfBlob = pdf.output('blob');
-          resolve(pdfBlob);
-        } else {
-          pdf.save(titlePDF);
-          resolve();
-        }
-      })
-      .catch(() => {
-        setShowErrorModal(true);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const margin = 15;
+    const contentWidth = pdfWidth - margin * 2;
+    
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i];
+      const canvas = await html2canvas(block, { 
+        scale: 0.8,
+        useCORS: false,
+        logging: false 
       });
-  })
+      const imgData = canvas.toDataURL("image/jpeg", 1);
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+
+      pdf.addImage(
+        imgData,
+        "JPEG",
+        margin,
+        margin,
+        contentWidth,
+        contentHeight
+      );
+    }
+    
+    if (getAsBlob) {
+      return pdf.output("blob");
+    } else {
+      pdf.save(`${titlePDF}.pdf`);
+    }
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    setShowErrorModal(true);
+    return Promise.reject(error);
+  } finally {
+    document.body.removeChild(offscreenContainer);
+  }
 };

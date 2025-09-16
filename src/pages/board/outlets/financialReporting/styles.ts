@@ -99,3 +99,15 @@ export const StyledTextField = styled.div`
     max-width: 230px;
   }
 `;
+
+export const StyledContainerSpinner = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  `;
+
+export const BlockPdfSection = styled.div`
+  width: inherit;
+  height: inherit;
+`;
