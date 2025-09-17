@@ -133,20 +133,23 @@ function useAppContext() {
   });
 
   useEffect(() => {
+    const identificationNumber =
+      eventData?.user?.identificationDocumentNumber || "";
+
     if (
       !eventData.businessUnit.abbreviatedName ||
       !eventData.businessManager.publicCode ||
-      !eventData?.user?.identificationDocumentNumber ||
-      ""
+      !identificationNumber
     ) {
       return;
     }
+
     (async () => {
       try {
         const staffUseCaseData = await getSearchUseCaseForStaff(
           eventData.businessUnit.abbreviatedName,
           eventData.businessManager.publicCode,
-          eventData?.user?.identificationDocumentNumber || ""
+          identificationNumber
         );
         setStaffUseCases(staffUseCaseData);
       } catch (error) {
@@ -156,7 +159,7 @@ function useAppContext() {
   }, [
     eventData.businessUnit.abbreviatedName,
     eventData.businessManager.publicCode,
-    eventData?.user?.identificationDocumentNumber || "",
+    eventData?.user?.identificationDocumentNumber,
   ]);
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+
 import { IModeOfDisbursement } from "../types";
 import { mapCreditRequestToEntities } from "./mapper";
 
@@ -28,7 +29,7 @@ export const getModeOfDisbursement = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/mode-of-disbursement/${creditRequestId}?`,
+        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/modes-of-disbursement/${creditRequestId}?`,
         options
       );
 
@@ -42,7 +43,7 @@ export const getModeOfDisbursement = async (
 
       if (!res.ok) {
         throw {
-          message: "Error al obtener los ",
+          message: "Error al obtener los modos de desembolso",
           status: res.status,
           data,
         };
@@ -56,7 +57,7 @@ export const getModeOfDisbursement = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta."
+          "Todos los intentos fallaron. No se pudieron obtener los modos de desembolso."
         );
       }
     }
