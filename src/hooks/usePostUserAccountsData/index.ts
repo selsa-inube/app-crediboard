@@ -119,6 +119,7 @@ export const usePostUserAccountsData = (
     if (clientId && clientSecret && localStorage.getItem("auth_token")) {
       postUserAccounts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientId, clientSecret]);
 
   const reset = () => {

@@ -20,6 +20,7 @@ import { BoardRoutes } from "@routes/board";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
 import { useIAuth } from "@context/AuthContext/useAuthContext";
 import { IUsers } from "@context/AppContext/types";
+import { EnumProvider } from "@context/enumContext";
 import { usePostUserAccountsData } from "@hooks/usePostUserAccountsData";
 
 function LogOut() {
@@ -89,12 +90,14 @@ function App() {
   }
 
   return (
-    <AppContextProvider>
-      <FlagProvider>
-        <GlobalStyles />
-        <RouterProvider router={router} />
-      </FlagProvider>
-    </AppContextProvider>
+    <EnumProvider>
+      <AppContextProvider>
+        <FlagProvider>
+          <GlobalStyles />
+          <RouterProvider router={router} />
+        </FlagProvider>
+      </AppContextProvider>
+    </EnumProvider>
   );
 }
 

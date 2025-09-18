@@ -43,6 +43,7 @@ function useAppContext() {
 
   const portalId = localStorage.getItem("portalCode");
   let portalCode = "";
+
   if (portalId) {
     portalCode = decrypt(portalId);
   }
@@ -132,32 +133,26 @@ function useAppContext() {
     enumRole: [],
   });
 
+  const { abbreviatedName } = eventData.businessUnit;
+  const managerCode = eventData.businessManager.publicCode;
+  const userDocId = eventData.user?.identificationDocumentNumber || "";
+
   useEffect(() => {
-    if (
-      !eventData.businessUnit.abbreviatedName ||
-      !eventData.businessManager.publicCode ||
-      !eventData?.user?.identificationDocumentNumber ||
-      ""
-    ) {
-      return;
-    }
+    if (!abbreviatedName || !managerCode || !userDocId) return;
+
     (async () => {
       try {
         const staffUseCaseData = await getSearchUseCaseForStaff(
-          eventData.businessUnit.abbreviatedName,
-          eventData.businessManager.publicCode,
-          eventData?.user?.identificationDocumentNumber || ""
+          abbreviatedName,
+          managerCode,
+          userDocId
         );
         setStaffUseCases(staffUseCaseData);
       } catch (error) {
         console.error("Error fetching use cases:", error);
       }
     })();
-  }, [
-    eventData.businessUnit.abbreviatedName,
-    eventData.businessManager.publicCode,
-    eventData?.user?.identificationDocumentNumber || "",
-  ]);
+  }, [abbreviatedName, managerCode, userDocId]);
 
   useEffect(() => {
     validateConsultation(portalCode).then((data) => {

@@ -36,15 +36,19 @@ const useLogin = () => {
     setBusinessUnitsToTheStaff,
   ]);
 
+  const userAccount = eventData?.user?.userAccount;
+
   useEffect(() => {
     if (
       location.pathname === "/login" ||
       location.pathname === "/login/" ||
       location.pathname === "/"
     ) {
-      navigate(`/login/${eventData.user.userAccount}/checking-credentials/`);
+      if (userAccount) {
+        navigate(`/login/${userAccount}/checking-credentials/`);
+      }
     }
-  }, [location, navigate, userIdentifier]);
+  }, [location, navigate, userAccount]);
 
   return { eventData, codeError, hasError };
 };
