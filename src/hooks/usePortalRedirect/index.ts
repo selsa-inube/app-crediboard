@@ -5,7 +5,11 @@ import { getStaffPortalsByBusinessManager } from "@services/staff-portals-by-bus
 import { getBusinessManagers } from "@services/businessManager/SearchByIdBusinessManager";
 import { decrypt, encrypt } from "@utils/encrypt/encrypt";
 import { IBusinessManagers } from "@services/businessManager/types";
-import { useIAuth } from "@context/AuthContext/useAuthContext";
+
+interface AuthConfig {
+  clientId: string;
+  clientSecret: string;
+}
 
 const usePortalLogic = () => {
   const [portalData, setPortalData] =
@@ -13,10 +17,9 @@ const usePortalLogic = () => {
   const [businessManager, setBusinessManager] = useState<IBusinessManagers>(
     {} as IBusinessManagers
   );
+  const [authConfig, setAuthConfig] = useState<AuthConfig | null>(null);
   const [codeError, setCodeError] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const { loginWithRedirect, isAuthenticated, isLoading } = useIAuth();
 
   const rawPortalCode = useMemo(() => {
     const urlCode = new URLSearchParams(window.location.search)
@@ -66,13 +69,15 @@ const usePortalLogic = () => {
           return;
         }
 
-        if (!isAuthenticated && !isLoading) {
-          loginWithRedirect();
-          return;
-        }
-
         const manager = await getBusinessManagers(businessManagerCode);
         setBusinessManager(manager);
+        if (manager.clientId && manager.clientSecret) {
+          setAuthConfig({
+            clientId: manager.clientId,
+            clientSecret: manager.clientSecret,
+          });
+        }
+
         setLoading(false);
       } catch (error) {
         setCodeError(1003);
@@ -80,17 +85,20 @@ const usePortalLogic = () => {
       }
     };
 
-    if (!isLoading) {
-      loadData();
-    }
-  }, [rawPortalCode, isAuthenticated, isLoading, loginWithRedirect]);
+    loadData();
+  }, [rawPortalCode]);
+
+  const hasAuthError = !authConfig || !!codeError;
+
+
 
   return {
     portalData,
     businessManager,
+    authConfig,
     codeError,
     loading,
-    isAuthenticated,
+    hasAuthError,
   };
 };
 
