@@ -90,8 +90,6 @@ const usePortalLogic = () => {
 
   const hasAuthError = !authConfig || !!codeError;
 
-
-
   return {
     portalData,
     businessManager,
