@@ -107,7 +107,6 @@ export const usePostUserAccountsData = (
           err instanceof Error ? err : new Error(String(err));
         setError(errorInstance);
         setCodeError(1006);
-
         clearCache();
         signOut("/error?code=1006");
         throw errorInstance;
@@ -119,6 +118,7 @@ export const usePostUserAccountsData = (
     if (clientId && clientSecret && localStorage.getItem("auth_token")) {
       postUserAccounts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientId, clientSecret]);
 
   const reset = () => {
