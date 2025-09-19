@@ -5,11 +5,11 @@ const getUserMenu = (
   notificationsCount: number = 0
 ) => [
   {
-    id: "section",
+    id: "notifications-section",
     title: "",
     actions: [
       {
-        id: "logout",
+        id: "notifications",
         title: `Novedades (${notificationsCount})`,
         action: handleToggleLogoutModal,
         iconBefore: <MdOutlineMarkunreadMailbox />,
@@ -18,7 +18,7 @@ const getUserMenu = (
     divider: true,
   },
   {
-    id: "section",
+    id: "logout-section",
     title: "",
     links: [
       {

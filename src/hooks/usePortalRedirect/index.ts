@@ -81,7 +81,7 @@ const usePortalLogic = () => {
     loadData();
   }, [portalCode]);
 
-  const hasAuthError = !authConfig || !!codeError;
+  const hasAuthError = !authConfig || Boolean(codeError);
 
   return {
     portalData,
