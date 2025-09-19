@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 import { IStaffPortalByBusinessManager } from "@services/staff-portals-by-business-manager/types";
 import { getStaffPortalsByBusinessManager } from "@services/staff-portals-by-business-manager/SearchAllStaffPortalsByBusinessManager";
@@ -12,6 +12,13 @@ interface AuthConfig {
 }
 
 const usePortalLogic = () => {
+  const url = new URL(window.location.href);
+  const params = new URLSearchParams(url.search);
+  const portalParam = params.get("portal");
+  const storedPortal = localStorage.getItem("portalCode");
+  const decryptedPortal = storedPortal ? decrypt(storedPortal) : "";
+  const portalCode = portalParam ?? decryptedPortal;
+
   const [portalData, setPortalData] =
     useState<IStaffPortalByBusinessManager | null>(null);
   const [businessManager, setBusinessManager] = useState<IBusinessManagers>(
@@ -21,37 +28,23 @@ const usePortalLogic = () => {
   const [codeError, setCodeError] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const rawPortalCode = useMemo(() => {
-    const urlCode = new URLSearchParams(window.location.search)
-      .get("portal")
-      ?.trim();
-    if (urlCode) {
-      localStorage.setItem("portalCode", encrypt(urlCode));
-      return urlCode;
+  useEffect(() => {
+    if (portalParam && portalParam !== decryptedPortal) {
+      const encryptedPortal = encrypt(portalParam);
+      localStorage.setItem("portalCode", encryptedPortal);
     }
-
-    const storedEncrypted = localStorage.getItem("portalCode");
-    if (storedEncrypted) {
-      try {
-        return decrypt(storedEncrypted);
-      } catch (err) {
-        return null;
-      }
-    }
-
-    return null;
-  }, []);
+  }, [portalParam, decryptedPortal]);
 
   useEffect(() => {
     const loadData = async () => {
-      if (!rawPortalCode) {
+      if (!portalCode) {
         setCodeError(1000);
         setLoading(false);
         return;
       }
 
       try {
-        const portals = await getStaffPortalsByBusinessManager(rawPortalCode);
+        const portals = await getStaffPortalsByBusinessManager(portalCode);
 
         if (!portals || portals.length === 0) {
           setCodeError(1001);
@@ -86,7 +79,7 @@ const usePortalLogic = () => {
     };
 
     loadData();
-  }, [rawPortalCode]);
+  }, [portalCode]);
 
   const hasAuthError = !authConfig || !!codeError;
 
@@ -97,6 +90,7 @@ const usePortalLogic = () => {
     codeError,
     loading,
     hasAuthError,
+    portalCode,
   };
 };
 

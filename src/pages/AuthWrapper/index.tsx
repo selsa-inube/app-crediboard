@@ -13,12 +13,17 @@ interface AuthProviderWrapperProps {
 }
 
 function AuthContent({ children }: { children: ReactNode }) {
-  const { codeError, authConfig, loading, hasAuthError } = usePortalLogic();
+  const { codeError, authConfig, loading, hasAuthError, portalCode } =
+    usePortalLogic();
 
-  useAuthHandler(authConfig, hasAuthError);
+  useAuthHandler(authConfig, hasAuthError, portalCode);
 
   if (loading) {
     return <LoadingAppUI />;
+  }
+
+  if (!portalCode) {
+    return <ErrorPage errorCode={1000} />;
   }
 
   if (codeError || !authConfig) {
@@ -29,28 +34,28 @@ function AuthContent({ children }: { children: ReactNode }) {
 }
 
 export function AuthProviderWrapper({ children }: AuthProviderWrapperProps) {
-  const { codeError, authConfig, loading } = usePortalLogic();
-
+  const { codeError, authConfig, loading, portalCode } = usePortalLogic();
   if (loading) {
     return <LoadingAppUI />;
   }
 
-  if (codeError && !authConfig) {
-    return <ErrorPage errorCode={codeError ?? 1000} />;
-  }
-  if (authConfig) {
-    return (
-      <IAuthProvider
-        originatorId={environment.ORIGINATOR_ID}
-        callbackUrl={environment.REDIRECT_URI}
-        iAuthUrl={environment.IAUTH_URL}
-        clientId={decrypt(authConfig.clientId)}
-        clientSecret={decrypt(authConfig.clientSecret)}
-      >
-        <AuthContent>{children}</AuthContent>
-      </IAuthProvider>
-    );
+  if (!portalCode) {
+    return <ErrorPage errorCode={1000} />;
   }
 
-  return <ErrorPage errorCode={1000} />;
+  if (codeError || !authConfig) {
+    return <ErrorPage errorCode={codeError ?? 1000} />;
+  }
+
+  return (
+    <IAuthProvider
+      originatorId={environment.ORIGINATOR_ID}
+      callbackUrl={environment.REDIRECT_URI}
+      iAuthUrl={environment.IAUTH_URL}
+      clientId={decrypt(authConfig.clientId)}
+      clientSecret={decrypt(authConfig.clientSecret)}
+    >
+      <AuthContent>{children}</AuthContent>
+    </IAuthProvider>
+  );
 }

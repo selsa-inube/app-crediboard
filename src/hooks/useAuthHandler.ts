@@ -8,21 +8,39 @@ interface AuthConfig {
 
 const useAuthHandler = (
   authConfig: AuthConfig | null,
-  hasAuthError: boolean
+  hasAuthError: boolean,
+  portalCode: string
 ) => {
   const { loginWithRedirect, isAuthenticated, isLoading } = useIAuth();
 
   useEffect(() => {
-    if (!hasAuthError && authConfig && !isAuthenticated && !isLoading) {
+    if (
+      !hasAuthError &&
+      authConfig &&
+      portalCode && 
+      !isAuthenticated &&
+      !isLoading
+    ) {
       loginWithRedirect();
     }
-  }, [authConfig, hasAuthError, isAuthenticated, isLoading, loginWithRedirect]);
+  }, [
+    authConfig,
+    hasAuthError,
+    portalCode,
+    isAuthenticated,
+    isLoading,
+    loginWithRedirect,
+  ]);
 
   return {
     isAuthenticated,
     isLoading,
     shouldRedirect:
-      !hasAuthError && authConfig && !isAuthenticated && !isLoading,
+      !hasAuthError &&
+      authConfig &&
+      portalCode &&
+      !isAuthenticated &&
+      !isLoading,
   };
 };
 
