@@ -20,51 +20,44 @@ export const generatePDF = async (
   offscreenContainer.style.width = "1200px";
 
   const clonedElement = originalElement.cloneNode(true) as HTMLElement;
+  clonedElement.classList.add("pdf-generation-mode");
+
   offscreenContainer.appendChild(clonedElement);
   document.body.appendChild(offscreenContainer);
 
   try {
-    const blocks = offscreenContainer.querySelectorAll<HTMLElement>(".pdf-block");
+    const blocks = clonedElement.querySelectorAll<HTMLElement>(".pdf-block");
 
     if (blocks.length === 0) {
       setShowErrorModal(true);
       return;
     }
 
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
-
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const margin = 15;
     const contentWidth = pdfWidth - margin * 2;
-    
+
     for (let index = 0; index < blocks.length; index++) {
       const block = blocks[index];
-      const canvas = await html2canvas(block, { 
-        scale: 0.8,
-        useCORS: false,
-        logging: false 
-      });
-      const imgData = canvas.toDataURL("image/jpeg", 1);
-      const contentHeight = (canvas.height * contentWidth) / canvas.width;
 
       if (index > 0) {
         pdf.addPage();
       }
 
-      pdf.addImage(
-        imgData,
-        "JPEG",
-        margin,
-        margin,
-        contentWidth,
-        contentHeight
-      );
+      const canvas = await html2canvas(block, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
+
+      pdf.addImage(imgData, "JPEG", margin, margin, contentWidth, contentHeight);
     }
-    
+
     if (getAsBlob) {
       return pdf.output("blob");
     } else {

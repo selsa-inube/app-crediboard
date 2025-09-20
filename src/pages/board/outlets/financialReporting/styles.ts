@@ -1,5 +1,9 @@
-import styled from "styled-components";
+import styled, { createGlobalStyle, css }  from "styled-components";
 import { inube } from "@inubekit/inubekit";
+
+interface IGlobalPdfStylesProps {
+  $isGeneratingPdf?: boolean;
+}
 
 export const StyledItem = styled.li`
   display: flex;
@@ -110,4 +114,23 @@ export const StyledContainerSpinner = styled.div`
 export const BlockPdfSection = styled.div`
   width: inherit;
   height: inherit;
+`;
+
+export const GlobalPdfStyles = createGlobalStyle<IGlobalPdfStylesProps>`
+  ${({ $isGeneratingPdf }) =>
+    $isGeneratingPdf &&
+    css`
+      .pdf-generation-mode,
+      .pdf-generation-mode * {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+        flex-shrink: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .pdf-generation-mode {
+        background-color: white !important;
+      }
+    `}
 `;

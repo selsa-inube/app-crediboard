@@ -50,7 +50,8 @@ import {
   StyledScreenPrint,
   StyledToast,
   StyledContainerSpinner,
-  BlockPdfSection
+  BlockPdfSection,
+  GlobalPdfStyles
 } from "./styles";
 import { Approvals } from "./Approvals";
 import { Requirements } from "./Requirements";
@@ -389,6 +390,7 @@ export const FinancialReporting = () => {
 
   return (
     <div ref={dataCommercialManagementRef}>
+    <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
       <StyledMarginPrint $isMobile={isMobile}>
         <Stack direction="column">
           <Stack justifyContent="center" alignContent="center">
