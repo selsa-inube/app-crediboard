@@ -133,26 +133,35 @@ function useAppContext() {
     enumRole: [],
   });
 
-  const { abbreviatedName } = eventData.businessUnit;
-  const managerCode = eventData.businessManager.publicCode;
-  const userDocId = eventData.user?.identificationDocumentNumber || "";
-
   useEffect(() => {
-    if (!abbreviatedName || !managerCode || !userDocId) return;
+    const identificationNumber =
+      eventData?.user?.identificationDocumentNumber || "";
+
+    if (
+      !eventData.businessUnit.abbreviatedName ||
+      !eventData.businessManager.publicCode ||
+      !identificationNumber
+    ) {
+      return;
+    }
 
     (async () => {
       try {
         const staffUseCaseData = await getSearchUseCaseForStaff(
-          abbreviatedName,
-          managerCode,
-          userDocId
+          eventData.businessUnit.abbreviatedName,
+          eventData.businessManager.publicCode,
+          identificationNumber
         );
         setStaffUseCases(staffUseCaseData);
       } catch (error) {
         console.error("Error fetching use cases:", error);
       }
     })();
-  }, [abbreviatedName, managerCode, userDocId]);
+  }, [
+    eventData.businessUnit.abbreviatedName,
+    eventData.businessManager.publicCode,
+    eventData?.user?.identificationDocumentNumber,
+  ]);
 
   useEffect(() => {
     validateConsultation(portalCode).then((data) => {
