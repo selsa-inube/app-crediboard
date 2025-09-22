@@ -121,7 +121,7 @@ export function RiskScoring(props: RiskScoringProps) {
                   <SkeletonLine animated width="80px" />
                 ) : (
                   <Text size={isMobile ? "small" : "medium"}>
-                    {`/ mínimo ${data.minCreditRiskScore}`}
+                    {`${dataRiskScoring.min} ${data.minCreditRiskScore}`}
                   </Text>
                 )}
               </Stack>
