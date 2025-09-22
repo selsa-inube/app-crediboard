@@ -1,17 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect } from "react";
 
-interface EnumContextType {
-  lang: "es" | "en";
+import { EnumContextType } from "./types";
+
+interface EnumProviderProps {
+  children: React.ReactNode;
 }
 
 export const EnumContext = createContext<EnumContextType | undefined>(
   undefined
 );
 
-export const EnumProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export function EnumProvider(props: EnumProviderProps) {
+  const { children } = props;
   const [lang, setLang] = useState<"es" | "en">("es");
 
   useEffect(() => {
@@ -22,4 +23,4 @@ export const EnumProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <EnumContext.Provider value={{ lang }}>{children}</EnumContext.Provider>
   );
-};
+}
