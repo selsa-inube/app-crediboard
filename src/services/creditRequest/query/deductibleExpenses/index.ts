@@ -3,11 +3,11 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IAllDeductibleExpensesById } from "../types";
+import { IAllDeductibleExpensesById } from "../../../prospect/types";
 
 const getAllDeductibleExpensesById = async (
   businessUnitPublicCode: string,
-  publicCode: string,
+  creditRequestCode: string
 ): Promise<IAllDeductibleExpensesById[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -28,8 +28,8 @@ const getAllDeductibleExpensesById = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${publicCode}`,
-        options,
+        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/prospects/${creditRequestCode}`,
+        options
       );
 
       clearTimeout(timeoutId);
@@ -53,14 +53,14 @@ const getAllDeductibleExpensesById = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener los gastos descontables.",
+          "Todos los intentos fallaron. No se pudo obtener los gastos descontables."
         );
       }
     }
   }
 
   throw new Error(
-    "No se pudo obtener los gastos descontables después de varios intentos.",
+    "No se pudo obtener los gastos descontables después de varios intentos."
   );
 };
 

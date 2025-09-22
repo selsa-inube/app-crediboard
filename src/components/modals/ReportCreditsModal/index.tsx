@@ -224,6 +224,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           newObligation={newObligation}
           businessUnitPublicCode={businessUnitPublicCode}
           onObligationProcessed={handleObligationProcessed}
+          creditRequestCode={prospectData?.[0]?.prospectCode || ""}
         />
       </Stack>
     </BaseModal>

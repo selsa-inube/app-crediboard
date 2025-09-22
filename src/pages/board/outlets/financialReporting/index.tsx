@@ -28,7 +28,7 @@ import {
   textFlagsReject,
   textFlagsUsers,
 } from "@config/pages/staffModal/addFlag";
-import { getSearchProspectByCode } from "@services/prospect/ProspectByCode";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import {
   IProspect,
   IExtraordinaryInstallments,
@@ -152,10 +152,12 @@ export const FinancialReporting = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!id) return;
+
       try {
         const result = await getSearchProspectByCode(
           businessUnitPublicCode,
-          idProspect
+          id
         );
 
         setDataProspect(Array.isArray(result) ? result[0] : result);
@@ -165,7 +167,7 @@ export const FinancialReporting = () => {
     };
 
     idProspect && businessUnitPublicCode && fetchData();
-  }, [businessUnitPublicCode, idProspect, sentData]);
+  }, [businessUnitPublicCode, idProspect, sentData, id]);
 
   const handleGeneratePDF = () => {
     setTimeout(async () => {
