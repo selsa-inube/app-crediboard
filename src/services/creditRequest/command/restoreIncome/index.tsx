@@ -29,7 +29,7 @@ export const RestoreIncomeInformationByBorrowerId = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_PERSISTENCE}/credit-request`,
+        `${environment.ICOREBANKING_API_URL_PERSISTENCE}/credit-requests`,
         options,
       );
 
