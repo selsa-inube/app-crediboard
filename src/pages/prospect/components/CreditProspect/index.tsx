@@ -182,9 +182,9 @@ export function CreditProspect(props: ICreditProspectProps) {
   };
 
   const handlePdfGeneration = () => {
-    print()
-    pdfFunction()
-  }
+    print();
+    pdfFunction();
+  };
 
   return (
     <Stack direction="column" gap="24px">
@@ -240,7 +240,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                     size="24px"
                     disabled={!isPrint}
                     cursorHover
-                    onClick={()=> handlePdfGeneration()}
+                    onClick={() => handlePdfGeneration()}
                   />
                   <Icon
                     icon={<MdOutlineShare />}
@@ -352,6 +352,8 @@ export function CreditProspect(props: ICreditProspectProps) {
             selectedBorrower && incomeData[selectedBorrower.borrowerName]
           }
           onSubmit={handleIncomeSubmit}
+          businessUnitPublicCode={businessUnitPublicCode}
+          creditRequestCode={id}
         />
       )}
       {currentModal === "reportCreditsModal" && (
