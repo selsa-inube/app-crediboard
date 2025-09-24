@@ -260,10 +260,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   };
 
   const onChangesReportCredit = (name: string, newValue: string) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: newValue,
-    }));
+    setForm((prevForm) => ({ ...prevForm, [name]: newValue }));
   };
 
   const borrowersProspect =
@@ -277,10 +274,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
       setIncomeData((prev) => ({
         ...prev,
-        [borrowerName]: {
-          ...updatedData,
-          edited: true,
-        },
+        [borrowerName]: { ...updatedData, edited: true },
       }));
 
       setDataProspect((prev) => {
@@ -339,28 +333,19 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   propertyName: "FinancialIncome",
                   propertyValue: updatedData.FinancialIncome?.toString() || "0",
                 },
-                {
-                  propertyName: "name",
-                  propertyValue: updatedData.name || "",
-                },
+                { propertyName: "name", propertyValue: updatedData.name || "" },
                 {
                   propertyName: "surname",
                   propertyValue: updatedData.surname || "",
                 },
               ];
 
-              return {
-                ...borrower,
-                borrowerProperties: updatedProperties,
-              };
+              return { ...borrower, borrowerProperties: updatedProperties };
             }
             return borrower;
           });
 
-          return {
-            ...prospect,
-            borrowers: updatedBorrowers,
-          };
+          return { ...prospect, borrowers: updatedBorrowers };
         });
       });
       setOpenModal(null);
