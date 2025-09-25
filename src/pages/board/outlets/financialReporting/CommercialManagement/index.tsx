@@ -79,7 +79,7 @@ interface ComercialManagementProps {
     React.SetStateAction<IPaymentChannel[] | undefined>
   >;
   generateAndSharePdf: () => void;
-  id: string;
+  creditRequestCode: string;
   isPrint?: boolean;
   hideContactIcons?: boolean;
   requestValue?: IPaymentChannel[];
@@ -91,7 +91,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     isPrint = false,
     collapse,
     setCollapse,
-    id,
+    creditRequestCode,
     hideContactIcons,
     prospectData,
     generateAndSharePdf,
@@ -163,7 +163,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       try {
         const data = await getCreditRequestByCode(
           businessUnitPublicCode,
-          id,
+          creditRequestCode,
           userAccount
         );
         setRequests(data[0] as ICreditRequest);
@@ -172,10 +172,10 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       }
     };
 
-    if (id) {
+    if (creditRequestCode) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, id, userAccount]);
+  }, [businessUnitPublicCode, creditRequestCode, userAccount]);
 
   const handleDisbursement = async () => {
     if (requests?.creditRequestId) {
@@ -545,7 +545,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           <Button
                             type="link"
                             spacing="compact"
-                            path={`/extended-card/${id}/credit-profile`}
+                            path={`/extended-card/${creditRequestCode}/credit-profile`}
                           >
                             {tittleOptions.titleProfile}
                           </Button>
@@ -609,7 +609,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     <Button
                       type="link"
                       spacing="compact"
-                      path={`/extended-card/${id}/credit-profile`}
+                      path={`/extended-card/${creditRequestCode}/credit-profile`}
                       fullwidth
                     >
                       {tittleOptions.titleProfile}
@@ -771,6 +771,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   businessUnitPublicCode={businessUnitPublicCode}
                   generateAndSharePdf={generateAndSharePdf}
                   setDataProspect={setDataProspect}
+                  creditRequestCode={creditRequestCode}
                 />
               )}
             </Stack>
@@ -802,6 +803,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 prospectData={prospectData ? [prospectData] : undefined}
                 options={incomeOptions}
                 businessUnitPublicCode={businessUnitPublicCode}
+                creditRequestCode={creditRequestCode}
               />
             )}
             {currentModal === "extraPayments" && (

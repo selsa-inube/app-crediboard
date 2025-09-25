@@ -3,11 +3,13 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IProspect } from "../types";
 
-const getSearchProspectById = async (
+import { IProspect } from "../../../prospect/types";
+import { mapperProspectResponseToIProspect } from "../../../prospect/mapper";
+
+const getSearchProspectByCode = async (
   businessUnitPublicCode: string,
-  prospectCode: string
+  creditRequestCode: string
 ): Promise<IProspect> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -28,7 +30,7 @@ const getSearchProspectById = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectCode}`,
+        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/prospects/${creditRequestCode}`,
         options
       );
 
@@ -39,6 +41,7 @@ const getSearchProspectById = async (
       }
 
       const data = await res.json();
+
       if (!res.ok) {
         throw {
           message: "Error al obtener la tarea.",
@@ -47,11 +50,11 @@ const getSearchProspectById = async (
         };
       }
 
-      if (Array.isArray(data) && data.length > 0) {
-        return data[0];
+      if (Array.isArray(data)) {
+        return data[0] as IProspect;
       }
 
-      return data;
+      return mapperProspectResponseToIProspect(data);
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
@@ -65,4 +68,4 @@ const getSearchProspectById = async (
   throw new Error("No se pudo obtener la tarea después de varios intentos.");
 };
 
-export { getSearchProspectById };
+export { getSearchProspectByCode };
