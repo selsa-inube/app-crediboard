@@ -16,13 +16,14 @@ import { initializeDataDB } from "@mocks/utils/initializeDataDB";
 import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
 import { useIAuth } from "@inube/iauth-react";
-import { AuthProviderWrapper } from "@pages/AuthWrapper";
+import { environment } from "@config/environment";
+import { AuthProvider } from "@pages/AuthWrapper";
 
 function LogOut() {
   localStorage.clear();
   sessionStorage.clear();
   const { logout } = useIAuth();
-  logout();
+  logout({ logoutParams: { returnTo: environment.GOOGLE_REDIRECT_URI } });
   return <AppPage />;
 }
 
@@ -48,14 +49,14 @@ const router = createBrowserRouter(
 );
 function App() {
   return (
-    <AuthProviderWrapper>
+    <AuthProvider>
       <AppContextProvider>
         <FlagProvider>
           <GlobalStyles />
           <RouterProvider router={router} />
         </FlagProvider>
       </AppContextProvider>
-    </AuthProviderWrapper>
+    </AuthProvider>
   );
 }
 

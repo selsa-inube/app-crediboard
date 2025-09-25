@@ -33,7 +33,7 @@ function AuthContent({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-export function AuthProviderWrapper({ children }: AuthProviderWrapperProps) {
+export function AuthProvider({ children }: AuthProviderWrapperProps) {
   const { codeError, authConfig, loading, portalCode } = usePortalLogic();
   if (loading) {
     return <LoadingAppUI />;
