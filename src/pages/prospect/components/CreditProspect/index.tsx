@@ -63,7 +63,6 @@ interface ICreditProspectProps {
   showMenu: () => void;
   handleChange: (name: string, newValue: string) => void;
   handleIncomeSubmit: (values: IIncomeSources) => void;
-  pdfFunction: () => void;
   generateAndSharePdf: () => void;
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
 }
@@ -87,7 +86,6 @@ export function CreditProspect(props: ICreditProspectProps) {
     showMenu,
     handleChange,
     handleIncomeSubmit,
-    pdfFunction,
     generateAndSharePdf,
     setDataProspect,
   } = props;
@@ -185,7 +183,6 @@ export function CreditProspect(props: ICreditProspectProps) {
 
   const handlePdfGeneration = () => {
     print()
-    pdfFunction()
   }
 
   return (
