@@ -50,6 +50,7 @@ interface ICreditProspectProps {
   isMobile: boolean;
   businessUnitPublicCode: string;
   sentData: IExtraordinaryInstallments | null;
+  creditRequestCode?: string;
   setSentData: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallments | null>
   >;
@@ -81,6 +82,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     sentData,
     setSentData,
     businessUnitPublicCode,
+    creditRequestCode,
     showMenu,
     handleChange,
     handleIncomeSubmit,
@@ -360,6 +362,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           prospectData={prospectData ? [prospectData] : undefined}
           setDataProspect={setDataProspect}
           businessUnitPublicCode={businessUnitPublicCode}
+          creditRequestCode={creditRequestCode  || ""}
         />
       )}
       {currentModal === "extraPayments" && (
