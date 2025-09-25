@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useIAuth } from "@inube/iauth-react";
 
 import { IStaffPortalByBusinessManager } from "@services/staff-portals-by-business-manager/types";
 import {
@@ -11,7 +12,6 @@ import { getEnumerators } from "@services/enumerators";
 import { getStaff } from "@services/staff/staffs";
 import { decrypt } from "@utils/encrypt/encrypt";
 import { getSearchUseCaseForStaff } from "@services/staffs/SearchUseCaseForStaff";
-import { useIAuth } from "@context/AuthContext/useAuthContext";
 import { IBusinessManagers } from "@services/businessManager/types";
 
 interface IBusinessUnits {
@@ -131,7 +131,6 @@ function useAppContext() {
     },
     enumRole: [],
   });
-
   useEffect(() => {
     const identificationNumber =
       eventData?.user?.identificationDocumentNumber || "";

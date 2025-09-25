@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
 import {
   Stack,
   useFlag,
@@ -9,8 +8,8 @@ import {
   Text,
   Spinner,
 } from "@inubekit/inubekit";
+import { useIAuth } from "@inube/iauth-react";
 
-import { useIAuth } from "@context/AuthContext/useAuthContext";
 import { OfferedGuaranteeModal } from "@components/modals/OfferedGuaranteeModal";
 import { ErrorAlert } from "@components/ErrorAlert";
 import { ContainerSections } from "@components/layout/ContainerSections";
