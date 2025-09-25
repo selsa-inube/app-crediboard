@@ -4,15 +4,14 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IProspectSummaryById } from "../types";
+import { ICreditRiskScoreResponse } from "../types";
 
-const getSearchProspectSummaryById = async (
+export const getCreditRiskScoreById = async (
   businessUnitPublicCode: string,
-  prospectCode: string
-): Promise<IProspectSummaryById> => {
+  customerIdentificationNumber: string
+): Promise<ICreditRiskScoreResponse | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
@@ -20,7 +19,7 @@ const getSearchProspectSummaryById = async (
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "GetProspectSummaryById",
+          "X-Action": "GetCreditRiskScoreById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -28,44 +27,41 @@ const getSearchProspectSummaryById = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectCode}`,
+        `${environment.ICOREBANKING_API_URL_QUERY}/credit-profiles/credit-risk-score/${customerIdentificationNumber}`,
         options
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay resumen de montos disponibles.");
+        return null;
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Error al obtener el resumen de montos.",
+          message: "Ha ocurrido un error: ",
           status: res.status,
           data,
         };
       }
 
-      if (Array.isArray(data)) {
-        return data[0] as IProspectSummaryById;
-      }
-
       return data;
     } catch (error) {
-      console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
+        if (typeof error === "object" && error !== null) {
+          throw {
+            ...(error as object),
+            message: (error as Error).message,
+          };
+        }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo traer el resumen de montos"
+          "Todos los intentos fallaron. No se pudo obtener los creditos de riesgo."
         );
       }
     }
   }
 
-  throw new Error(
-    "No se pudo obtener el resumen de montos después de varios intentos."
-  );
+  return null;
 };
-
-export { getSearchProspectSummaryById };
