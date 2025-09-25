@@ -1,72 +1,82 @@
+import { useEffect, useState } from "react";
 import { MdQueryStats } from "react-icons/md";
 import { Stack, Text, SkeletonLine } from "@inubekit/inubekit";
 
 import { CardInfoContainer } from "@components/cards/CardInfoContainer";
 import { StyledDivider } from "@components/cards/SummaryCard/styles";
-import { IRiskScoringRangeRequered } from "./types";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
+import { ICreditRiskScoreResponse } from "@services/creditProfiles/types";
+import { getCreditRiskScoreById } from "@services/creditProfiles/GetCreditRiskScoreById";
+import { ErrorModal } from "@components/modals/ErrorModal";
+
+import { dataRiskScoring } from "./config";
 
 interface RiskScoringProps {
-  totalScore: number;
-  minimumScore: number;
-  seniority: number;
-  seniorityScore: number;
-  riskCenter: number;
-  riskCenterScore: number;
-  jobStabilityIndex: number;
-  jobStabilityIndexScore: number;
-  maritalStatusScore: number;
-  economicActivityScore: number;
-  maritalStatus: string;
-  economicActivity: string;
-  isLoading: boolean;
-  isMobile?: boolean;
-  dataWereObtained: boolean;
-  dataRiskScoringMax: IRiskScoringRangeRequered;
-  setWataWereObtained: (stade: boolean) => void;
+  businessUnitPublicCode: string;
+  customerIdentificationNumber: string;
+  isMobile: boolean;
 }
 
 export function RiskScoring(props: RiskScoringProps) {
-  const {
-    totalScore,
-    minimumScore,
-    seniority,
-    seniorityScore,
-    riskCenter,
-    riskCenterScore,
-    jobStabilityIndex,
-    jobStabilityIndexScore,
-    maritalStatusScore,
-    economicActivityScore,
-    maritalStatus,
-    economicActivity,
-    isLoading,
-    isMobile,
-    dataWereObtained,
-    dataRiskScoringMax,
-    setWataWereObtained,
-  } = props;
+  const { businessUnitPublicCode, customerIdentificationNumber, isMobile } =
+    props;
+
+  const [data, setData] = useState<ICreditRiskScoreResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const getMainGap = () => {
     if (isMobile) {
-      return isLoading ? "16px" : "4px";
+      return loading ? "16px" : "4px";
     } else {
-      return isLoading ? "28px" : "16px";
+      return loading ? "28px" : "16px";
     }
   };
 
   const getInnerGap = () => {
     if (isMobile) {
-      return isLoading ? "16px" : "4px";
+      return loading ? "16px" : "4px";
     } else {
-      return isLoading ? "20px" : "8px";
+      return loading ? "20px" : "8px";
     }
   };
 
   const handleRetry = () => {
-    setWataWereObtained(false);
+    setData(null);
+    (async () => {
+      try {
+        setLoading(true);
+        const response = await getCreditRiskScoreById(
+          businessUnitPublicCode,
+          customerIdentificationNumber
+        );
+        setData(response);
+      } catch {
+        setShowErrorModal(true);
+        setMessageError(dataRiskScoring.modalError);
+      }
+    })();
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await getCreditRiskScoreById(
+          businessUnitPublicCode,
+          customerIdentificationNumber
+        );
+        setData(response);
+      } catch {
+        setShowErrorModal(true);
+        setMessageError(dataRiskScoring.modalError);
+      }
+    };
+
+    fetchData();
+  }, [businessUnitPublicCode, customerIdentificationNumber]);
 
   return (
     <CardInfoContainer
@@ -74,223 +84,86 @@ export function RiskScoring(props: RiskScoringProps) {
       icon={<MdQueryStats />}
       isMobile={isMobile}
     >
-      {dataWereObtained ? (
-        <ItemNotFound
-          image={userNotFound}
-          title="Datos no encontrados"
-          description="No pudimos obtener los datos solicitados."
-          buttonDescription="Reintentar"
-          route="#"
-          onRetry={handleRetry}
-        />
-      ) : (
-        <Stack direction="column" gap={getMainGap()}>
-          <Stack alignItems="center" gap="32px">
-            <Stack width="100px">
-              {isLoading ? (
-                <SkeletonLine animated width="100%" />
-              ) : (
-                <Text
-                  size={isMobile ? "small" : "medium"}
-                  disabled={dataWereObtained}
-                >
-                  Puntaje total
-                </Text>
-              )}
+      <>
+        {!data ? (
+          <ItemNotFound
+            image={userNotFound}
+            title={dataRiskScoring.noData}
+            description={dataRiskScoring.noDataDescription}
+            buttonDescription={dataRiskScoring.retryButton}
+            onRetry={handleRetry}
+          />
+        ) : (
+          <Stack direction="column" gap={getMainGap()}>
+            <Stack alignItems="center" gap="32px">
+              <Stack width="100px">
+                {loading ? (
+                  <SkeletonLine animated width="100%" />
+                ) : (
+                  <Text size={isMobile ? "small" : "medium"}>
+                    {dataRiskScoring.totalScore}
+                  </Text>
+                )}
+              </Stack>
+              <Stack alignItems="center" gap="8px">
+                {loading ? (
+                  <SkeletonLine animated width="80px" />
+                ) : (
+                  <Text
+                    appearance="primary"
+                    type={isMobile ? "body" : "headline"}
+                    size={isMobile ? "small" : "medium"}
+                  >
+                    {data.totalCreditRiskScore}
+                  </Text>
+                )}
+                {loading ? (
+                  <SkeletonLine animated width="80px" />
+                ) : (
+                  <Text size={isMobile ? "small" : "medium"}>
+                    {`${dataRiskScoring.min} ${data.minCreditRiskScore}`}
+                  </Text>
+                )}
+              </Stack>
             </Stack>
-            <Stack alignItems="center" gap="8px">
-              {isLoading ? (
-                <SkeletonLine animated width="80px" />
-              ) : (
-                <Text
-                  appearance="primary"
-                  type={dataWereObtained ? "body" : "headline"}
-                  size={isMobile || dataWereObtained ? "small" : "medium"}
-                  disabled={dataWereObtained}
-                >
-                  {dataWereObtained ? "-" : totalScore}
-                </Text>
-              )}
-              {isLoading ? (
-                <SkeletonLine animated width="80px" />
-              ) : (
-                <Text
-                  size={isMobile || dataWereObtained ? "small" : "medium"}
-                  disabled={dataWereObtained}
-                >
-                  {dataWereObtained ? "-" : `/ mínimo ${minimumScore}`}
-                </Text>
-              )}
+            <StyledDivider />
+            <Stack direction="column" gap={getInnerGap()}>
+              {data.variables.map((variable, index) => (
+                <Stack key={index} alignItems="center">
+                  <Stack width={isMobile ? "600px" : "500px"}>
+                    {loading ? (
+                      <SkeletonLine animated width="100%" />
+                    ) : (
+                      <Text size={isMobile ? "small" : "medium"}>
+                        {`${variable.variableDescription} ${variable.variableValue}`}
+                      </Text>
+                    )}
+                  </Stack>
+                  <Stack justifyContent="end" width="100%">
+                    {loading ? (
+                      <SkeletonLine animated width="60px" />
+                    ) : (
+                      <Text
+                        appearance="primary"
+                        type="title"
+                        size={isMobile ? "small" : "large"}
+                      >
+                        {variable.variableScore}
+                      </Text>
+                    )}
+                  </Stack>
+                </Stack>
+              ))}
             </Stack>
           </Stack>
-          <StyledDivider />
-          <Stack direction="column" gap={getInnerGap()}>
-            <Stack alignItems="center">
-              <Stack width={isMobile ? "600px" : "500px"}>
-                {isLoading ? (
-                  <SkeletonLine animated width="100%" />
-                ) : (
-                  <Text
-                    size={isMobile ? "small" : "medium"}
-                    disabled={dataWereObtained}
-                  >
-                    {dataWereObtained ? "-" : `Antigüedad de ${seniority} años`}
-                  </Text>
-                )}
-              </Stack>
-              <Stack justifyContent="end" width="100%">
-                {isLoading ? (
-                  <SkeletonLine animated width="60px" />
-                ) : (
-                  <>
-                    <Text
-                      appearance="primary"
-                      type="title"
-                      size={dataWereObtained ? "small" : "large"}
-                      disabled={dataWereObtained}
-                    >
-                      {dataWereObtained ? "-" : seniorityScore}
-                    </Text>
-                    <Text>/ {dataRiskScoringMax?.seniority_score}</Text>
-                  </>
-                )}
-              </Stack>
-            </Stack>
-            <Stack alignItems="center">
-              <Stack width={isMobile ? "600px" : "500px"}>
-                {isLoading ? (
-                  <SkeletonLine animated width="100%" />
-                ) : (
-                  <Text
-                    size={isMobile ? "small" : "medium"}
-                    disabled={dataWereObtained}
-                  >
-                    {dataWereObtained
-                      ? "-"
-                      : `Central de riesgo de ${riskCenter} P`}
-                  </Text>
-                )}
-              </Stack>
-              <Stack justifyContent="end" width="100%">
-                {isLoading ? (
-                  <SkeletonLine animated width="60px" />
-                ) : (
-                  <>
-                    <Text
-                      appearance="primary"
-                      type="title"
-                      size={dataWereObtained ? "small" : "large"}
-                      disabled={dataWereObtained}
-                    >
-                      {dataWereObtained ? "-" : riskCenterScore}
-                    </Text>
-                    <Text>/ {dataRiskScoringMax?.risk_center_score}</Text>
-                  </>
-                )}
-              </Stack>
-            </Stack>
-            <Stack alignItems="center">
-              <Stack width={isMobile ? "600px" : "500px"}>
-                {isLoading ? (
-                  <SkeletonLine animated width="100%" />
-                ) : (
-                  <Text
-                    size={isMobile ? "small" : "medium"}
-                    disabled={dataWereObtained}
-                  >
-                    {dataWereObtained
-                      ? "-"
-                      : `Indice de estabilidad laboral ${jobStabilityIndex} P`}
-                  </Text>
-                )}
-              </Stack>
-              <Stack justifyContent="end" width="100%">
-                {isLoading ? (
-                  <SkeletonLine animated width="60px" />
-                ) : (
-                  <>
-                    <Text
-                      appearance="primary"
-                      type="title"
-                      size={dataWereObtained ? "small" : "large"}
-                      disabled={dataWereObtained}
-                    >
-                      {dataWereObtained ? "-" : jobStabilityIndexScore}
-                    </Text>
-                    <Text>
-                      / {dataRiskScoringMax?.job_stability_index_score}
-                    </Text>
-                  </>
-                )}
-              </Stack>
-            </Stack>
-            <Stack alignItems="center">
-              <Stack width={isMobile ? "600px" : "500px"}>
-                {isLoading ? (
-                  <SkeletonLine animated width="100%" />
-                ) : (
-                  <Text
-                    size={isMobile ? "small" : "medium"}
-                    disabled={dataWereObtained}
-                  >
-                    {dataWereObtained ? "-" : `Estado civil - ${maritalStatus}`}
-                  </Text>
-                )}
-              </Stack>
-              <Stack justifyContent="end" width="100%">
-                {isLoading ? (
-                  <SkeletonLine animated width="60px" />
-                ) : (
-                  <>
-                    <Text
-                      appearance="primary"
-                      type="title"
-                      size={dataWereObtained ? "small" : "large"}
-                      disabled={dataWereObtained}
-                    >
-                      {dataWereObtained ? "-" : maritalStatusScore}
-                    </Text>
-                    <Text>/ {dataRiskScoringMax?.marital_status_score}</Text>
-                  </>
-                )}
-              </Stack>
-            </Stack>
-            <Stack alignItems="center">
-              <Stack width={isMobile ? "600px" : "500px"}>
-                {isLoading ? (
-                  <SkeletonLine animated width="100%" />
-                ) : (
-                  <Text
-                    size={isMobile ? "small" : "medium"}
-                    disabled={dataWereObtained}
-                  >
-                    {dataWereObtained
-                      ? "-"
-                      : `Actividad economica - ${economicActivity}`}
-                  </Text>
-                )}
-              </Stack>
-              <Stack justifyContent="end" width="100%" alignItems="center">
-                {isLoading ? (
-                  <SkeletonLine animated width="60px" />
-                ) : (
-                  <>
-                    <Text
-                      appearance="primary"
-                      type="title"
-                      size={dataWereObtained ? "small" : "large"}
-                      disabled={dataWereObtained}
-                    >
-                      {dataWereObtained ? "-" : economicActivityScore}
-                    </Text>
-                    <Text>/ {dataRiskScoringMax?.economic_activity_score}</Text>
-                  </>
-                )}
-              </Stack>
-            </Stack>
-          </Stack>
-        </Stack>
-      )}
+        )}
+        {showErrorModal && (
+          <ErrorModal
+            message={messageError}
+            handleClose={() => setShowErrorModal(false)}
+          />
+        )}
+      </>
     </CardInfoContainer>
   );
 }
