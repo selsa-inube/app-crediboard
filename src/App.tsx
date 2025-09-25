@@ -17,7 +17,8 @@ import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
 import { useIAuth } from "@inube/iauth-react";
 import { environment } from "@config/environment";
-import { AuthProvider } from "@pages/AuthWrapper";
+import { AuthProvider } from "@pages/AuthProvider";
+
 
 function LogOut() {
   localStorage.clear();
