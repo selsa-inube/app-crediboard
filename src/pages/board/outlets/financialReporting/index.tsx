@@ -96,7 +96,7 @@ export const FinancialReporting = () => {
   >([]);
   const [idProspect, setIdProspect] = useState("");
 
-  const { id } = useParams();
+  const { creditRequestCode } = useParams();
   const { user } = useIAuth();
 
   const navigation = useNavigate();
@@ -117,14 +117,14 @@ export const FinancialReporting = () => {
   const { addFlag } = useFlag();
 
   useEffect(() => {
-    getCreditRequestByCode(businessUnitPublicCode, id!, userAccount)
+    getCreditRequestByCode(businessUnitPublicCode, creditRequestCode!, userAccount)
       .then((data) => {
         setData(data[0]);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [id, businessUnitPublicCode, userAccount]);
+  }, [creditRequestCode, businessUnitPublicCode, userAccount]);
 
   const fetchAndShowDocuments = async () => {
     if (!data?.creditRequestId || !user?.id || !businessUnitPublicCode) return;
@@ -152,12 +152,12 @@ export const FinancialReporting = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!id) return;
+      if (!creditRequestCode) return;
 
       try {
         const result = await getSearchProspectByCode(
           businessUnitPublicCode,
-          id
+          creditRequestCode
         );
 
         setDataProspect(Array.isArray(result) ? result[0] : result);
@@ -167,7 +167,7 @@ export const FinancialReporting = () => {
     };
 
     idProspect && businessUnitPublicCode && fetchData();
-  }, [businessUnitPublicCode, idProspect, sentData, id]);
+  }, [businessUnitPublicCode, idProspect, sentData, creditRequestCode]);
 
   const handleGeneratePDF = () => {
     setTimeout(async () => {
@@ -405,7 +405,7 @@ export const FinancialReporting = () => {
                       data={data}
                       collapse={collapse}
                       setCollapse={setCollapse}
-                      id={id!}
+                      creditRequestCode={creditRequestCode!}
                       hideContactIcons={true}
                       prospectData={dataProspect!}
                       sentData={null}
@@ -420,7 +420,7 @@ export const FinancialReporting = () => {
                     <ToDo
                       icon={infoIcon}
                       isMobile={isMobile}
-                      id={id!}
+                      id={creditRequestCode!}
                       user={user!.nickname!}
                       setIdProspect={setIdProspect}
                     />
@@ -429,7 +429,7 @@ export const FinancialReporting = () => {
                     direction="column"
                     height={isMobile ? "auto" : "277px"}
                   >
-                    <Approvals user={id!} isMobile={isMobile} id={id!} />
+                    <Approvals user={creditRequestCode!} isMobile={isMobile} id={creditRequestCode!} />
                   </Stack>
                   <Stack
                     direction="column"
@@ -445,20 +445,20 @@ export const FinancialReporting = () => {
                     />
                   </Stack>
                   <Stack direction="column">
-                    <Management id={id!} isMobile={isMobile} />
+                    <Management id={creditRequestCode!} isMobile={isMobile} />
                   </Stack>
                   <Stack
                     direction="column"
                     height={isMobile ? "auto" : "163px"}
                   >
                     <StyledPageBreak />
-                    <PromissoryNotes id={id!} isMobile={isMobile} />
+                    <PromissoryNotes id={creditRequestCode!} isMobile={isMobile} />
                   </Stack>
                   <Stack
                     direction="column"
                     height={isMobile ? "auto" : "163px"}
                   >
-                    <Postingvouchers user={id!} id={id!} isMobile={isMobile} />
+                    <Postingvouchers user={creditRequestCode!} id={creditRequestCode!} isMobile={isMobile} />
                   </Stack>
                   <StyledPageBreak />
                   <StyledPageBreak />
