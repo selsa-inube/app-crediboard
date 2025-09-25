@@ -78,7 +78,6 @@ interface ComercialManagementProps {
   setRequestValue: React.Dispatch<
     React.SetStateAction<IPaymentChannel[] | undefined>
   >;
-  print: () => void;
   generateAndSharePdf: () => void;
   id: string;
   isPrint?: boolean;
@@ -89,7 +88,6 @@ interface ComercialManagementProps {
 export const ComercialManagement = (props: ComercialManagementProps) => {
   const {
     data,
-    print,
     isPrint = false,
     collapse,
     setCollapse,
@@ -771,7 +769,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setSentData={setSentData}
                   setRequestValue={setRequestValue}
                   businessUnitPublicCode={businessUnitPublicCode}
-                  pdfFunction={print}
                   generateAndSharePdf={generateAndSharePdf}
                   setDataProspect={setDataProspect}
                 />
