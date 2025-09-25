@@ -29,20 +29,6 @@ import { IRiskScoring } from "./RiskScoring/types";
 
 export const CreditProfileInfo = () => {
   const [requests, setRequests] = useState({} as ICreditRequest);
-  const [riskScoring, setRiskScoring] = useState<IRiskScoring["risk_scoring"]>({
-    total_score: 0,
-    minimum_score: 0,
-    seniority: 0,
-    seniority_score: 0,
-    risk_center: 0,
-    risk_center_score: 0,
-    job_stability_index: 0,
-    job_stability_index_score: 0,
-    marital_status: "",
-    marital_status_score: 0,
-    economic_activity: "",
-    economic_activity_score: 0,
-  });
   const [credit_profileInfo, setCredit_profileInfo] = useState({
     company_seniority: 0,
     labor_stability_index: 0,
@@ -66,15 +52,6 @@ export const CreditProfileInfo = () => {
     reciprocity: 0,
   });
 
-  const [riskScoringMax, setRiskScoringMax] = useState({
-    seniority_score: 0,
-    risk_center_score: 0,
-    job_stability_index_score: 0,
-    marital_status_score: 0,
-    economic_activity_score: 0,
-  });
-
-  const [loading, setLoading] = useState(false);
   const [dataWereObtained, setWataWereObtained] = useState(false);
   const [dataBehaviorError, setBehaviorError] = useState(false);
   const [dataCreditProfile, setCreditProfile] = useState(false);
@@ -96,8 +73,6 @@ export const CreditProfileInfo = () => {
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
-
       try {
         const [
           riskScoring,
@@ -115,17 +90,7 @@ export const CreditProfileInfo = () => {
           get("range_requered_Business_Unit"),
         ]);
 
-        if (
-          riskScoring.status === "fulfilled" &&
-          Array.isArray(riskScoring.value)
-        ) {
-          const [riskScoringData] = riskScoring.value;
-
-          setRiskScoring((prev) => ({
-            ...prev,
-            ...riskScoringData?.risk_scoring,
-          }));
-        } else {
+        if (riskScoring.status !== "fulfilled") {
           setWataWereObtained(true);
         }
 
@@ -177,18 +142,13 @@ export const CreditProfileInfo = () => {
         if (riskScoringMaximum.status === "fulfilled") {
           const data = riskScoringMaximum.value;
           if (Array.isArray(data) && data.length > 0) {
-            setRiskScoringMax((prevState) => ({
-              ...prevState,
-              ...data[0],
-            }));
+            setUncoveredWallet(false);
           }
         } else {
           setUncoveredWallet(false);
         }
       } catch (e) {
         console.error(e);
-      } finally {
-        setLoading(false);
       }
     })();
 
@@ -368,23 +328,9 @@ export const CreditProfileInfo = () => {
             setUncoveredWallet={setUncoveredWallet}
           />
           <RiskScoring
-            totalScore={riskScoring.total_score}
-            minimumScore={riskScoring.minimum_score}
-            seniority={riskScoring.seniority}
-            seniorityScore={riskScoring.seniority_score}
-            riskCenter={riskScoring.risk_center}
-            riskCenterScore={riskScoring.risk_center_score}
-            jobStabilityIndex={riskScoring.job_stability_index}
-            jobStabilityIndexScore={riskScoring.job_stability_index_score}
-            maritalStatusScore={riskScoring.marital_status_score}
-            economicActivityScore={riskScoring.economic_activity_score}
-            maritalStatus={riskScoring.marital_status}
-            economicActivity={riskScoring.economic_activity}
-            isLoading={loading}
             isMobile={isMobile}
-            dataWereObtained={Object.keys(riskScoring).length === 0}
-            dataRiskScoringMax={riskScoringMax}
-            setWataWereObtained={setWataWereObtained}
+            businessUnitPublicCode={businessUnitPublicCode}
+            customerIdentificationNumber={requests.clientIdentificationNumber}
           />
           <Guarantees
             guaranteesRequired="Ninguna garantía real, o fianza o codeudor."
