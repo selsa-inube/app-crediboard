@@ -19,12 +19,11 @@ import { useIAuth } from "@inube/iauth-react";
 import { environment } from "@config/environment";
 import { AuthProvider } from "@pages/AuthProvider";
 
-
 function LogOut() {
   localStorage.clear();
   sessionStorage.clear();
   const { logout } = useIAuth();
-  logout({ logoutParams: { returnTo: environment.GOOGLE_REDIRECT_URI } });
+  logout({ logoutParams: { returnTo: environment.VITE_LOGOUT_REDIRECT_URI } });
   return <AppPage />;
 }
 
