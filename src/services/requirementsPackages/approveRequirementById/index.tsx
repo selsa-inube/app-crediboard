@@ -30,7 +30,7 @@ export const approveRequirementById = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_PERSISTENCE}/requirements-packages`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/requirements-packages`,
         options
       );
 

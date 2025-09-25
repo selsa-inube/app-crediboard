@@ -31,7 +31,7 @@ const getAllPackagesOfRequirementsById = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/requirements-packages?${queryParams.toString()}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/requirements-packages?${queryParams.toString()}`,
         options
       );
 

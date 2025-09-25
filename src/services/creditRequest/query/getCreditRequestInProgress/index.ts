@@ -35,7 +35,7 @@ export const getCreditRequestInProgress = async (
       }
       queryParams.set("sort", "desc.isPinned,asc.creditRequestDateOfCreation");
 
-      const finalUrl = `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests?${queryParams.toString()}`;
+      const finalUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests?${queryParams.toString()}`;
       const options: RequestInit = {
         method: "GET",
         headers: {
