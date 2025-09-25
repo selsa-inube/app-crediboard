@@ -30,7 +30,7 @@ export const getSearchDecisionById = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/${creditRequestId}?${queryParams.toString()}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/${creditRequestId}?${queryParams.toString()}`,
         options
       );
 

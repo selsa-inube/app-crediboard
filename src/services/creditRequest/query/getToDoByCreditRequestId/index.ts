@@ -29,7 +29,7 @@ export const getToDoByCreditRequestId = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/${creditRequestId}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/${creditRequestId}`,
         options
       );
       
