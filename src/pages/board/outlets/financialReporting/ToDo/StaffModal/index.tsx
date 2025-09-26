@@ -99,8 +99,16 @@ export function StaffModal(props: StaffModalProps) {
     const fetchData = async () => {
       try {
         const [accountManagers, analysts] = await Promise.all([
-          getCommercialManagerAndAnalyst("CredicarAccountManager", "Selsa"),
-          getCommercialManagerAndAnalyst("CredicarAnalyst", "Selsa"),
+          getCommercialManagerAndAnalyst(
+            "SistemasEnlinea",
+            "Selsa",
+            businessUnitPublicCode
+          ),
+          getCommercialManagerAndAnalyst(
+            "SistemasEnlinea",
+            "Selsa",
+            businessUnitPublicCode
+          ),
         ]);
 
         setAccountManagerList(accountManagers);

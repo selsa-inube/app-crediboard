@@ -29,7 +29,6 @@ import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
   truncateTextToMaxLength,
-  capitalizeFirstLetter,
   capitalizeFirstLetterEachWord,
 } from "@utils/formatData/text";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
@@ -509,10 +508,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       {tittleOptions.titleDestination}
                     </Text>
                     <Text type="title" size="small">
-                      {data.clientName &&
-                        capitalizeFirstLetter(
-                          truncateTextToMaxLength(data.moneyDestinationId, 60)
-                        )}
+                      {data.moneyDestinationAbreviatedName}
                     </Text>
                   </Stack>
                   <Stack gap="4px">
