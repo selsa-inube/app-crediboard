@@ -43,6 +43,7 @@ function useAppContext() {
 
   const portalId = localStorage.getItem("portalCode");
   let portalCode = "";
+
   if (portalId) {
     portalCode = decrypt(portalId);
   }

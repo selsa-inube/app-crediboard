@@ -21,6 +21,11 @@ interface ITaskDecisionOption extends IOption {
 interface DecisionItem {
   decision: string;
   value: string;
+  I18nAttribute: string;
+  I18n: {
+    es: string;
+    en: string;
+  };
 }
 
 export type { IICon, IButton, ITaskDecisionOption, DecisionItem };

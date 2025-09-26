@@ -17,6 +17,7 @@ import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
 import { useIAuth } from "@inube/iauth-react";
 import { environment } from "@config/environment";
+import { EnumProvider } from "@context/enumContext";
 import { AuthProvider } from "@pages/AuthProvider";
 
 function LogOut() {
@@ -50,12 +51,14 @@ const router = createBrowserRouter(
 function App() {
   return (
     <AuthProvider>
-      <AppContextProvider>
-        <FlagProvider>
-          <GlobalStyles />
-          <RouterProvider router={router} />
-        </FlagProvider>
-      </AppContextProvider>
+      <EnumProvider>
+        <AppContextProvider>
+          <FlagProvider>
+            <GlobalStyles />
+            <RouterProvider router={router} />
+          </FlagProvider>
+        </AppContextProvider>
+      </EnumProvider>
     </AuthProvider>
   );
 }
