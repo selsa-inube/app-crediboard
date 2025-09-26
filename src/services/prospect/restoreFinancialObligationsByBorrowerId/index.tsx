@@ -7,12 +7,16 @@ import {
 export const restoreFinancialObligationsByBorrowerId = async (
   businessUnitPublicCode: string,
   borrowerIdentificationNumber: string,
+  creditRequestCode: string,
+  justification: string
 ): Promise<void> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
   const payload = {
     borrowerIdentificationNumber,
+    creditRequestCode,
+    justification
   };
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -31,7 +35,7 @@ export const restoreFinancialObligationsByBorrowerId = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_PERSISTENCE}/prospects`,
+        `${environment.ICOREBANKING_API_URL_PERSISTENCE}/credit-requests`,
         options,
       );
 
