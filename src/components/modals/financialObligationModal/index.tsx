@@ -79,7 +79,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
 
     if (values.id) {
       const updatedData = storedData.map((item) =>
-        item.id === values.id ? { ...item, ...updatedValues } : item
+        item.creditRequestCode === values.id ? { ...item, ...updatedValues } : item
       );
       await localforage.setItem("financial_obligation", updatedData);
     } else {

@@ -6,7 +6,7 @@ const patchChangeTracesToReadById = async (
   creditRequestId: string,
   businessUnitPublicCode: string
 ): Promise<IPatchChangeTracesToReadById | undefined> => {
-  const requestUrl = `${environment.ICOREBANKING_API_URL_PERSISTENCE}/credit-requests`;
+  const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`;
 
   try {
     const options: RequestInit = {

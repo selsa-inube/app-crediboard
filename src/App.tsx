@@ -1,15 +1,13 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
 } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-import { FlagProvider } from "@inubekit/inubekit";
 
+import { FlagProvider } from "@inubekit/inubekit";
 import { AppContext, AppContextProvider } from "@context/AppContext";
-import { usePortalLogic } from "@hooks/usePortalRedirect";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { AppPage } from "@components/layout/AppPage";
 import { GlobalStyles } from "@styles/global";
@@ -17,17 +15,16 @@ import { Login } from "@pages/login";
 import { initializeDataDB } from "@mocks/utils/initializeDataDB";
 import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
-import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
-import { useIAuth } from "@context/AuthContext/useAuthContext";
-import { IUsers } from "@context/AppContext/types";
+import { useIAuth } from "@inube/iauth-react";
+import { environment } from "@config/environment";
 import { EnumProvider } from "@context/enumContext";
-import { usePostUserAccountsData } from "@hooks/usePostUserAccountsData";
+import { AuthProvider } from "@pages/AuthProvider";
 
 function LogOut() {
   localStorage.clear();
   sessionStorage.clear();
   const { logout } = useIAuth();
-  logout();
+  logout({ logoutParams: { returnTo: environment.VITE_LOGOUT_REDIRECT_URI } });
   return <AppPage />;
 }
 
@@ -51,53 +48,18 @@ const router = createBrowserRouter(
     </>
   )
 );
-
 function App() {
-  const { codeError, loading, businessManager } = usePortalLogic();
-  const { setUser } = useIAuth();
-
-  const { data: userAccountsData } = usePostUserAccountsData(
-    businessManager.clientId,
-    businessManager.clientSecret
-  );
-  useEffect(() => {
-    if (userAccountsData?.idToken) {
-      const decoded = jwtDecode<{
-        identificationNumber: string;
-        names: string;
-        surNames: string;
-        userAccount: string;
-        consumerApplicationCode: string;
-      }>(userAccountsData.idToken);
-
-      const mappedUser: IUsers = {
-        id: decoded.identificationNumber,
-        username: `${decoded.names} ${decoded.surNames}`,
-        nickname: decoded.userAccount,
-        company: decoded.consumerApplicationCode,
-        urlImgPerfil: "",
-      };
-
-      setUser(mappedUser);
-    }
-  }, [userAccountsData, setUser]);
-  if (loading) {
-    return <LoadingAppUI />;
-  }
-
-  if (codeError) {
-    return <ErrorPage errorCode={codeError} />;
-  }
-
   return (
-    <EnumProvider>
-      <AppContextProvider>
-        <FlagProvider>
-          <GlobalStyles />
-          <RouterProvider router={router} />
-        </FlagProvider>
-      </AppContextProvider>
-    </EnumProvider>
+    <AuthProvider>
+      <EnumProvider>
+        <AppContextProvider>
+          <FlagProvider>
+            <GlobalStyles />
+            <RouterProvider router={router} />
+          </FlagProvider>
+        </AppContextProvider>
+      </EnumProvider>
+    </AuthProvider>
   );
 }
 

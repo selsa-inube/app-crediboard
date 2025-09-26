@@ -6,7 +6,7 @@ const postBusinessUnitRules = async (
   businessUnitPublicCode: string,
   submitData: IBusinessUnitRules
 ): Promise<IBusinessUnitRules | undefined> => {
-  const requestUrl = `${environment.ICOREBANKING_API_URL_PERSISTENCE}/business-unit-rules`;
+  const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/business-unit-rules`;
 
   try {
     const options: RequestInit = {

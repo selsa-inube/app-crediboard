@@ -27,7 +27,7 @@ export const getTraceByCreditRequestId = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/traces/${creditRequestId}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/traces/${creditRequestId}`,
         options
       );
 
