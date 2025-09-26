@@ -260,11 +260,11 @@ export const TableFinancialObligations = (
     }
   }, [selectedBorrower, dataProspect, filterListBorrowersFinancialObligation]);
 
-  useEffect(() => {
+ /*  useEffect(() => {
     if (newObligation) {
       saveNewObligation();
     }
-  }, [newObligation, saveNewObligation]);
+  }, [newObligation, saveNewObligation]); */
 
   useEffect(() => {
     setCurrentPage(0);
