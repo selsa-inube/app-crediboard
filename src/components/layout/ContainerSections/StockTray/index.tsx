@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { MdOutlineChevronLeft, MdMenu, MdOutlineInfo } from "react-icons/md";
-import { Stack, Icon, Button, Text } from "@inubekit/inubekit";
+import { Stack, Icon, Button } from "@inubekit/inubekit";
 
-import { BaseModal } from "@components/modals/baseModal";
 import { ICrediboardData } from "@context/AppContext/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { privilegeCrediboard } from "@config/privilege";
 
-import { configButtons, titlesModal } from "../config";
+import { configButtons } from "../config";
 import { StyledHorizontalDivider, StyledPrint } from "./styled";
 
 interface IActionButtons {
@@ -49,6 +50,9 @@ export const StockTray = (props: IStockTrayProps) => {
   const handleInfo = () => {
     setIsModalOpen(true);
   };
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
   const { disabledButton: canReject } = useValidateUseCase({
     useCase: getUseCaseValue("canReject"),
   });
@@ -56,8 +60,8 @@ export const StockTray = (props: IStockTrayProps) => {
     useCase: getUseCaseValue("canCancel"),
   });
 
-  const { disabledButton: canAttach } = useValidateUseCase({
-    useCase: getUseCaseValue("canAttach"),
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
   });
 
   return (
@@ -145,12 +149,12 @@ export const StockTray = (props: IStockTrayProps) => {
                 <Button
                   spacing="compact"
                   variant="outlined"
-                  disabled={canAttach}
+                  disabled={editCreditApplication}
                   onClick={actionButtons?.buttonsOutlined?.buttonAttach.OnClick}
                 >
                   {configButtons.buttonsOutlined.buttonAttach.label}
                 </Button>
-                {canAttach && (
+                {editCreditApplication && (
                   <Icon
                     icon={<MdOutlineInfo />}
                     appearance="primary"
@@ -188,24 +192,14 @@ export const StockTray = (props: IStockTrayProps) => {
         </StyledPrint>
       )}
       {isModalOpen && (
-        <>
-          <BaseModal
-            title={titlesModal.title}
-            nextButton={titlesModal.textButtonNext}
-            handleNext={() => setIsModalOpen(false)}
-            handleClose={() => setIsModalOpen(false)}
-            width={isMobile ? "290px" : "400px"}
-          >
-            <Stack gap="16px" direction="column">
-              <Text weight="bold" size="large">
-                {titlesModal.subTitle}
-              </Text>
-              <Text weight="normal" size="medium" appearance="gray">
-                {titlesModal.description}
-              </Text>
-            </Stack>
-          </BaseModal>
-        </>
+        <InfoModal
+          onClose={handleInfoModalClose}
+          title={privilegeCrediboard.title}
+          subtitle={privilegeCrediboard.subtitle}
+          description={privilegeCrediboard.description}
+          nextButtonText={privilegeCrediboard.nextButtonText}
+          isMobile={isMobile}
+        />
       )}
     </Stack>
   );

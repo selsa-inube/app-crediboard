@@ -1,6 +1,6 @@
 import { Formik, FormikValues, FormikHelpers } from "formik";
 import * as Yup from "yup";
-import { MdAttachMoney, MdPercent } from "react-icons/md";
+import { MdAttachMoney, MdOutlineInfo, MdPercent } from "react-icons/md";
 import {
   Stack,
   Icon,
@@ -8,6 +8,7 @@ import {
   Select,
   Textfield,
 } from "@inubekit/inubekit";
+import { useState } from "react";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
@@ -15,6 +16,8 @@ import {
   handleChangeWithCurrency,
   validateCurrencyField,
 } from "@utils/formatData/currency";
+import { privilegeCrediboard } from "@config/privilege";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -26,6 +29,7 @@ import {
   amortizationTypeOptions,
   rateTypeOptions,
 } from "./config";
+import InfoModal from "../InfoModal";
 
 interface EditProductModalProps {
   onCloseModal: () => void;
@@ -63,7 +67,16 @@ function EditProductModal(props: EditProductModalProps) {
       .min(0, "No puede ser negativo"),
     rateType: Yup.string().required("Campo requerido"),
   });
-
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
   return (
     <Formik
       initialValues={initialValues}
@@ -83,8 +96,22 @@ function EditProductModal(props: EditProductModalProps) {
           nextButton={confirmButtonText}
           handleNext={formik.submitForm}
           handleBack={onCloseModal}
-          disabledNext={!formik.dirty || !formik.isValid}
-          iconBeforeNext={iconBefore}
+          disabledNext={
+            !formik.dirty || !formik.isValid || editCreditApplication
+          }
+          iconBeforeNext={
+            editCreditApplication ? (
+              <Icon
+                icon={<MdOutlineInfo />}
+                appearance="primary"
+                size="16px"
+                cursorHover
+                onClick={handleInfo}
+              />
+            ) : (
+              iconBefore
+            )
+          }
           iconAfterNext={iconAfter}
           finalDivider={true}
         >
@@ -220,6 +247,18 @@ function EditProductModal(props: EditProductModalProps) {
               />
             </Stack>
           </ScrollableContainer>
+          {isModalOpen ? (
+            <InfoModal
+              onClose={handleInfoModalClose}
+              title={privilegeCrediboard.title}
+              subtitle={privilegeCrediboard.subtitle}
+              description={privilegeCrediboard.description}
+              nextButtonText={privilegeCrediboard.nextButtonText}
+              isMobile={isMobile}
+            />
+          ) : (
+            <></>
+          )}
         </BaseModal>
       )}
     </Formik>

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { FormikValues } from "formik";
 import {
   MdOutlineAdd,
+  MdOutlineInfo,
   MdOutlinePayments,
   MdOutlinePictureAsPdf,
   MdOutlineShare,
@@ -30,7 +31,9 @@ import {
 } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { dataCreditProspect } from "./config";
 import { StyledPrint } from "./styles";
@@ -39,6 +42,7 @@ import { CreditLimitModal } from "../modals/CreditLimitModal";
 import { IncomeModal } from "../modals/IncomeModal";
 import { EditProductModal } from "../modals/ProspectProductModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
+import InfoModal from "../modals/InfoModal";
 
 interface ICreditProspectProps {
   borrowersProspect: IProspect | undefined;
@@ -106,7 +110,9 @@ export function CreditProspect(props: ICreditProspectProps) {
       return newHistory;
     });
   };
-
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
   const currentModal = modalHistory[modalHistory.length - 1];
 
   const { id } = useParams();
@@ -160,7 +166,10 @@ export function CreditProspect(props: ICreditProspectProps) {
     interestRate: "",
     rateType: "",
   };
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
   const onChanges = (name: string, newValue: string) => {
     setForm((prevForm) => ({
       ...prevForm,
@@ -182,18 +191,19 @@ export function CreditProspect(props: ICreditProspectProps) {
   };
 
   const handlePdfGeneration = () => {
-    print()
-  }
+    print();
+  };
 
   return (
     <Stack direction="column" gap="24px">
       {!isMobile && (
         <StyledPrint>
-          <Stack gap="16px" justifyContent="end" alignItems="center">
+          <Stack gap="2px" justifyContent="end" alignItems="center">
             <Button
               type="button"
               appearance="primary"
               spacing="compact"
+              disabled={editCreditApplication}
               iconBefore={
                 <Icon
                   icon={<MdOutlineAdd />}
@@ -206,6 +216,15 @@ export function CreditProspect(props: ICreditProspectProps) {
             >
               {dataCreditProspect.addProduct}
             </Button>
+            {editCreditApplication && (
+              <Icon
+                icon={<MdOutlineInfo />}
+                appearance="primary"
+                size="16px"
+                cursorHover
+                onClick={handleInfo}
+              />
+            )}
             {prospectData?.creditProducts?.some(
               (product) =>
                 Array.isArray(product.extraordinaryInstallments) &&
@@ -239,7 +258,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                     size="24px"
                     disabled={!isPrint}
                     cursorHover
-                    onClick={()=> handlePdfGeneration()}
+                    onClick={() => handlePdfGeneration()}
                   />
                   <Icon
                     icon={<MdOutlineShare />}
@@ -362,7 +381,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           prospectData={prospectData ? [prospectData] : undefined}
           setDataProspect={setDataProspect}
           businessUnitPublicCode={businessUnitPublicCode}
-          creditRequestCode={creditRequestCode  || ""}
+          creditRequestCode={creditRequestCode || ""}
         />
       )}
       {currentModal === "extraPayments" && (
@@ -378,6 +397,16 @@ export function CreditProspect(props: ICreditProspectProps) {
       {showShareModal && (
         <ShareCreditModal
           handleClose={() => setShowShareModal(false)}
+          isMobile={isMobile}
+        />
+      )}
+      {isModalOpen && (
+        <InfoModal
+          onClose={() => setIsModalOpen(false)}
+          title={privilegeCrediboard.title}
+          subtitle={privilegeCrediboard.subtitle}
+          description={privilegeCrediboard.description}
+          nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />
       )}

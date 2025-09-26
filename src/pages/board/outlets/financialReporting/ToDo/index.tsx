@@ -23,7 +23,7 @@ import {
 import { getToDoByCreditRequestId } from "@services/creditRequest/query/getToDoByCreditRequestId";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
-
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { AppContext } from "@context/AppContext";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
@@ -43,6 +43,7 @@ import { getXAction } from "./util/utils";
 import { StyledHorizontalDivider, StyledTextField } from "../styles";
 import { errorMessages, errorObserver } from "../config";
 import { DecisionModal } from "./DecisionModal";
+
 
 interface ToDoProps {
   icon?: IICon;
@@ -68,7 +69,6 @@ function ToDo(props: ToDoProps) {
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
-  const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
 
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
@@ -311,17 +311,9 @@ function ToDo(props: ToDoProps) {
   const handleInfo = () => {
     setIsModalInfo(true);
   };
-
-  useEffect(() => {
-    setHasPermitSend(
-      staff.some(
-        (s) =>
-          s.role === taskRole?.substring(0, 20) &&
-          s.userId === eventData?.user?.staff?.staffId
-      )
-    );
-  }, [staff, eventData, taskData, taskRole]);
-
+  const { disabledButton: reassignCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("reassignCreditApplication"),
+  });
   return (
     <>
       <Fieldset
@@ -398,11 +390,11 @@ function ToDo(props: ToDoProps) {
                     type="submit"
                     fullwidth={isMobile}
                     spacing="compact"
-                    disabled={false}
+                    disabled={reassignCreditApplication}
                   >
                     {button?.label || txtLabels.buttonText}
                   </Button>
-                  {!hasPermitSend && (
+                  {reassignCreditApplication ? (
                     <Icon
                       icon={<MdOutlineInfo />}
                       appearance="primary"
@@ -410,6 +402,8 @@ function ToDo(props: ToDoProps) {
                       cursorHover
                       onClick={handleInfo}
                     />
+                  ) : (
+                    <></>
                   )}
                 </Stack>
               </Stack>
@@ -507,8 +501,19 @@ function ToDo(props: ToDoProps) {
                     size="24px"
                     onClick={handleToggleStaffModal}
                     cursorHover
-                    disabled={staff === null}
+                    disabled={staff === null || reassignCreditApplication}
                   />
+                  {reassignCreditApplication ? (
+                    <Icon
+                      icon={<MdOutlineInfo />}
+                      appearance="primary"
+                      size="16px"
+                      cursorHover
+                      onClick={handleInfo}
+                    />
+                  ) : (
+                    <></>
+                  )}
                 </Stack>
               )}
             </Stack>

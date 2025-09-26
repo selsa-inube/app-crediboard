@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { MdAdd, MdOutlineMoreVert } from "react-icons/md";
+import { MdAdd, MdOutlineInfo, MdOutlineMoreVert } from "react-icons/md";
 import { Stack, Text, useMediaQuery, Button, Icon } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { MenuProspect } from "@components/navigation/MenuProspect";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
 
 import {
   StyledContainerFieldset,
@@ -95,7 +97,16 @@ export const Fieldset = (props: IFieldsetProps) => {
       visible: true,
     },
   ];
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
   return (
     <Stack
       direction="column"
@@ -146,6 +157,7 @@ export const Fieldset = (props: IFieldsetProps) => {
                   spacing="compact"
                   onClick={activeButton.onClick}
                   variant="outlined"
+                  disabled={editCreditApplication}
                 >
                   {activeButton.title}
                 </Button>
@@ -154,10 +166,36 @@ export const Fieldset = (props: IFieldsetProps) => {
                   spacing="compact"
                   onClick={activeButton.onClickSistemValidation}
                   variant="outlined"
+                  disabled={editCreditApplication}
                 >
                   {activeButton.titleSistemValidation}
                 </Button>
+                <Stack alignItems="center">
+                  {editCreditApplication ? (
+                    <Icon
+                      icon={<MdOutlineInfo />}
+                      appearance="primary"
+                      size="16px"
+                      cursorHover
+                      onClick={handleInfo}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </Stack>
               </StyledPrint>
+            )}
+            {isModalOpen ? (
+              <InfoModal
+                onClose={handleInfoModalClose}
+                title="Información"
+                subtitle="Funcionalidad no disponible"
+                description="No tienes permisos para editar la solicitud de crédito en este momento."
+                nextButtonText="Entendido"
+                isMobile={isMobile}
+              />
+            ) : (
+              <></>
             )}
           </Stack>
         )}

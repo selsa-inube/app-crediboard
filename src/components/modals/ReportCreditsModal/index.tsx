@@ -1,12 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
-import { MdAdd, MdCached } from "react-icons/md";
+import { MdAdd, MdCached, MdOutlineInfo } from "react-icons/md";
 import { FormikValues } from "formik";
-import { Stack, useMediaQuery, Button, Select, Text } from "@inubekit/inubekit";
+import {
+  Stack,
+  useMediaQuery,
+  Button,
+  Select,
+  Text,
+  Icon,
+} from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { TableFinancialObligations } from "@pages/prospect/components/TableObligationsFinancial";
 import { IProspect, IBorrower } from "@services/prospect/types";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { ListModal } from "../ListModal";
 import { FinancialObligationModal } from "../financialObligationModal";
@@ -137,7 +147,16 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   const handleSaveNewObligation = (obligation: IFinancialObligation) => {
     setNewObligation(obligation);
   };
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
   return (
     <BaseModal
       title={dataReport.title}
@@ -190,6 +209,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                   fullwidth={isMobile}
                   variant="outlined"
                   spacing="wide"
+                  disabled={editCreditApplication}
                   onClick={() => setIsOpenModal(true)}
                 />
               </Stack>
@@ -198,9 +218,21 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                   children={dataReport.addObligations}
                   iconBefore={<MdAdd />}
                   fullwidth={isMobile}
+                  disabled={editCreditApplication}
                   onClick={() => setOpenModal(true)}
                 />
               </Stack>
+              {editCreditApplication ? (
+                <Icon
+                  icon={<MdOutlineInfo />}
+                  appearance="primary"
+                  size="16px"
+                  cursorHover
+                  onClick={handleInfo}
+                />
+              ) : (
+                <></>
+              )}
             </Stack>
           </Stack>
         )}
@@ -238,6 +270,18 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           creditRequestCode={creditRequestCode}
         />
       </Stack>
+      {isModalOpen ? (
+        <InfoModal
+          onClose={handleInfoModalClose}
+          title={privilegeCrediboard.title}
+          subtitle={privilegeCrediboard.subtitle}
+          description={privilegeCrediboard.description}
+          nextButtonText={privilegeCrediboard.nextButtonText}
+          isMobile={isMobile}
+        />
+      ) : (
+        <></>
+      )}
     </BaseModal>
   );
 }

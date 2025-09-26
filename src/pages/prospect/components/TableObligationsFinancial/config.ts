@@ -80,6 +80,5 @@ export const errorMessages = {
   update: {
     title: "Error al actualizar.",
     description: "Error al actualizar la obligación financiera.",
-
-  }
+  },
 };
