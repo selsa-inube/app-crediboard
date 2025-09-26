@@ -13,6 +13,8 @@ import { getStaff } from "@services/staff/staffs";
 import { decrypt } from "@utils/encrypt/encrypt";
 import { getSearchUseCaseForStaff } from "@services/staffs/SearchUseCaseForStaff";
 import { IBusinessManagers } from "@services/businessManager/types";
+import { getSearchOptionForStaff } from "@services/staff/staffs/searchOptionForStaff";
+import { IOptionStaff } from "@services/staff/staffs/searchOptionForStaff/types";
 
 interface IBusinessUnits {
   businessUnitPublicCode: string;
@@ -22,12 +24,12 @@ interface IBusinessUnits {
 }
 
 function useAppContext() {
-  const { user } = useIAuth();
+  const { user, isAuthenticated, isLoading } = useIAuth();
+  const [hasUserLoaded, setHasUserLoaded] = useState(false);
   const [portalData, setPortalData] = useState<IStaffPortalByBusinessManager[]>(
     []
   );
   const [staffUseCases, setStaffUseCases] = useState<string[]>([]);
-
   const [businessManagers, setBusinessManagers] = useState<IBusinessManagers>(
     {} as IBusinessManagers
   );
@@ -40,6 +42,7 @@ function useAppContext() {
     const savedBusinessUnits = localStorage.getItem("businessUnitsToTheStaff");
     return savedBusinessUnits ? JSON.parse(savedBusinessUnits) : [];
   });
+  const [optionStaffData, setOptionStaffData] = useState<IOptionStaff[]>([]);
 
   const portalId = localStorage.getItem("portalCode");
   let portalCode = "";
@@ -54,35 +57,44 @@ function useAppContext() {
   } catch (error) {
     console.error("Error parsing businessUnitSigla: ", error);
   }
-  useEffect(() => {
-    if (user) {
-      setEventData((prev) => ({
-        ...prev,
-        user: {
-          ...prev.user,
-          userAccount: user.username || "",
-          userName: user.nickname || "",
-          identificationDocumentNumber: user.id || "",
-        },
-      }));
-    }
-  }, [user]);
-  useEffect(() => {
-    const fetchStaffData = async () => {
-      try {
-        const userIdentifier = user?.username;
-        if (!userIdentifier) return;
-        const staffData = await getStaff(userIdentifier);
-        if (!staffData.length) return;
-      } catch (error) {
-        console.error("Error fetching staff data:", error);
-      }
-    };
 
-    if (user?.username) {
-      fetchStaffData();
+  useEffect(() => {
+    if (isLoading) return;
+
+    const isValidAuthUser =
+      user?.id &&
+      user?.username &&
+      user.id !== "id" &&
+      user.username !== "username";
+
+    if (user?.id === "id" && user?.username === "username") {
+      const hasAlreadyRefreshed = localStorage.getItem(
+        "hasRefreshedForDefaultUser"
+      );
+
+      if (!hasAlreadyRefreshed) {
+        localStorage.setItem("hasRefreshedForDefaultUser", "true");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 100);
+        return;
+      }
+    } else {
+      localStorage.removeItem("hasRefreshedForDefaultUser");
     }
-  }, [user?.username]);
+
+    if (isValidAuthUser) {
+      setHasUserLoaded(true);
+    } else if (
+      user?.id === "id" &&
+      user?.username === "username" &&
+      !hasUserLoaded
+    ) {
+      setHasUserLoaded(false);
+    } else if (!user && !hasUserLoaded) {
+      setHasUserLoaded(false);
+    }
+  }, [user, hasUserLoaded, isLoading]);
 
   const [eventData, setEventData] = useState<ICrediboardData>({
     portal: {
@@ -106,6 +118,7 @@ function useAppContext() {
     user: {
       userAccount: user?.username || "",
       userName: user?.nickname || "",
+      identificationDocumentNumber: user?.id || "",
       staff: {
         biologicalSex: "",
         birthDay: "",
@@ -132,6 +145,69 @@ function useAppContext() {
     },
     enumRole: [],
   });
+
+  useEffect(() => {
+    if (hasUserLoaded && user) {
+      setEventData((prev) => ({
+        ...prev,
+        user: {
+          ...prev.user,
+          userAccount: user.username || "",
+          userName: user.nickname || "",
+          identificationDocumentNumber: user.id || "",
+        },
+      }));
+    }
+  }, [user, hasUserLoaded]);
+  useEffect(() => {
+    const fetchStaffData = async () => {
+      try {
+        const userIdentifier = user?.id;
+        if (
+          !userIdentifier ||
+          isLoading ||
+          !isAuthenticated ||
+          !hasUserLoaded
+        ) {
+          return;
+        }
+
+        const staffData = await getStaff(userIdentifier);
+        if (!staffData.length) return;
+
+        setEventData((prev) => ({
+          ...prev,
+          user: {
+            ...prev.user,
+            staff: {
+              ...prev.user.staff,
+              biologicalSex: staffData[0].biologicalSex,
+              birthDay: staffData[0].birthDay,
+              businessManagerCode: staffData[0].businessManagerCode,
+              identificationDocumentNumber:
+                staffData[0].identificationDocumentNumber,
+              identificationTypeNaturalPerson:
+                staffData[0].identificationTypeNaturalPerson,
+              missionName: staffData[0].missionName,
+              principalEmail: staffData[0].principalEmail,
+              principalPhone: staffData[0].principalPhone,
+              staffByBusinessUnitAndRole:
+                staffData[0].staffByBusinessUnitAndRole,
+              staffId: staffData[0].staffId,
+              staffName: staffData[0].staffName,
+              userAccount: staffData[0].userAccount,
+            },
+          },
+        }));
+      } catch (error) {
+        console.error("Error fetching staff data:", error);
+      }
+    };
+
+    fetchStaffData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.username, isLoading, isAuthenticated, hasUserLoaded]);
+
   useEffect(() => {
     const identificationNumber =
       eventData?.user?.identificationDocumentNumber || "";
@@ -162,15 +238,55 @@ function useAppContext() {
     eventData?.user?.identificationDocumentNumber,
   ]);
 
+  const userIdentifier = eventData?.user?.identificationDocumentNumber;
+
   useEffect(() => {
+    const fetchOptionStaff = async () => {
+      try {
+        if (
+          !eventData?.portal?.publicCode ||
+          !eventData?.businessUnit?.businessUnitPublicCode ||
+          !user?.username ||
+          isLoading ||
+          !isAuthenticated ||
+          !hasUserLoaded
+        ) {
+          return;
+        }
+
+        const result = await getSearchOptionForStaff(
+          eventData.portal.publicCode,
+          eventData.businessUnit.businessUnitPublicCode,
+          userIdentifier || ""
+        );
+        setOptionStaffData(result);
+      } catch (error) {
+        console.error("Error fetching option staff:", error);
+      }
+    };
+
+    fetchOptionStaff();
+  }, [
+    eventData?.portal?.publicCode,
+    eventData?.businessUnit?.businessUnitPublicCode,
+    user?.username,
+    isLoading,
+    isAuthenticated,
+    userIdentifier,
+    hasUserLoaded,
+  ]);
+
+  useEffect(() => {
+    if (!hasUserLoaded || !portalCode) return;
+
     validateConsultation(portalCode).then((data) => {
       setPortalData(data);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [portalCode, hasUserLoaded]);
 
   useEffect(() => {
-    if (!portalCode) return;
+    if (!portalCode || !hasUserLoaded) return;
+
     const portalDataFiltered = portalData.filter(
       (data) => data.staffPortalId === portalCode
     );
@@ -183,10 +299,10 @@ function useAppContext() {
         setBusinessManagers(data);
       });
     }
-  }, [portalData, portalCode]);
+  }, [portalData, portalCode, hasUserLoaded]);
 
   useEffect(() => {
-    if (!businessManagers) return;
+    if (!businessManagers || !hasUserLoaded) return;
 
     const portalDataFiltered = portalData.find(
       (data) => data.staffPortalId === portalCode
@@ -208,7 +324,7 @@ function useAppContext() {
         urlLogo: businessManagers.urlLogo || "",
       },
     }));
-  }, [businessManagers, portalData, portalCode]);
+  }, [businessManagers, portalData, portalCode, hasUserLoaded]);
 
   useEffect(() => {
     localStorage.setItem("businessUnitSigla", businessUnitSigla);
@@ -268,17 +384,23 @@ function useAppContext() {
       eventData,
       businessUnitSigla,
       businessUnitsToTheStaff,
+      optionStaffData,
+      isLoading,
+      isAuthenticated,
+      hasUserLoaded,
       setEventData,
       setBusinessUnitSigla,
       setBusinessUnitsToTheStaff,
+      setOptionStaffData,
     }),
     [
       eventData,
       businessUnitSigla,
       businessUnitsToTheStaff,
-      setEventData,
-      setBusinessUnitSigla,
-      setBusinessUnitsToTheStaff,
+      optionStaffData,
+      isLoading,
+      isAuthenticated,
+      hasUserLoaded,
     ]
   );
 
