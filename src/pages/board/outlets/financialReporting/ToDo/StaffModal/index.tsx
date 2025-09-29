@@ -70,6 +70,7 @@ export function StaffModal(props: StaffModalProps) {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const handleCommercialManagerChange = (
     name: string,
     value: string,
@@ -100,12 +101,12 @@ export function StaffModal(props: StaffModalProps) {
       try {
         const [accountManagers, analysts] = await Promise.all([
           getCommercialManagerAndAnalyst(
-            "SistemasEnlinea",
+            businessManagerCode,
             "Selsa",
             businessUnitPublicCode
           ),
           getCommercialManagerAndAnalyst(
-            "SistemasEnlinea",
+            businessManagerCode,
             "Selsa",
             businessUnitPublicCode
           ),
