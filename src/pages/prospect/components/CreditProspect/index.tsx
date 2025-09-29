@@ -31,6 +31,8 @@ import {
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
+import { BaseModal } from "@components/modals/baseModal";
+import { CardGray } from "@components/cards/CardGray";
 
 import { dataCreditProspect } from "./config";
 import { StyledPrint } from "./styles";
@@ -162,10 +164,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   };
 
   const onChanges = (name: string, newValue: string) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: newValue,
-    }));
+    setForm((prevForm) => ({ ...prevForm, [name]: newValue }));
   };
 
   const handleConfirm = async (values: FormikValues) => {
@@ -364,7 +363,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           prospectData={prospectData ? [prospectData] : undefined}
           setDataProspect={setDataProspect}
           businessUnitPublicCode={businessUnitPublicCode}
-          creditRequestCode={creditRequestCode  || ""}
+          creditRequestCode={creditRequestCode || ""}
         />
       )}
       {currentModal === "extraPayments" && (
@@ -382,6 +381,23 @@ export function CreditProspect(props: ICreditProspectProps) {
           handleClose={() => setShowShareModal(false)}
           isMobile={isMobile}
         />
+      )}
+      {currentModal === "observationsModal" && (
+        <BaseModal
+          width={isMobile ? "300px" : "500px"}
+          title={dataCreditProspect.observations}
+          handleClose={handleCloseModal}
+          handleNext={handleCloseModal}
+          nextButton={dataCreditProspect.close}
+        >
+          <Stack direction="column" gap="16px">
+            <CardGray
+              apparencePlaceHolder="gray"
+              label={dataCreditProspect.approvalObservations}
+              placeHolder={dataProspect?.[0]?.clientManagerObservation}
+            />
+          </Stack>
+        </BaseModal>
       )}
     </Stack>
   );
