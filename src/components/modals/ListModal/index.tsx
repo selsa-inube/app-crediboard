@@ -26,6 +26,7 @@ import { truncateTextToMaxLength } from "@utils/formatData/text";
 import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
 import { optionFlags } from "@pages/board/outlets/financialReporting/config";
 
+import { ErrorModal } from "../ErrorModal";
 import { DocumentViewer } from "../DocumentViewer";
 import {
   StyledAttachContainer,
@@ -112,6 +113,9 @@ export const ListModal = (props: IListModalProps) => {
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
+
   interface IListdataProps {
     data: { id: string; name: string }[] | null | undefined;
     onDelete?: (id: string) => void;
@@ -295,7 +299,8 @@ export const ListModal = (props: IListModalProps) => {
       setFileName(name);
       setOpen(true);
     } catch (error) {
-      console.error("Error obteniendo el documento:", error);
+      setShowErrorModal(true);
+      setMessageError(listModalData.errorDocument);
     }
   };
 
@@ -498,6 +503,15 @@ export const ListModal = (props: IListModalProps) => {
             selectedFile={selectedFile}
             handleClose={() => setOpen(false)}
             title={fileName || ""}
+          />
+        )}
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
+            message={messageError}
           />
         )}
       </StyledModal>

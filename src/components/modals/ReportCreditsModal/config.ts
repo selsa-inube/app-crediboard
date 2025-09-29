@@ -45,3 +45,7 @@ export const configSelect = {
   label: "Deudor",
   placeholder: "Seleccione una opcion",
 }
+
+export const restoreData = {
+  justification: "Restore financial obligations",
+}

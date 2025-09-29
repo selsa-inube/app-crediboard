@@ -9,4 +9,5 @@ export const listModalData = {
   exceedSize: "El archivo supera el tamaño máximo permitido de 2.5MB.",
   onlypdf:
     "Solo se permiten archivos PDF o imágenes (JPG, JPEG, PNG) de máximo 2.5MB.",
+  errorDocument: "No se pudo obtener el documento. Intenta de nuevo.",
 };

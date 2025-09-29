@@ -42,6 +42,7 @@ export const dataReport = {
   delete: "Eliminar",
   content: "¿Realmente desea eliminar esta obligación?",
   cancel: "Cancelar",
+  errorIncome: "Error al restablecer las fuentes de ingresos",
 };
 export function convertObligationsToProperties(
   obligations: {
@@ -80,6 +81,5 @@ export const errorMessages = {
   update: {
     title: "Error al actualizar.",
     description: "Error al actualizar la obligación financiera.",
-
-  }
+  },
 };
