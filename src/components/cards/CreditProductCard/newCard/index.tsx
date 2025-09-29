@@ -1,6 +1,7 @@
 import { MdOutlineAdd } from "react-icons/md";
 import { Stack, Icon, Text, useMediaQuery } from "@inubekit/inubekit";
 import { useState } from "react";
+
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";

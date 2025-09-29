@@ -188,10 +188,10 @@ export const Fieldset = (props: IFieldsetProps) => {
             {isModalOpen ? (
               <InfoModal
                 onClose={handleInfoModalClose}
-                title="Información"
-                subtitle="Funcionalidad no disponible"
-                description="No tienes permisos para editar la solicitud de crédito en este momento."
-                nextButtonText="Entendido"
+                title={titlesModal.title}
+                subtitle={titlesModal.subTitle}
+                description={titlesModal.description}
+                nextButtonText={titlesModal.textButtonNext}
                 isMobile={isMobile}
               />
             ) : (
