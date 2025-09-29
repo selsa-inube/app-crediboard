@@ -35,13 +35,13 @@ export const dataReport = {
 };
 
 export const defaultOptionsSelect = {
-  id:"0", 
-  label: "No hay deudores", 
-  value: "0"
+  id: "0",
+  label: "No hay deudores",
+  value: "0",
 };
 
 export const configSelect = {
   name: "deudor",
   label: "Deudor",
   placeholder: "Seleccione una opcion",
-}
+};

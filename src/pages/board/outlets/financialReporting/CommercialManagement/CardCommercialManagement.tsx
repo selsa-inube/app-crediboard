@@ -5,7 +5,6 @@ import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
 import { CardValues } from "@components/cards/cardValues";
 import { DeleteModal } from "@components/modals/DeleteModal";
-
 import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
 import { getSearchProspectSummaryById } from "@services/creditRequest/query/ProspectSummaryById";
 import { AppContext } from "@context/AppContext";
@@ -20,6 +19,9 @@ import { getAllDeductibleExpensesById } from "@services/creditRequest/query/dedu
 import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
 import { dataTableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment/config";
 import { ConsolidatedCredits } from "@pages/prospect/components/modals/ConsolidatedCreditModal";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { StyledCardsCredit, StyledPrint } from "./styles";
 import { SummaryProspectCredit, tittleOptions } from "./config/config";
@@ -60,7 +62,16 @@ export const CardCommercialManagement = (
     { expenseName: string; expenseValue: number }[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
   useEffect(() => {
     if (prospectData?.creditProducts) {
       setProspectProducts(prospectData?.creditProducts);
@@ -157,11 +168,19 @@ export const CardCommercialManagement = (
                 entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
               }
               schedule={entry.schedule as Schedule}
-              onEdit={() => {
-                setSelectedProduct(entry);
-                setModalHistory((prev) => [...prev, "editProductModal"]);
-              }}
-              onDelete={() => handleDeleteClick(entry.creditProductCode)}
+              onEdit={
+                editCreditApplication
+                  ? handleInfo
+                  : () => {
+                      setSelectedProduct(entry);
+                      setModalHistory((prev) => [...prev, "editProductModal"]);
+                    }
+              }
+              onDelete={
+                editCreditApplication
+                  ? handleInfo
+                  : () => handleDeleteClick(entry.creditProductCode)
+              }
             />
           ))}
           <StyledPrint>
@@ -230,6 +249,16 @@ export const CardCommercialManagement = (
           handleClose={() => setDeductibleExpensesModal(false)}
           initialValues={deductibleExpenses}
           loading={isLoading}
+          isMobile={isMobile}
+        />
+      )}
+      {isModalOpen && (
+        <InfoModal
+          onClose={handleInfoModalClose}
+          title={privilegeCrediboard.title}
+          subtitle={privilegeCrediboard.subtitle}
+          description={privilegeCrediboard.description}
+          nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />
       )}

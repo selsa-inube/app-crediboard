@@ -1,7 +1,6 @@
-import { MdOutlineAdd, MdOutlineInfo } from "react-icons/md";
-import { useState } from "react";
+import { MdOutlineAdd } from "react-icons/md";
 import { Stack, Icon, Text, useMediaQuery } from "@inubekit/inubekit";
-
+import { useState } from "react";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
@@ -12,26 +11,24 @@ import { StyledCreditProductCard } from "../styles";
 interface INewCreditProductCardProps {
   onClick: () => void;
 }
-
 export function NewCreditProductCard(props: INewCreditProductCardProps) {
   const { onClick } = props;
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width:880px)");
-  const handleInfo = () => {
-    setIsModalOpen(true);
-  };
   const handleInfoModalClose = () => {
     setIsModalOpen(false);
   };
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+  const isMobile = useMediaQuery("(max-width:880px)");
   return (
     <Stack gap="6px">
       <StyledCreditProductCard
-        onClick={onClick}
+        onClick={editCreditApplication ? handleInfo : onClick}
         $new={true}
-        $disabled={editCreditApplication}
       >
         <Stack direction="column" alignItems="center" margin="auto">
           <Icon icon={<MdOutlineAdd />} appearance="gray" size="45px" />
@@ -40,17 +37,6 @@ export function NewCreditProductCard(props: INewCreditProductCardProps) {
           </Text>
         </Stack>
       </StyledCreditProductCard>
-      <Stack alignItems="end">
-        {editCreditApplication && (
-          <Icon
-            icon={<MdOutlineInfo />}
-            appearance="primary"
-            size="16px"
-            cursorHover
-            onClick={handleInfo}
-          />
-        )}
-      </Stack>
       {isModalOpen && (
         <InfoModal
           onClose={handleInfoModalClose}

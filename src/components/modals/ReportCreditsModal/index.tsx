@@ -202,7 +202,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               alignItems="center"
               gap="16px"
             >
-              <Stack>
+              <Stack gap="2px">
                 <Button
                   children="Restablecer"
                   iconBefore={<MdCached />}
@@ -212,27 +212,44 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                   disabled={editCreditApplication}
                   onClick={() => setIsOpenModal(true)}
                 />
+                <Stack alignItems="center">
+                  {editCreditApplication ? (
+                    <Icon
+                      icon={<MdOutlineInfo />}
+                      appearance="primary"
+                      size="16px"
+                      cursorHover
+                      onClick={handleInfo}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </Stack>
               </Stack>
-              <Stack gap="16px">
-                <Button
-                  children={dataReport.addObligations}
-                  iconBefore={<MdAdd />}
-                  fullwidth={isMobile}
-                  disabled={editCreditApplication}
-                  onClick={() => setOpenModal(true)}
-                />
+              <Stack gap="2px">
+                <Stack gap="16px">
+                  <Button
+                    children={dataReport.addObligations}
+                    iconBefore={<MdAdd />}
+                    fullwidth={isMobile}
+                    disabled={editCreditApplication}
+                    onClick={() => setOpenModal(true)}
+                  />
+                </Stack>
+                <Stack alignItems="center">
+                  {editCreditApplication ? (
+                    <Icon
+                      icon={<MdOutlineInfo />}
+                      appearance="primary"
+                      size="16px"
+                      cursorHover
+                      onClick={handleInfo}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </Stack>
               </Stack>
-              {editCreditApplication ? (
-                <Icon
-                  icon={<MdOutlineInfo />}
-                  appearance="primary"
-                  size="16px"
-                  cursorHover
-                  onClick={handleInfo}
-                />
-              ) : (
-                <></>
-              )}
             </Stack>
           </Stack>
         )}

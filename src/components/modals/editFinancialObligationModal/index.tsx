@@ -1,11 +1,7 @@
 import { Formik, FormikValues } from "formik";
 import * as Yup from "yup";
-import { MdOutlineAttachMoney, MdOutlineInfo } from "react-icons/md";
-import { useState } from "react";
+import { MdOutlineAttachMoney } from "react-icons/md";
 
-import InfoModal from "@pages/prospect/components/modals/InfoModal";
-import { privilegeCrediboard } from "@config/privilege";
-import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { Icon, Grid, useMediaQuery, Textfield } from "@inubekit/inubekit";
 import { BaseModal } from "@components/modals/baseModal";
 import {
@@ -34,7 +30,6 @@ function EditFinancialObligationModal(
     title,
     confirmButtonText,
     initialValues,
-    iconBefore,
     iconAfter,
   } = props;
 
@@ -48,17 +43,7 @@ function EditFinancialObligationModal(
   const handleFormSubmit = async (values: FormikValues) => {
     onConfirm(values);
   };
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleInfo = () => {
-    setIsModalOpen(true);
-  };
 
-  const { disabledButton: editCreditApplication } = useValidateUseCase({
-    useCase: getUseCaseValue("editCreditApplication"),
-  });
-  const handleInfoModalClose = () => {
-    setIsModalOpen(false);
-  };
   return (
     <Formik
       initialValues={initialValues}
@@ -76,23 +61,8 @@ function EditFinancialObligationModal(
           nextButton={confirmButtonText}
           handleBack={onCloseModal}
           handleNext={formik.submitForm}
-          disabledNext={
-            !formik.dirty || !formik.isValid || editCreditApplication
-          }
+          disabledNext={!formik.dirty || !formik.isValid}
           iconAfterNext={iconAfter}
-          iconBeforeNext={
-            editCreditApplication ? (
-              <Icon
-                icon={<MdOutlineInfo />}
-                appearance="primary"
-                size="16px"
-                cursorHover
-                onClick={handleInfo}
-              />
-            ) : (
-              iconBefore
-            )
-          }
           finalDivider={true}
           width={isMobile ? "300px" : "410px"}
           height={isMobile ? "298px" : "auto"}
@@ -140,18 +110,6 @@ function EditFinancialObligationModal(
               fullwidth
             />
           </Grid>
-          {isModalOpen ? (
-            <InfoModal
-              onClose={handleInfoModalClose}
-              title={privilegeCrediboard.title}
-              subtitle={privilegeCrediboard.subtitle}
-              description={privilegeCrediboard.description}
-              nextButtonText={privilegeCrediboard.nextButtonText}
-              isMobile={isMobile}
-            />
-          ) : (
-            <></>
-          )}
         </BaseModal>
       )}
     </Formik>

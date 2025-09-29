@@ -44,7 +44,6 @@ import { StyledHorizontalDivider, StyledTextField } from "../styles";
 import { errorMessages, errorObserver } from "../config";
 import { DecisionModal } from "./DecisionModal";
 
-
 interface ToDoProps {
   icon?: IICon;
   button?: IButton;
@@ -70,7 +69,7 @@ function ToDo(props: ToDoProps) {
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
-
+  const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
     analyst: "",
@@ -310,6 +309,15 @@ function ToDo(props: ToDoProps) {
   const { disabledButton: reassignCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("reassignCreditApplication"),
   });
+  useEffect(() => {
+    setHasPermitSend(
+      staff.some(
+        (s) =>
+          s.role === taskRole?.substring(0, 20) &&
+          s.userId === eventData?.user?.staff?.staffId
+      )
+    );
+  }, [staff, eventData, taskData, taskRole]);
   return (
     <>
       <Fieldset
@@ -386,11 +394,11 @@ function ToDo(props: ToDoProps) {
                     type="submit"
                     fullwidth={isMobile}
                     spacing="compact"
-                    disabled={reassignCreditApplication}
+                    disabled={false}
                   >
                     {button?.label || txtLabels.buttonText}
                   </Button>
-                  {reassignCreditApplication ? (
+                  {!hasPermitSend && (
                     <Icon
                       icon={<MdOutlineInfo />}
                       appearance="primary"
@@ -398,8 +406,6 @@ function ToDo(props: ToDoProps) {
                       cursorHover
                       onClick={handleInfo}
                     />
-                  ) : (
-                    <></>
                   )}
                 </Stack>
               </Stack>
@@ -495,21 +501,14 @@ function ToDo(props: ToDoProps) {
                     icon={icon.icon}
                     appearance="primary"
                     size="24px"
-                    onClick={handleToggleStaffModal}
+                    onClick={
+                      reassignCreditApplication
+                        ? handleInfo
+                        : handleToggleStaffModal
+                    }
                     cursorHover
-                    disabled={staff === null || reassignCreditApplication}
+                    disabled={staff === null}
                   />
-                  {reassignCreditApplication ? (
-                    <Icon
-                      icon={<MdOutlineInfo />}
-                      appearance="primary"
-                      size="16px"
-                      cursorHover
-                      onClick={handleInfo}
-                    />
-                  ) : (
-                    <></>
-                  )}
                 </Stack>
               )}
             </Stack>
