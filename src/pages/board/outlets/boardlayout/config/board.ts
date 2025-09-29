@@ -66,7 +66,7 @@ const dataInformationModal = {
   tilte: "Información",
   button: "Entendido",
   description:
-    "No cuenta con los privilegios requeridos para quitar el ancla de esta tarjeta.",
+    "No cuentas con los privilegios requeridos para quitar el ancla de esta tarjeta.",
 };
 
 const dataInformationSearchModal = {
