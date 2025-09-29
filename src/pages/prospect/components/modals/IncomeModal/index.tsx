@@ -10,13 +10,23 @@ import { dataIncomeModal } from "./config";
 interface IncomeModalProps {
   initialValues?: IIncomeSources;
   disabled?: boolean;
+  businessUnitPublicCode?: string;
+  creditRequestCode?: string;
   handleClose: () => void;
   onSubmit: (data: IIncomeSources) => void;
   openModal?: (state: boolean) => void;
 }
 
 export function IncomeModal(props: IncomeModalProps) {
-  const { disabled, initialValues, handleClose, openModal, onSubmit } = props;
+  const {
+    disabled,
+    initialValues,
+    businessUnitPublicCode,
+    creditRequestCode,
+    handleClose,
+    openModal,
+    onSubmit,
+  } = props;
 
   const [formData, setFormData] = useState<IIncomeSources | undefined>(
     initialValues
@@ -59,6 +69,8 @@ export function IncomeModal(props: IncomeModalProps) {
         data={initialValues}
         showEdit={false}
         onDataChange={handleDataChange}
+        businessUnitPublicCode={businessUnitPublicCode}
+        creditRequestCode={creditRequestCode}
       />
     </BaseModal>
   );
