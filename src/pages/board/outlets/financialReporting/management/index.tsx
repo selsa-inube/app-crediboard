@@ -1,5 +1,10 @@
 import { useState, useEffect, useCallback, useRef, useContext } from "react";
-import { MdOutlineSend, MdAttachFile, MdInfoOutline } from "react-icons/md";
+import {
+  MdOutlineSend,
+  MdAttachFile,
+  MdInfoOutline,
+  MdOutlineInfo,
+} from "react-icons/md";
 import { Stack, Icon, Textfield } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
@@ -13,6 +18,9 @@ import { registerNewsToCreditRequest } from "@services/creditRequest/command/reg
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { AppContext } from "@context/AppContext";
 import { ListModal } from "@components/modals/ListModal";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { ChatContent, SkeletonContainer, SkeletonLine } from "./styles";
 import {
@@ -189,7 +197,16 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         }}
       />
     ));
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
   return (
     <Fieldset
       title={errorMessages.Management.titleCard}
@@ -224,6 +241,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   size="24px"
                   icon={<MdAttachFile />}
                   onClick={() => setShowAttachments(true)}
+                  disabled={editCreditApplication}
                 />
                 <Textfield
                   id="text"
@@ -231,6 +249,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   fullwidth
                   value={newMessage}
                   onChange={handleInputChange}
+                  disabled={editCreditApplication}
                 />
                 <Icon
                   appearance="primary"
@@ -238,7 +257,19 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   size="24px"
                   icon={<MdOutlineSend />}
                   onClick={handleFormSubmit}
+                  disabled={editCreditApplication}
                 />
+                {editCreditApplication ? (
+                  <Icon
+                    icon={<MdOutlineInfo />}
+                    appearance="primary"
+                    size="16px"
+                    cursorHover
+                    onClick={handleInfo}
+                  />
+                ) : (
+                  <></>
+                )}
               </Stack>
             </form>
           </Stack>
@@ -259,6 +290,18 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
             />
+          )}
+          {isModalOpen ? (
+            <InfoModal
+              onClose={handleInfoModalClose}
+              title={privilegeCrediboard.title}
+              subtitle={privilegeCrediboard.subtitle}
+              description={privilegeCrediboard.description}
+              nextButtonText={privilegeCrediboard.nextButtonText}
+              isMobile={isMobile}
+            />
+          ) : (
+            <></>
           )}
         </>
       )}

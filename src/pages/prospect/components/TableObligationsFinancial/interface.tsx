@@ -22,9 +22,12 @@ import { NewPrice } from "@components/modals/ReportCreditsModal/components/newPr
 import { BaseModal } from "@components/modals/baseModal";
 import { currencyFormat } from "@utils/formatData/currency";
 import { DeleteModal } from "@components/modals/DeleteModal";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { usePagination } from "./utils";
-import { dataReport, ROWS_PER_PAGE} from "./config";
+import { dataReport, ROWS_PER_PAGE } from "./config";
+import InfoModal from "../modals/InfoModal";
 
 export interface ITableFinancialObligationsProps {
   type?: string;
@@ -55,10 +58,10 @@ interface UIProps {
   ) => Promise<void>;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
-  setGotEndPage: React.Dispatch<React.SetStateAction<boolean>>
+  setGotEndPage: React.Dispatch<React.SetStateAction<boolean>>;
   gotEndPage: boolean;
   showDeleteModal: boolean;
-  setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>
+  setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const TableFinancialObligationsUI = ({
@@ -78,11 +81,22 @@ export const TableFinancialObligationsUI = ({
   setGotEndPage,
   gotEndPage,
   showDeleteModal,
-  setShowDeleteModal
+  setShowDeleteModal,
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
-  const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(null);
-
+  const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
   const {
     handleStartPage,
     handlePrevPage,
@@ -91,7 +105,7 @@ export const TableFinancialObligationsUI = ({
     startIndex,
     endIndex,
     paginatedData,
-    totalPages
+    totalPages,
   } = usePagination(dataInformation, setCurrentPage, currentPage);
 
   if (gotEndPage) {
@@ -155,7 +169,12 @@ export const TableFinancialObligationsUI = ({
 
   const renderNoDataRow = () => (
     <Tr>
-      <Td colSpan={visibleHeaders.length} align="center" type="custom" height={245}>
+      <Td
+        colSpan={visibleHeaders.length}
+        align="center"
+        type="custom"
+        height={245}
+      >
         <Text size="large" type="label" appearance="gray" textAlign="center">
           {dataReport.noData}
         </Text>
@@ -208,8 +227,14 @@ export const TableFinancialObligationsUI = ({
                       icon={<MdOutlineEdit />}
                       appearance="dark"
                       size="16px"
-                      onClick={() =>
-                        handleEdit(prop as ITableFinancialObligationsProps, prop.id as number)
+                      onClick={
+                        editCreditApplication
+                          ? handleInfo
+                          : () =>
+                              handleEdit(
+                                prop as ITableFinancialObligationsProps,
+                                prop.id as number
+                              )
                       }
                       cursorHover
                     />
@@ -218,8 +243,10 @@ export const TableFinancialObligationsUI = ({
                         icon={<MdDeleteOutline />}
                         appearance="danger"
                         size="16px"
-                        onClick={() => 
-                          handleDeleteModal(prop)
+                        onClick={
+                          editCreditApplication
+                            ? handleInfo
+                            : () => handleDeleteModal(prop)
                         }
                         cursorHover
                       />
@@ -250,12 +277,14 @@ export const TableFinancialObligationsUI = ({
     const emptyRowsCount = ROWS_PER_PAGE - paginatedData.length;
 
     if (emptyRowsCount > 0) {
-      const emptyRows = Array.from({ length: emptyRowsCount }).map((_, index) => {
-        const rowIndex = paginatedData.length + index;
-        const globalRowIndex = (currentPage - 1) * ROWS_PER_PAGE + rowIndex;
+      const emptyRows = Array.from({ length: emptyRowsCount }).map(
+        (_, index) => {
+          const rowIndex = paginatedData.length + index;
+          const globalRowIndex = (currentPage - 1) * ROWS_PER_PAGE + rowIndex;
 
-        return renderEmptyRow(globalRowIndex);
-      });
+          return renderEmptyRow(globalRowIndex);
+        }
+      );
 
       return (
         <>
@@ -271,10 +300,7 @@ export const TableFinancialObligationsUI = ({
   const renderEmptyRow = (rowIndex: number) => (
     <Tr key={`empty-${rowIndex}`} border="left">
       {visibleHeaders.map((_, colIndex) => (
-        <Td
-          key={`empty-cell-${rowIndex}-${colIndex}`}
-          appearance={"light"}
-        >
+        <Td key={`empty-cell-${rowIndex}-${colIndex}`} appearance={"light"}>
           &nbsp;
         </Td>
       ))}
@@ -282,9 +308,9 @@ export const TableFinancialObligationsUI = ({
   );
 
   const handleDeleteModal = (itemToDelete: IDataInformationItem) => {
-    setDataToDelete(itemToDelete); 
+    setDataToDelete(itemToDelete);
     setShowDeleteModal(true);
-  }
+  };
 
   return (
     <>
@@ -297,7 +323,11 @@ export const TableFinancialObligationsUI = ({
           {!loading && dataInformation.length > 0 && (
             <Tfoot>
               <Tr border="bottom">
-                <Td colSpan={visibleHeaders.length} type="custom" align="center">
+                <Td
+                  colSpan={visibleHeaders.length}
+                  type="custom"
+                  align="center"
+                >
                   <Pagination
                     firstEntryInPage={startIndex}
                     lastEntryInPage={endIndex}
@@ -360,12 +390,25 @@ export const TableFinancialObligationsUI = ({
           handleClose={() => setShowDeleteModal(false)}
           handleDelete={() => {
             if (dataToDelete) {
-              handleDelete(dataToDelete.id as number, dataToDelete.borrowerIdentificationNumber as string);
+              handleDelete(
+                dataToDelete.id as number,
+                dataToDelete.borrowerIdentificationNumber as string
+              );
             }
 
             setShowDeleteModal(false);
           }}
           TextDelete={dataReport.content}
+        />
+      )}
+      {isModalOpen && (
+        <InfoModal
+          onClose={handleInfoModalClose}
+          title={privilegeCrediboard.title}
+          subtitle={privilegeCrediboard.subtitle}
+          description={privilegeCrediboard.description}
+          nextButtonText={privilegeCrediboard.nextButtonText}
+          isMobile={isMobile}
         />
       )}
     </>

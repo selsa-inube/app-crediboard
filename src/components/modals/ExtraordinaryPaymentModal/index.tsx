@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MdOutlineAdd } from "react-icons/md";
+import { MdOutlineAdd, MdOutlineInfo } from "react-icons/md";
 import { Stack, Icon, useMediaQuery, Button } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
@@ -10,6 +10,9 @@ import {
   IExtraordinaryInstallment,
   IExtraordinaryInstallments,
 } from "@services/prospect/types";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { TextLabels } from "./config";
 import { IExtraordinaryPayment } from "./types";
@@ -58,6 +61,9 @@ export const ExtraordinaryPaymentModal = (
   const [seriesModal, setSeriesModal] = useState<IExtraordinaryInstallment[]>(
     []
   );
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
   const [selectedModal, setAddModal] =
     useState<IExtraordinaryInstallment | null>(null);
   const closeAddSeriesModal = () => {
@@ -67,7 +73,14 @@ export const ExtraordinaryPaymentModal = (
   const handleSubmit = () => {
     closeAddSeriesModal();
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
   return (
     <BaseModal
       title={TextLabels.extraPayments}
@@ -78,12 +91,13 @@ export const ExtraordinaryPaymentModal = (
       finalDivider={true}
     >
       <Stack gap="24px" direction="column">
-        <Stack justifyContent="end">
+        <Stack justifyContent="end" alignItems="center" gap="2px">
           <Button
             type="button"
             appearance="primary"
             spacing="wide"
             fullwidth={isMobile}
+            disabled={editCreditApplication}
             iconBefore={
               <Icon
                 icon={<MdOutlineAdd />}
@@ -96,6 +110,15 @@ export const ExtraordinaryPaymentModal = (
           >
             {TextLabels.addSeries}
           </Button>
+          {editCreditApplication && (
+            <Icon
+              icon={<MdOutlineInfo />}
+              appearance="primary"
+              size="16px"
+              cursorHover
+              onClick={handleInfo}
+            />
+          )}
         </Stack>
         <Stack>
           <TableExtraordinaryInstallment
@@ -119,6 +142,16 @@ export const ExtraordinaryPaymentModal = (
             setAddModal={setAddModal}
             selectedModal={selectedModal}
             prospectData={prospectData}
+          />
+        )}
+        {isModalOpen && (
+          <InfoModal
+            onClose={handleInfoModalClose}
+            title={privilegeCrediboard.title}
+            subtitle={privilegeCrediboard.subtitle}
+            description={privilegeCrediboard.description}
+            nextButtonText={privilegeCrediboard.nextButtonText}
+            isMobile={isMobile}
           />
         )}
       </Stack>

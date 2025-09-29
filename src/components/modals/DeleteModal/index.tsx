@@ -8,6 +8,7 @@ export interface IDeleteModalProps {
   TextDelete: string;
   handleClose: () => void;
   handleDelete?: (id?: number, borrowerIdentificationNumber?: string) => void;
+  iconBefore?: React.JSX.Element;
 }
 
 export function DeleteModal(props: IDeleteModalProps) {

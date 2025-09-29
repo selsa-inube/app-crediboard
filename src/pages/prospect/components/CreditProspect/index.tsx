@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { FormikValues } from "formik";
 import {
   MdOutlineAdd,
+  MdOutlineInfo,
   MdOutlinePayments,
   MdOutlinePictureAsPdf,
   MdOutlineShare,
@@ -30,9 +31,9 @@ import {
 } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
-import { BaseModal } from "@components/modals/baseModal";
-import { CardGray } from "@components/cards/CardGray";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { dataCreditProspect } from "./config";
 import { StyledPrint } from "./styles";
@@ -41,6 +42,7 @@ import { CreditLimitModal } from "../modals/CreditLimitModal";
 import { IncomeModal } from "../modals/IncomeModal";
 import { EditProductModal } from "../modals/ProspectProductModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
+import InfoModal from "../modals/InfoModal";
 
 interface ICreditProspectProps {
   borrowersProspect: IProspect | undefined;
@@ -108,7 +110,9 @@ export function CreditProspect(props: ICreditProspectProps) {
       return newHistory;
     });
   };
-
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
   const currentModal = modalHistory[modalHistory.length - 1];
 
   const { id } = useParams();
@@ -162,7 +166,10 @@ export function CreditProspect(props: ICreditProspectProps) {
     interestRate: "",
     rateType: "",
   };
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
   const onChanges = (name: string, newValue: string) => {
     setForm((prevForm) => ({ ...prevForm, [name]: newValue }));
   };
@@ -188,11 +195,12 @@ export function CreditProspect(props: ICreditProspectProps) {
     <Stack direction="column" gap="24px">
       {!isMobile && (
         <StyledPrint>
-          <Stack gap="16px" justifyContent="end" alignItems="center">
+          <Stack gap="2px" justifyContent="end" alignItems="center">
             <Button
               type="button"
               appearance="primary"
               spacing="compact"
+              disabled={editCreditApplication}
               iconBefore={
                 <Icon
                   icon={<MdOutlineAdd />}
@@ -205,6 +213,15 @@ export function CreditProspect(props: ICreditProspectProps) {
             >
               {dataCreditProspect.addProduct}
             </Button>
+            {editCreditApplication && (
+              <Icon
+                icon={<MdOutlineInfo />}
+                appearance="primary"
+                size="16px"
+                cursorHover
+                onClick={handleInfo}
+              />
+            )}
             {prospectData?.creditProducts?.some(
               (product) =>
                 Array.isArray(product.extraordinaryInstallments) &&
@@ -382,22 +399,15 @@ export function CreditProspect(props: ICreditProspectProps) {
           isMobile={isMobile}
         />
       )}
-      {currentModal === "observationsModal" && (
-        <BaseModal
-          width={isMobile ? "300px" : "500px"}
-          title={dataCreditProspect.observations}
-          handleClose={handleCloseModal}
-          handleNext={handleCloseModal}
-          nextButton={dataCreditProspect.close}
-        >
-          <Stack direction="column" gap="16px">
-            <CardGray
-              apparencePlaceHolder="gray"
-              label={dataCreditProspect.approvalObservations}
-              placeHolder={dataProspect?.[0]?.clientManagerObservation}
-            />
-          </Stack>
-        </BaseModal>
+      {isModalOpen && (
+        <InfoModal
+          onClose={() => setIsModalOpen(false)}
+          title={privilegeCrediboard.title}
+          subtitle={privilegeCrediboard.subtitle}
+          description={privilegeCrediboard.description}
+          nextButtonText={privilegeCrediboard.nextButtonText}
+          isMobile={isMobile}
+        />
       )}
     </Stack>
   );
