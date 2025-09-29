@@ -7,10 +7,10 @@ import { BaseModal } from "@components/modals/baseModal";
 import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { TableFinancialObligations } from "@pages/prospect/components/TableObligationsFinancial";
 import { IProspect, IBorrower } from "@services/prospect/types";
+import { restoreFinancialObligationsByBorrowerId } from "@services/prospect/restoreFinancialObligationsByBorrowerId";
 
-import { ListModal } from "../ListModal";
 import { FinancialObligationModal } from "../financialObligationModal";
-import { defaultOptionsSelect, configSelect } from "./config";
+import { defaultOptionsSelect, configSelect, restoreData } from "./config"
 
 export interface ReportCreditsModalProps {
   handleClose: () => void;
@@ -138,6 +138,16 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     setNewObligation(obligation);
   };
 
+  const handleRestore = () => {
+    setIsOpenModal(false)
+
+    restoreFinancialObligationsByBorrowerId(
+      businessUnitPublicCode, selectedBorrower?.value || "",
+      prospectData![0].prospectCode,
+      restoreData.justification
+    );
+  }
+
   return (
     <BaseModal
       title={dataReport.title}
@@ -206,15 +216,18 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         )}
         <Stack gap="16px" justifyContent="center">
           {isOpenModal && (
-            <ListModal
+            <BaseModal
               title={dataReport.restore}
+              nextButton={dataReport.restore}
+              backButton={dataReport.cancel}
+              handleNext={handleRestore}
               handleClose={() => setIsOpenModal(false)}
-              handleSubmit={() => setIsOpenModal(false)}
-              cancelButton="Cancelar"
-              appearanceCancel="gray"
-              buttonLabel={dataReport.restore}
-              content={dataReport.descriptionModal}
-            />
+              width={!isMobile ? "600px" : "290px"}
+            >
+              <Text>
+                {dataReport.descriptionModal}
+              </Text>
+            </BaseModal>
           )}
           {openModal && (
             <FinancialObligationModal
