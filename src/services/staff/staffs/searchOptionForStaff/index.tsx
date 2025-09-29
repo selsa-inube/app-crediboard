@@ -4,62 +4,59 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IToDo } from "../types";
+import { mapStaffOptionToEntity } from "./mappers";
+import { IOptionStaff } from "./types";
 
-export const getToDoByCreditRequestId = async (
+const getSearchOptionForStaff = async (
+  portalPublicCode: string,
   businessUnitPublicCode: string,
-  creditRequestId: string
-): Promise<IToDo> => {
+  userAccount: string,
+): Promise<IOptionStaff[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-  
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-
+      const queryParams = new URLSearchParams({
+        portalPublicCode: portalPublicCode,
+        businessUnitPublicCode: businessUnitPublicCode,
+      });
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchToDo",
-          "X-Business-Unit": businessUnitPublicCode,
+          "X-Action": "SearchOptionForStaff",
           "Content-type": "application/json; charset=UTF-8",
+          "X-User-Name": userAccount,
         },
-        signal: controller.signal,
       };
-
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/${creditRequestId}`,
-        options
+        `${environment.IVITE_IPORTAL_STAFF_QUERY_PROCESS_SERVICE}/staffs?${queryParams.toString()}`,
+        options,
       );
-      
       clearTimeout(timeoutId);
-
       if (res.status === 204) {
-        throw new Error("No hay tarea disponible.");
+        return [];
       }
-
       const data = await res.json();
 
       if (!res.ok) {
-        throw {
-          message: "Error al obtener la tarea.",
-          status: res.status,
-          data,
-        };
+        throw new Error(`Error al obtener los datos: ${res.status}`);
       }
 
-      return data;
-
+      return data.map((item: Record<string, string | number | object>) =>
+        mapStaffOptionToEntity(item),
+      );
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la tarea."
+          "Todos los intentos fallaron. No se pudieron obtener las opciones del personal.",
         );
       }
     }
   }
-
-  throw new Error("No se pudo obtener la tarea después de varios intentos.");
+  return [];
 };
+
+export { getSearchOptionForStaff };

@@ -28,7 +28,7 @@ const getSearchProspectSummaryById = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/prospects/${creditRequestCode}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
         options
       );
 
