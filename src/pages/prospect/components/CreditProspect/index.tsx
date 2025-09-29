@@ -370,6 +370,8 @@ export function CreditProspect(props: ICreditProspectProps) {
             selectedBorrower && incomeData[selectedBorrower.borrowerName]
           }
           onSubmit={handleIncomeSubmit}
+          businessUnitPublicCode={businessUnitPublicCode}
+          creditRequestCode={id}
         />
       )}
       {currentModal === "reportCreditsModal" && (

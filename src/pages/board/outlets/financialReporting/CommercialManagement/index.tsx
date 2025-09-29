@@ -823,15 +823,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   selectedBorrower && incomeData[selectedBorrower.borrowerName]
                 }
                 onSubmit={handleIncomeSubmit}
-              />
-            )}
-            {openModal === "IncomeModalEdit" && (
-              <IncomeModal
-                handleClose={() => setOpenModal(null)}
-                initialValues={
-                  selectedBorrower && incomeData[selectedBorrower.borrowerName]
-                }
-                onSubmit={handleIncomeSubmit}
+                businessUnitPublicCode={businessUnitPublicCode}
+                creditRequestCode={creditRequestCode}
               />
             )}
             {currentModal === "disbursementModal" && (

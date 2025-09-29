@@ -85,3 +85,26 @@ export interface IPaymentChannel {
   label: string;
   value: string;
 }
+
+export interface IRestoreIncome {
+  borrowerIdentificationNumber: string;
+  creditRequestCode: string;
+  justification: string;
+}
+
+interface IIncome {
+  dividends: number;
+  financialIncome: number;
+  leases: number;
+  otherNonSalaryEmoluments: number;
+  pensionAllowances: number;
+  periodicSalary: number;
+  personalBusinessUtilities: number;
+  professionalFees: number;
+}
+
+export interface IRestoreIncomeResponse {
+  borrowerIdentificationNumber: string;
+  income: IIncome;
+  creditRequestCode: string;
+}
