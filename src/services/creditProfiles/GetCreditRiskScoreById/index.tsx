@@ -3,24 +3,23 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IProspect } from "../types";
 
-const getSearchProspectById = async (
+import { ICreditRiskScoreResponse } from "../types";
+
+export const getCreditRiskScoreById = async (
   businessUnitPublicCode: string,
-  prospectCode: string
-): Promise<IProspect> => {
+  customerIdentificationNumber: string
+): Promise<ICreditRiskScoreResponse | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchByIdProspect",
+          "X-Action": "GetCreditRiskScoreById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -28,41 +27,41 @@ const getSearchProspectById = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectCode}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/credit-risk-score/${customerIdentificationNumber}`,
         options
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay tarea disponible.");
+        return null;
       }
 
       const data = await res.json();
+
       if (!res.ok) {
         throw {
-          message: "Error al obtener la tarea.",
+          message: "Ha ocurrido un error: ",
           status: res.status,
           data,
         };
       }
 
-      if (Array.isArray(data) && data.length > 0) {
-        return data[0];
-      }
-
       return data;
     } catch (error) {
-      console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
+        if (typeof error === "object" && error !== null) {
+          throw {
+            ...(error as object),
+            message: (error as Error).message,
+          };
+        }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la tarea."
+          "Todos los intentos fallaron. No se pudo obtener los creditos de riesgo."
         );
       }
     }
   }
 
-  throw new Error("No se pudo obtener la tarea después de varios intentos.");
+  return null;
 };
-
-export { getSearchProspectById };

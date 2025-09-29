@@ -7,7 +7,7 @@ import { CardValues } from "@components/cards/cardValues";
 import { DeleteModal } from "@components/modals/DeleteModal";
 
 import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
-import { getSearchProspectSummaryById } from "@services/prospect/ProspectSummaryById";
+import { getSearchProspectSummaryById } from "@services/creditRequest/query/ProspectSummaryById";
 import { AppContext } from "@context/AppContext";
 import {
   IProspect,
@@ -16,7 +16,7 @@ import {
 } from "@services/prospect/types";
 import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { DeductibleExpensesModal } from "@pages/prospect/components/modals/DeductibleExpensesModal";
-import { getAllDeductibleExpensesById } from "@services/prospect/deductibleExpenses";
+import { getAllDeductibleExpensesById } from "@services/creditRequest/query/deductibleExpenses";
 import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
 import { dataTableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment/config";
 import { ConsolidatedCredits } from "@pages/prospect/components/modals/ConsolidatedCreditModal";
@@ -87,7 +87,7 @@ export const CardCommercialManagement = (
       try {
         const result = await getSearchProspectSummaryById(
           businessUnitPublicCode,
-          prospectData?.prospectId || ""
+          id
         );
         if (result) {
           setProspectSummaryData(result);
@@ -114,7 +114,7 @@ export const CardCommercialManagement = (
       try {
         const data = await getAllDeductibleExpensesById(
           businessUnitPublicCode,
-          prospectData.prospectId
+          id
         );
         setDeductibleExpenses(data);
       } catch (error) {

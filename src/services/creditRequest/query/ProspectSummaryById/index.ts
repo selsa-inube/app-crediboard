@@ -3,12 +3,13 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IAllDeductibleExpensesById } from "../types";
 
-const getAllDeductibleExpensesById = async (
+import { IProspectSummaryById } from "../../../prospect/types";
+
+const getSearchProspectSummaryById = async (
   businessUnitPublicCode: string,
-  publicCode: string,
-): Promise<IAllDeductibleExpensesById[]> => {
+  creditRequestCode: string
+): Promise<IProspectSummaryById> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -16,11 +17,10 @@ const getAllDeductibleExpensesById = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllDeductibleExpensesById",
+          "X-Action": "GetProspectSummaryById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -28,24 +28,28 @@ const getAllDeductibleExpensesById = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${publicCode}`,
-        options,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
+        options
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay gastos descontables.");
+        throw new Error("No hay resumen de montos disponibles.");
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Error al obtener los gastos descontables.",
+          message: "Error al obtener el resumen de montos.",
           status: res.status,
           data,
         };
+      }
+
+      if (Array.isArray(data)) {
+        return data[0] as IProspectSummaryById;
       }
 
       return data;
@@ -53,15 +57,15 @@ const getAllDeductibleExpensesById = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener los gastos descontables.",
+          "Todos los intentos fallaron. No se pudo traer el resumen de montos"
         );
       }
     }
   }
 
   throw new Error(
-    "No se pudo obtener los gastos descontables después de varios intentos.",
+    "No se pudo obtener el resumen de montos después de varios intentos."
   );
 };
 
-export { getAllDeductibleExpensesById };
+export { getSearchProspectSummaryById };

@@ -41,10 +41,10 @@ export const StyledUl = styled.ul<IStyledUl>`
 export const StyledPrint = styled.div`
   @media print {
     @page {
-      size: landscape;
+      size: A3 landscape;
     }
     * {
-      zoom: 0.9;
+      zoom: 0.95;
     }
   }
 `;
@@ -66,14 +66,31 @@ export const StyledGridPrint = styled.div<IStyledGrid>`
 
   @media print {
     & > div {
-      width: 250px;
-      zoom: 1.5;
+      width: 400px;
+      zoom: 1.2;
     }
   }
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   margin: ${({ $isMobile }) => ($isMobile ? "20px 40px" : "20px")};
+`;
+
+export const StylePrintListMobile = styled.div`
+  @media print {
+    display: none;
+  }
+}
+`;
+
+export const StyledPrintListMobileShow = styled.div`
+  display: none;  
+
+  @media print {
+    display: block;
+    width: 2000px;
+  }
+}
 `;
 
 export const StyledLi = styled.li`

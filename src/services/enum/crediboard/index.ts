@@ -1,7 +1,7 @@
 export const EPayrollAgreement = [
   {
     Code: "canReject",
-    Value: "Rechazar",
+    Value: "Agregar",
     Description: "Permite rechazar una operación en curso",
   },
   {

@@ -12,12 +12,12 @@ import {
 import { BaseModal } from "@components/modals/baseModal";
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
+import { RestoreIncomeInformationByBorrowerId } from "@services/creditRequest/command/restoreIncome";
 
 import { IIncomeSources } from "../CreditProspect/types";
 import { IncomeEmployment, IncomeCapital, MicroBusinesses } from "./config";
 import { IIncome } from "./types";
 import { StyledContainer } from "./styles";
-import { RestoreIncomeInformationByBorrowerId } from "@services/creditRequest/command/restoreIncome";
 
 interface ISourceIncomeProps {
   openModal?: (state: boolean) => void;

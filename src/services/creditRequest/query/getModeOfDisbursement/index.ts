@@ -29,7 +29,7 @@ export const getModeOfDisbursement = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/credit-requests/modes-of-disbursement/${creditRequestId}?`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/modes-of-disbursement/${creditRequestId}?`,
         options
       );
 
