@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Stack } from "@inubekit/inubekit";
+import { useIAuth } from "@inube/iauth-react";
 
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { getAccountingVouchers } from "@services/creditRequest/query/accountingVouchers";
@@ -10,7 +11,6 @@ import { IEntries } from "@components/data/TableBoard/types";
 import { UnfoundData } from "@components/layout/UnfoundData";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
-import { useIAuth } from "@context/AuthContext/useAuthContext";
 
 import {
   actionsPostingvouchers,

@@ -20,6 +20,7 @@ export interface ReportCreditsModalProps {
   prospectData?: IProspect[];
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
   businessUnitPublicCode: string;
+  creditRequestCode: string;
 }
 
 export interface optionsSelect {
@@ -40,7 +41,12 @@ export interface IFinancialObligation {
 }
 
 export function ReportCreditsModal(props: ReportCreditsModalProps) {
-  const { handleClose, prospectData, businessUnitPublicCode } = props;
+  const {
+    handleClose,
+    prospectData,
+    businessUnitPublicCode,
+    creditRequestCode,
+  } = props;
   const [loading, setLoading] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -56,7 +62,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     payment: "",
     feePaid: "",
     term: "",
-    idUser: ""
+    idUser: "",
   };
 
   const isMobile = useMediaQuery("(max-width:880px)");
@@ -65,32 +71,38 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     setOpenModal(false);
   };
 
-  const filterListBorrowers = useCallback((parameter: keyof IBorrower, value: string) => {
-    if (!prospectData) return;
+  const filterListBorrowers = useCallback(
+    (parameter: keyof IBorrower, value: string) => {
+      if (!prospectData) return;
 
-    const listsBorrowers = prospectData[0].borrowers?.filter((borrower) => {
-      if (borrower[parameter] === value) {
-        return borrower;
-      }
-    });
+      const listsBorrowers = prospectData[0].borrowers?.filter((borrower) => {
+        if (borrower[parameter] === value) {
+          return borrower;
+        }
+      });
 
-    return listsBorrowers?.[0];
-  }, [prospectData]);
+      return listsBorrowers?.[0];
+    },
+    [prospectData]
+  );
 
   const buildObjectSelection = useCallback((name: string, value: string) => {
     return {
       id: value,
       label: name,
-      value: value
-    }
+      value: value,
+    };
   }, []);
 
   const getOptionsSelect = useCallback(() => {
     if (!prospectData) return;
 
     return prospectData[0].borrowers?.map((borrower) => {
-      return buildObjectSelection(borrower.borrowerName, borrower.borrowerIdentificationNumber);
-    })
+      return buildObjectSelection(
+        borrower.borrowerName,
+        borrower.borrowerIdentificationNumber
+      );
+    });
   }, [prospectData, buildObjectSelection]);
 
   const handleObligationProcessed = () => {
@@ -106,7 +118,10 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
     if (mainBorrower) {
       setSelectedBorrower(
-        buildObjectSelection(mainBorrower.borrowerName, mainBorrower.borrowerIdentificationNumber)
+        buildObjectSelection(
+          mainBorrower.borrowerName,
+          mainBorrower.borrowerIdentificationNumber
+        )
       );
     }
 
@@ -116,14 +131,12 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   }, [filterListBorrowers, getOptionsSelect, buildObjectSelection]);
 
   const onChangeSelect = (name: string, value: string) => {
-    setSelectedBorrower(
-      buildObjectSelection(name, value)
-    );
-  }
+    setSelectedBorrower(buildObjectSelection(name, value));
+  };
 
   const handleSaveNewObligation = (obligation: IFinancialObligation) => {
     setNewObligation(obligation);
-  }
+  };
 
   const handleRestore = () => {
     setIsOpenModal(false)
@@ -152,32 +165,28 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             direction={isMobile ? "column" : "row"}
             gap="16px"
           >
-            {
-              optionsBorrowers && optionsBorrowers.length > 1 ?
-                <Select
-                  id="income"
-                  name={configSelect.name}
-                  label={configSelect.label}
-                  placeholder={configSelect.placeholder}
-                  options={optionsBorrowers || []}
-                  value={selectedBorrower?.value || ""}
-                  onChange={(name, value) => onChangeSelect(name, value)}
-                  size="compact"
-                />
-                :
-                <Stack
-                  direction="row"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Text
-                    appearance="dark"
-                    as="h2"
-                  >
-                    {optionsBorrowers[0]?.label}
-                  </Text>
-                </Stack>
-            }
+            {optionsBorrowers && optionsBorrowers.length > 1 ? (
+              <Select
+                id="income"
+                name={configSelect.name}
+                label={configSelect.label}
+                placeholder={configSelect.placeholder}
+                options={optionsBorrowers || []}
+                value={selectedBorrower?.value || ""}
+                onChange={(name, value) => onChangeSelect(name, value)}
+                size="compact"
+              />
+            ) : (
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Text appearance="dark" as="h2">
+                  {optionsBorrowers[0]?.label}
+                </Text>
+              </Stack>
+            )}
 
             <Stack
               direction={isMobile ? "column" : "row"}
@@ -224,7 +233,9 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             <FinancialObligationModal
               title="Agregar obligaciones"
               onCloseModal={handleCloseModal}
-              onConfirm={(values) => handleSaveNewObligation(values as IFinancialObligation)}
+              onConfirm={(values) =>
+                handleSaveNewObligation(values as IFinancialObligation)
+              }
               initialValues={initialValues}
               confirmButtonText="Agregar"
             />
@@ -237,6 +248,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           newObligation={newObligation}
           businessUnitPublicCode={businessUnitPublicCode}
           onObligationProcessed={handleObligationProcessed}
+          creditRequestCode={creditRequestCode}
         />
       </Stack>
     </BaseModal>

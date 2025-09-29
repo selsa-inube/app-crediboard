@@ -3,14 +3,12 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+import { IAllDeductibleExpensesById } from "../../../prospect/types";
 
-import { IProspect } from "../types";
-import { mapperProspectResponseToIProspect } from "../mapper";
-
-const getSearchProspectByCode = async (
+const getAllDeductibleExpensesById = async (
   businessUnitPublicCode: string,
-  prospectId: string
-): Promise<IProspect> => {
+  creditRequestCode: string
+): Promise<IAllDeductibleExpensesById[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -22,7 +20,7 @@ const getSearchProspectByCode = async (
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchByIdProspect",
+          "X-Action": "SearchAllDeductibleExpensesById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -30,42 +28,40 @@ const getSearchProspectByCode = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectId}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
         options
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay tarea disponible.");
+        throw new Error("No hay gastos descontables.");
       }
-      
+
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Error al obtener la tarea.",
+          message: "Error al obtener los gastos descontables.",
           status: res.status,
           data,
         };
       }
-      
-      if (Array.isArray(data)) {
-        return data[0] as IProspect;
-      }
-      
-      return mapperProspectResponseToIProspect(data);
+
+      return data;
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la tarea."
+          "Todos los intentos fallaron. No se pudo obtener los gastos descontables."
         );
       }
     }
   }
 
-  throw new Error("No se pudo obtener la tarea después de varios intentos.");
+  throw new Error(
+    "No se pudo obtener los gastos descontables después de varios intentos."
+  );
 };
 
-export { getSearchProspectByCode };
+export { getAllDeductibleExpensesById };

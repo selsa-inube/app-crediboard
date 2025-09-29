@@ -4,11 +4,11 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IProspectSummaryById } from "../types";
+import { IProspectSummaryById } from "../../../prospect/types";
 
 const getSearchProspectSummaryById = async (
   businessUnitPublicCode: string,
-  prospectCode: string
+  creditRequestCode: string
 ): Promise<IProspectSummaryById> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -28,7 +28,7 @@ const getSearchProspectSummaryById = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_QUERY_PROCESS_SERVICE}/prospects/${prospectCode}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
         options
       );
 

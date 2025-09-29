@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  Stack,
+  useFlag,
+  useMediaQuery,
+  Blanket,
+  Text,
+  Spinner,
+} from "@inubekit/inubekit";
+import { useIAuth } from "@inube/iauth-react";
 
-import { Stack, useFlag, useMediaQuery, Blanket, Text, Spinner } from "@inubekit/inubekit";
-
-import { useIAuth } from "@context/AuthContext/useAuthContext";
 import { OfferedGuaranteeModal } from "@components/modals/OfferedGuaranteeModal";
 import { ErrorAlert } from "@components/ErrorAlert";
 import { ContainerSections } from "@components/layout/ContainerSections";
@@ -28,7 +34,7 @@ import {
   textFlagsReject,
   textFlagsUsers,
 } from "@config/pages/staffModal/addFlag";
-import { getSearchProspectByCode } from "@services/prospect/ProspectByCode";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import {
   IProspect,
   IExtraordinaryInstallments,
@@ -51,7 +57,7 @@ import {
   StyledToast,
   StyledContainerSpinner,
   BlockPdfSection,
-  GlobalPdfStyles
+  GlobalPdfStyles,
 } from "./styles";
 import { Approvals } from "./Approvals";
 import { Requirements } from "./Requirements";
@@ -105,7 +111,7 @@ export const FinancialReporting = () => {
     showShareModal: false,
   });
 
-  const { id } = useParams();
+  const { creditRequestCode } = useParams();
   const { user } = useIAuth();
 
   const navigation = useNavigate();
@@ -126,14 +132,18 @@ export const FinancialReporting = () => {
   const { addFlag } = useFlag();
 
   useEffect(() => {
-    getCreditRequestByCode(businessUnitPublicCode, id!, userAccount)
+    getCreditRequestByCode(
+      businessUnitPublicCode,
+      creditRequestCode!,
+      userAccount
+    )
       .then((data) => {
         setData(data[0]);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [id, businessUnitPublicCode, userAccount]);
+  }, [creditRequestCode, businessUnitPublicCode, userAccount]);
 
   const fetchAndShowDocuments = async () => {
     if (!data?.creditRequestId || !user?.id || !businessUnitPublicCode) return;
@@ -161,10 +171,12 @@ export const FinancialReporting = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!creditRequestCode) return;
+
       try {
         const result = await getSearchProspectByCode(
           businessUnitPublicCode,
-          idProspect
+          creditRequestCode
         );
 
         setDataProspect(Array.isArray(result) ? result[0] : result);
@@ -174,7 +186,7 @@ export const FinancialReporting = () => {
     };
 
     idProspect && businessUnitPublicCode && fetchData();
-  }, [businessUnitPublicCode, idProspect, sentData]);
+  }, [businessUnitPublicCode, idProspect, sentData, creditRequestCode]);
 
   const generateAndSharePdf = async () => {
     setPdfState({ isGenerating: true, blob: null, showShareModal: false });
@@ -191,10 +203,9 @@ export const FinancialReporting = () => {
         setPdfState({
           isGenerating: false,
           blob: pdfBlob,
-          showShareModal: true
+          showShareModal: true,
         });
       }
-
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
       setMessageError(errorMessages.share.description);
@@ -217,11 +228,10 @@ export const FinancialReporting = () => {
       });
 
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
       setMessageError(errorMessages.share.description);
-      setShowErrorModal(true)
+      setShowErrorModal(true);
     }
   };
 
@@ -385,12 +395,11 @@ export const FinancialReporting = () => {
 
   const handleSharePdfModal = () => {
     setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-  }
-
+  };
 
   return (
     <div ref={dataCommercialManagementRef}>
-    <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
+      <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
       <StyledMarginPrint $isMobile={isMobile}>
         <Stack direction="column">
           <Stack justifyContent="center" alignContent="center">
@@ -426,7 +435,7 @@ export const FinancialReporting = () => {
                         data={data}
                         collapse={collapse}
                         setCollapse={setCollapse}
-                        id={id!}
+                        creditRequestCode={creditRequestCode!}
                         hideContactIcons={true}
                         prospectData={dataProspect!}
                         sentData={null}
@@ -443,7 +452,7 @@ export const FinancialReporting = () => {
                       <ToDo
                         icon={infoIcon}
                         isMobile={isMobile}
-                        id={id!}
+                        id={creditRequestCode!}
                         user={user!.nickname!}
                         setIdProspect={setIdProspect}
                       />
@@ -454,7 +463,11 @@ export const FinancialReporting = () => {
                     height={isMobile ? "auto" : "277px"}
                   >
                     <BlockPdfSection className="pdf-block">
-                      <Approvals user={id!} isMobile={isMobile} id={id!} />
+                      <Approvals
+                        user={creditRequestCode!}
+                        isMobile={isMobile}
+                        id={creditRequestCode!}
+                      />
                     </BlockPdfSection>
                   </Stack>
                   <Stack
@@ -474,7 +487,7 @@ export const FinancialReporting = () => {
                   </Stack>
                   <Stack direction="column">
                     <BlockPdfSection className="pdf-block">
-                      <Management id={id!} isMobile={isMobile} />
+                      <Management id={creditRequestCode!} isMobile={isMobile} />
                     </BlockPdfSection>
                   </Stack>
                   <Stack
@@ -483,7 +496,10 @@ export const FinancialReporting = () => {
                   >
                     <StyledPageBreak />
                     <BlockPdfSection className="pdf-block">
-                      <PromissoryNotes id={id!} isMobile={isMobile} />
+                      <PromissoryNotes
+                        id={creditRequestCode!}
+                        isMobile={isMobile}
+                      />
                     </BlockPdfSection>
                   </Stack>
                   <Stack
@@ -491,7 +507,11 @@ export const FinancialReporting = () => {
                     height={isMobile ? "auto" : "163px"}
                   >
                     <BlockPdfSection className="pdf-block">
-                      <Postingvouchers user={id!} id={id!} isMobile={isMobile} />
+                      <Postingvouchers
+                        user={creditRequestCode!}
+                        id={creditRequestCode!}
+                        isMobile={isMobile}
+                      />
                     </BlockPdfSection>
                   </Stack>
                   <StyledPageBreak />
@@ -575,7 +595,7 @@ export const FinancialReporting = () => {
       {showErrorModal && (
         <ErrorModal message={messageError} handleClose={handleErrorModal} />
       )}
-      {pdfState.isGenerating &&
+      {pdfState.isGenerating && (
         <Blanket>
           <StyledContainerSpinner>
             <Spinner size="large" />
@@ -584,15 +604,14 @@ export const FinancialReporting = () => {
             </Text>
           </StyledContainerSpinner>
         </Blanket>
-      }
-      {
-        pdfState.showShareModal && pdfState.blob &&
+      )}
+      {pdfState.showShareModal && pdfState.blob && (
         <ShareModal
           isMobile={isMobile}
           handleClose={handleSharePdfModal}
           handleNext={handleSharePdf}
         />
-      }
+      )}
     </div>
   );
 };

@@ -33,7 +33,7 @@ export const getNotificationOnApprovals = async (
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_PERSISTENCE}/credit-requests`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
         options
       );
 

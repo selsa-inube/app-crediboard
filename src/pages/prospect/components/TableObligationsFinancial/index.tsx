@@ -5,7 +5,7 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { IBorrower, IProspect, IBorrowerProperty } from "@services/prospect/types";
 import { optionsSelect, IFinancialObligation } from "@components/modals/ReportCreditsModal/index.tsx";
-import { getSearchProspectByCode } from "@services/prospect/ProspectByCode";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 
 import { headers, ROWS_PER_PAGE, errorMessages } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
@@ -15,7 +15,7 @@ export interface ITableFinancialObligationsProps {
   prospectId?: string;
   businessUnitPublicCode?: string;
   type?: string;
-  id?: string;
+  creditRequestCode?: string;
   propertyValue?: string;
   balance?: string;
   fee?: string;
@@ -36,7 +36,7 @@ export interface ITableFinancialObligationsProps {
 export const TableFinancialObligations = (
   props: ITableFinancialObligationsProps
 ) => {
-  const { refreshKey, showActions, businessUnitPublicCode, prospectId, selectedBorrower, newObligation, onObligationProcessed } = props;
+  const { refreshKey, showActions, businessUnitPublicCode, creditRequestCode, selectedBorrower, newObligation, onObligationProcessed } = props;
 
   const [dataProspect, setDataProspect] = useState<IProspect[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -242,15 +242,15 @@ export const TableFinancialObligations = (
     }
   }, [newObligation, saveNewObligation, isProcessingObligation]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => setLoading(false), 500);
+    useEffect(() => {
+      const timeout = setTimeout(() => setLoading(false), 500);
 
-    getSearchProspectByCode(businessUnitPublicCode || "", prospectId || "").then((res) => {
-      setDataProspect([res]);
-    });
+      getSearchProspectByCode(businessUnitPublicCode || "", creditRequestCode || "").then((res) => {
+        setDataProspect([res]);
+      });
 
-    return () => clearTimeout(timeout);
-  }, [businessUnitPublicCode, prospectId]);
+      return () => clearTimeout(timeout);
+    }, [businessUnitPublicCode, creditRequestCode]);
 
   useEffect(() => {
     const financialObligationBorrowers = filterListBorrowersFinancialObligation();

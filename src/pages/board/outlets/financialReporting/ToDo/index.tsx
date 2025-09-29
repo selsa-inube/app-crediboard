@@ -25,10 +25,10 @@ import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
 
 import { AppContext } from "@context/AppContext";
+import { useEnums } from "@hooks/useEnums";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { BaseModal } from "@components/modals/baseModal";
-import { decisions as decisionsEnum } from "@services/enum/icorebanking-vi-crediboard/decisions/decisions";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -57,6 +57,7 @@ function ToDo(props: ToDoProps) {
   const { icon, button, isMobile, id, setIdProspect } = props;
 
   const { approverid } = useParams();
+  const { lang } = useEnums();
 
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
@@ -247,21 +248,15 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           requests.creditRequestId
         );
+
         const formattedDecisions = Array.isArray(decision)
-          ? decision.map((decisions: DecisionItem, index: number) => {
-              const enumDecision = decisionsEnum.find(
-                (d) => d.Code === decisions.decision
-              );
-              return {
-                id: `decision-${index}`,
-                label: enumDecision
-                  ? `${enumDecision.Value}: ${enumDecision.Description}`
-                  : `${decisions.decision}: ${decisions.value}`,
-                value: decisions.value,
-                code: decisions.decision,
-                originalLabel: `${decisions.decision}: ${decisions.value}`,
-              };
-            })
+          ? decision.map((decisions: DecisionItem, index: number) => ({
+              id: `decision-${index}`,
+              label: decisions.I18n ? decisions.I18n[lang] : decisions.value,
+              value: decisions.value,
+              code: decisions.decision,
+              originalLabel: decisions.decision,
+            }))
           : [];
         setTaskDecisions(formattedDecisions);
       } catch (error) {
@@ -272,6 +267,7 @@ function ToDo(props: ToDoProps) {
         });
       } finally {
         setLoading(false);
+        isFetching.current = false;
       }
     }
   };
