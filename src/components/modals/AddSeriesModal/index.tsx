@@ -149,9 +149,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         paymentChannelAbbreviatedName: "",
       },
     ],
-    prospectId: prospectData?.prospectId || "",
+    creditRequestCode: prospectData?.prospectCode || "",
   };
-
   const handleExtraordinaryInstallment = async (
     extraordinaryInstallments: IExtraordinaryInstallments
   ) => {

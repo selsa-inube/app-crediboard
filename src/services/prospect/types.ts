@@ -2,22 +2,23 @@ export interface IExtraordinaryInstallment {
   installmentAmount?: number;
   installmentDate?: string;
   paymentChannelAbbreviatedName?: string;
+  humanChannelPaymentDay?: string;
   id?: string;
   creditProductCode?: string;
   extraordinaryInstallments?: IExtraordinaryInstallment[];
   prospectId?: string;
+  creditRequestCode?: string;
 }
 export interface IExtraordinaryInstallments {
   creditProductCode: string;
   extraordinaryInstallments: IExtraordinaryInstallment[];
-  prospectId: string;
+  creditRequestCode: string;
 }
 
 export interface IAllDeductibleExpensesById {
   expenseName: string;
   expenseValue: number;
 }
-
 
 export interface IBorrowerProperty {
   propertyName: string;

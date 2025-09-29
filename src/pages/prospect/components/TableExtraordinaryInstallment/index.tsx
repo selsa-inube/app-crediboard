@@ -180,7 +180,7 @@ export const TableExtraordinaryInstallment = (
             installment.paymentChannelAbbreviatedName
           ),
         })) || [],
-    prospectId: prospectData?.prospectId || "",
+    creditRequestCode: prospectData?.prospectCode || "",
   };
 
   const handleExtraordinaryInstallment = async (
@@ -340,7 +340,9 @@ export const TableExtraordinaryInstallment = (
       {isOpenModalDelete && (
         <DeleteModal
           handleClose={() => setIsOpenModalDelete(false)}
-          handleDelete={() => handleExtraordinaryInstallment(itemIdentifiersForUpdate)}
+          handleDelete={() =>
+            handleExtraordinaryInstallment(itemIdentifiersForUpdate)
+          }
           TextDelete={dataTableExtraordinaryInstallment.content}
         />
       )}
