@@ -171,10 +171,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     setIsModalOpen(true);
   };
   const onChanges = (name: string, newValue: string) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: newValue,
-    }));
+    setForm((prevForm) => ({ ...prevForm, [name]: newValue }));
   };
 
   const handleConfirm = async (values: FormikValues) => {

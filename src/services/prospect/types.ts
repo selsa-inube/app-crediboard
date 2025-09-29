@@ -18,7 +18,6 @@ export interface IAllDeductibleExpensesById {
   expenseValue: number;
 }
 
-
 export interface IBorrowerProperty {
   propertyName: string;
   propertyValue: string;
@@ -80,6 +79,7 @@ export interface ICreditProduct {
   extraordinaryInstallments?: IExtraordinaryInstallment[];
   acquiredCashFlows?: IAcquiredCashFlow[];
   installmentFrequency?: string;
+  referenceIndexForVariableInterestRate?: string;
   fixedPoints?: number;
 }
 
@@ -99,6 +99,8 @@ export interface IProspect {
   selectedRateType: string;
   preferredPaymentChannelAbbreviatedName: string;
   gracePeriod: number;
+  clientComments?: string;
+  clientManagerObservation?: string;
   gracePeriodType: string;
   moneyDestinationAbbreviatedName: string;
   bondValue: number;
