@@ -41,9 +41,10 @@ export const CardCommercialManagement = (
   );
 
   const { addFlag } = useFlag();
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ICreditProduct | null>(
@@ -87,6 +88,7 @@ export const CardCommercialManagement = (
       try {
         const result = await getSearchProspectSummaryById(
           businessUnitPublicCode,
+          businessManagerCode,
           id
         );
         if (result) {
@@ -114,6 +116,7 @@ export const CardCommercialManagement = (
       try {
         const data = await getAllDeductibleExpensesById(
           businessUnitPublicCode,
+          businessManagerCode,
           id
         );
         setDeductibleExpenses(data);

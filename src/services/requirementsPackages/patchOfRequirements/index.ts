@@ -5,7 +5,8 @@ import { mapRequirementsEntity } from "./mappers";
 
 const patchOfRequirements = async (
   creditRequest: IPatchOfRequirements,
-  businessUnitPublicCode: string
+  businessUnitPublicCode: string,
+  businessManagerCode: string,
 ): Promise<IPatchOfRequirements | undefined> => {
   const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/requirements-packages`;
 
@@ -16,6 +17,7 @@ const patchOfRequirements = async (
         "X-Action": "UpdatePackageOfRequirements",
         "X-Business-Unit": businessUnitPublicCode,
         "Content-type": "application/json; charset=UTF-8",
+        "X-Process-Manager": businessManagerCode,
       },
       body: JSON.stringify(mapRequirementsEntity(creditRequest)),
     };

@@ -9,6 +9,7 @@ import { mapAccountingVouchersEntities } from "./mappers";
 
 export const getAccountingVouchers = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequestId: string
 ): Promise<IAccountingVouchers[]> => {
   const maxRetries = maxRetriesServices;
@@ -23,6 +24,7 @@ export const getAccountingVouchers = async (
           "X-Action": "SearchAllObligationsById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

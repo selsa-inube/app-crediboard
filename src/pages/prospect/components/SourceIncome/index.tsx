@@ -22,6 +22,7 @@ import { StyledContainer } from "./styles";
 interface ISourceIncomeProps {
   openModal?: (state: boolean) => void;
   onDataChange?: (newData: IIncomeSources) => void;
+  businessManagerCode: string;
   ShowSupport?: boolean;
   disabled?: boolean;
   data?: IIncomeSources;
@@ -34,6 +35,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
   const {
     openModal,
     onDataChange,
+    businessManagerCode,
     ShowSupport,
     disabled,
     showEdit = true,
@@ -116,6 +118,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
     try {
       const response = await RestoreIncomeInformationByBorrowerId(
         businessUnitPublicCode || "",
+        businessManagerCode,
         body
       );
       if (response && response.income) {
@@ -317,6 +320,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
           handleClose={() => setIsOpenEditModal(false)}
           disabled={false}
           onSubmit={() => {}}
+          businessManagerCode={businessManagerCode}
         />
       )}
       {showErrorModal && (

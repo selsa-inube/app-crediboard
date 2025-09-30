@@ -58,6 +58,8 @@ function BoardLayout() {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
@@ -81,12 +83,16 @@ function BoardLayout() {
         await Promise.allSettled([
           getCreditRequestInProgress(
             businessUnitPublicCode,
+            businessManagerCode,
             page,
             userAccount,
             searchParam
           ),
           page === 1
-            ? getCreditRequestPinned(businessUnitPublicCode)
+            ? getCreditRequestPinned(
+                businessUnitPublicCode,
+                businessManagerCode
+              )
             : Promise.resolve([]),
         ]);
 
@@ -232,7 +238,8 @@ function BoardLayout() {
             rule,
             postBusinessUnitRules,
             "value",
-            businessUnitPublicCode
+            businessUnitPublicCode,
+            businessManagerCode
           );
 
           const extractedValues = Array.isArray(values)
@@ -252,7 +259,7 @@ function BoardLayout() {
         }
       })
     );
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, businessManagerCode]);
 
   const handlePinRequest = async (
     creditRequestId: string | undefined,
@@ -279,6 +286,7 @@ function BoardLayout() {
 
         await patchChangeAnchorToCreditRequest(
           businessUnitPublicCode,
+          businessManagerCode,
           userAccount,
           creditRequestId,
           isPinned
@@ -386,12 +394,14 @@ function BoardLayout() {
           .join("&");
         const searchResults = await getCreditRequestInProgress(
           businessUnitPublicCode,
+          businessManagerCode,
           1,
           userAccount,
           { text: trimmedValue }
         );
         const filteredResults = await getCreditRequestInProgress(
           businessUnitPublicCode,
+          businessManagerCode,
           1,
           userAccount,
           { filter: currentFilters }

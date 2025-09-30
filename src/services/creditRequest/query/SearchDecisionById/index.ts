@@ -8,6 +8,7 @@ import { IDecisionsToDo } from "../types";
 
 export const getSearchDecisionById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequestId: string
 ): Promise<IDecisionsToDo> => {
   const maxRetries = maxRetriesServices;
@@ -25,6 +26,7 @@ export const getSearchDecisionById = async (
           "X-Action": "SearchDecisionByTaskToBeDone",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

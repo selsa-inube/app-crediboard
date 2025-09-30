@@ -8,6 +8,7 @@ import { IUnreadErrors, IUnreadErrorsResponse } from "../types";
 
 export const getUnreadErrorsById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   payload: IUnreadErrors
 ): Promise<IUnreadErrorsResponse[] | undefined> => {
   const maxRetries = maxRetriesServices;
@@ -24,6 +25,7 @@ export const getUnreadErrorsById = async (
           "X-Action": "SearchAllUnreadErrorsById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

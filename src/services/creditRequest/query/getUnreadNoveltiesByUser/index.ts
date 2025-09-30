@@ -7,7 +7,8 @@ import { IUnreadNoveltiesByUser } from "./types";
 
 const getUnreadNoveltiesByUser = async (
   userAccount: string,
-  businessUnitPublicCode: string
+  businessUnitPublicCode: string,
+  businessManagerCode: string
 ): Promise<IUnreadNoveltiesByUser[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -24,6 +25,7 @@ const getUnreadNoveltiesByUser = async (
           "X-User-Name": userAccount,
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

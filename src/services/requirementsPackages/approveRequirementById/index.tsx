@@ -8,6 +8,7 @@ import { IapproveRequirement, IapproveRequirementResponse } from "./types";
 
 export const approveRequirementById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   payload: IapproveRequirement
 ): Promise<IapproveRequirementResponse[] | undefined> => {
   const maxRetries = maxRetriesServices;
@@ -24,6 +25,7 @@ export const approveRequirementById = async (
           "X-Action": "ApproveRequirementById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

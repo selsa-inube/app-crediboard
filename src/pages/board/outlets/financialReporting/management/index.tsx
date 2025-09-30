@@ -52,6 +52,8 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const chatContentRef = useRef<HTMLDivElement>(null);
 
   const notifyError = useCallback((message: string) => {
@@ -62,6 +64,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     try {
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
+        businessManagerCode,
         id,
         userAccount
       );
@@ -70,7 +73,13 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       console.error(error);
       notifyError((error as Error).message);
     }
-  }, [businessUnitPublicCode, id, userAccount, notifyError]);
+  }, [
+    businessUnitPublicCode,
+    id,
+    userAccount,
+    notifyError,
+    businessManagerCode,
+  ]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();
@@ -85,6 +94,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     try {
       const data = await getTraceByCreditRequestId(
         businessUnitPublicCode,
+        businessManagerCode,
         creditRequest.creditRequestId
       );
       setTraces(Array.isArray(data) ? data.flat() : []);
@@ -94,7 +104,12 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     } finally {
       setLoading(false);
     }
-  }, [businessUnitPublicCode, creditRequest?.creditRequestId, notifyError]);
+  }, [
+    businessUnitPublicCode,
+    creditRequest?.creditRequestId,
+    businessManagerCode,
+    notifyError,
+  ]);
 
   useEffect(() => {
     fetchData();
@@ -124,6 +139,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     try {
       await registerNewsToCreditRequest(
         businessUnitPublicCode,
+        businessManagerCode,
         userAccount,
         newTrace
       );

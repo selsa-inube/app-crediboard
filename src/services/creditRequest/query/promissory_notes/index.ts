@@ -7,6 +7,7 @@ import { IPromissoryNotes } from "../types";
 
 export const getPromissoryNotesById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequestId: string
 ): Promise<IPromissoryNotes[]> => {
   const maxRetries = maxRetriesServices;
@@ -23,6 +24,7 @@ export const getPromissoryNotesById = async (
           "X-Action": "SearchAllPromissoryNotesById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

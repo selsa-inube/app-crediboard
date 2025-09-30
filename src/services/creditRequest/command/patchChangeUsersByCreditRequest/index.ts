@@ -5,6 +5,7 @@ import { mapCreditRequestsEntity } from "./mappers";
 const patchChangeUsersByCreditRequest = async (
   creditRequest: ICreditRequests,
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   userAccount: string
 ): Promise<ICreditRequests | undefined> => {
   const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`;
@@ -17,6 +18,7 @@ const patchChangeUsersByCreditRequest = async (
         "X-Business-Unit": businessUnitPublicCode,
         "Content-type": "application/json; charset=UTF-8",
         "X-User-Name": userAccount,
+        "X-Process-Manager": businessManagerCode,
       },
       body: JSON.stringify(mapCreditRequestsEntity(creditRequest)),
     };

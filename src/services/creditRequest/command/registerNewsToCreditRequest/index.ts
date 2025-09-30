@@ -7,6 +7,7 @@ import { ITraceType } from "../types";
 
 export const registerNewsToCreditRequest = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   userAccount: string,
   payload: ITraceType
 ): Promise<void> => {
@@ -25,6 +26,7 @@ export const registerNewsToCreditRequest = async (
           "X-Business-Unit": businessUnitPublicCode,
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

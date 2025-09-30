@@ -129,11 +129,14 @@ export const FinancialReporting = () => {
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const { addFlag } = useFlag();
 
   useEffect(() => {
     getCreditRequestByCode(
       businessUnitPublicCode,
+      businessManagerCode,
       creditRequestCode!,
       userAccount
     )
@@ -143,7 +146,12 @@ export const FinancialReporting = () => {
       .catch((error) => {
         console.error(error);
       });
-  }, [creditRequestCode, businessUnitPublicCode, userAccount]);
+  }, [
+    creditRequestCode,
+    businessUnitPublicCode,
+    userAccount,
+    businessManagerCode,
+  ]);
 
   const fetchAndShowDocuments = async () => {
     if (!data?.creditRequestId || !user?.id || !businessUnitPublicCode) return;
@@ -152,7 +160,8 @@ export const FinancialReporting = () => {
       const documents = await getSearchAllDocumentsById(
         data.creditRequestId,
         user.id,
-        businessUnitPublicCode
+        businessUnitPublicCode,
+        businessManagerCode
       );
 
       const dataToMap = Array.isArray(documents) ? documents : documents.value;
@@ -176,6 +185,7 @@ export const FinancialReporting = () => {
       try {
         const result = await getSearchProspectByCode(
           businessUnitPublicCode,
+          businessManagerCode,
           creditRequestCode
         );
 
@@ -186,7 +196,13 @@ export const FinancialReporting = () => {
     };
 
     idProspect && businessUnitPublicCode && fetchData();
-  }, [businessUnitPublicCode, idProspect, sentData, creditRequestCode]);
+  }, [
+    businessUnitPublicCode,
+    idProspect,
+    sentData,
+    creditRequestCode,
+    businessManagerCode,
+  ]);
 
   const generateAndSharePdf = async () => {
     setPdfState({ isGenerating: true, blob: null, showShareModal: false });
@@ -282,6 +298,7 @@ export const FinancialReporting = () => {
         data?.creditRequestId || "",
         user?.id || "",
         businessUnitPublicCode,
+        businessManagerCode,
         "RECHAZAR_SOLICITUD", // o "RECHAZO_HUMANO"
         removalJustification
       );
@@ -315,6 +332,7 @@ export const FinancialReporting = () => {
         await patchAssignAccountManager(
           data?.creditRequestId ?? "",
           businessUnitPublicCode,
+          businessManagerCode,
           user?.id ?? ""
         );
       } catch (error) {
@@ -332,9 +350,13 @@ export const FinancialReporting = () => {
     if (!data?.creditRequestId || !businessUnitPublicCode) return;
 
     try {
-      const unreadErrors = await getUnreadErrorsById(businessUnitPublicCode, {
-        creditRequestId: data.creditRequestId,
-      });
+      const unreadErrors = await getUnreadErrorsById(
+        businessUnitPublicCode,
+        businessManagerCode,
+        {
+          creditRequestId: data.creditRequestId,
+        }
+      );
 
       if (Array.isArray(unreadErrors)) {
         const mappedErrors = unreadErrors.map((error: IErrorsUnread) => ({
@@ -361,7 +383,11 @@ export const FinancialReporting = () => {
       creditRequestId: data?.creditRequestId ?? "",
       removalJustification,
     };
-    await deleteCreditRequest(businessUnitPublicCode, creditRequests)
+    await deleteCreditRequest(
+      businessUnitPublicCode,
+      businessManagerCode,
+      creditRequests
+    )
       .then(() => {
         addFlag({
           title: textFlagsUsers.titleSuccess,
@@ -482,6 +508,7 @@ export const FinancialReporting = () => {
                         user={user!.id!}
                         businessUnitPublicCode={businessUnitPublicCode}
                         creditRequestCode={data.creditRequestCode!}
+                        businessManagerCode={businessManagerCode}
                       />
                     </BlockPdfSection>
                   </Stack>
@@ -564,6 +591,7 @@ export const FinancialReporting = () => {
               prospectData={dataProspect!}
               businessUnitPublicCode={businessUnitPublicCode}
               requestId={data.creditRequestId!}
+              businessManagerCode={businessManagerCode}
             />
           )}
           {showCancelModal && (

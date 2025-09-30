@@ -7,6 +7,7 @@ import { ITraceType } from "@services/creditRequest/command/types";
 
 export const getTraceByCreditRequestId = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequestId: string
 ): Promise<ITraceType[]> => {
   const maxRetries = maxRetriesServices;
@@ -22,6 +23,7 @@ export const getTraceByCreditRequestId = async (
           "X-Action": "SearchAllTracesById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

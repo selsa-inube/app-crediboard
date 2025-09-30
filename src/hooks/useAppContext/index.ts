@@ -257,6 +257,7 @@ function useAppContext() {
         const result = await getSearchOptionForStaff(
           eventData.portal.publicCode,
           eventData.businessUnit.businessUnitPublicCode,
+          eventData.businessManager.abbreviatedName,
           userIdentifier || ""
         );
         setOptionStaffData(result);
@@ -269,6 +270,7 @@ function useAppContext() {
   }, [
     eventData?.portal?.publicCode,
     eventData?.businessUnit?.businessUnitPublicCode,
+    eventData.businessManager.abbreviatedName,
     user?.username,
     isLoading,
     isAuthenticated,
@@ -340,7 +342,8 @@ function useAppContext() {
 
       (async () => {
         const enumRoles = await getEnumerators(
-          businessUnit.businessUnitPublicCode
+          businessUnit.businessUnitPublicCode,
+          businessManagers.abbreviatedName
         );
         setEventData((prev) => ({
           ...prev,
@@ -355,7 +358,7 @@ function useAppContext() {
         }));
       })();
     }
-  }, [businessUnitSigla, businessUnitsToTheStaff]);
+  }, [businessUnitSigla, businessUnitsToTheStaff, businessManagers]);
 
   useEffect(() => {
     localStorage.setItem(

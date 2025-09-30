@@ -9,6 +9,7 @@ import { IMakeDecisionsCreditRequest } from "../types";
 
 export const makeDecisions = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   userAccount: string,
   makeDecisions: IMakeDecisionsCreditRequest,
   xAction: string
@@ -33,6 +34,7 @@ export const makeDecisions = async (
           "X-Business-Unit": businessUnitPublicCode,
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(makeDecisions),
         signal: controller.signal,

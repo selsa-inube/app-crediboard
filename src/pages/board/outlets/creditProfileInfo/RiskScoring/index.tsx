@@ -14,13 +14,18 @@ import { dataRiskScoring } from "./config";
 
 interface RiskScoringProps {
   businessUnitPublicCode: string;
+  businessManagerCode: string;
   customerIdentificationNumber: string;
   isMobile: boolean;
 }
 
 export function RiskScoring(props: RiskScoringProps) {
-  const { businessUnitPublicCode, customerIdentificationNumber, isMobile } =
-    props;
+  const {
+    businessUnitPublicCode,
+    businessManagerCode,
+    customerIdentificationNumber,
+    isMobile,
+  } = props;
 
   const [data, setData] = useState<ICreditRiskScoreResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,6 +55,7 @@ export function RiskScoring(props: RiskScoringProps) {
         setLoading(true);
         const response = await getCreditRiskScoreById(
           businessUnitPublicCode,
+          businessManagerCode,
           customerIdentificationNumber
         );
         setData(response);
@@ -66,6 +72,7 @@ export function RiskScoring(props: RiskScoringProps) {
         setLoading(true);
         const response = await getCreditRiskScoreById(
           businessUnitPublicCode,
+          businessManagerCode,
           customerIdentificationNumber
         );
         setData(response);
@@ -76,7 +83,11 @@ export function RiskScoring(props: RiskScoringProps) {
     };
 
     fetchData();
-  }, [businessUnitPublicCode, customerIdentificationNumber]);
+  }, [
+    businessUnitPublicCode,
+    customerIdentificationNumber,
+    businessManagerCode,
+  ]);
 
   return (
     <CardInfoContainer

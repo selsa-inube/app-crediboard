@@ -66,6 +66,8 @@ function AppPage() {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const getNotificationsCount = (): number => {
     return noveltiesData && noveltiesData.length > 0 ? noveltiesData.length : 0;
   };
@@ -157,6 +159,7 @@ function AppPage() {
       try {
         const data = await getUnreadNoveltiesByUser(
           eventData.user.identificationDocumentNumber || "",
+          businessManagerCode,
           businessUnitPublicCode
         );
         setNoveltiesData(data);
@@ -166,7 +169,7 @@ function AppPage() {
     };
 
     fetchNoveltiesData();
-  }, [eventData.user.identificationDocumentNumber, businessUnitPublicCode]);
+  }, [eventData.user.identificationDocumentNumber, businessUnitPublicCode, businessManagerCode]);
 
   return (
     <StyledAppPage>

@@ -145,6 +145,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
@@ -163,6 +165,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       try {
         const data = await getCreditRequestByCode(
           businessUnitPublicCode,
+          businessManagerCode,
           creditRequestCode,
           userAccount
         );
@@ -175,7 +178,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     if (creditRequestCode) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, creditRequestCode, userAccount]);
+  }, [businessUnitPublicCode, creditRequestCode, userAccount, businessManagerCode]);
 
   const handleDisbursement = async () => {
     if (requests?.creditRequestId) {
@@ -183,6 +186,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       try {
         const disbursement = await getModeOfDisbursement(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
 
@@ -745,6 +749,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   incomeData={incomeData}
                   isMobile={isMobile}
                   prospectData={prospectData}
+                  businessManagerCode={businessManagerCode}
                   showPrint
                   showMenu={() => setShowMenu(false)}
                   handleChange={handleChangeIncome}
@@ -789,6 +794,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 options={incomeOptions}
                 businessUnitPublicCode={businessUnitPublicCode}
                 creditRequestCode={creditRequestCode}
+                businessManagerCode={businessManagerCode}
               />
             )}
             {currentModal === "extraPayments" && (
@@ -799,6 +805,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 sentData={sentData}
                 setSentData={setSentData}
                 businessUnitPublicCode={businessUnitPublicCode}
+                businessManagerCode={businessManagerCode}
               />
             )}
             {openModal === "IncomeModalEdit" && (
@@ -810,6 +817,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 onSubmit={handleIncomeSubmit}
                 businessUnitPublicCode={businessUnitPublicCode}
                 creditRequestCode={creditRequestCode}
+                businessManagerCode={businessManagerCode}
               />
             )}
             {currentModal === "disbursementModal" && (

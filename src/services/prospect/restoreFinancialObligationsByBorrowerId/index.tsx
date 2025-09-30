@@ -6,6 +6,7 @@ import {
 
 export const restoreFinancialObligationsByBorrowerId = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   borrowerIdentificationNumber: string,
   creditRequestCode: string,
   justification: string
@@ -29,6 +30,7 @@ export const restoreFinancialObligationsByBorrowerId = async (
           "X-Action": "RestoreFinancialObligationsByBorrowerId",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

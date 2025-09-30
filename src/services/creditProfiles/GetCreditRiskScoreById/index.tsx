@@ -8,6 +8,7 @@ import { ICreditRiskScoreResponse } from "../types";
 
 export const getCreditRiskScoreById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   customerIdentificationNumber: string
 ): Promise<ICreditRiskScoreResponse | null> => {
   const maxRetries = maxRetriesServices;
@@ -22,6 +23,7 @@ export const getCreditRiskScoreById = async (
           "X-Action": "GetCreditRiskScoreById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

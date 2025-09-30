@@ -24,6 +24,7 @@ export interface IOfferedGuaranteeModalProps {
   isMobile: boolean;
   prospectData: IProspect;
   businessUnitPublicCode: string;
+  businessManagerCode: string;
   requestId: string;
 }
 
@@ -33,6 +34,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
     isMobile,
     prospectData,
     businessUnitPublicCode,
+    businessManagerCode,
     requestId,
   } = props;
 
@@ -61,6 +63,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       try {
         const result = await getGuaranteesById(
           businessUnitPublicCode,
+          businessManagerCode,
           requestId
         );
         setDataProperty(result);
