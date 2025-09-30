@@ -23,7 +23,7 @@ import {
 import { getToDoByCreditRequestId } from "@services/creditRequest/query/getToDoByCreditRequestId";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
-
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { AppContext } from "@context/AppContext";
 import { useEnums } from "@hooks/useEnums";
 import userNotFound from "@assets/images/ItemNotFound.png";
@@ -70,7 +70,6 @@ function ToDo(props: ToDoProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
   const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
-
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
     analyst: "",
@@ -307,7 +306,9 @@ function ToDo(props: ToDoProps) {
   const handleInfo = () => {
     setIsModalInfo(true);
   };
-
+  const { disabledButton: reassignCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("reassignCreditApplication"),
+  });
   useEffect(() => {
     setHasPermitSend(
       staff.some(
@@ -317,7 +318,6 @@ function ToDo(props: ToDoProps) {
       )
     );
   }, [staff, eventData, taskData, taskRole]);
-
   return (
     <>
       <Fieldset
@@ -501,7 +501,11 @@ function ToDo(props: ToDoProps) {
                     icon={icon.icon}
                     appearance="primary"
                     size="24px"
-                    onClick={handleToggleStaffModal}
+                    onClick={
+                      reassignCreditApplication
+                        ? handleInfo
+                        : handleToggleStaffModal
+                    }
                     cursorHover
                     disabled={staff === null}
                   />

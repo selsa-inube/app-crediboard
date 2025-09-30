@@ -1,5 +1,11 @@
-import { Button, IOption, Select, Stack, Text } from "@inubekit/inubekit";
+import { useState } from "react";
+import { MdOutlineInfo } from "react-icons/md";
+import { Button, Icon, IOption, Select, Stack, Text } from "@inubekit/inubekit";
+
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import { privilegeCrediboard } from "@config/privilege";
 import { IProspect } from "@services/prospect/types";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
 
 import { BaseModal } from "../baseModal";
@@ -16,7 +22,6 @@ interface IIncomeBorrowersModalProps {
   handleChange: (name: string, newValue: string) => void;
   setOpenModal: (modal: string) => void;
 }
-
 export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
   const {
     borrowersProspect,
@@ -29,12 +34,28 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
     handleChange,
     setOpenModal,
   } = props;
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const currentBorrower =
     dataProspect[0]?.borrowers?.find(
       (borrower) =>
         borrower.borrowerName === borrowerOptions[selectedIndex]?.value
     ) || selectedBorrower;
+
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = () => {
+    handleCloseModal();
+    setOpenModal("IncomeModalEdit");
+  };
+
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <BaseModal
@@ -63,24 +84,49 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
               fullwidth={isMobile}
               size="compact"
             />
-            <Button
-              onClick={() => {
-                handleCloseModal();
-                setOpenModal("IncomeModalEdit");
-              }}
-              fullwidth={isMobile}
-            >
-              {dataCreditProspect.edit}
-            </Button>
+            <Stack alignItems="center" justifyContent="center" gap="2px">
+              <Button
+                onClick={handleEditClick}
+                fullwidth={isMobile}
+                disabled={editCreditApplication}
+              >
+                {dataCreditProspect.edit}
+              </Button>
+              {editCreditApplication ? (
+                <Icon
+                  icon={<MdOutlineInfo />}
+                  appearance="primary"
+                  size="16px"
+                  cursorHover
+                  onClick={handleInfo}
+                />
+              ) : (
+                <></>
+              )}
+            </Stack>
           </Stack>
-          {currentBorrower && (
+          {currentBorrower ? (
             <IncomeBorrower initialIncome={currentBorrower} />
+          ) : (
+            <></>
           )}
         </>
       ) : (
         <Stack width="400px">
           <Text>{dataCreditProspect.noDataIncome}</Text>
         </Stack>
+      )}
+      {isModalOpen ? (
+        <InfoModal
+          onClose={handleInfoModalClose}
+          title={privilegeCrediboard.title}
+          subtitle={privilegeCrediboard.subtitle}
+          description={privilegeCrediboard.description}
+          nextButtonText={privilegeCrediboard.nextButtonText}
+          isMobile={isMobile}
+        />
+      ) : (
+        <></>
       )}
     </BaseModal>
   );
