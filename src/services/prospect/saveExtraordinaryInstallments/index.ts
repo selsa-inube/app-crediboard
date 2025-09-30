@@ -4,10 +4,11 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
 
-export const saveExtraordinaryInstallments = async (
+import { mapExtraordinaryInstallmentsEntity } from "./mappers";
+
+export const updateExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string
 ): Promise<IExtraordinaryInstallments | undefined> => {
@@ -21,7 +22,7 @@ export const saveExtraordinaryInstallments = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "SaveExtraordinaryInstallments",
+          "X-Action": "UpdateExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
         },
