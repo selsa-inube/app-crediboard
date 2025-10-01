@@ -7,6 +7,7 @@ import { IGuarantees } from "../types";
 
 const getGuaranteesById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequest: string
 ): Promise<IGuarantees[]> => {
   const maxRetries = maxRetriesServices;
@@ -23,6 +24,7 @@ const getGuaranteesById = async (
           "X-Action": "SearchAllGuaranteesById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

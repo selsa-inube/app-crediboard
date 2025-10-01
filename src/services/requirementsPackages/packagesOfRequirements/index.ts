@@ -7,6 +7,7 @@ import { IPackagesOfRequirementsById } from "../types";
 
 const getAllPackagesOfRequirementsById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   uniqueReferenceNumber: string
 ): Promise<IPackagesOfRequirementsById[]> => {
   const maxRetries = maxRetriesServices;
@@ -26,6 +27,7 @@ const getAllPackagesOfRequirementsById = async (
           "X-Action": "SearchAllPackagesOfRequirements",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

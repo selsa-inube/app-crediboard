@@ -14,7 +14,10 @@ import {
 } from "@inubekit/inubekit";
 
 import { SummaryCard } from "@components/cards/SummaryCard";
-import { ICreditRequestPinned, ICreditRequest } from "@services/creditRequest/query/types";
+import {
+  ICreditRequestPinned,
+  ICreditRequest,
+} from "@services/creditRequest/query/types";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
@@ -75,6 +78,9 @@ function BoardSection(props: BoardSectionProps) {
   const flagMessage = useRef(false);
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
+
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
 
@@ -138,7 +144,8 @@ function BoardSection(props: BoardSectionProps) {
     try {
       await patchChangeTracesToReadById(
         creditRequestId,
-        businessUnitPublicCode
+        businessUnitPublicCode,
+        businessManagerCode
       );
     } catch (error) {
       addFlag({
@@ -163,7 +170,8 @@ function BoardSection(props: BoardSectionProps) {
             rule,
             postBusinessUnitRules,
             "value",
-            businessUnitPublicCode
+            businessUnitPublicCode,
+            businessManagerCode
           );
 
           const extractedValues = Array.isArray(values)
@@ -182,7 +190,7 @@ function BoardSection(props: BoardSectionProps) {
         }
       })
     );
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, businessManagerCode]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {

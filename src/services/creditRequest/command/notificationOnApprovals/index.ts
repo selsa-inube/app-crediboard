@@ -11,6 +11,7 @@ import {
 
 export const getNotificationOnApprovals = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   payload: INotificationOnApprovals
 ): Promise<INotificationOnApprovalsResponse | undefined> => {
   const maxRetries = maxRetriesServices;
@@ -27,6 +28,7 @@ export const getNotificationOnApprovals = async (
           "X-Action": "NotificationOnApprovals",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

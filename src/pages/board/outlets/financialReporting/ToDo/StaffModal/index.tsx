@@ -70,6 +70,7 @@ export function StaffModal(props: StaffModalProps) {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const handleCommercialManagerChange = (
     name: string,
     value: string,
@@ -99,8 +100,16 @@ export function StaffModal(props: StaffModalProps) {
     const fetchData = async () => {
       try {
         const [accountManagers, analysts] = await Promise.all([
-          getCommercialManagerAndAnalyst("CredicarAccountManager", "Selsa"),
-          getCommercialManagerAndAnalyst("CredicarAnalyst", "Selsa"),
+          getCommercialManagerAndAnalyst(
+            businessManagerCode,
+            "Selsa",
+            businessUnitPublicCode
+          ),
+          getCommercialManagerAndAnalyst(
+            businessManagerCode,
+            "Selsa",
+            businessUnitPublicCode
+          ),
         ]);
 
         setAccountManagerList(accountManagers);
@@ -154,6 +163,7 @@ export function StaffModal(props: StaffModalProps) {
       if (managerRequest) {
         await changeUsersByCreditRequest(
           businessUnitPublicCode,
+          businessManagerCode,
           managerRequest,
           userAccount
         );
@@ -166,6 +176,7 @@ export function StaffModal(props: StaffModalProps) {
       if (analystRequest) {
         await changeUsersByCreditRequest(
           businessUnitPublicCode,
+          businessManagerCode,
           analystRequest,
           userAccount
         );

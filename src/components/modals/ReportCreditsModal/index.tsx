@@ -30,6 +30,7 @@ export interface ReportCreditsModalProps {
   prospectData?: IProspect[];
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
   businessUnitPublicCode: string;
+  businessManagerCode: string,
   creditRequestCode: string;
 }
 
@@ -55,6 +56,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     handleClose,
     prospectData,
     businessUnitPublicCode,
+    businessManagerCode,
     creditRequestCode,
   } = props;
   const [loading, setLoading] = useState(true);
@@ -164,6 +166,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
     restoreFinancialObligationsByBorrowerId(
       businessUnitPublicCode, selectedBorrower?.value || "",
+      businessManagerCode,
       prospectData![0].prospectCode,
       restoreData.justification
     );
@@ -300,6 +303,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           businessUnitPublicCode={businessUnitPublicCode}
           onObligationProcessed={handleObligationProcessed}
           creditRequestCode={creditRequestCode}
+          businessManagerCode={businessManagerCode}
         />
       </Stack>
       {isModalOpen ? (

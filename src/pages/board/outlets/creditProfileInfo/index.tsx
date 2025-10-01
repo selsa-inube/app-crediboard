@@ -65,6 +65,8 @@ export const CreditProfileInfo = () => {
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -154,7 +156,12 @@ export const CreditProfileInfo = () => {
       }
     })();
 
-    getCreditRequestByCode(businessUnitPublicCode, id!, userAccount)
+    getCreditRequestByCode(
+      businessUnitPublicCode,
+      businessManagerCode,
+      id!,
+      userAccount
+    )
       .then((data) => {
         setRequests(data[0] as ICreditRequest);
       })
@@ -170,6 +177,7 @@ export const CreditProfileInfo = () => {
     dataPaymentcapacity,
     dataUncoveredWallet,
     userAccount,
+    businessManagerCode
   ]);
 
   return (
@@ -194,7 +202,11 @@ export const CreditProfileInfo = () => {
                     >
                       {fieldLabels.back}
                     </Button>
-                    <Button spacing="compact" variant="filled" onClick={() => print()}>
+                    <Button
+                      spacing="compact"
+                      variant="filled"
+                      onClick={() => print()}
+                    >
                       {fieldLabels.print}
                     </Button>
                   </Stack>
@@ -362,6 +374,7 @@ export const CreditProfileInfo = () => {
             setCreditProfile={setCreditProfile}
             requests={requests}
             businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
           />
           <PaymentCapacity
             availableValue={payment_capacity.available_value}
@@ -383,6 +396,7 @@ export const CreditProfileInfo = () => {
           <RiskScoring
             isMobile={isMobile}
             businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
             customerIdentificationNumber={requests.clientIdentificationNumber}
           />
           <Guarantees

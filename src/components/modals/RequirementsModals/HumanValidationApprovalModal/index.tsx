@@ -16,6 +16,7 @@ interface IHumanValidationApprovalModalProps {
   isMobile: boolean;
   initialValues: IApprovalHuman;
   businessUnitPublicCode: string;
+  businessManagerCode: string,
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
   rawRequirements: IPackagesOfRequirementsById[];
@@ -30,6 +31,7 @@ export function HumanValidationApprovalModal(
     isMobile,
     initialValues,
     businessUnitPublicCode,
+    businessManagerCode,
     entryId,
     entryIdToRequirementMap,
     rawRequirements,
@@ -91,7 +93,11 @@ export function HumanValidationApprovalModal(
           ],
         };
 
-        await approveRequirementById(businessUnitPublicCode, payload);
+        await approveRequirementById(
+          businessUnitPublicCode,
+          businessManagerCode,
+          payload
+        );
 
         if (onConfirm) {
           onConfirm(formik.values);

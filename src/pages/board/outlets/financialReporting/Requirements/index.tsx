@@ -49,13 +49,20 @@ export interface IRequirementsProps {
   id: string;
   user: string;
   businessUnitPublicCode: string;
+  businessManagerCode: string;
   creditRequestCode: string;
   isMobile: boolean;
 }
 
 export const Requirements = (props: IRequirementsProps) => {
-  const { isMobile, id, user, businessUnitPublicCode, creditRequestCode } =
-    props;
+  const {
+    isMobile,
+    id,
+    user,
+    businessUnitPublicCode,
+    businessManagerCode,
+    creditRequestCode,
+  } = props;
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -123,6 +130,7 @@ export const Requirements = (props: IRequirementsProps) => {
 
         const data = await getAllPackagesOfRequirementsById(
           businessUnitPublicCode,
+          businessManagerCode,
           creditRequestCode
         );
         setRawRequirements(data);
@@ -248,7 +256,11 @@ export const Requirements = (props: IRequirementsProps) => {
   );
 
   const handleAddRequirement = async (creditRequests: IPatchOfRequirements) => {
-    await saveRequirements(businessUnitPublicCode, creditRequests)
+    await saveRequirements(
+      businessUnitPublicCode,
+      businessManagerCode,
+      creditRequests
+    )
       .then(() => {
         setSentData(creditRequests);
       })
@@ -431,6 +443,7 @@ export const Requirements = (props: IRequirementsProps) => {
               observations:
                 approvalSystemValues[selectedEntryId]?.observations || "",
             }}
+            businessManagerCode={businessManagerCode}
           />
         )}
       {showSeeDetailsModal &&
@@ -448,6 +461,7 @@ export const Requirements = (props: IRequirementsProps) => {
                 approvalDocumentValues[selectedEntryId]?.observations || "",
             }}
             businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
           />
         )}
       {showSeeDetailsModal &&
@@ -461,6 +475,7 @@ export const Requirements = (props: IRequirementsProps) => {
               observations:
                 approvalHumanValues[selectedEntryId]?.observations || "",
             }}
+            businessManagerCode={businessManagerCode}
           />
         )}
       {showAprovalsModal &&
@@ -501,6 +516,7 @@ export const Requirements = (props: IRequirementsProps) => {
               return "";
             })()}
             businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
             entryId={selectedEntryId}
             rawRequirements={rawRequirements}
             entryIdToRequirementMap={entryIdToRequirementMap}
@@ -540,6 +556,7 @@ export const Requirements = (props: IRequirementsProps) => {
             entryId={selectedEntryId}
             rawRequirements={rawRequirements}
             entryIdToRequirementMap={entryIdToRequirementMap}
+            businessManagerCode={businessManagerCode}
           />
         )}
       {showAprovalsModal &&
@@ -561,6 +578,7 @@ export const Requirements = (props: IRequirementsProps) => {
               }))
             }
             businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
             entryId={selectedEntryId}
             rawRequirements={rawRequirements}
             entryIdToRequirementMap={entryIdToRequirementMap}

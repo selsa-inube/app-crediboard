@@ -15,12 +15,20 @@ export interface ITraceDetailsModalProps {
   handleClose: () => void;
   data: { answer: string; observations: string; documents?: DocumentItem[] };
   businessUnitPublicCode?: string;
+  businessManagerCode?: string;
   isMobile?: boolean;
   user?: string;
 }
 
 export function TraceDetailsModal(props: ITraceDetailsModalProps) {
-  const { handleClose, data, businessUnitPublicCode, isMobile, user } = props;
+  const {
+    handleClose,
+    data,
+    businessUnitPublicCode,
+    businessManagerCode,
+    isMobile,
+    user,
+  } = props;
 
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -33,7 +41,8 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
       const documentData = await getSearchDocumentById(
         id,
         user ?? "",
-        businessUnitPublicCode ?? ""
+        businessUnitPublicCode ?? "",
+        businessManagerCode ?? ""
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);

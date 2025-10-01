@@ -10,6 +10,7 @@ import { IOptionStaff } from "./types";
 const getSearchOptionForStaff = async (
   portalPublicCode: string,
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   userAccount: string,
 ): Promise<IOptionStaff[]> => {
   const maxRetries = maxRetriesServices;
@@ -28,6 +29,8 @@ const getSearchOptionForStaff = async (
           "X-Action": "SearchOptionForStaff",
           "Content-type": "application/json; charset=UTF-8",
           "X-User-Name": userAccount,
+          "X-Process-Manager": businessManagerCode,
+
         },
       };
       const res = await fetch(

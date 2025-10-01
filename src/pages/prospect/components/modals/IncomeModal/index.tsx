@@ -11,6 +11,7 @@ interface IncomeModalProps {
   initialValues?: IIncomeSources;
   disabled?: boolean;
   businessUnitPublicCode?: string;
+  businessManagerCode: string;
   creditRequestCode?: string;
   handleClose: () => void;
   onSubmit: (data: IIncomeSources) => void;
@@ -23,6 +24,7 @@ export function IncomeModal(props: IncomeModalProps) {
     initialValues,
     businessUnitPublicCode,
     creditRequestCode,
+    businessManagerCode,
     handleClose,
     openModal,
     onSubmit,
@@ -70,6 +72,7 @@ export function IncomeModal(props: IncomeModalProps) {
         showEdit={false}
         onDataChange={handleDataChange}
         businessUnitPublicCode={businessUnitPublicCode}
+        businessManagerCode={businessManagerCode}
         creditRequestCode={creditRequestCode}
       />
     </BaseModal>

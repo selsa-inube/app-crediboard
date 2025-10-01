@@ -52,10 +52,13 @@ export const Approvals = (props: IApprovalsProps) => {
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const fetchCreditRequest = useCallback(async () => {
     try {
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
+        businessManagerCode,
         id,
         userAccount
       );
@@ -67,7 +70,7 @@ export const Approvals = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id, userAccount]);
+  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();
@@ -80,6 +83,7 @@ export const Approvals = (props: IApprovalsProps) => {
     try {
       const data: IApprovals = await getApprovalsById(
         businessUnitPublicCode,
+        businessManagerCode,
         requests.creditRequestId
       );
       if (data && Array.isArray(data)) {
@@ -99,7 +103,7 @@ export const Approvals = (props: IApprovalsProps) => {
     } finally {
       setLoading(false);
     }
-  }, [businessUnitPublicCode, requests?.creditRequestId]);
+  }, [businessUnitPublicCode, requests?.creditRequestId, businessManagerCode]);
 
   useEffect(() => {
     fetchApprovalsData();
@@ -127,10 +131,14 @@ export const Approvals = (props: IApprovalsProps) => {
 
   const handleSubmit = async () => {
     try {
-      const code = await getNotificationOnApprovals(businessUnitPublicCode, {
-        approvalId: selectedData?.approvalId?.toString() ?? "",
-        creditRequestId: requests?.creditRequestId ?? "",
-      });
+      const code = await getNotificationOnApprovals(
+        businessUnitPublicCode,
+        businessManagerCode,
+        {
+          approvalId: selectedData?.approvalId?.toString() ?? "",
+          creditRequestId: requests?.creditRequestId ?? "",
+        }
+      );
 
       addFlag({
         title: dataInfoApprovals.notifySend,

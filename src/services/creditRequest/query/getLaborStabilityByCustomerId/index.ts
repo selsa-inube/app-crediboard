@@ -7,6 +7,7 @@ import { ILaborStabilityByCustomerId } from "./types";
 
 const getLaborStabilityByCustomerId = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   customerIdentificationNumber: string
 ): Promise<ILaborStabilityByCustomerId[]> => {
   const maxRetries = maxRetriesServices;
@@ -23,6 +24,7 @@ const getLaborStabilityByCustomerId = async (
           "X-Action": "GetLaborStabilityByCustomerId",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

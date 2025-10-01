@@ -53,6 +53,7 @@ interface ICreditProspectProps {
   incomeData: Record<string, IIncomeSources>;
   isMobile: boolean;
   businessUnitPublicCode: string;
+  businessManagerCode: string;
   sentData: IExtraordinaryInstallments | null;
   creditRequestCode?: string;
   setSentData: React.Dispatch<
@@ -86,6 +87,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     sentData,
     setSentData,
     businessUnitPublicCode,
+    businessManagerCode,
     creditRequestCode,
     showMenu,
     handleChange,
@@ -369,6 +371,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           onSubmit={handleIncomeSubmit}
           businessUnitPublicCode={businessUnitPublicCode}
           creditRequestCode={id}
+          businessManagerCode={businessManagerCode}
         />
       )}
       {currentModal === "reportCreditsModal" && (
@@ -381,6 +384,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           setDataProspect={setDataProspect}
           businessUnitPublicCode={businessUnitPublicCode}
           creditRequestCode={creditRequestCode || ""}
+          businessManagerCode={businessManagerCode}
         />
       )}
       {currentModal === "extraPayments" && (
@@ -391,6 +395,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           sentData={sentData}
           setSentData={setSentData}
           businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
         />
       )}
       {showShareModal && (

@@ -8,6 +8,7 @@ export const lateRejectionOfACreditRequest = async (
   creditRequestId: string | undefined,
   userAccount: string,
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   humanDecision: string,
   justificacion: string
 ) => {
@@ -26,6 +27,7 @@ export const lateRejectionOfACreditRequest = async (
           "X-Business-Unit": businessUnitPublicCode,
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify({ creditRequestId, humanDecision, justificacion }),
         signal: controller.signal,

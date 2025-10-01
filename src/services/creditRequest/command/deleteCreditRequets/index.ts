@@ -5,7 +5,8 @@ import { mapRolesDeleteCreditRequestToApi } from "./mappers";
 
 const deleteCreditRequests = async (
   creditRequest: IDeleteCreditRequest,
-  businessUnitPublicCode: string
+  businessUnitPublicCode: string,
+  businessManagerCode: string
 ): Promise<IDeleteCreditRequest | undefined> => {
   const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`;
 
@@ -16,6 +17,7 @@ const deleteCreditRequests = async (
         "X-Action": "RemoveCreditRequest",
         "X-Business-Unit": businessUnitPublicCode,
         "Content-type": "application/json; charset=UTF-8",
+        "X-Process-Manager": businessManagerCode,
       },
       body: JSON.stringify(mapRolesDeleteCreditRequestToApi(creditRequest)),
     };

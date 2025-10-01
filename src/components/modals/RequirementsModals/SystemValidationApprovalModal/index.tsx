@@ -18,6 +18,7 @@ interface ISystemValidationApprovalModalProps {
   initialValues: IApprovalSystem;
   questionToBeAskedInModal: string;
   businessUnitPublicCode: string;
+  businessManagerCode: string,
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
   rawRequirements: IPackagesOfRequirementsById[];
@@ -33,6 +34,7 @@ export function SystemValidationApprovalModal(
     initialValues,
     questionToBeAskedInModal,
     businessUnitPublicCode,
+    businessManagerCode,
     entryId,
     entryIdToRequirementMap,
     rawRequirements,
@@ -82,7 +84,11 @@ export function SystemValidationApprovalModal(
           ],
         };
 
-        await approveRequirementById(businessUnitPublicCode, payload);
+        await approveRequirementById(
+          businessUnitPublicCode,
+          businessManagerCode,
+          payload
+        );
 
         if (onConfirm) {
           onConfirm(formik.values);

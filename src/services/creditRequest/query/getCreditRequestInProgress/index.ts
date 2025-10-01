@@ -8,6 +8,7 @@ import { mapCreditRequestToEntities } from "./mapper";
 
 export const getCreditRequestInProgress = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   page: number,
   userAccount: string,
   searchParam?: { filter?: string; text?: string }
@@ -43,6 +44,7 @@ export const getCreditRequestInProgress = async (
           "X-Business-Unit": businessUnitPublicCode,
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };
