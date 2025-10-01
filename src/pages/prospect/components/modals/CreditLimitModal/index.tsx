@@ -4,14 +4,18 @@ import { Stack, Text } from "@inubekit/inubekit";
 import { BaseModal } from "@components/modals/baseModal";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { CreditLimitCard } from "@pages/simulateCredit/CreditLimitCard";
+import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimitCard/types";
 import { get } from "@mocks/utils/dataMock.service";
 import { mockCreditLimit } from "@mocks/add-prospect/modals-amount/modalsAmount.mock";
 
 import { dataCreditLimitModal } from "./config";
 
 export interface ICreditLimitModalProps {
-  handleClose: () => void;
+  businessUnitPublicCode: string;
+  businessManagerCode: string;
+  dataMaximumCreditLimitService: IdataMaximumCreditLimitService;
   isMobile: boolean;
+  handleClose: () => void;
   setRequestValue: React.Dispatch<
     React.SetStateAction<IPaymentChannel[] | undefined>
   >;
@@ -19,7 +23,14 @@ export interface ICreditLimitModalProps {
 }
 
 export function CreditLimitModal(props: ICreditLimitModalProps) {
-  const { isMobile, handleClose, setRequestValue } = props;
+  const {
+    businessUnitPublicCode,
+    businessManagerCode,
+    dataMaximumCreditLimitService,
+    isMobile,
+    handleClose,
+    setRequestValue,
+  } = props;
 
   const creditCardsData = mockCreditLimit;
   useEffect(() => {
@@ -61,11 +72,13 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
               creditLineTxt={item.creditLineTxt}
               creditLine={item.creditLine}
               creditLimitData={item.creditLimitdata}
-              maxLimitData={item.maxLimitData}
               paymentCapacityData={item.paymentCapacityData}
               reciprocityData={item.reciprocityData}
               scoreData={item.scoreData}
               isMobile={isMobile}
+              businessUnitPublicCode={businessUnitPublicCode}
+              businessManagerCode={businessManagerCode}
+              dataMaximumCreditLimitService={dataMaximumCreditLimitService}
             />
           ))}
         </Stack>

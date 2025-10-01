@@ -178,7 +178,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     if (creditRequestCode) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, creditRequestCode, userAccount, businessManagerCode]);
+  }, [
+    businessUnitPublicCode,
+    creditRequestCode,
+    userAccount,
+    businessManagerCode,
+  ]);
 
   const handleDisbursement = async () => {
     if (requests?.creditRequestId) {
@@ -442,6 +447,18 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBorrower]);
+
+  const borrower = dataProspect?.[0]?.borrowers?.[0];
+
+  const dataMaximumCreditLimitService = {
+    identificationDocumentType: borrower?.borrowerIdentificationType || "",
+    identificationDocumentNumber: borrower?.borrowerIdentificationNumber || "",
+    moneyDestination: dataProspect?.[0]?.moneyDestinationAbbreviatedName || "",
+    primaryIncomeType:
+      borrower?.borrowerProperties?.find(
+        (property) => property.propertyName === "PeriodicSalary"
+      )?.propertyValue || "",
+  };
 
   return (
     <>
@@ -770,6 +787,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 isMobile={isMobile}
                 handleClose={handleCloseModal}
                 setRequestValue={() => {}}
+                businessUnitPublicCode={businessUnitPublicCode}
+                businessManagerCode={businessManagerCode}
+                dataMaximumCreditLimitService={dataMaximumCreditLimitService}
               />
             )}
             {currentModal === "IncomeModal" && (
