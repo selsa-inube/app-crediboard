@@ -35,7 +35,7 @@ export const getMaximumCreditLimitByLineOfCreditRegulation = async (
         },
         signal: controller.signal,
       };
-      console.log(businessUnitPublicCode);
+      
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/${lineOfCreditAbbreviatedName}/${identificationDocumentType}/${identificationDocumentNumber}/?${queryParams.toString()}`,
         options
