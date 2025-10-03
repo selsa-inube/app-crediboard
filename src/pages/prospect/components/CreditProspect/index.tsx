@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import { FormikValues } from "formik";
 import {
   MdOutlineAdd,
@@ -119,14 +118,12 @@ export function CreditProspect(props: ICreditProspectProps) {
   });
   const currentModal = modalHistory[modalHistory.length - 1];
 
-  const { id } = useParams();
-
   const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
-
+  console.log(creditRequestCode);
   useEffect(() => {
-    if (id) {
+    if (creditRequestCode) {
       const foundProspect = mockProspectCredit.find(
-        (prospect) => prospect.public_code === id
+        (prospect) => prospect.public_code === creditRequestCode
       );
       if (foundProspect) {
         const mockCredit = foundProspect.consolidated_credit[0];
@@ -144,7 +141,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         });
       }
     }
-  }, [id]);
+  }, [creditRequestCode]);
 
   const [form, setForm] = useState({
     borrower: "",
@@ -179,12 +176,16 @@ export function CreditProspect(props: ICreditProspectProps) {
   };
 
   const handleConfirm = async (values: FormikValues) => {
-    if (!id) {
+    if (!creditRequestCode) {
       console.error("ID no está definido");
       return;
     }
 
-    const result = await addCreditProduct(id, values, mockProspectCredit);
+    const result = await addCreditProduct(
+      creditRequestCode,
+      values,
+      mockProspectCredit
+    );
 
     if (result) {
       handleCloseModal();
@@ -289,7 +290,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       )}
       <Stack direction="column">
         <CardCommercialManagement
-          id={id!}
+          id={creditRequestCode!}
           dataRef={dataCommercialManagementRef}
           onClick={() => handleOpenModal("editProductModal")}
           prospectData={prospectData || undefined}
@@ -373,7 +374,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           }
           onSubmit={handleIncomeSubmit}
           businessUnitPublicCode={businessUnitPublicCode}
-          creditRequestCode={id}
+          creditRequestCode={creditRequestCode}
           businessManagerCode={businessManagerCode}
         />
       )}
