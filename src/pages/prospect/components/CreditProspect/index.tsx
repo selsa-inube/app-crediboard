@@ -60,6 +60,7 @@ interface ICreditProspectProps {
     React.SetStateAction<IExtraordinaryInstallments | null>
   >;
   prospectData?: IProspect;
+  onProspectUpdate?: (prospect: IProspect) => void;
   isPrint?: boolean;
   showPrint?: boolean;
   setRequestValue?: React.Dispatch<
@@ -81,6 +82,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     selectedBorrower,
     incomeData,
     prospectData,
+    onProspectUpdate,
     isMobile,
     isPrint = false,
     showPrint = true,
@@ -291,6 +293,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           dataRef={dataCommercialManagementRef}
           onClick={() => handleOpenModal("editProductModal")}
           prospectData={prospectData || undefined}
+          onProspectUpdate={onProspectUpdate}
         />
       </Stack>
       {currentModal === "creditLimit" && (

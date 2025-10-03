@@ -178,7 +178,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     if (creditRequestCode) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, creditRequestCode, userAccount, businessManagerCode]);
+  }, [
+    businessUnitPublicCode,
+    creditRequestCode,
+    userAccount,
+    businessManagerCode,
+  ]);
 
   const handleDisbursement = async () => {
     if (requests?.creditRequestId) {
@@ -762,6 +767,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   generateAndSharePdf={generateAndSharePdf}
                   setDataProspect={setDataProspect}
                   creditRequestCode={creditRequestCode}
+                  onProspectUpdate={
+                    setDataProspect as unknown as (prospect: IProspect) => void
+                  }
                 />
               )}
             </Stack>
