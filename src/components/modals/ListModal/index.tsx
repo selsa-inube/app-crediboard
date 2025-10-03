@@ -104,6 +104,7 @@ export const ListModal = (props: IListModalProps) => {
   const dragCounter = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const [pendingFiles, setPendingFiles] = useState<
@@ -260,6 +261,7 @@ export const ListModal = (props: IListModalProps) => {
 
           await saveDocument(
             businessUnitPublicCode,
+            businessManagerCode,
             id,
             abbreviatedName,
             fileData.file,
@@ -292,7 +294,8 @@ export const ListModal = (props: IListModalProps) => {
       const documentData = await getSearchDocumentById(
         id,
         eventData.user.identificationDocumentNumber || "",
-        businessUnitPublicCode
+        businessUnitPublicCode,
+        businessManagerCode,
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);

@@ -14,6 +14,7 @@ import { IProperty } from "./types";
 export interface ITableFinancialObligationsProps {
   prospectId?: string;
   businessUnitPublicCode?: string;
+  businessManagerCode?: string,
   type?: string;
   creditRequestCode?: string;
   propertyValue?: string;
@@ -36,7 +37,7 @@ export interface ITableFinancialObligationsProps {
 export const TableFinancialObligations = (
   props: ITableFinancialObligationsProps
 ) => {
-  const { refreshKey, showActions, businessUnitPublicCode, creditRequestCode, selectedBorrower, newObligation, onObligationProcessed } = props;
+  const { refreshKey, showActions, businessUnitPublicCode, businessManagerCode, creditRequestCode, selectedBorrower, newObligation, onObligationProcessed } = props;
 
   const [dataProspect, setDataProspect] = useState<IProspect[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -206,7 +207,7 @@ export const TableFinancialObligations = (
 
       if (!newContentTable) return;
 
-      await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
+      await updateProspect(businessUnitPublicCode || "", businessManagerCode || "", newContentTable[0]);
 
       if ((borrowersListFinancialObligation.length % ROWS_PER_PAGE) === 0) {
         setGotEndPage(true);
@@ -228,6 +229,7 @@ export const TableFinancialObligations = (
     newObligation,
     isProcessingObligation,
     addFinancialObligation,
+    businessManagerCode,
     businessUnitPublicCode,
     borrowersListFinancialObligation.length,
     setGotEndPage,
@@ -245,12 +247,12 @@ export const TableFinancialObligations = (
     useEffect(() => {
       const timeout = setTimeout(() => setLoading(false), 500);
 
-      getSearchProspectByCode(businessUnitPublicCode || "", creditRequestCode || "").then((res) => {
+      getSearchProspectByCode(businessUnitPublicCode || "", businessManagerCode || "",creditRequestCode || "").then((res) => {
         setDataProspect([res]);
       });
 
       return () => clearTimeout(timeout);
-    }, [businessUnitPublicCode, creditRequestCode]);
+    }, [businessUnitPublicCode, creditRequestCode, businessManagerCode]);
 
   useEffect(() => {
     const financialObligationBorrowers = filterListBorrowersFinancialObligation();
@@ -357,7 +359,7 @@ export const TableFinancialObligations = (
 
     if (!newContentTable) return;
 
-    await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
+    await updateProspect(businessUnitPublicCode || "", businessManagerCode || "", newContentTable[0]);
 
     if (setDataProspect === undefined) return;
 
@@ -366,6 +368,7 @@ export const TableFinancialObligations = (
     moveBeforePage();
   }, [
     businessUnitPublicCode,
+    businessManagerCode,
     deleteFinancialObligation,
     moveBeforePage
   ]);
@@ -389,7 +392,7 @@ export const TableFinancialObligations = (
 
       if (!newContentTable) return;
 
-      await updateProspect(businessUnitPublicCode || "", newContentTable[0]);
+      await updateProspect(businessUnitPublicCode || "", businessManagerCode || "", newContentTable[0]);
 
       setDataProspect(newContentTable);
 
@@ -397,7 +400,7 @@ export const TableFinancialObligations = (
     } catch (error) {
       handleFlag(errorMessages.update.description, errorMessages.update.title);
     }
-  }, [editFinancialObligation, businessUnitPublicCode, handleFlag]);
+  }, [editFinancialObligation, businessUnitPublicCode, businessManagerCode, handleFlag]);
 
   return (
     <TableFinancialObligationsUI

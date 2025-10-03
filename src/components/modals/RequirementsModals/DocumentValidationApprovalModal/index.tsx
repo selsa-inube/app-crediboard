@@ -35,6 +35,7 @@ interface IDocumentValidationApprovalModalsProps {
   title: string;
   id: string;
   businessUnitPublicCode: string;
+  businessManagerCode: string;
   user: string;
   seenDocuments: string[];
   entryId: string;
@@ -54,6 +55,7 @@ export function DocumentValidationApprovalModal(
     title,
     id,
     businessUnitPublicCode,
+    businessManagerCode,
     user,
     seenDocuments,
     entryId,
@@ -133,7 +135,11 @@ export function DocumentValidationApprovalModal(
           ],
         };
 
-        await approveRequirementById(businessUnitPublicCode, payload);
+        await approveRequirementById(
+          businessUnitPublicCode,
+          businessManagerCode,
+          payload
+        );
 
         if (onConfirm) {
           onConfirm({
@@ -170,7 +176,8 @@ export function DocumentValidationApprovalModal(
         const response = await getSearchAllDocumentsById(
           id,
           user,
-          businessUnitPublicCode
+          businessUnitPublicCode,
+          businessManagerCode
         );
         setDocuments(response);
       } catch (error) {
@@ -200,7 +207,8 @@ export function DocumentValidationApprovalModal(
       const documentData = await getSearchDocumentById(
         id,
         user,
-        businessUnitPublicCode
+        businessUnitPublicCode,
+        businessManagerCode
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);

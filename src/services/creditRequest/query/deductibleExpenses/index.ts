@@ -7,6 +7,7 @@ import { IAllDeductibleExpensesById } from "../../../prospect/types";
 
 const getAllDeductibleExpensesById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequestCode: string
 ): Promise<IAllDeductibleExpensesById[]> => {
   const maxRetries = maxRetriesServices;
@@ -23,6 +24,7 @@ const getAllDeductibleExpensesById = async (
           "X-Action": "SearchAllDeductibleExpensesById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

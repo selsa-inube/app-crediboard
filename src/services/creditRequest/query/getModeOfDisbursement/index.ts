@@ -9,6 +9,7 @@ import { mapCreditRequestToEntities } from "./mapper";
 
 export const getModeOfDisbursement = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequestId: string
 ): Promise<IModeOfDisbursement[]> => {
   const maxRetries = maxRetriesServices;
@@ -24,6 +25,7 @@ export const getModeOfDisbursement = async (
           "X-Action": "SearchAllModeOfDisbursementById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

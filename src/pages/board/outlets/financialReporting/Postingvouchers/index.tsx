@@ -37,12 +37,15 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
   const fetchCreditRequest = useCallback(async () => {
     try {
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
+        businessManagerCode,
         id,
         userAccount
       );
@@ -54,7 +57,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id, userAccount]);
+  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
 
   useEffect(() => {
     fetchCreditRequest();
@@ -67,6 +70,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
       try {
         const vouchers = await getAccountingVouchers(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
         setPositionsAccountingVouchers(vouchers);
@@ -78,7 +82,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
     };
 
     fetchAccountingVouchers();
-  }, [user, requests, businessUnitPublicCode]);
+  }, [user, requests, businessUnitPublicCode, businessManagerCode]);
   return (
     <Stack direction="column">
       <Fieldset

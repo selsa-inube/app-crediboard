@@ -3,6 +3,7 @@ import { patchChangeUsersByCreditRequest } from "@services/creditRequest/command
 
 export const changeUsersByCreditRequest = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequests: ICreditRequests,
   userAccount: string
 ) => {
@@ -11,6 +12,7 @@ export const changeUsersByCreditRequest = async (
     await patchChangeUsersByCreditRequest(
       creditRequests,
       businessUnitPublicCode,
+      businessManagerCode,
       userAccount
     );
   } catch (error) {

@@ -7,7 +7,8 @@ import {
 import { ICreditRequestPinned } from "../types";
 
 export const getCreditRequestPinned = async (
-  businessUnitPublicCode: string
+  businessUnitPublicCode: string,
+  businessManagerCode: string,
 ): Promise<ICreditRequestPinned[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -26,6 +27,7 @@ export const getCreditRequestPinned = async (
           "X-Action": "SearchAllCreditRequestPinned",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

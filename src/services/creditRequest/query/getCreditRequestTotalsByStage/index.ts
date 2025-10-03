@@ -6,7 +6,8 @@ import {
 import { ICreditRequestTotalsByStage } from "./types";
 
 const getCreditRequestTotalsByStage = async (
-  businessUnitPublicCode: string
+  businessUnitPublicCode: string,
+  businessManagerCode: string
 ): Promise<ICreditRequestTotalsByStage> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -21,6 +22,7 @@ const getCreditRequestTotalsByStage = async (
           "X-Action": "GetCreditRequestTotalsByStage",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

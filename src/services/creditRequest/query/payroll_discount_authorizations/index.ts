@@ -7,6 +7,7 @@ import { IPayrollDiscountAuthorization } from "../types";
 
 export const getPayrollDiscountAuthorizationsById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequestId: string
 ): Promise<IPayrollDiscountAuthorization[]> => {
   const maxRetries = maxRetriesServices;
@@ -23,6 +24,7 @@ export const getPayrollDiscountAuthorizationsById = async (
           "X-Action": "SearchAllPayrollDiscountAuthorizationsById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

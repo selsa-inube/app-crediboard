@@ -34,6 +34,7 @@ import { removeExtraordinaryInstallment } from "./utils";
 export interface TableExtraordinaryInstallmentProps {
   [key: string]: unknown;
   businessUnitPublicCode?: string;
+  businessManagerCode?: string;
   prospectData?: IProspect;
   handleClose?: (() => void) | undefined;
   refreshKey?: number;
@@ -83,6 +84,7 @@ export const TableExtraordinaryInstallment = (
     handleClose,
     setSentData,
     businessUnitPublicCode,
+    businessManagerCode,
   } = props;
 
   const headers = headersTableExtraordinaryInstallment;
@@ -189,6 +191,7 @@ export const TableExtraordinaryInstallment = (
     try {
       await removeExtraordinaryInstallment(
         businessUnitPublicCode || "",
+        businessManagerCode || "",
         extraordinaryInstallments
       );
 

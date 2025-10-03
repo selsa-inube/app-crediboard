@@ -101,6 +101,8 @@ function ToDo(props: ToDoProps) {
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -112,6 +114,7 @@ function ToDo(props: ToDoProps) {
       try {
         const data = await getCreditRequestByCode(
           businessUnitPublicCode,
+          businessManagerCode,
           id,
           userAccount
         );
@@ -129,7 +132,7 @@ function ToDo(props: ToDoProps) {
     if (id) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, id, userAccount]);
+  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
 
   useEffect(() => {
     const fetchToDoData = async () => {
@@ -138,6 +141,7 @@ function ToDo(props: ToDoProps) {
       try {
         const data = await getToDoByCreditRequestId(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
 
@@ -155,7 +159,12 @@ function ToDo(props: ToDoProps) {
     };
 
     fetchToDoData();
-  }, [businessUnitPublicCode, requests?.creditRequestId, setIdProspect]);
+  }, [
+    businessUnitPublicCode,
+    requests?.creditRequestId,
+    businessManagerCode,
+    setIdProspect,
+  ]);
 
   useEffect(() => {
     if (taskData?.usersByCreditRequestResponse) {
@@ -191,6 +200,7 @@ function ToDo(props: ToDoProps) {
       try {
         const data = await getToDoByCreditRequestId(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
         setTaskData(data);
@@ -245,6 +255,7 @@ function ToDo(props: ToDoProps) {
       try {
         const decision = await getSearchDecisionById(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
 
@@ -425,6 +436,7 @@ function ToDo(props: ToDoProps) {
                   secondaryButtonText={txtLabels.secondaryButtonText}
                   inputLabel={txtLabels.inputLabel}
                   inputPlaceholder={txtLabels.inputPlaceholder}
+                  businessManagerCode={businessManagerCode}
                   onSecondaryButtonClick={handleCloseModal}
                   onCloseModal={handleCloseModal}
                   data={data}

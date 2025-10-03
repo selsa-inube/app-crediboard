@@ -120,9 +120,10 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const { addFlag } = useFlag();
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const stackRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -253,7 +254,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     const fetchTotals = async () => {
       try {
         const result = await getCreditRequestTotalsByStage(
-          businessUnitPublicCode
+          businessUnitPublicCode,
+          businessManagerCode
         );
         if (result) setTotalsData(normalizedTotalData(result));
       } catch (error) {

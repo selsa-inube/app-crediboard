@@ -8,6 +8,7 @@ import { IProspectId } from "../types";
 
 export const removeProspect = async (
     businessUnitPublicCode: string,
+    businessManagerCode: string,
     prospectId: string,
 ): Promise<IProspectId | null> => {
     const maxRetries = maxRetriesServices;
@@ -29,6 +30,7 @@ export const removeProspect = async (
                     "X-Action": "RemoveProspect",
                     "X-Business-Unit": businessUnitPublicCode,
                     "Content-type": "application/json; charset=UTF-8",
+                    "X-Process-Manager": businessManagerCode,
                 },
                 signal: controller.signal,
                 body: JSON.stringify(body),

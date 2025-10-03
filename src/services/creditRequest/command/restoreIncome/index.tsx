@@ -8,6 +8,7 @@ import { IRestoreIncome, IRestoreIncomeResponse } from "../types";
 
 export const RestoreIncomeInformationByBorrowerId = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   payload: IRestoreIncome,
 ): Promise<IRestoreIncomeResponse | undefined> => {
   const maxRetries = maxRetriesServices;
@@ -23,6 +24,7 @@ export const RestoreIncomeInformationByBorrowerId = async (
           "X-Action": "RestoreIncomeInformationByBorrowerId",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

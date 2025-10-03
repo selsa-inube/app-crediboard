@@ -6,6 +6,7 @@ import {
 import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";
 export const getApprovalsById = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   creditRequestId: string
 ): Promise<IApprovals> => {
   const maxRetries = maxRetriesServices;
@@ -22,6 +23,7 @@ export const getApprovalsById = async (
           "X-Action": "SearchAllApprovalsById",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };

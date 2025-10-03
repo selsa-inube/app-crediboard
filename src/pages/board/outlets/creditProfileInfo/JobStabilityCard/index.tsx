@@ -22,6 +22,7 @@ interface JobStabilityCardProps {
   setCreditProfile: (stade: boolean) => void;
   requests: ICreditRequest;
   businessUnitPublicCode: string;
+  businessManagerCode: string;
 }
 
 export function JobStabilityCard(props: JobStabilityCardProps) {
@@ -32,6 +33,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
     setCreditProfile,
     requests,
     businessUnitPublicCode,
+    businessManagerCode,
   } = props;
 
   const handleRetry = () => {
@@ -47,6 +49,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
       try {
         const data = await getLaborStabilityByCustomerId(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.clientIdentificationNumber
         );
         setLaborStabilityByCustomerId(data);

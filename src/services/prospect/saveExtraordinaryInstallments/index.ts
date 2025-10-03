@@ -10,7 +10,8 @@ import { mapExtraordinaryInstallmentsEntity } from "./mappers";
 
 export const updateExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,
-  businessUnitPublicCode: string
+  businessUnitPublicCode: string,
+  businessManagerCode: string,
 ): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,6 +26,7 @@ export const updateExtraordinaryInstallments = async (
           "X-Action": "UpdateExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(
           mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)

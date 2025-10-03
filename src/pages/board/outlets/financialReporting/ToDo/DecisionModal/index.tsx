@@ -33,6 +33,7 @@ export interface DecisionModalProps {
   buttonText: string;
   inputLabel: string;
   inputPlaceholder: string;
+  businessManagerCode: string;
   onSubmit?: (values: { textarea: string }) => void;
   onSecondaryButtonClick?: () => void;
   maxLength?: number;
@@ -49,6 +50,7 @@ export function DecisionModal(props: DecisionModalProps) {
     buttonText,
     inputLabel,
     inputPlaceholder,
+    businessManagerCode,
     onSubmit,
     onSecondaryButtonClick,
     maxLength = 200,
@@ -112,6 +114,7 @@ export function DecisionModal(props: DecisionModalProps) {
 
       const response = await makeDecisions(
         data.businessUnit,
+        businessManagerCode,
         data.user,
         makeDecisionsPayload,
         data.xAction

@@ -6,6 +6,7 @@ import {
 
 export const patchChangeAnchorToCreditRequest = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
   userAccount: string,
   creditRequestId: string | undefined,
   isPinned: string | undefined
@@ -25,6 +26,7 @@ export const patchChangeAnchorToCreditRequest = async (
           "X-Business-Unit": businessUnitPublicCode,
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify({ creditRequestId, isPinned }),
         signal: controller.signal,

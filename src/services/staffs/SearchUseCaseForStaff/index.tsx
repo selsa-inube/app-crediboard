@@ -29,6 +29,7 @@ export const getSearchUseCaseForStaff = async (
           "X-Action": "SearchUseCaseForStaff",
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };
