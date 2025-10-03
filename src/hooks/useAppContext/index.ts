@@ -57,28 +57,6 @@ function useAppContext() {
   } catch (error) {
     console.error("Error parsing businessUnitSigla: ", error);
   }
-
-  // useEffect(() => {
-  //   if (isLoading) return;
-
-  //   const isValidAuthUser =
-  //     user?.id &&
-  //     user?.username &&
-  //     user.id !== "id" &&
-  //     user.username !== "username";
-  //   if (isValidAuthUser) {
-  //     setHasUserLoaded(true);
-  //   } else if (
-  //     user?.id === "id" &&
-  //     user?.username === "username" &&
-  //     !hasUserLoaded
-  //   ) {
-  //     setHasUserLoaded(false);
-  //   } else if (!user && !hasUserLoaded) {
-  //     setHasUserLoaded(false);
-  //   }
-  // }, [user, hasUserLoaded, isLoading]);
-
   const [eventData, setEventData] = useState<ICrediboardData>({
     portal: {
       abbreviatedName: "",
