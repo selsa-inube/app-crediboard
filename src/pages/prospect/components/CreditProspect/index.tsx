@@ -193,6 +193,18 @@ export function CreditProspect(props: ICreditProspectProps) {
     print();
   };
 
+  const borrower = dataProspect?.[0]?.borrowers?.[0];
+
+  const dataMaximumCreditLimitService = {
+    identificationDocumentType: borrower?.borrowerIdentificationType || "",
+    identificationDocumentNumber: borrower?.borrowerIdentificationNumber || "",
+    moneyDestination: dataProspect?.[0]?.moneyDestinationAbbreviatedName || "",
+    primaryIncomeType:
+      borrower?.borrowerProperties?.find(
+        (property) => property.propertyName === "PeriodicSalary"
+      )?.propertyValue || "",
+  };
+
   return (
     <Stack direction="column" gap="24px">
       {!isMobile && (
@@ -299,6 +311,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           isMobile={isMobile}
           setRequestValue={setRequestValue || (() => {})}
           requestValue={requestValue}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          dataMaximumCreditLimitService={dataMaximumCreditLimitService}
         />
       )}
       {openModal === "paymentCapacity" && (
