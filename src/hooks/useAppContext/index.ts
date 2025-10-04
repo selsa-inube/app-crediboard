@@ -77,9 +77,9 @@ function useAppContext() {
       urlLogo: businessUnit?.urlLogo || "",
     },
     user: {
-      userAccount: user?.username || "",
-      userName: user?.nickname || "",
-      identificationDocumentNumber: user?.id || "",
+      userAccount: "",
+      userName: "",
+      identificationDocumentNumber: "",
       staff: {
         biologicalSex: "",
         birthDay: "",
@@ -198,7 +198,7 @@ function useAppContext() {
   ]);
 
   const userIdentifier = eventData?.user?.identificationDocumentNumber;
-
+  console.log(userIdentifier);
   useEffect(() => {
     const fetchOptionStaff = async () => {
       try {

@@ -7,7 +7,7 @@ const getStaff = async (
   identificationDocumentNumber: string
 ): Promise<IStaff[]> => {
   const queryParams = new URLSearchParams({
-    identificationDocumentNumber: identificationDocumentNumber.substring(0, 20),
+    identificationDocumentNumber: identificationDocumentNumber,
   });
   const requestUrl = `${environment.IVITE_IPORTAL_STAFF_QUERY_PROCESS_SERVICE}/staffs?${queryParams.toString()};`;
 
