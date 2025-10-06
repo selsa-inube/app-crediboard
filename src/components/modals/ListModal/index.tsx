@@ -5,7 +5,6 @@ import {
   MdDeleteOutline,
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   Stack,
   Icon,
@@ -18,15 +17,16 @@ import {
 } from "@inubekit/inubekit";
 
 import { File } from "@components/inputs/File";
-import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
-import { optionFlags } from "@pages/board/outlets/financialReporting/config";
-import { saveDocument } from "@services/credit-request/command/saveDocument";
+import { saveDocument } from "@services/creditRequest/command/saveDocument";
 import { validationMessages } from "@validations/validationMessages";
 import { AppContext } from "@context/AppContext";
-import { getSearchDocumentById } from "@services/credit-request/query/SearchDocumentById";
+import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
-import { IUploadedFile } from "@services/types";
+import { truncateTextToMaxLength } from "@utils/formatData/text";
+import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
+import { optionFlags } from "@pages/board/outlets/financialReporting/config";
 
+import { ErrorModal } from "../ErrorModal";
 import { DocumentViewer } from "../DocumentViewer";
 import {
   StyledAttachContainer,
@@ -71,8 +71,7 @@ export interface IListModalProps {
   handleClose: () => void;
   handleSubmit?: () => void;
   onSubmit?: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setUploadedFiles?: React.Dispatch<React.SetStateAction<any>>;
+  setUploadedFiles?: React.Dispatch<React.SetStateAction<IDocumentUpload[]>>;
 }
 
 export const ListModal = (props: IListModalProps) => {
@@ -104,9 +103,8 @@ export const ListModal = (props: IListModalProps) => {
   const isMobile = useMediaQuery("(max-width: 700px)");
   const dragCounter = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { businessUnitSigla } = useContext(AppContext);
-
-  const { user } = useAuth0();
+  const { businessUnitSigla, eventData } = useContext(AppContext);
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const [pendingFiles, setPendingFiles] = useState<
@@ -116,6 +114,9 @@ export const ListModal = (props: IListModalProps) => {
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
+
   interface IListdataProps {
     data: { id: string; name: string }[] | null | undefined;
     onDelete?: (id: string) => void;
@@ -126,6 +127,8 @@ export const ListModal = (props: IListModalProps) => {
   const Listdata = (props: IListdataProps) => {
     const { data, icon, onDelete, onPreview } = props;
 
+    const maxLength = isMobile ? 20 : 40;
+
     return (
       <ul
         style={{
@@ -135,7 +138,7 @@ export const ListModal = (props: IListModalProps) => {
       >
         {data?.map((element) => (
           <StyledItem key={element.id}>
-            <Text>{element.name}</Text>
+            <Text>{truncateTextToMaxLength(element.name, maxLength)}</Text>
             <Icon
               icon={icon}
               appearance="dark"
@@ -195,7 +198,7 @@ export const ListModal = (props: IListModalProps) => {
         name: file.name,
         file: file,
       }));
-      setUploadedFiles((prev: IUploadedFile[]) => [
+      setUploadedFiles((prev: IDocumentUpload[]) => [
         ...(prev || []),
         ...newFiles,
       ]);
@@ -231,7 +234,10 @@ export const ListModal = (props: IListModalProps) => {
       name: file.name,
       file,
     }));
-    setUploadedFiles((prev: IUploadedFile[]) => [...(prev || []), ...newFiles]);
+    setUploadedFiles((prev: IDocumentUpload[]) => [
+      ...(prev || []),
+      ...newFiles,
+    ]);
 
     e.dataTransfer.clearData();
   };
@@ -255,9 +261,11 @@ export const ListModal = (props: IListModalProps) => {
 
           await saveDocument(
             businessUnitPublicCode,
+            businessManagerCode,
             id,
             abbreviatedName,
-            fileData.file
+            fileData.file,
+            eventData.user.identificationDocumentNumber || ""
           );
         }
 
@@ -285,15 +293,17 @@ export const ListModal = (props: IListModalProps) => {
     try {
       const documentData = await getSearchDocumentById(
         id,
-        user?.email ?? "",
-        businessUnitPublicCode
+        eventData.user.identificationDocumentNumber || "",
+        businessUnitPublicCode,
+        businessManagerCode,
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);
       setFileName(name);
       setOpen(true);
     } catch (error) {
-      console.error("Error obteniendo el documento:", error);
+      setShowErrorModal(true);
+      setMessageError(listModalData.errorDocument);
     }
   };
 
@@ -325,6 +335,7 @@ export const ListModal = (props: IListModalProps) => {
       fileInputRef.current.click();
     }
   };
+
   return createPortal(
     <Blanket>
       <StyledModal $smallScreen={isMobile}>
@@ -448,14 +459,15 @@ export const ListModal = (props: IListModalProps) => {
                     {listModalData.attachments}
                   </Text>
                   <StyledFileBox>
-                    {uploadedFiles.map((file: IUploadedFile) => (
+                    {uploadedFiles.map((file: IDocumentUpload) => (
                       <File
+                        key={file.id}
                         name={file.name}
                         size={
                           file.file?.size ? formatFileSize(file.file.size) : "-"
                         }
                         onDelete={() => {
-                          setUploadedFiles?.((prev: IUploadedFile[] = []) =>
+                          setUploadedFiles?.((prev: IDocumentUpload[] = []) =>
                             prev.filter((f) => f.id !== file.id)
                           );
                         }}
@@ -494,6 +506,15 @@ export const ListModal = (props: IListModalProps) => {
             selectedFile={selectedFile}
             handleClose={() => setOpen(false)}
             title={fileName || ""}
+          />
+        )}
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
+            message={messageError}
           />
         )}
       </StyledModal>

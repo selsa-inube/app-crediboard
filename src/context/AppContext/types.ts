@@ -1,5 +1,5 @@
 import { SectionOrientation } from "@components/layout/BoardSection/types";
-import { IEnumerator } from "@services/types";
+import { IEnumerator } from "@services/enumerators/types";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 
 interface IPortal {
@@ -13,6 +13,13 @@ interface IBusinessManager {
   abbreviatedName: string;
   urlBrand: string;
   urlLogo: string;
+}
+export interface IUsers {
+  username: string;
+  id: string;
+  company: string;
+  urlImgPerfil: string;
+  nickname: string;
 }
 interface IPreferences {
   boardOrientation: SectionOrientation;
@@ -53,7 +60,7 @@ interface IStaff {
   staffId: string;
   staffName: string;
   userAccount: string;
-  useCases: Ipermissions;
+  useCases: string[];
 }
 
 interface IUser {
@@ -61,6 +68,7 @@ interface IUser {
   userName: string;
   staff: IStaff;
   preferences: IPreferences;
+  identificationDocumentNumber?: string;
 }
 
 interface IBusinessUnit {

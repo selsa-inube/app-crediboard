@@ -12,7 +12,7 @@ import {
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { ITableFinancialObligationsProps } from "@components/data/TableObligationsFinancial";
+import { ITableFinancialObligationsProps } from "@pages/prospect/components/TableObligationsFinancial";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
 import {
   handleChangeWithCurrency,
@@ -63,6 +63,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
         return value !== undefined && term !== undefined ? value < term : true;
       }),
     term: Yup.number().required(""),
+    idUser: Yup.number().required(""),
   });
 
   const handleFormSubmit = async (values: FormikValues) => {
@@ -78,7 +79,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
 
     if (values.id) {
       const updatedData = storedData.map((item) =>
-        item.id === values.id ? { ...item, ...updatedValues } : item
+        item.creditRequestCode === values.id ? { ...item, ...updatedValues } : item
       );
       await localforage.setItem("financial_obligation", updatedData);
     } else {

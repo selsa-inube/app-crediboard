@@ -13,18 +13,22 @@ import {
 import { Fieldset } from "@components/data/Fieldset";
 import { Divider } from "@components/layout/Divider";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getSearchDecisionById } from "@services/credit-request/query/SearchDecisionById";
-import { IStaff, IToDo, ICreditRequest } from "@services/types";
-import { getToDoByCreditRequestId } from "@services/credit-request/query/getToDoByCreditRequestId";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { getSearchDecisionById } from "@services/creditRequest/query/SearchDecisionById";
+import {
+  ICreditRequest,
+  IStaff,
+  IToDo,
+} from "@services/creditRequest/query/types";
+import { getToDoByCreditRequestId } from "@services/creditRequest/query/getToDoByCreditRequestId";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
-import { DecisionModal } from "@pages/board/outlets/financialReporting/ToDo/DecisionModal";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { AppContext } from "@context/AppContext";
+import { useEnums } from "@hooks/useEnums";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { BaseModal } from "@components/modals/baseModal";
-import { decisions as decisionsEnum } from "@services/enum/icorebanking-vi-crediboard/decisions/decisions";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -38,6 +42,7 @@ import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
 import { StyledHorizontalDivider, StyledTextField } from "../styles";
 import { errorMessages, errorObserver } from "../config";
+import { DecisionModal } from "./DecisionModal";
 
 interface ToDoProps {
   icon?: IICon;
@@ -45,12 +50,14 @@ interface ToDoProps {
   isMobile?: boolean;
   user: string;
   id: string;
+  setIdProspect: (idProspect: string) => void;
 }
 
 function ToDo(props: ToDoProps) {
-  const { icon, button, isMobile, id } = props;
+  const { icon, button, isMobile, id, setIdProspect } = props;
 
   const { approverid } = useParams();
+  const { lang } = useEnums();
 
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
@@ -63,7 +70,6 @@ function ToDo(props: ToDoProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
   const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
-
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
     analyst: "",
@@ -95,6 +101,8 @@ function ToDo(props: ToDoProps) {
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -106,9 +114,11 @@ function ToDo(props: ToDoProps) {
       try {
         const data = await getCreditRequestByCode(
           businessUnitPublicCode,
+          businessManagerCode,
           id,
           userAccount
         );
+
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
         console.error(error);
@@ -122,7 +132,7 @@ function ToDo(props: ToDoProps) {
     if (id) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, id, userAccount]);
+  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
 
   useEffect(() => {
     const fetchToDoData = async () => {
@@ -131,9 +141,12 @@ function ToDo(props: ToDoProps) {
       try {
         const data = await getToDoByCreditRequestId(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
+
         setTaskData(data);
+        data.prospectId && setIdProspect(data.prospectId);
       } catch (error) {
         console.error(error);
         errorObserver.notify({
@@ -146,7 +159,12 @@ function ToDo(props: ToDoProps) {
     };
 
     fetchToDoData();
-  }, [businessUnitPublicCode, requests?.creditRequestId]);
+  }, [
+    businessUnitPublicCode,
+    requests?.creditRequestId,
+    businessManagerCode,
+    setIdProspect,
+  ]);
 
   useEffect(() => {
     if (taskData?.usersByCreditRequestResponse) {
@@ -182,6 +200,7 @@ function ToDo(props: ToDoProps) {
       try {
         const data = await getToDoByCreditRequestId(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
         setTaskData(data);
@@ -236,23 +255,18 @@ function ToDo(props: ToDoProps) {
       try {
         const decision = await getSearchDecisionById(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
+
         const formattedDecisions = Array.isArray(decision)
-          ? decision.map((decisions: DecisionItem, index: number) => {
-              const enumDecision = decisionsEnum.find(
-                (d) => d.Code === decisions.decision
-              );
-              return {
-                id: `decision-${index}`,
-                label: enumDecision
-                  ? `${enumDecision.Value}: ${enumDecision.Description}`
-                  : `${decisions.decision}: ${decisions.value}`,
-                value: decisions.value,
-                code: decisions.decision,
-                originalLabel: `${decisions.decision}: ${decisions.value}`,
-              };
-            })
+          ? decision.map((decisions: DecisionItem, index: number) => ({
+              id: `decision-${index}`,
+              label: decisions.I18n ? decisions.I18n[lang] : decisions.value,
+              value: decisions.value,
+              code: decisions.decision,
+              originalLabel: decisions.decision,
+            }))
           : [];
         setTaskDecisions(formattedDecisions);
       } catch (error) {
@@ -263,6 +277,7 @@ function ToDo(props: ToDoProps) {
         });
       } finally {
         setLoading(false);
+        isFetching.current = false;
       }
     }
   };
@@ -302,7 +317,9 @@ function ToDo(props: ToDoProps) {
   const handleInfo = () => {
     setIsModalInfo(true);
   };
-
+  const { disabledButton: reassignCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("reassignCreditApplication"),
+  });
   useEffect(() => {
     setHasPermitSend(
       staff.some(
@@ -312,7 +329,6 @@ function ToDo(props: ToDoProps) {
       )
     );
   }, [staff, eventData, taskData, taskRole]);
-
   return (
     <>
       <Fieldset
@@ -372,7 +388,7 @@ function ToDo(props: ToDoProps) {
                   name="decision"
                   label="Decisión"
                   value={decisionValue.decision}
-                  placeholder="Seleccione una opción"
+                  placeholder="Selecciona una opción"
                   size="compact"
                   options={taskDecisions || []}
                   onChange={onChangeDecision}
@@ -389,7 +405,7 @@ function ToDo(props: ToDoProps) {
                     type="submit"
                     fullwidth={isMobile}
                     spacing="compact"
-                    disabled={!hasPermitSend ? true : false}
+                    disabled={false}
                   >
                     {button?.label || txtLabels.buttonText}
                   </Button>
@@ -420,6 +436,7 @@ function ToDo(props: ToDoProps) {
                   secondaryButtonText={txtLabels.secondaryButtonText}
                   inputLabel={txtLabels.inputLabel}
                   inputPlaceholder={txtLabels.inputPlaceholder}
+                  businessManagerCode={businessManagerCode}
                   onSecondaryButtonClick={handleCloseModal}
                   onCloseModal={handleCloseModal}
                   data={data}
@@ -496,7 +513,11 @@ function ToDo(props: ToDoProps) {
                     icon={icon.icon}
                     appearance="primary"
                     size="24px"
-                    onClick={handleToggleStaffModal}
+                    onClick={
+                      reassignCreditApplication
+                        ? handleInfo
+                        : handleToggleStaffModal
+                    }
                     cursorHover
                     disabled={staff === null}
                   />

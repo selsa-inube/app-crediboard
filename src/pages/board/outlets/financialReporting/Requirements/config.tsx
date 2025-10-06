@@ -14,11 +14,18 @@ import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
-import { CreditRequest } from "@services/types";
+import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 
-export const dataButton = (onClick: () => void) => ({
-  title: "Agregar Requisito",
+import { MappedRequirements } from "./types";
+
+export const dataButton = (
+  onClick: () => void,
+  onClickSistemValidation: () => void
+) => ({
+  title: "Agregar validación humana",
+  titleSistemValidation: "Agregar validación del sistema",
   onClick,
+  onClickSistemValidation,
 });
 
 const receiveData = (data: IEntries) => {
@@ -71,7 +78,10 @@ export const textFlagsRequirements = {
 };
 
 export const dataAddRequirement = {
-  title: "Agregar Requisito",
+  title: "Agregar requisito a esta solicitud",
+  titleJustification: "Descripción del requisito",
+  descriptionJustification:
+    "Lorem ipsum dolor sit amet consectetur adipiscing elit, primis turpis a donec dictum ad, urna eu sem malesuada mauris ac.",
   close: "Cerrar",
   cancel: "Cancelar",
   add: "Agregar",
@@ -83,12 +93,17 @@ export const dataAddRequirement = {
   labelJustification: "Justificacion",
   labelFrequency: "Frecuencia de pago",
   labelDate: "Primer pago",
-  placeHolderSelect: "Seleccione una opción",
+  placeHolderSelect: "Selecciona una opción",
   placeHolderAmount: "Número de pagos",
   placeHolderValue: "Valor a pagar",
   placeHolderDate: "Seleccione un requisito",
-  placeHolderTextarea: "Descripción del requisito",
+  placeHolderTextarea: "¿Qué hace necesario incluir este requisito?",
   placeHolderJustification: "Justificación del requisito",
+};
+
+export const justificationDescriptions: Record<string, string> = {
+  edad: "Se valida la edad mínima para el requisito",
+  antiguedad: "Se valida la antigüedad mínima para el requisito",
 };
 
 export const infoItems = [
@@ -99,7 +114,12 @@ export const infoItems = [
     appearance: "help",
   },
 ];
-
+export const questionToBeAskedInModalText = {
+  notEvaluated: "Sin Evaluar",
+  notCompliant: "No Cumple",
+  questionForUnvalidated: "Pudo evaluar?",
+  questionForNotCompliant: "Cumple?",
+};
 export const actionsRequirements = [
   [
     {
@@ -162,49 +182,6 @@ const isValidTagElement = (element: unknown): element is TagElement => {
   return isValidElement(element) && element.props !== undefined;
 };
 
-export const getAcctionMobile = (
-  showModalAdd: (state: boolean) => void,
-  showAprovalsModal: (state: boolean) => void
-) => {
-  const actionsMobile = [
-    {
-      id: "agregar",
-      content: () => (
-        <Stack justifyContent="center">
-          <Icon
-            icon={<MdOutlineRemoveRedEye />}
-            appearance="primary"
-            onClick={() => showModalAdd(true)}
-            spacing="narrow"
-            size="20px"
-            cursorHover
-          />
-        </Stack>
-      ),
-    },
-    {
-      id: "aprobar",
-      content: (data: IEntries) => (
-        <Stack justifyContent="center">
-          <Icon
-            icon={<MdOutlineHowToReg />}
-            appearance="primary"
-            spacing="narrow"
-            cursorHover
-            size="20px"
-            onClick={() => showAprovalsModal(true)}
-            disabled={
-              isValidElement(data?.tag) &&
-              data?.tag?.props?.label === "No Cumple"
-            }
-          />
-        </Stack>
-      ),
-    },
-  ];
-  return actionsMobile;
-};
-
 const actionsMobile = [
   {
     id: "tags",
@@ -264,23 +241,36 @@ const actionsMobile = [
   },
 ];
 
+const getRequirementCode = (codeKey: string) => {
+  return requirementStatus.find((item) => item.Code === codeKey)?.Code || "";
+};
+
 const generateTag = (value: string): JSX.Element => {
   if (
-    value === "PASSED_WITH_SYSTEM_VALIDATION" ||
-    value === "DOCUMENT_STORED_WITHOUT_VALIDATION" ||
-    value === "PASSED_WITH_HUMAN_VALIDATION" ||
-    value === "DOCUMENT_VALIDATED_BY_THE_USER" ||
-    value === "IGNORED_BY_THE_USER"
+    value === getRequirementCode("PASSED_WITH_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_STORED_WITHOUT_VALIDATION") ||
+    value === getRequirementCode("PASSED_WITH_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_VALIDATED_BY_THE_USER") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER") ||
+    value === getRequirementCode("PASSED_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_STORED_AND_VALIDATED") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER_HUMAN_VALIDATION") ||
+    value === getRequirementCode("DOCUMENT_IGNORED_BY_THE_USER")
   ) {
     return <Tag label="Cumple" appearance="success" />;
-  } else if (value === "FAILED_SYSTEM_VALIDATION") {
+  } else if (
+    value === getRequirementCode("FAILED_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("IGNORED_BY_THE_USER_SYSTEM_VALIDATION") ||
+    value === getRequirementCode("FAILED_DOCUMENT_VALIDATION") ||
+    value === getRequirementCode("FAILED_HUMAN_VALIDATION")
+  ) {
     return <Tag label="No Cumple" appearance="danger" />;
   } else {
     return <Tag label="Sin Evaluar" appearance="warning" />;
   }
 };
 
-export const maperEntries = (data: CreditRequest): IEntries[][] => {
+export const maperEntries = (data: MappedRequirements): IEntries[][] => {
   const result: IEntries[][] = [];
 
   const systemValidations: IEntries[] = Object.entries(
@@ -315,19 +305,19 @@ export const maperEntries = (data: CreditRequest): IEntries[][] => {
 export const maperDataRequirements = (processedEntries: IEntries[][]) => {
   return [
     {
-      id: "tabla1",
+      id: "tableApprovalSystem",
       titlesRequirements: titlesRequirements[0],
       entriesRequirements: processedEntries[0],
       actionsMovile: actionsMobile,
     },
     {
-      id: "tabla2",
+      id: "tableDocumentValues",
       titlesRequirements: titlesRequirements[1],
       entriesRequirements: processedEntries[1],
       actionsMovile: actionsMobile,
     },
     {
-      id: "tabla3",
+      id: "tableApprovalHuman",
       titlesRequirements: titlesRequirements[2],
       entriesRequirements: processedEntries[2],
       actionsMovile: actionsMobile,
@@ -369,19 +359,4 @@ export const getActionsMobileIcon = () => {
       },
     },
   ];
-};
-
-export const dataFlags = {
-  requirements: {
-    title: "Error al cargar requisitos",
-    description: "No se encontraron requisitos disponibles.",
-  },
-  documentApproved: {
-    title: "Éxito",
-    description: "Documentación aprobada correctamente.",
-  },
-  documentRejected: {
-    title: "Error",
-    description: "Ocurrió un error al aprobar el documento.",
-  },
 };

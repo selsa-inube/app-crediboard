@@ -1,4 +1,4 @@
-import { IExtraordinaryPayment } from "@services/types";
+import { IExtraordinaryPayment } from "@components/modals/ExtraordinaryPaymentModal/types";
 
 export const extraordinaryInstallmentMock: IExtraordinaryPayment[] = [
   {
@@ -40,7 +40,18 @@ export const paymentMethodOptionsMock = [
   },
   { id: "cash", label: "Efectivo", value: "Efectivo" },
 ];
-
+export const paymentDateOptionsMock = [
+  {
+    id: "dic",
+    label: "15/Dic/2025",
+    value: "2025-12-15T00:00:00.000Z",
+  },
+  {
+    id: "Jun",
+    label: "30/Jun/2026",
+    value: "30/Jun/2026",
+  },
+];
 export const frequencyOptionsMock = [
   { id: "monthly", label: "Mensual", value: "Mensual" },
   { id: "quarterly", label: "Trimestral", value: "Trimestral" },

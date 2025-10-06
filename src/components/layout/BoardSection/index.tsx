@@ -14,15 +14,19 @@ import {
 } from "@inubekit/inubekit";
 
 import { SummaryCard } from "@components/cards/SummaryCard";
-import { ICreditRequestPinned, ICreditRequest } from "@services/types";
+import {
+  ICreditRequestPinned,
+  ICreditRequest,
+} from "@services/creditRequest/query/types";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
-import { patchChangeTracesToReadById } from "@services/credit-request/command/patchChangeTracesToReadById";
+import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { getCanUnpin } from "@utils/configRules/permissions";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
+import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 
 import { StyledBoardSection, StyledCollapseIcon } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
@@ -45,8 +49,8 @@ interface BoardSectionProps {
   handleLoadMoreData: () => void;
   dragIcon?: React.ReactElement;
   onOrientationChange: (orientation: SectionOrientation) => void;
+  shouldCollapseAll: boolean;
 }
-
 
 function BoardSection(props: BoardSectionProps) {
   const {
@@ -61,6 +65,7 @@ function BoardSection(props: BoardSectionProps) {
     handlePinRequest,
     handleLoadMoreData,
     onOrientationChange,
+    shouldCollapseAll,
   } = props;
   const disabledCollapse = sectionInformation.length === 0;
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
@@ -73,6 +78,9 @@ function BoardSection(props: BoardSectionProps) {
   const flagMessage = useRef(false);
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
+
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
 
@@ -81,6 +89,11 @@ function BoardSection(props: BoardSectionProps) {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  useEffect(() => {
+    if (shouldCollapseAll && !disabledCollapse) {
+      setCollapse(true);
+    }
+  }, [shouldCollapseAll, disabledCollapse]);
   const handleCollapse = () => {
     if (!disabledCollapse) {
       setCollapse((prev) => !prev);
@@ -131,7 +144,8 @@ function BoardSection(props: BoardSectionProps) {
     try {
       await patchChangeTracesToReadById(
         creditRequestId,
-        businessUnitPublicCode
+        businessUnitPublicCode,
+        businessManagerCode
       );
     } catch (error) {
       addFlag({
@@ -156,7 +170,8 @@ function BoardSection(props: BoardSectionProps) {
             rule,
             postBusinessUnitRules,
             "value",
-            businessUnitPublicCode
+            businessUnitPublicCode,
+            businessManagerCode
           );
 
           const extractedValues = Array.isArray(values)
@@ -175,7 +190,7 @@ function BoardSection(props: BoardSectionProps) {
         }
       })
     );
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, businessManagerCode]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -188,7 +203,6 @@ function BoardSection(props: BoardSectionProps) {
         flagMessage.current = true;
       }
     }, 1000);
-
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectionInformation]);
@@ -196,6 +210,11 @@ function BoardSection(props: BoardSectionProps) {
   useEffect(() => {
     if (businessUnitPublicCode) fetchValidationRulesData();
   }, [businessUnitPublicCode, fetchValidationRulesData]);
+
+  const getTaskLabel = (code: string): string => {
+    const task = taskPrs.find((t) => t.Code === code);
+    return task ? `${task.Value}` : code;
+  };
 
   return (
     <StyledBoardSection
@@ -232,18 +251,21 @@ function BoardSection(props: BoardSectionProps) {
             </StyledCollapseIcon>
           )}
 
-          <Icon
-            icon={
-              currentOrientation === "vertical" ? (
-                <MdOutlineFilterAlt />
-              ) : (
-                <MdOutlineFilterAltOff />
-              )
-            }
-            appearance="primary"
-            size="24px"
-            onClick={handleToggleOrientation}
-          />
+          {!isTablet && (
+            <Icon
+              icon={
+                currentOrientation === "vertical" ? (
+                  <MdOutlineFilterAlt />
+                ) : (
+                  <MdOutlineFilterAltOff />
+                )
+              }
+              appearance="primary"
+              size="24px"
+              onClick={handleToggleOrientation}
+              cursorHover
+            />
+          )}
 
           <Text
             type={orientation === "vertical" || isMobile ? "title" : "headline"}
@@ -275,7 +297,9 @@ function BoardSection(props: BoardSectionProps) {
                 name={request.clientName}
                 destination={request.moneyDestinationAbreviatedName}
                 value={request.loanAmount}
-                toDo={request.taskToBeDone}
+                toDo={
+                  request.taskToBeDone ? getTaskLabel(request.taskToBeDone) : ""
+                }
                 path={`extended-card/${request.creditRequestCode}`}
                 isPinned={isRequestPinned(
                   request.creditRequestId,

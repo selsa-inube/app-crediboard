@@ -5,22 +5,26 @@ import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
 import { CardValues } from "@components/cards/cardValues";
 import { DeleteModal } from "@components/modals/DeleteModal";
-import { ConsolidatedCredits } from "@components/modals/ConsolidatedCreditModal";
-import {
-  SummaryProspectCredit,
-  tittleOptions,
-} from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
-import { getSearchProspectSummaryById } from "@services/prospects/ProspectSummaryById";
+import { getSearchProspectSummaryById } from "@services/creditRequest/query/ProspectSummaryById";
 import { AppContext } from "@context/AppContext";
-import { IProspect, ICreditProduct } from "@services/prospects/types";
-import { Schedule } from "@services/enums";
-import { DeductibleExpensesModal } from "@components/modals/DeductibleExpensesModal";
-import { IProspectSummaryById } from "@services/prospects/ProspectSummaryById/types";
-import { getAllDeductibleExpensesById } from "@services/iProspect/deductibleExpenses";
+import {
+  IProspect,
+  ICreditProduct,
+  IProspectSummaryById,
+} from "@services/prospect/types";
+import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
+import { DeductibleExpensesModal } from "@pages/prospect/components/modals/DeductibleExpensesModal";
+import { getAllDeductibleExpensesById } from "@services/creditRequest/query/deductibleExpenses";
+import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
+import { dataTableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment/config";
+import { ConsolidatedCredits } from "@pages/prospect/components/modals/ConsolidatedCreditModal";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { StyledCardsCredit, StyledPrint } from "./styles";
-import { EditProductModal } from "@components/modals/ProspectProductModal";
+import { SummaryProspectCredit, tittleOptions } from "./config/config";
 
 interface CardCommercialManagementProps {
   id: string;
@@ -39,9 +43,10 @@ export const CardCommercialManagement = (
   );
 
   const { addFlag } = useFlag();
-  const { businessUnitSigla } = useContext(AppContext);
+  const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ICreditProduct | null>(
@@ -58,7 +63,16 @@ export const CardCommercialManagement = (
     { expenseName: string; expenseValue: number }[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
   useEffect(() => {
     if (prospectData?.creditProducts) {
       setProspectProducts(prospectData?.creditProducts);
@@ -85,7 +99,8 @@ export const CardCommercialManagement = (
       try {
         const result = await getSearchProspectSummaryById(
           businessUnitPublicCode,
-          prospectData?.prospectId || ""
+          businessManagerCode,
+          id
         );
         if (result) {
           setProspectSummaryData(result);
@@ -112,7 +127,8 @@ export const CardCommercialManagement = (
       try {
         const data = await getAllDeductibleExpensesById(
           businessUnitPublicCode,
-          prospectData.prospectId
+          businessManagerCode,
+          id
         );
         setDeductibleExpenses(data);
       } catch (error) {
@@ -155,11 +171,19 @@ export const CardCommercialManagement = (
                 entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
               }
               schedule={entry.schedule as Schedule}
-              onEdit={() => {
-                setSelectedProduct(entry);
-                setModalHistory((prev) => [...prev, "editProductModal"]);
-              }}
-              onDelete={() => handleDeleteClick(entry.creditProductCode)}
+              onEdit={
+                editCreditApplication
+                  ? handleInfo
+                  : () => {
+                      setSelectedProduct(entry);
+                      setModalHistory((prev) => [...prev, "editProductModal"]);
+                    }
+              }
+              onDelete={
+                editCreditApplication
+                  ? handleInfo
+                  : () => handleDeleteClick(entry.creditProductCode)
+              }
             />
           ))}
           <StyledPrint>
@@ -192,6 +216,7 @@ export const CardCommercialManagement = (
         <DeleteModal
           handleClose={() => setShowDeleteModal(false)}
           handleDelete={handleDelete}
+          TextDelete={dataTableExtraordinaryInstallment.content}
         />
       )}
       {currentModal === "editProductModal" && selectedProduct && (
@@ -227,6 +252,16 @@ export const CardCommercialManagement = (
           handleClose={() => setDeductibleExpensesModal(false)}
           initialValues={deductibleExpenses}
           loading={isLoading}
+          isMobile={isMobile}
+        />
+      )}
+      {isModalOpen && (
+        <InfoModal
+          onClose={handleInfoModalClose}
+          title={privilegeCrediboard.title}
+          subtitle={privilegeCrediboard.subtitle}
+          description={privilegeCrediboard.description}
+          nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />
       )}

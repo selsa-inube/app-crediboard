@@ -1,3 +1,4 @@
+import { IProperty } from "@pages/prospect/components/TableObligationsFinancial/types";
 import { FormikValues } from "formik";
 
 const currencyFormat = (price: number, withCurrencySymbol = true): string => {
@@ -44,7 +45,7 @@ const validateCurrencyField = (
 const handleChangeWithCurrency = (
   formik: FormikValues,
   e: React.ChangeEvent<HTMLInputElement>,
-  optionNameForm?: string
+  optionNameForm?: string | ""
 ) => {
   const parsedValue = parseCurrencyString(e.target.value);
   const formattedValue = isNaN(parsedValue) ? "" : parsedValue;
@@ -81,8 +82,7 @@ const getMonthsElapsed = (dateString: string, decimal: number): number => {
   return parseFloat((years + months).toFixed(decimal));
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getTotalFinancialObligations = (properties: any[]) => {
+const getTotalFinancialObligations = (properties: IProperty[]) => {
   return properties
     .filter((prop) => prop.propertyName === "FinancialObligation")
     .reduce((total, prop) => {

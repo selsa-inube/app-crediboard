@@ -5,47 +5,28 @@ import {
   MdOutlineAccountBalanceWallet,
   MdOutlineEdit,
   MdOutlineRemoveRedEye,
+  MdOutlineMessage,
 } from "react-icons/md";
 import { Stack, Text } from "@inubekit/inubekit";
 
 import { TableBoard } from "@components/data/TableBoard";
-import { Schedule } from "@services/enums";
+import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { IOptions } from "@components/navigation/MenuProspect/types";
 
 export const titlesCommercialManagementAccordion = [
-  {
-    id: "obligacion",
-    titleName: "",
-    priority: 1,
-  },
-  {
-    id: "Compra primera Vivienda",
-    titleName: "",
-    priority: 2,
-  },
-  {
-    id: "Libre Inversion",
-    titleName: "",
-    priority: 3,
-  },
+  { id: "obligacion", titleName: "", priority: 1 },
+  { id: "Compra primera Vivienda", titleName: "", priority: 2 },
+  { id: "Libre Inversion", titleName: "", priority: 3 },
 ];
 
 export const titlesCommercialManagement = [
-  {
-    id: "obligacion",
-    titleName: "",
-    priority: 1,
-  },
+  { id: "obligacion", titleName: "", priority: 1 },
   {
     id: "Compra primera Vivienda",
     titleName: "Compra primera Vivienda",
     priority: 2,
   },
-  {
-    id: "Libre Inversion",
-    titleName: "Libre Inversion",
-    priority: 3,
-  },
+  { id: "Libre Inversion", titleName: "Libre Inversion", priority: 3 },
 ];
 
 export const entriesCommercialManagementAccordeon = [
@@ -224,21 +205,13 @@ export const dataAccordeon = [
 ];
 
 export const titlesCommercialManagementPRueba = [
-  {
-    id: "obligacion",
-    titleName: "",
-    priority: 1,
-  },
+  { id: "obligacion", titleName: "", priority: 1 },
   {
     id: "Compra primera Vivienda",
     titleName: "Compra primera Vivienda",
     priority: 2,
   },
-  {
-    id: "Libre Inversion",
-    titleName: "Libre Inversión",
-    priority: 3,
-  },
+  { id: "Libre Inversion", titleName: "Libre Inversión", priority: 3 },
 ];
 
 export const entriesCommercialManagement = [
@@ -433,6 +406,14 @@ export const menuOptions = (
       handleOpenModal("extraPayments");
     },
     icon: <MdOutlinePayments />,
+    visible: visibleExtraPayments,
+  },
+  {
+    title: "Observaciones de preaprobación",
+    onClick: () => {
+      handleOpenModal("observationsModal");
+    },
+    icon: <MdOutlineMessage />,
     visible: visibleExtraPayments,
   },
 ];

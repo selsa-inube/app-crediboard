@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Button } from "@inubekit/inubekit";
+
 import { incomeOptions } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 
 import { ReportCreditsModal, ReportCreditsModalProps } from ".";

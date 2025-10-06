@@ -1,19 +1,26 @@
 import { useState, useEffect, useCallback, useRef, useContext } from "react";
-import { MdOutlineSend, MdAttachFile, MdInfoOutline } from "react-icons/md";
+import {
+  MdOutlineSend,
+  MdAttachFile,
+  MdInfoOutline,
+  MdOutlineInfo,
+} from "react-icons/md";
 import { Stack, Icon, Textfield } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
 import { Message } from "@components/data/Message";
-import { ITraceType } from "@services/types";
+import { ITraceType } from "@services/creditRequest/command/types";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { getTraceByCreditRequestId } from "@services/credit-request/query/getTraceByCreditRequestId";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { registerNewsToCreditRequest } from "@services/credit-request/command/registerNewsToCreditRequest";
-import { ICreditRequest } from "@services/types";
-import { DetailsModal } from "@pages/board/outlets/financialReporting/management/DetailsModal";
+import { getTraceByCreditRequestId } from "@services/creditRequest/query/getTraceByCreditRequestId";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { registerNewsToCreditRequest } from "@services/creditRequest/command/registerNewsToCreditRequest";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 import { AppContext } from "@context/AppContext";
 import { ListModal } from "@components/modals/ListModal";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { privilegeCrediboard } from "@config/privilege";
 
 import { ChatContent, SkeletonContainer, SkeletonLine } from "./styles";
 import {
@@ -22,6 +29,7 @@ import {
   errorMessages,
   optionButtons,
 } from "../config";
+import { DetailsModal } from "./DetailsModal";
 
 interface IManagementProps {
   id: string;
@@ -52,6 +60,8 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const chatContentRef = useRef<HTMLDivElement>(null);
 
   const notifyError = useCallback((message: string) => {
@@ -62,6 +72,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     try {
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
+        businessManagerCode,
         id,
         userAccount
       );
@@ -70,7 +81,13 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       console.error(error);
       notifyError((error as Error).message);
     }
-  }, [businessUnitPublicCode, id, userAccount, notifyError]);
+  }, [
+    businessUnitPublicCode,
+    id,
+    userAccount,
+    notifyError,
+    businessManagerCode,
+  ]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();
@@ -85,6 +102,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     try {
       const data = await getTraceByCreditRequestId(
         businessUnitPublicCode,
+        businessManagerCode,
         creditRequest.creditRequestId
       );
       setTraces(Array.isArray(data) ? data.flat() : []);
@@ -94,7 +112,12 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     } finally {
       setLoading(false);
     }
-  }, [businessUnitPublicCode, creditRequest?.creditRequestId, notifyError]);
+  }, [
+    businessUnitPublicCode,
+    creditRequest?.creditRequestId,
+    businessManagerCode,
+    notifyError,
+  ]);
 
   useEffect(() => {
     fetchData();
@@ -124,6 +147,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     try {
       await registerNewsToCreditRequest(
         businessUnitPublicCode,
+        businessManagerCode,
         userAccount,
         newTrace
       );
@@ -164,11 +188,23 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     setDetailsOpen(true);
   };
 
+  const getMessageType = (
+    traceType: string
+  ): "sent" | "received" | "system" => {
+    const map: Record<string, "sent" | "received" | "system"> = {
+      Novelty: "sent",
+      Message: "received",
+      Executed_task: "system",
+    };
+
+    return map[traceType] ?? "sent";
+  };
+
   const renderMessages = () =>
     traces.map((trace, index) => (
       <Message
         key={index}
-        type={trace.traceType === "Message" ? "received" : "sent"}
+        type={getMessageType(trace.traceType)}
         timestamp={trace.executionDate || ""}
         message={trace.traceValue}
         icon={<MdInfoOutline size={14} />}
@@ -177,7 +213,16 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         }}
       />
     ));
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
   return (
     <Fieldset
       title={errorMessages.Management.titleCard}
@@ -212,14 +257,15 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   size="24px"
                   icon={<MdAttachFile />}
                   onClick={() => setShowAttachments(true)}
+                  disabled={editCreditApplication}
                 />
-
                 <Textfield
                   id="text"
-                  placeholder="Ej.: Escriba su mensaje"
+                  placeholder="Ej.: Escribe tu mensaje"
                   fullwidth
                   value={newMessage}
                   onChange={handleInputChange}
+                  disabled={editCreditApplication}
                 />
                 <Icon
                   appearance="primary"
@@ -227,7 +273,19 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   size="24px"
                   icon={<MdOutlineSend />}
                   onClick={handleFormSubmit}
+                  disabled={editCreditApplication}
                 />
+                {editCreditApplication ? (
+                  <Icon
+                    icon={<MdOutlineInfo />}
+                    appearance="primary"
+                    size="16px"
+                    cursorHover
+                    onClick={handleInfo}
+                  />
+                ) : (
+                  <></>
+                )}
               </Stack>
             </form>
           </Stack>
@@ -248,6 +306,18 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
             />
+          )}
+          {isModalOpen ? (
+            <InfoModal
+              onClose={handleInfoModalClose}
+              title={privilegeCrediboard.title}
+              subtitle={privilegeCrediboard.subtitle}
+              description={privilegeCrediboard.description}
+              nextButtonText={privilegeCrediboard.nextButtonText}
+              isMobile={isMobile}
+            />
+          ) : (
+            <></>
           )}
         </>
       )}

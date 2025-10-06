@@ -17,9 +17,7 @@ import { uncovered_wallet } from "@mocks/creditProfileInfo/uncoveredWallet.mock"
 import { payment_capacity } from "@mocks/creditProfileInfo/paymentCapacity.mock";
 import { credit_behavior } from "@mocks/creditProfileInfo/creditBehavior.mock";
 import { mockDecisions } from "@mocks/financialReporting/to-do/decisions.mock";
-import { mockMoneyDestinations } from "@mocks/add-prospect/money-destinations/moneydestinations.mock";
 import { mockPaymentChannel } from "@mocks/add-prospect/payment-channel/paymentchannel.mock";
-import { mockExtraDebtors } from "@mocks/add-prospect/extra-debtors/extradebtors.mock";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { mockFinancialObligation } from "@mocks/add-prospect/financial-obligation/financialobligation.mock";
 import {
@@ -27,7 +25,7 @@ import {
   mockRiskScoring,
 } from "@mocks/credit-profile/risk-scoring/riskScoring.mock";
 import { mockAttachedDocuments } from "@mocks/filing-application/attached-documents/attacheddocuments.mock";
-import { IRiskScoring } from "@services/types";
+import { IRiskScoring } from "@pages/board/outlets/creditProfileInfo/RiskScoring/types";
 
 import {
   mockRequests,
@@ -38,7 +36,6 @@ import {
   errorIssued,
   traceMock,
 } from "./importDataDb";
-import { userStepsMock } from "../filing-application/userSteps/users.mock";
 
 export function initializeDataDB(company: string) {
   localforage.clear();
@@ -91,11 +88,8 @@ export function initializeDataDB(company: string) {
     mockRangeRequeredByTheBusinessUnit
   );
   intializedData("decisions", mockDecisions);
-  intializedData("money_destinations", mockMoneyDestinations);
   intializedData("mockRequest_value", mockPaymentChannel);
   intializedData("financial_obligation", mockFinancialObligation);
-  intializedData("extra_debtors", mockExtraDebtors);
   intializedData("attached_documents", mockAttachedDocuments);
-  intializedData("user_steps", userStepsMock);
   intializedData("extraordinary_installments", extraordinaryInstallmentMock);
 }

@@ -3,16 +3,16 @@ import { MdInfoOutline } from "react-icons/md";
 import { Stack, Icon, Text, useMediaQuery, useFlag } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { ICreditRequest } from "@services/types";
-import { getCreditRequestPinned } from "@services/credit-request/query/isPinned";
-import { getCreditRequestInProgress } from "@services/credit-request/query/getCreditRequestInProgress";
-import { patchChangeAnchorToCreditRequest } from "@services/credit-request/command/anchorCreditRequest";
+import { ICreditRequest } from "@services/creditRequest/query/types";
+import { getCreditRequestPinned } from "@services/creditRequest/query/isPinned";
+import { getCreditRequestInProgress } from "@services/creditRequest/query/getCreditRequestInProgress";
+import { patchChangeAnchorToCreditRequest } from "@services/creditRequest/command/anchorCreditRequest";
 import { AppContext } from "@context/AppContext";
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules";
+import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 
 import { dataInformationModal } from "./config/board";
 import { BoardLayoutUI } from "./interface";
@@ -40,12 +40,9 @@ function BoardLayout() {
     boardOrientation: eventData.user.preferences.boardOrientation || "vertical",
   });
 
-  // const [filteredRequests, setFilteredRequests] = useState<ICreditRequest[]>(
-  //   []
-  // );
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 1439px)");
 
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
@@ -61,45 +58,59 @@ function BoardLayout() {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   const errorData = mockErrorBoard[0];
 
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
-  const [recordsToFetch, setRecordsToFetch] = useState(79);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filterValues, setFilterValues] = useState<IFilterFormValues>({
+    assignment: "",
+    status: "",
+  });
 
   const fetchBoardData = async (
     businessUnitPublicCode: string,
-    limit: number,
-    searchParam?: { filter?: string; text?: string }
+    page: number,
+    searchParam?: { filter?: string; text?: string },
+    append: boolean = false
   ) => {
     try {
       const [boardRequestsResult, requestsPinnedResult] =
         await Promise.allSettled([
           getCreditRequestInProgress(
             businessUnitPublicCode,
-            limit,
+            businessManagerCode,
+            page,
             userAccount,
             searchParam
           ),
-          getCreditRequestPinned(businessUnitPublicCode),
+          page === 1
+            ? getCreditRequestPinned(
+                businessUnitPublicCode,
+                businessManagerCode
+              )
+            : Promise.resolve([]),
         ]);
 
       if (boardRequestsResult.status === "fulfilled") {
         setBoardData((prevState) => ({
           ...prevState,
-          boardRequests: boardRequestsResult.value,
+          boardRequests: append
+            ? [...prevState.boardRequests, ...boardRequestsResult.value]
+            : boardRequestsResult.value,
         }));
-        //setFilteredRequests(boardRequestsResult.value);
       }
 
-      if (requestsPinnedResult.status === "fulfilled") {
+      if (requestsPinnedResult.status === "fulfilled" && page === 1) {
         setBoardData((prevState) => ({
           ...prevState,
           requestsPinned: requestsPinnedResult.value,
         }));
-      } else {
+      } else if (requestsPinnedResult.status === "rejected" && page === 1) {
         handleFlag(errorData.Summary[0], errorData.Summary[1]);
       }
     } catch (error) {
@@ -112,16 +123,40 @@ function BoardLayout() {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 3)
       return;
 
-    fetchBoardData(businessUnitPublicCode, recordsToFetch);
+    fetchBoardData(businessUnitPublicCode, 1);
+    setCurrentPage(1);
 
     fetchValidationRulesData();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, recordsToFetch]);
-  const handleLoadMoreData = () => {
-    setRecordsToFetch((prev) => prev + 50);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode]);
 
+  const handleLoadMoreData = () => {
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+
+    let searchParam;
+
+    if (activeOptions.length > 0) {
+      searchParam = {
+        filter: activeOptions.map((filter) => filter.value).join("&"),
+      };
+    } else if (filters.searchRequestValue.trim().length >= 3) {
+      searchParam = { text: filters.searchRequestValue.trim() };
+    } else {
+      searchParam = undefined;
+    }
+
+    fetchBoardData(businessUnitPublicCode, nextPage, searchParam, true);
+  };
+  const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
   const handleApplyFilters = async (values: IFilterFormValues) => {
+    setFilterValues(values);
+    setFilters((prev) => ({
+      ...prev,
+      searchRequestValue: "",
+      showPinnedOnly: false,
+      selectOptions: selectCheckOptions,
+    }));
     const assignmentIds = values.assignment.split(",");
     const activeFilteredValues: Filter[] = selectCheckOptions
       .filter((option) => assignmentIds.includes(option.id))
@@ -133,17 +168,20 @@ function BoardLayout() {
         count: index + 1,
       }));
 
-    const queryFilterString = activeFilteredValues.map(
-      (filter) => filter.value
-    );
+    const queryFilterString = activeFilteredValues
+      .map((filter) => `${filter.value}`)
+      .join("&");
 
     setActiveOptions(activeFilteredValues);
+    setCurrentPage(1);
 
-    await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+    await fetchBoardData(businessUnitPublicCode, 1, {
       filter: `${queryFilterString}`,
     });
 
     setIsFilterModalOpen(false);
+    setShouldCollapseAll(true);
+    setTimeout(() => setShouldCollapseAll(false), 100);
   };
 
   const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
@@ -200,7 +238,8 @@ function BoardLayout() {
             rule,
             postBusinessUnitRules,
             "value",
-            businessUnitPublicCode
+            businessUnitPublicCode,
+            businessManagerCode
           );
 
           const extractedValues = Array.isArray(values)
@@ -220,7 +259,7 @@ function BoardLayout() {
         }
       })
     );
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, businessManagerCode]);
 
   const handlePinRequest = async (
     creditRequestId: string | undefined,
@@ -247,11 +286,13 @@ function BoardLayout() {
 
         await patchChangeAnchorToCreditRequest(
           businessUnitPublicCode,
+          businessManagerCode,
           userAccount,
           creditRequestId,
           isPinned
         );
-        await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+        await fetchBoardData(businessUnitPublicCode, 1);
+        setCurrentPage(1);
       } else {
         setIsOpenModal(true);
         return;
@@ -260,27 +301,64 @@ function BoardLayout() {
       handleFlag(errorData.anchor[0], errorData.anchor[1]);
     }
   };
+
   const openFilterModal = useCallback(() => {
     setIsFilterModalOpen(true);
     setIsMenuOpen(false);
   }, []);
-  const handleClearFilters = async () => {
+
+  const handleClearFilters = async (keepSearchValue = false) => {
+    setFilterValues({ assignment: "", status: "" });
     setActiveOptions([]);
+    setCurrentPage(1);
+
     setFilters((prev) => ({
       ...prev,
-      searchRequestValue: "",
+      searchRequestValue: keepSearchValue ? prev.searchRequestValue : "",
       showPinnedOnly: false,
       selectOptions: selectCheckOptions,
     }));
 
-    await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+    if (keepSearchValue && filters.searchRequestValue.trim().length >= 3) {
+      await fetchBoardData(businessUnitPublicCode, 1, {
+        text: filters.searchRequestValue.trim(),
+      });
+    } else {
+      await fetchBoardData(businessUnitPublicCode, 1);
+    }
   };
 
   const handleRemoveFilter = async (filterIdToRemove: string) => {
     const updatedActiveOptions = activeOptions.filter(
       (option) => option.id !== filterIdToRemove
     );
+
     setActiveOptions(updatedActiveOptions);
+    setCurrentPage(1);
+
+    setFilterValues((prev) => {
+      const newValues = { ...prev };
+      if (newValues.assignment) {
+        const assignmentIds = newValues.assignment
+          .split(",")
+          .filter((id) => id.trim() !== "");
+        const updatedAssignmentIds = assignmentIds.filter(
+          (id) => id !== filterIdToRemove
+        );
+        newValues.assignment = updatedAssignmentIds.join(",");
+      }
+      if (newValues.status) {
+        const statusIds = newValues.status
+          .split(",")
+          .filter((id) => id.trim() !== "");
+        const updatedStatusIds = statusIds.filter(
+          (id) => id !== filterIdToRemove
+        );
+        newValues.status = updatedStatusIds.join(",");
+      }
+
+      return newValues;
+    });
 
     if (updatedActiveOptions.length === 0) {
       setFilters((prev) => ({
@@ -288,35 +366,74 @@ function BoardLayout() {
         selectOptions: selectCheckOptions,
       }));
 
-      await fetchBoardData(businessUnitPublicCode, recordsToFetch);
+      await fetchBoardData(businessUnitPublicCode, 1);
       return;
     }
 
     const updatedFilterString = updatedActiveOptions
       .map((filter) => filter.value)
-      .join(",")
+      .join("&")
       .trim();
-
-    await fetchBoardData(businessUnitPublicCode, recordsToFetch, {
+    await fetchBoardData(businessUnitPublicCode, 1, {
       filter: updatedFilterString,
     });
   };
 
-  const handleSearchRequestsValue = (
+  const handleSearchRequestsValue = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
-
     handleFiltersChange({ searchRequestValue: value });
+    const trimmedValue = value.trim();
+    setCurrentPage(1);
 
-    if (value.trim().length >= 3) {
-      fetchBoardData(businessUnitPublicCode, recordsToFetch, {
-        text: value.trim(),
-      });
-    }
+    if (trimmedValue.length >= 1) {
+      if (activeOptions.length > 0) {
+        const currentFilters = activeOptions
+          .map((filter) => filter.value)
+          .join("&");
+        const searchResults = await getCreditRequestInProgress(
+          businessUnitPublicCode,
+          businessManagerCode,
+          1,
+          userAccount,
+          { text: trimmedValue }
+        );
+        const filteredResults = await getCreditRequestInProgress(
+          businessUnitPublicCode,
+          businessManagerCode,
+          1,
+          userAccount,
+          { filter: currentFilters }
+        );
+        const intersection = searchResults.filter((searchItem) =>
+          filteredResults.some(
+            (filterItem) =>
+              filterItem.creditRequestId === searchItem.creditRequestId
+          )
+        );
 
-    if (value.trim().length === 0) {
-      fetchBoardData(businessUnitPublicCode, recordsToFetch);
+        setBoardData((prev) => ({
+          ...prev,
+          boardRequests: intersection,
+        }));
+      } else {
+        fetchBoardData(businessUnitPublicCode, 1, {
+          text: trimmedValue,
+        });
+      }
+    } else {
+      if (activeOptions.length > 0) {
+        const currentFilters = activeOptions
+          .map((filter) => filter.value)
+          .join("&");
+
+        await fetchBoardData(businessUnitPublicCode, 1, {
+          filter: currentFilters,
+        });
+      } else {
+        await fetchBoardData(businessUnitPublicCode, 1);
+      }
     }
   };
 
@@ -374,6 +491,8 @@ function BoardLayout() {
         selectOptions={[]}
         handleSelectCheckChange={() => {}}
         closeFilterModal={closeFilterModal}
+        filterValues={filterValues}
+        shouldCollapseAll={shouldCollapseAll}
       />
       {isOpenModal && (
         <BaseModal

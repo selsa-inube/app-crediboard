@@ -11,16 +11,19 @@ import {
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { makeDecisions } from "@services/credit-request/command/makeDecisions";
+import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
 
-import { IMakeDecisionsCreditRequestWithXAction } from "./types";
+import {
+  IMakeDecisionsCreditRequestWithXAction,
+  IMakeDecisionsPayload,
+} from "./types";
 import { StyledContainerTextField } from "./styles";
 import { soporteInvalidOptions, txtFlags, txtOthersOptions } from "./../config";
 
 interface FormValues {
   textarea: string;
-  selectedOptions?: string[];
+  selectedOptions?: string;
 }
 
 export interface DecisionModalProps {
@@ -30,6 +33,7 @@ export interface DecisionModalProps {
   buttonText: string;
   inputLabel: string;
   inputPlaceholder: string;
+  businessManagerCode: string;
   onSubmit?: (values: { textarea: string }) => void;
   onSecondaryButtonClick?: () => void;
   maxLength?: number;
@@ -46,6 +50,7 @@ export function DecisionModal(props: DecisionModalProps) {
     buttonText,
     inputLabel,
     inputPlaceholder,
+    businessManagerCode,
     onSubmit,
     onSecondaryButtonClick,
     maxLength = 200,
@@ -67,19 +72,55 @@ export function DecisionModal(props: DecisionModalProps) {
           .required(validationMessages.required),
   });
 
-  const sendData = async (value: string) => {
+  const handleNonCompliantDocuments = (formValues: FormValues): string[] => {
+    let selectedOptions: string[] | number[] = [];
+
+    if (formValues.selectedOptions) {
+      selectedOptions = formValues.selectedOptions.split(",");
+      selectedOptions?.shift();
+    }
+
+    selectedOptions = selectedOptions.map(
+      (option) => parseInt(`${option}`) - 1
+    );
+
+    return realNamesEnumNonCompliantDocuments(selectedOptions) as string[];
+  };
+
+  const realNamesEnumNonCompliantDocuments = (selectedOptions: number[]) => {
+    const valuesFromEnum: string[] = [];
+
+    selectedOptions.map((option) => {
+      valuesFromEnum.push(soporteInvalidOptions[option].value);
+    });
+
+    return valuesFromEnum;
+  };
+  const sendData = async (formValues: FormValues) => {
     try {
+      const makeDecisionsPayload: IMakeDecisionsPayload = {
+        creditRequestId: data.makeDecision.creditRequestId,
+        humanDecision: data.makeDecision.humanDecision,
+        justification: formValues.textarea,
+      };
+
+      if (
+        formValues.selectedOptions &&
+        data.xAction === "DisapproveLegalDocumentsAndWarranties"
+      ) {
+        makeDecisionsPayload["nonCompliantDocuments"] =
+          handleNonCompliantDocuments(formValues);
+      }
+
       const response = await makeDecisions(
         data.businessUnit,
+        businessManagerCode,
         data.user,
-        {
-          creditRequestId: data.makeDecision.creditRequestId,
-          humanDecision: data.makeDecision.humanDecision,
-          justification: value,
-        },
+        makeDecisionsPayload,
         data.xAction
       );
-      if (response.statusServices === 200) {
+
+      if (response?.statusServices === 200) {
         navigate("/");
         addFlag({
           title: txtFlags.titleSuccess,
@@ -90,7 +131,7 @@ export function DecisionModal(props: DecisionModalProps) {
       } else {
         addFlag({
           title: txtFlags.titleWarning,
-          description: `${txtFlags.descriptionWarning} ${response.statusServices}`,
+          description: `${txtFlags.descriptionWarning} ${response?.statusServices}`,
           appearance: "warning",
           duration: txtFlags.duration,
         });
@@ -106,10 +147,12 @@ export function DecisionModal(props: DecisionModalProps) {
       onCloseModal?.();
     }
   };
+
   const initialValues: FormValues = {
     textarea: "",
-    selectedOptions: [],
+    selectedOptions: "",
   };
+
   return (
     <Formik
       initialValues={initialValues}
@@ -120,7 +163,7 @@ export function DecisionModal(props: DecisionModalProps) {
       ) => {
         onSubmit?.(values);
         setSubmitting(false);
-        sendData(values.textarea);
+        sendData(values);
       }}
     >
       {({ errors, touched, handleSubmit, values }) => (

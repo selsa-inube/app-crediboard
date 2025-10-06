@@ -41,6 +41,7 @@ const StyledNoResults = styled.div`
 
 const StyledBusinessUnitsItem = styled.li`
   width: 100%;
+  
 `;
 
 export {

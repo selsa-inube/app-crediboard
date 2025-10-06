@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Stack, Tabs, Text, useFlag } from "@inubekit/inubekit";
+import { Stack, Tabs, useFlag } from "@inubekit/inubekit";
 
+import userNotFound from "@assets/images/ItemNotFound.png";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardBorrower } from "@components/cards/CardBorrower";
 import { Fieldset } from "@components/data/Fieldset";
-import { getGuaranteesById } from "@services/credit-request/query/guarantees";
-import { IGuarantees } from "@services/credit-request/query/guarantees/types";
-import { IProspect } from "@services/prospects/types";
+import { getGuaranteesById } from "@services/creditRequest/query/guarantees";
+import { IGuarantees } from "@services/creditRequest/query/types";
+import { IProspect } from "@services/prospect/types";
 import { getTotalFinancialObligations } from "@utils/formatData/currency";
 import { currencyFormat } from "@utils/formatData/currency";
 import { getPropertyValue } from "@utils/mappingData/mappings";
@@ -16,12 +17,14 @@ import { Pledge } from "./Pledge";
 import { Bail } from "./bail";
 import { dataGuarantee, dataTabs } from "./config";
 import { ScrollableContainer } from "./styles";
+import { ItemNotFound } from "@components/layout/ItemNotFound";
 
 export interface IOfferedGuaranteeModalProps {
   handleClose: () => void;
   isMobile: boolean;
   prospectData: IProspect;
   businessUnitPublicCode: string;
+  businessManagerCode: string;
   requestId: string;
 }
 
@@ -31,6 +34,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
     isMobile,
     prospectData,
     businessUnitPublicCode,
+    businessManagerCode,
     requestId,
   } = props;
 
@@ -59,6 +63,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       try {
         const result = await getGuaranteesById(
           businessUnitPublicCode,
+          businessManagerCode,
           requestId
         );
         setDataProperty(result);
@@ -153,7 +158,12 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                   alignItems="center"
                   height="290px"
                 >
-                  <Text>{dataGuarantee.noContent}</Text>
+                  <ItemNotFound
+                    image={userNotFound}
+                    title={dataGuarantee.noBorrowersTitle}
+                    description={dataGuarantee.noBorrowersDescription}
+                    buttonDescription={dataGuarantee.retry}
+                  />
                 </Stack>
               </Fieldset>
             )}

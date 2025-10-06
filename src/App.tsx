@@ -5,25 +5,26 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
-import { FlagProvider } from "@inubekit/inubekit";
 
+import { FlagProvider } from "@inubekit/inubekit";
 import { AppContext, AppContextProvider } from "@context/AppContext";
-import { usePortalLogic } from "@hooks/usePortalRedirect";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { AppPage } from "@components/layout/AppPage";
 import { GlobalStyles } from "@styles/global";
 import { Login } from "@pages/login";
-import { environment } from "@config/environment";
 import { initializeDataDB } from "@mocks/utils/initializeDataDB";
 import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
-import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
+import { useIAuth } from "@inube/iauth-react";
+import { environment } from "@config/environment";
+import { EnumProvider } from "@context/enumContext";
+import { AuthProvider } from "@pages/AuthProvider";
 
 function LogOut() {
   localStorage.clear();
-  const { logout } = useAuth0();
-  logout({ logoutParams: { returnTo: environment.GOOGLE_REDIRECT_URI } });
+  sessionStorage.clear();
+  const { logout } = useIAuth();
+  logout({ logoutParams: { returnTo: environment.VITE_LOGOUT_REDIRECT_URI } });
   return <AppPage />;
 }
 
@@ -47,25 +48,18 @@ const router = createBrowserRouter(
     </>
   )
 );
-
 function App() {
-  const { codeError, loading } = usePortalLogic();
-
-  if (loading) {
-    return <LoadingAppUI />;
-  }
-
-  if (codeError) {
-    return <ErrorPage errorCode={codeError} />;
-  }
-
   return (
-    <AppContextProvider>
-      <FlagProvider>
-        <GlobalStyles />
-        <RouterProvider router={router} />
-      </FlagProvider>
-    </AppContextProvider>
+    <AuthProvider>
+      <EnumProvider>
+        <AppContextProvider>
+          <FlagProvider>
+            <GlobalStyles />
+            <RouterProvider router={router} />
+          </FlagProvider>
+        </AppContextProvider>
+      </EnumProvider>
+    </AuthProvider>
   );
 }
 

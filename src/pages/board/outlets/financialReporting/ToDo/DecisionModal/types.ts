@@ -1,4 +1,4 @@
-import { IMakeDecisionsCreditRequest } from "@services/types";
+import { IMakeDecisionsCreditRequest } from "@services/creditRequest/command/types";
 
 interface IMakeDecisionsCreditRequestWithXAction {
   businessUnit: string;
@@ -8,4 +8,11 @@ interface IMakeDecisionsCreditRequestWithXAction {
   xAction: string;
 }
 
-export type { IMakeDecisionsCreditRequestWithXAction };
+interface IMakeDecisionsPayload {
+  creditRequestId: string;
+  humanDecision: string;
+  justification: string;
+  nonCompliantDocuments?: string[];
+}
+
+export type { IMakeDecisionsCreditRequestWithXAction, IMakeDecisionsPayload };

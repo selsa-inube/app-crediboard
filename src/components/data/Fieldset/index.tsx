@@ -1,15 +1,25 @@
 import { useState } from "react";
-import { MdAdd, MdOutlineInfo } from "react-icons/md";
+import { MdAdd, MdOutlineInfo, MdOutlineMoreVert } from "react-icons/md";
 import { Stack, Text, useMediaQuery, Button, Icon } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
+import { MenuProspect } from "@components/navigation/MenuProspect";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
 
-import { StyledContainerFieldset, StyledPrint } from "./styles";
+import {
+  StyledContainerFieldset,
+  StyledMenuContainer,
+  StyledMenuDropdown,
+  StyledPrint,
+} from "./styles";
 import { titlesModal } from "./config";
 
 interface IOptionsButton {
   title: string;
+  titleSistemValidation: string;
   onClick?: () => void;
+  onClickSistemValidation?: () => void;
 }
 
 interface IFieldsetProps {
@@ -28,6 +38,7 @@ interface IFieldsetProps {
   selectedState?: boolean;
   hasError?: boolean;
   alignContent?: string;
+  borderColor?: string;
 }
 
 export const Fieldset = (props: IFieldsetProps) => {
@@ -39,12 +50,12 @@ export const Fieldset = (props: IFieldsetProps) => {
     heightFieldset,
     descriptionTitle,
     activeButton,
-    disabledButton,
     hasTable = false,
     hasOverflow = false,
     isClickable = false,
     selectedState = false,
     hasError = false,
+    borderColor = "normal",
     alignContent,
   } = props;
 
@@ -52,7 +63,7 @@ export const Fieldset = (props: IFieldsetProps) => {
 
   const [isSelected, setIsSelected] = useState(selectedState || false);
   const [infoModal, setInfoModal] = useState(false);
-
+  const [showMenu, setShowMenu] = useState(false);
   const handleOnClick = () => {
     if (isClickable) {
       setIsSelected(!isSelected);
@@ -61,7 +72,41 @@ export const Fieldset = (props: IFieldsetProps) => {
       }
     }
   };
-
+  const menuOptions = (): {
+    title: string;
+    onClick: () => void;
+    visible: boolean;
+    icon: JSX.Element;
+  }[] => [
+    {
+      icon: <MdAdd />,
+      title: activeButton?.title || "",
+      onClick: () => {
+        activeButton?.onClick?.();
+        setShowMenu(false);
+      },
+      visible: true,
+    },
+    {
+      icon: <MdAdd />,
+      title: activeButton?.titleSistemValidation || "",
+      onClick: () => {
+        activeButton?.onClickSistemValidation?.();
+        setShowMenu(false);
+      },
+      visible: true,
+    },
+  ];
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
+  const handleInfo = () => {
+    setIsModalOpen(true);
+  };
+  const { disabledButton: editCreditApplication } = useValidateUseCase({
+    useCase: getUseCaseValue("editCreditApplication"),
+  });
   return (
     <Stack
       direction="column"
@@ -86,25 +131,72 @@ export const Fieldset = (props: IFieldsetProps) => {
         </Stack>
         {activeButton && (
           <Stack>
-            <StyledPrint>
-              <Button
-                iconBefore={<MdAdd />}
-                spacing="compact"
-                disabled={!disabledButton}
-                onClick={activeButton.onClick}
-              >
-                {activeButton.title}
-              </Button>
-              {!disabledButton && (
+            {isMobile ? (
+              <StyledMenuContainer>
                 <Icon
-                  icon={<MdOutlineInfo />}
+                  icon={<MdOutlineMoreVert />}
                   appearance="primary"
-                  size="16px"
+                  size="24px"
                   cursorHover
-                  onClick={() => setInfoModal(true)}
+                  onClick={() => setShowMenu((prev) => !prev)}
                 />
-              )}
-            </StyledPrint>
+
+                {showMenu && activeButton && (
+                  <StyledMenuDropdown>
+                    <MenuProspect
+                      options={menuOptions()}
+                      onMouseLeave={() => setShowMenu(false)}
+                    />
+                  </StyledMenuDropdown>
+                )}
+              </StyledMenuContainer>
+            ) : (
+              <StyledPrint>
+                <Button
+                  iconBefore={<MdAdd />}
+                  spacing="compact"
+                  onClick={activeButton.onClick}
+                  variant="outlined"
+                  disabled={editCreditApplication}
+                >
+                  {activeButton.title}
+                </Button>
+                <Button
+                  iconBefore={<MdAdd />}
+                  spacing="compact"
+                  onClick={activeButton.onClickSistemValidation}
+                  variant="outlined"
+                  disabled={editCreditApplication}
+                >
+                  {activeButton.titleSistemValidation}
+                </Button>
+                <Stack alignItems="center">
+                  {editCreditApplication ? (
+                    <Icon
+                      icon={<MdOutlineInfo />}
+                      appearance="primary"
+                      size="16px"
+                      cursorHover
+                      onClick={handleInfo}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </Stack>
+              </StyledPrint>
+            )}
+            {isModalOpen ? (
+              <InfoModal
+                onClose={handleInfoModalClose}
+                title={titlesModal.title}
+                subtitle={titlesModal.subTitle}
+                description={titlesModal.description}
+                nextButtonText={titlesModal.textButtonNext}
+                isMobile={isMobile}
+              />
+            ) : (
+              <></>
+            )}
           </Stack>
         )}
       </Stack>
@@ -119,6 +211,7 @@ export const Fieldset = (props: IFieldsetProps) => {
         $isClickable={isClickable}
         $hasError={hasError}
         $alignContent={alignContent}
+        $borderColor={borderColor}
       >
         {children}
       </StyledContainerFieldset>

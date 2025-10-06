@@ -8,20 +8,18 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IEntries } from "@components/data/TableBoard/types";
 import { TextAreaModal } from "@components/modals/TextAreaModal";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getNotificationOnApprovals } from "@services/notificationOnApprovals";
-import { getApprovalsById } from "@services/credit-request/query/getApprovals";
-import { IApprovals } from "./types";
-import { ICreditRequest } from "@services/types";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { getNotificationOnApprovals } from "@services/creditRequest/command/notificationOnApprovals";
+import { getApprovalsById } from "@services/creditRequest/query/getApprovals";
+import { IApprovals } from "@services/creditRequest/query/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 import {
   actionMobileApprovals,
   titlesApprovals,
-  actionsApprovals,
   handleNotificationClick,
   handleErrorClick,
   desktopActions,
   getMobileActionsConfig,
-  infoItems,
   entriesApprovals,
   getActionsMobileIcon,
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
@@ -54,10 +52,13 @@ export const Approvals = (props: IApprovalsProps) => {
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const fetchCreditRequest = useCallback(async () => {
     try {
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
+        businessManagerCode,
         id,
         userAccount
       );
@@ -69,7 +70,7 @@ export const Approvals = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id, userAccount]);
+  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();
@@ -82,6 +83,7 @@ export const Approvals = (props: IApprovalsProps) => {
     try {
       const data: IApprovals = await getApprovalsById(
         businessUnitPublicCode,
+        businessManagerCode,
         requests.creditRequestId
       );
       if (data && Array.isArray(data)) {
@@ -101,7 +103,7 @@ export const Approvals = (props: IApprovalsProps) => {
     } finally {
       setLoading(false);
     }
-  }, [businessUnitPublicCode, requests?.creditRequestId]);
+  }, [businessUnitPublicCode, requests?.creditRequestId, businessManagerCode]);
 
   useEffect(() => {
     fetchApprovalsData();
@@ -115,24 +117,28 @@ export const Approvals = (props: IApprovalsProps) => {
     handleErrorClick(data, setSelectedData, setShowErrorModal);
   };
 
-  const desktopActionsConfig = desktopActions(
-    actionsApprovals,
-    handleNotificationClickBound,
-    handleErrorClickBound
-  );
+  const desktopActionsConfig = !isMobile
+    ? desktopActions([], handleNotificationClickBound, handleErrorClickBound)
+    : [];
 
-  const mobileActions = getMobileActionsConfig(
-    actionMobileApprovals,
-    handleNotificationClickBound,
-    handleErrorClickBound
-  );
+  const mobileActions = !isMobile
+    ? getMobileActionsConfig(
+        actionMobileApprovals,
+        handleNotificationClickBound,
+        handleErrorClickBound
+      )
+    : [];
 
   const handleSubmit = async () => {
     try {
-      const code = await getNotificationOnApprovals(businessUnitPublicCode, {
-        approvalId: selectedData?.approvalId?.toString() ?? "",
-        creditRequestId: requests?.creditRequestId ?? "",
-      });
+      const code = await getNotificationOnApprovals(
+        businessUnitPublicCode,
+        businessManagerCode,
+        {
+          approvalId: selectedData?.approvalId?.toString() ?? "",
+          creditRequestId: requests?.creditRequestId ?? "",
+        }
+      );
 
       addFlag({
         title: dataInfoApprovals.notifySend,
@@ -187,14 +193,11 @@ export const Approvals = (props: IApprovalsProps) => {
             actionMobile={mobileActions}
             actionMobileIcon={getActionsMobileIcon()}
             loading={loading}
-            appearanceTable={{
-              widthTd: isMobile ? "70%" : undefined,
-              efectzebra: true,
-              title: "primary",
-              isStyleMobile: true,
-            }}
             isFirstTable={true}
-            infoItems={infoItems}
+            hideTagOnTablet={false}
+            hideSecondColumnOnTablet={true}
+            enableStickyActions={false}
+            showPendingWarningIcon={true}
           />
         )}
       </Fieldset>
@@ -204,7 +207,7 @@ export const Approvals = (props: IApprovalsProps) => {
           nextButton="Enviar"
           handleNext={handleSubmit}
           handleClose={handleCloseNotificationModal}
-          width="400px"
+          width={isMobile ? "290px" : "400px"}
         >
           <Text>{dataInfoApprovals.notifyModal}</Text>
         </BaseModal>
@@ -212,12 +215,14 @@ export const Approvals = (props: IApprovalsProps) => {
       {showErrorModal && selectedData && (
         <TextAreaModal
           title="Error"
-          buttonText="Cerrar"
+          buttonText="Entendido"
           inputLabel="Descripción del error"
           inputPlaceholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nec mollis felis. Donec eget sapien viverra, tincidunt ex ut, ornare nisi. Nulla eget fermentum velit."
           readOnly
           disableTextarea={true}
           onCloseModal={() => setShowErrorModal(false)}
+          handleNext={() => setShowErrorModal(false)}
+          showSecundaryButton={false}
         />
       )}
     </>

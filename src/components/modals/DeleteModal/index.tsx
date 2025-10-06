@@ -5,12 +5,14 @@ import { BaseModal } from "@components/modals/baseModal";
 import { DeleteData } from "./config";
 
 export interface IDeleteModalProps {
+  TextDelete: string;
   handleClose: () => void;
-  handleDelete?: () => void;
+  handleDelete?: (id?: number, borrowerIdentificationNumber?: string) => void;
+  iconBefore?: React.JSX.Element;
 }
 
 export function DeleteModal(props: IDeleteModalProps) {
-  const { handleClose, handleDelete = () => {} } = props;
+  const { handleClose, handleDelete = () => {}, TextDelete } = props;
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
@@ -24,7 +26,7 @@ export function DeleteModal(props: IDeleteModalProps) {
       initialDivider={false}
       width={isMobile ? "287px" : "402px"}
     >
-      <Text>{DeleteData.data}</Text>
+      <Text>{TextDelete}</Text>
     </BaseModal>
   );
 }

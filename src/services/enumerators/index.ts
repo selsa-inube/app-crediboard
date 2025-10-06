@@ -4,11 +4,12 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IEnumerator } from "@services/types";
+import { IEnumerator } from "./types";
 import { mapEnumeratorsEntities } from "./mappers";
 
 export const getEnumerators = async (
-  businessUnitPublicCode: string
+  businessUnitPublicCode: string,
+  businessManagerCode: string,
 ): Promise<IEnumerator[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -22,12 +23,13 @@ export const getEnumerators = async (
           "X-Action": "GetEnum",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.ICOREBANKING_API_URL_QUERY}/enumerators/Role`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/enumerators/Role`,
         options
       );
 

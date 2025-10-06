@@ -12,5 +12,7 @@ export const dataGuarantee = {
   title: "Garantías ofrecidas",
   close: "Cerrar",
   borrower: "Codeudor",
-  noContent: "No hay contenido",
+  noBorrowersTitle: "No se encontraron codeudores.",
+  noBorrowersDescription: "No hay codeudores disponibles para esta solicitud.",
+  retry: "Volver a intentar",
 };

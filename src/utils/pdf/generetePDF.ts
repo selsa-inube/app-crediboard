@@ -1,56 +1,72 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-export const generatePDF = (
+export const generatePDF = async (
   elementPrint: React.RefObject<HTMLDivElement>,
-  customTitle = "",
-  titlePDF = "document",
-  margins?: { top: number; bottom: number; left: number; right: number }
-) => {
-  if (elementPrint.current === null) return;
+  titlePDF = "documento",
+  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>,
+  getAsBlob = true
+): Promise<Blob | void> => {
+  const originalElement = elementPrint.current;
 
-  const pdf = new jsPDF({ orientation: "landscape", format: "a4" });
+  if (!originalElement) {
+    setShowErrorModal(true);
+    return;
+  }
 
-  const titleFontSize = 16;
+  const offscreenContainer = document.createElement("div");
+  offscreenContainer.style.position = "absolute";
+  offscreenContainer.style.left = "-9999px";
+  offscreenContainer.style.width = "1200px";
 
-  html2canvas(elementPrint.current)
-    .then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
+  const clonedElement = originalElement.cloneNode(true) as HTMLElement;
+  clonedElement.classList.add("pdf-generation-mode");
 
-      if (margins) {
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const imgProps = {
-          width: canvas.width,
-          height: canvas.height,
-        };
-        const contentWidth = pdfWidth - margins.left - margins.right;
-        const contentHeight = (imgProps.height * contentWidth) / imgProps.width;
+  offscreenContainer.appendChild(clonedElement);
+  document.body.appendChild(offscreenContainer);
 
-        const position = margins.top + titleFontSize + 10;
+  try {
+    const blocks = clonedElement.querySelectorAll<HTMLElement>(".pdf-block");
 
-        pdf.setFontSize(titleFontSize);
-        pdf.text(customTitle, margins.left, margins.top + titleFontSize);
+    if (blocks.length === 0) {
+      setShowErrorModal(true);
+      return;
+    }
 
-        pdf.addImage(
-          imgData,
-          "PNG",
-          margins.left,
-          position,
-          contentWidth,
-          contentHeight
-        );
-      } else {
-        const position = titleFontSize + 20;
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const margin = 15;
+    const contentWidth = pdfWidth - margin * 2;
 
-        pdf.setFontSize(titleFontSize);
-        pdf.text(customTitle, 10, position);
+    for (let index = 0; index < blocks.length; index++) {
+      const block = blocks[index];
 
-        pdf.addImage(imgData, "PNG", 10, position + 10, 100, 100);
+      if (index > 0) {
+        pdf.addPage();
       }
 
-      pdf.save(titlePDF);
-    })
-    .catch((error) => {
-      console.error("Error al generar el PDF:", error);
-    });
+      const canvas = await html2canvas(block, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
+
+      pdf.addImage(imgData, "JPEG", margin, margin, contentWidth, contentHeight);
+    }
+
+    if (getAsBlob) {
+      return pdf.output("blob");
+    } else {
+      pdf.save(`${titlePDF}.pdf`);
+    }
+  } catch (error) {
+    setShowErrorModal(true);
+    return Promise.reject(error);
+  } finally {
+    document.body.removeChild(offscreenContainer);
+  }
 };

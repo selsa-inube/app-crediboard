@@ -20,31 +20,38 @@ import {
 
 import { SectionOrientation } from "@components/layout/BoardSection/types";
 import { BoardSection } from "@components/layout/BoardSection";
-import { ICreditRequestPinned, ICreditRequest } from "@services/types";
+
 import { IOptionItemCheckedProps } from "@components/inputs/SelectCheck/OptionItem";
-import { ErrorAlert } from "@components/ErrorAlert";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { SelectedFilters } from "@components/cards/SelectedFilters";
 import { FilterRequestModal } from "@components/modals/FilterRequestModal";
-import { getCreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage";
-import { ICreditRequestTotalsByStage } from "@services/credit-request/query/getCreditRequestTotalsByStage/types";
+
 import { AppContext } from "@context/AppContext";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { totalsKeyBySection } from "@components/layout/BoardSection/config";
+import { BaseModal } from "@components/modals/baseModal";
+import { getCreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage";
+import { ICreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage/types";
+import {
+  ICreditRequest,
+  ICreditRequestPinned,
+} from "@services/creditRequest/query/types";
 
 import {
   StyledInputsContainer,
   StyledBoardContainer,
   StyledContainerToCenter,
-  StyledError,
   StyledSearch,
   StyledRequestsContainer,
+  StyledRequestsContainerVoiceSearch,
 } from "./styles";
-
 import { selectCheckOptions } from "./config/select";
 import { IFilterFormValues } from ".";
-import { boardColumns, seePinned } from "./config/board";
-
+import {
+  boardColumns,
+  boardLayoutData,
+  dataInformationSearchModal,
+} from "./config/board";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -57,23 +64,26 @@ interface BoardLayoutProps {
   errorLoadingPins: boolean;
   activeOptions: Filter[];
   closeFilterModal: () => void;
-  handleSelectCheckChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSelectCheckChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
     isPinned: string
   ) => void;
-
-  handleShowPinnedOnly: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSearchRequestsValue: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleShowPinnedOnly: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSearchRequestsValue: (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => void;
   onOrientationChange: (orientation: SectionOrientation) => void;
   handleLoadMoreData: () => void;
   openFilterModal: () => void;
   isFilterModalOpen: boolean;
   handleApplyFilters: (values: IFilterFormValues) => void;
+  shouldCollapseAll: boolean;
   handleClearFilters: () => void;
   handleRemoveFilter: (filterIdToRemove: string) => void;
   isMenuOpen: boolean;
+  filterValues: IFilterFormValues;
 }
 
 function BoardLayoutUI(props: BoardLayoutProps) {
@@ -89,6 +99,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     pinnedRequests,
     errorLoadingPins,
     activeOptions,
+    filterValues,
     closeFilterModal,
     handleLoadMoreData,
     handlePinRequest,
@@ -97,17 +108,84 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     handleRemoveFilter,
     handleSearchRequestsValue,
     onOrientationChange,
+    shouldCollapseAll,
   } = props;
 
-  const [showErrorAlert, setShowErrorAlert] = useState(true);
+  const [hasBeenFocused, setHasBeenFocused] = useState(false);
 
-  const { businessUnitSigla } = useContext(AppContext);
+  const [isTextSearchModalOpen, setIsTextSearchModalOpen] = useState(false);
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
+  const [lastFilterCount, setLastFilterCount] = useState(0);
+  const [hasShownModalForCurrentFilters, setHasShownModalForCurrentFilters] =
+    useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const { addFlag } = useFlag();
+  const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
-  const [isExpanded, setIsExpanded] = useState(false);
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const stackRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (activeOptions.length === 0) {
+      setHasBeenFocused(false);
+    }
+  }, [activeOptions.length]);
+
+  useEffect(() => {
+    if (activeOptions.length > lastFilterCount) {
+      setLastFilterCount(activeOptions.length);
+      setHasShownModalForCurrentFilters(false);
+    }
+    if (activeOptions.length === 0) {
+      setLastFilterCount(0);
+      setHasShownModalForCurrentFilters(false);
+    }
+  }, [activeOptions.length, lastFilterCount]);
+
+  const getWordsFromText = (text: string): string[] => {
+    return text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+  };
+
+  const handleTextfieldChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!isTextSearchModalOpen) {
+      handleSearchRequestsValue(event);
+    }
+  };
+
+  const handleTextfieldFocus = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isTextSearchModalOpen) {
+      return;
+    }
+    if (activeOptions.length === 0) {
+      return;
+    }
+    if (!hasBeenFocused) {
+      setIsTextSearchModalOpen(true);
+      setHasBeenFocused(true);
+      setHasShownModalForCurrentFilters(true);
+    } else {
+      const currentValue = event.target.value.trim();
+      if (currentValue) {
+        const words = getWordsFromText(currentValue);
+
+        if (words.length > 1) {
+          setIsTextSearchModalOpen(true);
+          setHasShownModalForCurrentFilters(true);
+        }
+      } else if (!hasShownModalForCurrentFilters) {
+        setIsTextSearchModalOpen(true);
+        setHasShownModalForCurrentFilters(true);
+      }
+    }
+  };
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -134,8 +212,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     setIsExpanded(Boolean(searchRequestValue));
   }, [searchRequestValue]);
 
-  const observerRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
     const timeout = setTimeout(() => {
       const observer = new IntersectionObserver(
@@ -161,7 +237,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     }, 3000);
 
     return () => clearTimeout(timeout);
-    //eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const normalizedTotalData = (result: ICreditRequestTotalsByStage) => {
@@ -178,7 +254,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     const fetchTotals = async () => {
       try {
         const result = await getCreditRequestTotalsByStage(
-          businessUnitPublicCode
+          businessUnitPublicCode,
+          businessManagerCode
         );
         if (result) setTotalsData(normalizedTotalData(result));
       } catch (error) {
@@ -196,10 +273,26 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     fetchTotals();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode]);
+
   const counterTotalsData = (value: string) => {
     if (totalsData) {
       return totalsData.find((item) => item.name === value)?.counter;
     }
+  };
+
+  const handleTextSearchModalBack = () => {
+    handleClearFilters();
+    setIsTextSearchModalOpen(false);
+    setHasBeenFocused(false);
+  };
+
+  const handleTextSearchModalNext = () => {
+    setIsTextSearchModalOpen(false);
+  };
+
+  const handleTextSearchModalClose = () => {
+    setIsTextSearchModalOpen(false);
+    setHasBeenFocused(false);
   };
 
   return (
@@ -208,14 +301,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         direction="column"
         width={isMobile ? "-webkit-fill-available" : "min(100%,1500px)"}
       >
-        {errorLoadingPins && showErrorAlert && (
-          <StyledError $isMobile={isMobile}>
-            <ErrorAlert
-              message="Error: No se pudo cargar el estado de los anclados."
-              onClose={() => setShowErrorAlert(false)}
-            />
-          </StyledError>
-        )}
         <StyledInputsContainer $isMobile={isMobile}>
           <Stack
             justifyContent="space-between"
@@ -229,7 +314,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   $isMobile={isMobile}
                   $isExpanded={isExpanded}
                   onClick={() => {
-                    if (!isExpanded) setIsExpanded(true);
+                    if (!isExpanded && !isTextSearchModalOpen)
+                      setIsExpanded(true);
                   }}
                 >
                   <Stack width="100%" alignItems="center" gap="8px">
@@ -240,19 +326,25 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                       size="compact"
                       iconAfter={<MdSearch />}
                       value={searchRequestValue}
-                      onChange={handleSearchRequestsValue}
+                      onChange={handleTextfieldChange}
+                      disabled={isTextSearchModalOpen}
                       fullwidth
+                      onFocus={handleTextfieldFocus}
                     />
-                    <Icon
-                      icon={<MdOutlineFilterAlt />}
-                      appearance="primary"
-                      variant="outlined"
-                      size="36px"
-                      shape="rectangle"
-                      cursorHover
-                      spacing="wide"
-                      onClick={openFilterModal}
-                    />
+                    {!isExpanded && (
+                      <>
+                        <Icon
+                          icon={<MdOutlineFilterAlt />}
+                          appearance="primary"
+                          variant="outlined"
+                          size="36px"
+                          shape="rectangle"
+                          cursorHover
+                          spacing="wide"
+                          onClick={openFilterModal}
+                        />
+                      </>
+                    )}
                   </Stack>
                 </StyledSearch>
               </>
@@ -291,11 +383,12 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 selectedFilters={activeOptions}
                 onCloseModal={closeFilterModal}
                 onRemoveFilter={handleRemoveFilter}
+                filterValues={filterValues}
               />
             )}
 
             {!isMobile && (
-              <Stack width="280px" alignItems="end">
+              <StyledRequestsContainerVoiceSearch $isMobile={isMobile}>
                 <Textfield
                   id="SearchCardsDesktop"
                   name="SearchCardsDesktop"
@@ -303,10 +396,12 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   size="compact"
                   iconAfter={<MdSearch />}
                   value={searchRequestValue}
-                  onChange={handleSearchRequestsValue}
+                  onChange={handleTextfieldChange}
+                  disabled={isTextSearchModalOpen}
                   fullwidth
+                  onFocus={handleTextfieldFocus}
                 />
-              </Stack>
+              </StyledRequestsContainerVoiceSearch>
             )}
 
             {!isMobile && (
@@ -324,7 +419,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   disabled={!activeOptions.length}
                   onClick={handleClearFilters}
                 >
-                  Quitar
+                  {boardLayoutData.remove}
                 </Button>
                 <Button
                   appearance="primary"
@@ -334,11 +429,10 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   variant="outlined"
                   onClick={openFilterModal}
                 >
-                  Filtrar
+                  {boardLayoutData.filter}
                 </Button>
               </StyledRequestsContainer>
             )}
-
             <Stack alignItems="center">
               <Stack gap="16px">
                 {!isMobile && (
@@ -348,7 +442,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                       appearance="dark"
                       size="24px"
                     />
-                    <Text type="label">{seePinned.viewPinned}</Text>
                     <Toggle
                       id="SeePinned"
                       name="SeePinned"
@@ -386,7 +479,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           </Stack>
         </StyledInputsContainer>
 
- 
         <StyledBoardContainer
           $orientation={boardOrientation}
           $isMobile={isMobile}
@@ -417,11 +509,24 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 handleLoadMoreData={handleLoadMoreData}
                 dragIcon={dragIcon}
                 onOrientationChange={onOrientationChange}
+                shouldCollapseAll={shouldCollapseAll}
               />
             );
           })}
         </StyledBoardContainer>
-
+        {isTextSearchModalOpen && (
+          <BaseModal
+            title={dataInformationSearchModal.titleModal}
+            width="400px"
+            nextButton={dataInformationSearchModal.succesModal}
+            backButton={dataInformationSearchModal.buttonModal}
+            handleBack={handleTextSearchModalBack}
+            handleNext={handleTextSearchModalNext}
+            handleClose={handleTextSearchModalClose}
+          >
+            <Text>{dataInformationSearchModal.descriptionModal}</Text>
+          </BaseModal>
+        )}
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
     </StyledContainerToCenter>

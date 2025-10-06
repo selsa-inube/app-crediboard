@@ -3,7 +3,7 @@ import { Accordion, type IAccordionProps } from "@components/data/Accordion";
 import {
   entriesCommercialManagement,
   titlesCommercialManagement,
-} from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
+} from "@config/pages/board/outlet/financialReporting/configCommercialManagement";
 
 interface IDataCommercialManagement {
   dataAccordeon: IAccordionProps[];

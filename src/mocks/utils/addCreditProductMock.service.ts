@@ -1,8 +1,8 @@
 import localforage from "localforage";
 import { FormikValues } from "formik";
 
-import { Schedule } from "@services/enums";
-import { ICreditProductProspect, IProspect } from "@services/types";
+import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
+import { ICreditProductProspect, IProspect } from "@services/creditRequest/query/types";
 
 export async function addCreditProduct(
   id: string,

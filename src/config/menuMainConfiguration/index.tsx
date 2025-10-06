@@ -1,8 +1,24 @@
-import { MdLogout } from "react-icons/md";
+import { MdLogout, MdOutlineMarkunreadMailbox } from "react-icons/md";
 
-const userMenu = [
+const getUserMenu = (
+  handleToggleLogoutModal: () => void,
+  notificationsCount: number = 0
+) => [
   {
-    id: "section",
+    id: "notifications-section",
+    title: "",
+    actions: [
+      {
+        id: "notifications",
+        title: `Novedades (${notificationsCount})`,
+        action: handleToggleLogoutModal,
+        iconBefore: <MdOutlineMarkunreadMailbox />,
+      },
+    ],
+    divider: true,
+  },
+  {
+    id: "logout-section",
     title: "",
     links: [
       {
@@ -16,4 +32,4 @@ const userMenu = [
   },
 ];
 
-export { userMenu };
+export { getUserMenu };

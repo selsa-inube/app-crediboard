@@ -4,16 +4,14 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Stack, useMediaQuery, Select, useFlag } from "@inubekit/inubekit";
 
-import { getCommercialManagerAndAnalyst } from "@services/commercialManagerAndAnalyst";
+import { getCommercialManagerAndAnalyst } from "@services/staff/commercialManagerAndAnalyst";
 
 import { AppContext } from "@context/AppContext";
-import {
-  ICommercialManagerAndAnalyst,
-  ICreditRequests,
-  IToDo,
-} from "@services/types";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { BaseModal } from "@components/modals/baseModal";
+import { IToDo } from "@services/creditRequest/query/types";
+import { ICommercialManagerAndAnalyst } from "@services/staff/types";
+import { ICreditRequests } from "@services/creditRequest/command/types";
 
 import { changeUsersByCreditRequest } from "./utils";
 import { txtFlags } from "../config";
@@ -72,6 +70,7 @@ export function StaffModal(props: StaffModalProps) {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
   const handleCommercialManagerChange = (
     name: string,
     value: string,
@@ -101,8 +100,16 @@ export function StaffModal(props: StaffModalProps) {
     const fetchData = async () => {
       try {
         const [accountManagers, analysts] = await Promise.all([
-          getCommercialManagerAndAnalyst("CredicarAccountManager", "Selsa"),
-          getCommercialManagerAndAnalyst("CredicarAnalyst", "Selsa"),
+          getCommercialManagerAndAnalyst(
+            businessManagerCode,
+            "Selsa",
+            businessUnitPublicCode
+          ),
+          getCommercialManagerAndAnalyst(
+            businessManagerCode,
+            "Selsa",
+            businessUnitPublicCode
+          ),
         ]);
 
         setAccountManagerList(accountManagers);
@@ -156,6 +163,7 @@ export function StaffModal(props: StaffModalProps) {
       if (managerRequest) {
         await changeUsersByCreditRequest(
           businessUnitPublicCode,
+          businessManagerCode,
           managerRequest,
           userAccount
         );
@@ -168,6 +176,7 @@ export function StaffModal(props: StaffModalProps) {
       if (analystRequest) {
         await changeUsersByCreditRequest(
           businessUnitPublicCode,
+          businessManagerCode,
           analystRequest,
           userAccount
         );
@@ -244,7 +253,7 @@ export function StaffModal(props: StaffModalProps) {
                 label="Gestor Comercial"
                 placeholder={
                   options.commercialManager.length > 0
-                    ? "Seleccione una opción"
+                    ? "Selecciona una opción"
                     : "No hay gestores disponibles"
                 }
                 options={options.commercialManager}
@@ -261,7 +270,7 @@ export function StaffModal(props: StaffModalProps) {
                 label="Analista"
                 placeholder={
                   options.analyst.length > 0
-                    ? "Seleccione una opción"
+                    ? "Selecciona una opción"
                     : "No hay analistas disponibles"
                 }
                 options={options.analyst}

@@ -7,14 +7,14 @@ import { TableBoard } from "@components/data/TableBoard";
 import { IEntries } from "@components/data/TableBoard/types";
 import { PromissoryNotesModal } from "@components/modals/PromissoryNotesModal";
 import { UnfoundData } from "@components/layout/UnfoundData";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
-import { getPayrollDiscountAuthorizationsById } from "@services/credit-request/query/payroll_discount_authorizations";
-import { getPromissoryNotesById } from "@services/credit-request/query/promissory_notes";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
+import { getPayrollDiscountAuthorizationsById } from "@services/creditRequest/query/payroll_discount_authorizations";
+import { getPromissoryNotesById } from "@services/creditRequest/query/promissory_notes";
 import {
+  ICreditRequest,
   IPayrollDiscountAuthorization,
   IPromissoryNotes,
-  ICreditRequest,
-} from "@services/types";
+} from "@services/creditRequest/query/types";
 import { AppContext } from "@context/AppContext";
 
 import {
@@ -51,6 +51,8 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
@@ -59,6 +61,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       try {
         const data = await getCreditRequestByCode(
           businessUnitPublicCode,
+          businessManagerCode,
           id,
           userAccount
         );
@@ -71,7 +74,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       }
     };
     if (id) fetchCreditRequest();
-  }, [businessUnitPublicCode, id, userAccount]);
+  }, [businessUnitPublicCode, id, businessManagerCode, userAccount]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -84,10 +87,12 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
         await Promise.allSettled([
           getPayrollDiscountAuthorizationsById(
             businessUnitPublicCode,
+            businessManagerCode,
             creditRequets.creditRequestId
           ),
           getPromissoryNotesById(
             businessUnitPublicCode,
+            businessManagerCode,
             creditRequets.creditRequestId
           ),
         ]);
@@ -137,7 +142,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
     } finally {
       setLoading(false);
     }
-  }, [businessUnitPublicCode, creditRequets]);
+  }, [businessUnitPublicCode, businessManagerCode, creditRequets]);
 
   useEffect(() => {
     if (creditRequets?.creditRequestId) fetchData();
@@ -185,6 +190,9 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
             }}
             isFirstTable
             infoItems={infoItems}
+            hideSecondColumnOnTablet={false}
+            hideSecondColumnOnMobile={false}
+            showUserIconOnTablet={false}
           />
 
           {showModal && (

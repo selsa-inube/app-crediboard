@@ -1,8 +1,10 @@
 import { Stack, Text, Grid, Divider } from "@inubekit/inubekit";
 
+import userNotFound from "@assets/images/ItemNotFound.png";
+import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { CardGray } from "@components/cards/CardGray";
 import { Fieldset } from "@components/data/Fieldset";
-import { IMortgages } from "@services/credit-request/query/guarantees/types";
+import { IMortgages } from "@services/creditRequest/query/types";
 
 import { dataMortgage } from "./config";
 
@@ -60,7 +62,12 @@ export function Mortgage(props: IMortgage) {
           </>
         ) : (
           <Stack margin="auto">
-            <Text>{dataMortgage.noContent}</Text>
+            <ItemNotFound
+              image={userNotFound}
+              title={dataMortgage.noBorrowersTitle}
+              description={dataMortgage.noBorrowersDescription}
+              buttonDescription={dataMortgage.retry}
+            />
           </Stack>
         )}
       </Stack>

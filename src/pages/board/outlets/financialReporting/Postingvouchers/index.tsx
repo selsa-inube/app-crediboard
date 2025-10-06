@@ -1,10 +1,11 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Stack } from "@inubekit/inubekit";
+import { useIAuth } from "@inube/iauth-react";
 
-import { IAccountingVouchers, ICreditRequest } from "@services/types";
-import { getAccountingVouchers } from "@services/credit-request/query/accountingVouchers";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
+import { ICreditRequest } from "@services/creditRequest/query/types";
+import { getAccountingVouchers } from "@services/creditRequest/query/accountingVouchers";
+import { IAccountingVouchers } from "@services/creditRequest/query/types";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { AppContext } from "@context/AppContext";
 import { IEntries } from "@components/data/TableBoard/types";
 import { UnfoundData } from "@components/layout/UnfoundData";
@@ -25,7 +26,7 @@ interface IApprovalsProps {
 }
 export const Postingvouchers = (props: IApprovalsProps) => {
   const { id, isMobile } = props;
-  const { user } = useAuth0();
+  const { user } = useIAuth();
   const [error, setError] = useState(false);
   const [positionsAccountingVouchers, setPositionsAccountingVouchers] =
     useState<IAccountingVouchers[]>([]);
@@ -36,13 +37,15 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-
   const fetchCreditRequest = useCallback(async () => {
     try {
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
+        businessManagerCode,
         id,
         userAccount
       );
@@ -54,7 +57,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id, userAccount]);
+  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
 
   useEffect(() => {
     fetchCreditRequest();
@@ -67,6 +70,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
       try {
         const vouchers = await getAccountingVouchers(
           businessUnitPublicCode,
+          businessManagerCode,
           requests.creditRequestId
         );
         setPositionsAccountingVouchers(vouchers);
@@ -78,7 +82,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
     };
 
     fetchAccountingVouchers();
-  }, [user, requests, businessUnitPublicCode]);
+  }, [user, requests, businessUnitPublicCode, businessManagerCode]);
   return (
     <Stack direction="column">
       <Fieldset
@@ -111,6 +115,8 @@ export const Postingvouchers = (props: IApprovalsProps) => {
               isStyleMobile: true,
             }}
             isFirstTable={true}
+            hideSecondColumnOnMobile={false}
+            showUserIconOnTablet={false}
           />
         )}
       </Fieldset>

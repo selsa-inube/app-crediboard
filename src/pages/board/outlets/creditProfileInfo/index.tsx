@@ -4,10 +4,10 @@ import { MdOutlineChevronLeft } from "react-icons/md";
 import { Stack, Text, Button, useMediaQuery } from "@inubekit/inubekit";
 
 import { get, getById } from "@mocks/utils/dataMock.service";
-import { ICreditRequest, IRiskScoring } from "@services/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { currencyFormat } from "@utils/formatData/currency";
-import { getCreditRequestByCode } from "@services/credit-request/query/getCreditRequestByCode";
+import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { AppContext } from "@context/AppContext";
 
 import { CreditBehavior } from "./CreditBehaviorCard";
@@ -23,25 +23,14 @@ import {
   StyledPrint,
   StyledNoPrint,
   StyledGridPrint,
+  StylePrintListMobile,
+  StyledPrintListMobileShow,
 } from "./styles";
 import { fieldLabels } from "./config";
+import { IRiskScoring } from "./RiskScoring/types";
 
 export const CreditProfileInfo = () => {
   const [requests, setRequests] = useState({} as ICreditRequest);
-  const [riskScoring, setRiskScoring] = useState<IRiskScoring["risk_scoring"]>({
-    total_score: 0,
-    minimum_score: 0,
-    seniority: 0,
-    seniority_score: 0,
-    risk_center: 0,
-    risk_center_score: 0,
-    job_stability_index: 0,
-    job_stability_index_score: 0,
-    marital_status: "",
-    marital_status_score: 0,
-    economic_activity: "",
-    economic_activity_score: 0,
-  });
   const [credit_profileInfo, setCredit_profileInfo] = useState({
     company_seniority: 0,
     labor_stability_index: 0,
@@ -65,15 +54,6 @@ export const CreditProfileInfo = () => {
     reciprocity: 0,
   });
 
-  const [riskScoringMax, setRiskScoringMax] = useState({
-    seniority_score: 0,
-    risk_center_score: 0,
-    job_stability_index_score: 0,
-    marital_status_score: 0,
-    economic_activity_score: 0,
-  });
-
-  const [loading, setLoading] = useState(false);
   const [dataWereObtained, setWataWereObtained] = useState(false);
   const [dataBehaviorError, setBehaviorError] = useState(false);
   const [dataCreditProfile, setCreditProfile] = useState(false);
@@ -85,6 +65,8 @@ export const CreditProfileInfo = () => {
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
+  const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -95,8 +77,6 @@ export const CreditProfileInfo = () => {
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
-
       try {
         const [
           riskScoring,
@@ -114,17 +94,7 @@ export const CreditProfileInfo = () => {
           get("range_requered_Business_Unit"),
         ]);
 
-        if (
-          riskScoring.status === "fulfilled" &&
-          Array.isArray(riskScoring.value)
-        ) {
-          const [riskScoringData] = riskScoring.value;
-
-          setRiskScoring((prev) => ({
-            ...prev,
-            ...riskScoringData?.risk_scoring,
-          }));
-        } else {
+        if (riskScoring.status !== "fulfilled") {
           setWataWereObtained(true);
         }
 
@@ -176,22 +146,22 @@ export const CreditProfileInfo = () => {
         if (riskScoringMaximum.status === "fulfilled") {
           const data = riskScoringMaximum.value;
           if (Array.isArray(data) && data.length > 0) {
-            setRiskScoringMax((prevState) => ({
-              ...prevState,
-              ...data[0],
-            }));
+            setUncoveredWallet(false);
           }
         } else {
           setUncoveredWallet(false);
         }
       } catch (e) {
         console.error(e);
-      } finally {
-        setLoading(false);
       }
     })();
 
-    getCreditRequestByCode(businessUnitPublicCode, id!, userAccount)
+    getCreditRequestByCode(
+      businessUnitPublicCode,
+      businessManagerCode,
+      id!,
+      userAccount
+    )
       .then((data) => {
         setRequests(data[0] as ICreditRequest);
       })
@@ -207,6 +177,7 @@ export const CreditProfileInfo = () => {
     dataPaymentcapacity,
     dataUncoveredWallet,
     userAccount,
+    businessManagerCode
   ]);
 
   return (
@@ -231,47 +202,102 @@ export const CreditProfileInfo = () => {
                     >
                       {fieldLabels.back}
                     </Button>
-                    <Button spacing="compact" variant="filled">
+                    <Button
+                      spacing="compact"
+                      variant="filled"
+                      onClick={() => print()}
+                    >
                       {fieldLabels.print}
                     </Button>
                   </Stack>
                 </StyledNoPrint>
-                <Stack direction="column" alignItems="center">
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="bold"
+                <StylePrintListMobile>
+                  <Stack direction="column" alignItems="center">
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="bold"
+                    >
+                      {fieldLabels.creditProfile}
+                    </Text>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="normal"
+                    >
+                      {requests.clientName
+                        ? capitalizeFirstLetterEachWord(requests.clientName)
+                        : ""}
+                    </Text>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="normal"
+                    >
+                      {`CC: ${requests.clientIdentificationNumber}`}
+                    </Text>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="bold"
+                    >
+                      {currencyFormat(requests.loanAmount)}
+                    </Text>
+                  </Stack>
+                </StylePrintListMobile>
+                <StyledPrintListMobileShow>
+                  <Stack
+                    justifyContent="space-between"
+                    alignItems="center"
+                    margin={!isMobile ? "16px" : "20px 40px"}
+                    gap="16px"
                   >
-                    {fieldLabels.creditProfile}
-                  </Text>
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="normal"
-                  >
-                    {requests.clientName
-                      ? capitalizeFirstLetterEachWord(requests.clientName)
-                      : ""}
-                  </Text>
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="normal"
-                  >
-                    {`CC: ${requests.clientIdentificationNumber}`}
-                  </Text>
-                  <Text
-                    type="title"
-                    size="medium"
-                    appearance="gray"
-                    weight="bold"
-                  >
-                    {currencyFormat(requests.loanAmount)}
-                  </Text>
-                </Stack>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="bold"
+                    >
+                      {fieldLabels.creditProfile}
+                    </Text>
+                    <StyledUl>
+                      <StyledLi>
+                        <Text
+                          type="title"
+                          size="medium"
+                          appearance="gray"
+                          weight="normal"
+                        >
+                          {requests.clientName
+                            ? capitalizeFirstLetterEachWord(requests.clientName)
+                            : ""}
+                        </Text>
+                      </StyledLi>
+                      <StyledLi>
+                        <Text
+                          type="title"
+                          size="medium"
+                          appearance="gray"
+                          weight="normal"
+                        >
+                          {`CC: ${requests.clientIdentificationNumber}`}
+                        </Text>
+                      </StyledLi>
+                    </StyledUl>
+                    <Text
+                      type="title"
+                      size="medium"
+                      appearance="gray"
+                      weight="bold"
+                    >
+                      {currencyFormat(requests.loanAmount)}
+                    </Text>
+                  </Stack>
+                </StyledPrintListMobileShow>
               </Stack>
             ) : (
               <>
@@ -346,6 +372,9 @@ export const CreditProfileInfo = () => {
             isMobile={isMobile}
             dataCreditProfile={dataCreditProfile}
             setCreditProfile={setCreditProfile}
+            requests={requests}
+            businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
           />
           <PaymentCapacity
             availableValue={payment_capacity.available_value}
@@ -365,23 +394,10 @@ export const CreditProfileInfo = () => {
             setUncoveredWallet={setUncoveredWallet}
           />
           <RiskScoring
-            totalScore={riskScoring.total_score}
-            minimumScore={riskScoring.minimum_score}
-            seniority={riskScoring.seniority}
-            seniorityScore={riskScoring.seniority_score}
-            riskCenter={riskScoring.risk_center}
-            riskCenterScore={riskScoring.risk_center_score}
-            jobStabilityIndex={riskScoring.job_stability_index}
-            jobStabilityIndexScore={riskScoring.job_stability_index_score}
-            maritalStatusScore={riskScoring.marital_status_score}
-            economicActivityScore={riskScoring.economic_activity_score}
-            maritalStatus={riskScoring.marital_status}
-            economicActivity={riskScoring.economic_activity}
-            isLoading={loading}
             isMobile={isMobile}
-            dataWereObtained={Object.keys(riskScoring).length === 0}
-            dataRiskScoringMax={riskScoringMax}
-            setWataWereObtained={setWataWereObtained}
+            businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
+            customerIdentificationNumber={requests.clientIdentificationNumber}
           />
           <Guarantees
             guaranteesRequired="Ninguna garantía real, o fianza o codeudor."
