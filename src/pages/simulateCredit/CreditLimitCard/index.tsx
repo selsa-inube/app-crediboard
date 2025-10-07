@@ -14,7 +14,6 @@ import {
   ICreditLimitData,
   IdataMaximumCreditLimitService,
   IPaymentCapacityData,
-  IReciprocityData,
   IScoreData,
 } from "./types";
 import { dataCreditLimit } from "./config";
@@ -27,7 +26,6 @@ export interface CreditLimitProps {
   creditLineTxt: string;
   creditLimitData: ICreditLimitData;
   paymentCapacityData: IPaymentCapacityData;
-  reciprocityData: IReciprocityData;
   scoreData: IScoreData;
   isMobile: boolean;
 }
@@ -41,7 +39,6 @@ export function CreditLimitCard(props: CreditLimitProps) {
     creditLineTxt,
     creditLimitData,
     paymentCapacityData,
-    reciprocityData,
     scoreData,
     isMobile,
   } = props;
@@ -119,7 +116,11 @@ export function CreditLimitCard(props: CreditLimitProps) {
         <ReciprocityModal
           loading={loading}
           handleClose={() => setOpenModal(null)}
-          {...reciprocityData}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          clientIdentificationNumber={
+            dataMaximumCreditLimitService.identificationDocumentNumber
+          }
         />
       )}
 
