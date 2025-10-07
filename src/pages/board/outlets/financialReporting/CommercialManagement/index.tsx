@@ -767,9 +767,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   generateAndSharePdf={generateAndSharePdf}
                   setDataProspect={setDataProspect}
                   creditRequestCode={creditRequestCode}
-                  onProspectUpdate={
-                    setDataProspect as unknown as (prospect: IProspect) => void
-                  }
+                  onProspectUpdate={(prospect) => setDataProspect([prospect])}
                 />
               )}
             </Stack>

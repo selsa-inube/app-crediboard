@@ -119,7 +119,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   const currentModal = modalHistory[modalHistory.length - 1];
 
   const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
-  console.log(creditRequestCode);
+
   useEffect(() => {
     if (creditRequestCode) {
       const foundProspect = mockProspectCredit.find(
