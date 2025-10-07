@@ -74,6 +74,7 @@ function BoardLayout() {
 
   const fetchBoardData = async (
     businessUnitPublicCode: string,
+    businessManagerCode: string,
     page: number,
     searchParam?: { filter?: string; text?: string },
     append: boolean = false
@@ -123,7 +124,7 @@ function BoardLayout() {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 3)
       return;
 
-    fetchBoardData(businessUnitPublicCode, 1);
+    fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
     setCurrentPage(1);
 
     fetchValidationRulesData();
@@ -146,7 +147,13 @@ function BoardLayout() {
       searchParam = undefined;
     }
 
-    fetchBoardData(businessUnitPublicCode, nextPage, searchParam, true);
+    fetchBoardData(
+      businessUnitPublicCode,
+      businessManagerCode,
+      nextPage,
+      searchParam,
+      true
+    );
   };
   const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
   const handleApplyFilters = async (values: IFilterFormValues) => {
@@ -175,7 +182,7 @@ function BoardLayout() {
     setActiveOptions(activeFilteredValues);
     setCurrentPage(1);
 
-    await fetchBoardData(businessUnitPublicCode, 1, {
+    await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
       filter: `${queryFilterString}`,
     });
 
@@ -291,7 +298,7 @@ function BoardLayout() {
           creditRequestId,
           isPinned
         );
-        await fetchBoardData(businessUnitPublicCode, 1);
+        await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
         setCurrentPage(1);
       } else {
         setIsOpenModal(true);
@@ -320,11 +327,11 @@ function BoardLayout() {
     }));
 
     if (keepSearchValue && filters.searchRequestValue.trim().length >= 3) {
-      await fetchBoardData(businessUnitPublicCode, 1, {
+      await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
         text: filters.searchRequestValue.trim(),
       });
     } else {
-      await fetchBoardData(businessUnitPublicCode, 1);
+      await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
     }
   };
 
@@ -366,7 +373,7 @@ function BoardLayout() {
         selectOptions: selectCheckOptions,
       }));
 
-      await fetchBoardData(businessUnitPublicCode, 1);
+      await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
       return;
     }
 
@@ -374,7 +381,7 @@ function BoardLayout() {
       .map((filter) => filter.value)
       .join("&")
       .trim();
-    await fetchBoardData(businessUnitPublicCode, 1, {
+    await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
       filter: updatedFilterString,
     });
   };
@@ -418,7 +425,7 @@ function BoardLayout() {
           boardRequests: intersection,
         }));
       } else {
-        fetchBoardData(businessUnitPublicCode, 1, {
+        fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
           text: trimmedValue,
         });
       }
@@ -428,11 +435,11 @@ function BoardLayout() {
           .map((filter) => filter.value)
           .join("&");
 
-        await fetchBoardData(businessUnitPublicCode, 1, {
+        await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
           filter: currentFilters,
         });
       } else {
-        await fetchBoardData(businessUnitPublicCode, 1);
+        await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
       }
     }
   };

@@ -159,8 +159,8 @@ function AppPage() {
       try {
         const data = await getUnreadNoveltiesByUser(
           eventData.user.identificationDocumentNumber || "",
-          businessManagerCode,
-          businessUnitPublicCode
+          businessUnitPublicCode,
+          businessManagerCode
         );
         setNoveltiesData(data);
       } catch (error) {
@@ -169,7 +169,11 @@ function AppPage() {
     };
 
     fetchNoveltiesData();
-  }, [eventData.user.identificationDocumentNumber, businessUnitPublicCode, businessManagerCode]);
+  }, [
+    eventData.user.identificationDocumentNumber,
+    businessUnitPublicCode,
+    businessManagerCode,
+  ]);
 
   return (
     <StyledAppPage>
