@@ -5,7 +5,6 @@ import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
 import { CardValues } from "@components/cards/cardValues";
 import { DeleteModal } from "@components/modals/DeleteModal";
-import { deleteCreditProductMock } from "@mocks/utils/deleteCreditProductMock.service";
 import { getSearchProspectSummaryById } from "@services/creditRequest/query/ProspectSummaryById";
 import { AppContext } from "@context/AppContext";
 import {
@@ -22,6 +21,9 @@ import { ConsolidatedCredits } from "@pages/prospect/components/modals/Consolida
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
+import { RemoveCreditProduct } from "@services/creditRequest/command/removeCreditProduct";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { StyledCardsCredit, StyledPrint } from "./styles";
 import { SummaryProspectCredit, tittleOptions } from "./config/config";
@@ -32,12 +34,13 @@ interface CardCommercialManagementProps {
   onClick: () => void;
   prospectData?: IProspect;
   refreshProducts?: () => void;
+  onProspectUpdate?: (prospect: IProspect) => void;
 }
 
 export const CardCommercialManagement = (
   props: CardCommercialManagementProps
 ) => {
-  const { dataRef, id, onClick, prospectData } = props;
+  const { dataRef, id, onClick, prospectData, onProspectUpdate } = props;
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     []
   );
@@ -67,6 +70,8 @@ export const CardCommercialManagement = (
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const handleInfoModalClose = () => {
     setIsModalOpen(false);
   };
@@ -81,13 +86,42 @@ export const CardCommercialManagement = (
   const isMobile = useMediaQuery("(max-width: 800px)");
 
   const handleDelete = async () => {
-    await deleteCreditProductMock(
-      id,
-      selectedProductId,
-      prospectProducts,
-      setProspectProducts
-    );
-    setShowDeleteModal(false);
+    if (!prospectData || !prospectProducts.length) return;
+    try {
+      await RemoveCreditProduct(businessUnitPublicCode, businessManagerCode, {
+        creditProductCode: selectedProductId,
+        creditRequestCode: prospectData?.prospectCode || "",
+      });
+      setProspectProducts((prev) =>
+        prev.filter(
+          (product) => product.creditProductCode !== selectedProductId
+        )
+      );
+
+      if (prospectData?.prospectId) {
+        const updatedProspect = await getSearchProspectByCode(
+          businessUnitPublicCode,
+          businessManagerCode,
+          prospectData.prospectId
+        );
+        if (onProspectUpdate) {
+          onProspectUpdate(updatedProspect);
+        }
+      }
+
+      setShowDeleteModal(false);
+    } catch (error) {
+      setShowDeleteModal(false);
+      const err = error as {
+        message?: string;
+        status: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description = code + err?.message + (err?.data?.description || "");
+      setShowErrorModal(true);
+      setMessageError(description);
+    }
   };
 
   const handleDeleteClick = (creditProductId: string) => {
@@ -263,6 +297,13 @@ export const CardCommercialManagement = (
           description={privilegeCrediboard.description}
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => setShowErrorModal(false)}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </div>

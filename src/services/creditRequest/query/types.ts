@@ -250,7 +250,10 @@ export interface IOutlay {
   date: string;
   amount: number;
 }
-
+export interface IRemoveCreditProduct {
+  creditProductCode: string;
+  creditRequestCode: string;
+}
 export interface IProspect {
   prospect_id: string;
   public_code: string;

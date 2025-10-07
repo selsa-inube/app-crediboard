@@ -3,15 +3,14 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { IRemoveCreditProduct } from "@services/creditRequest/query/types";
+import { IProspect } from "@services/prospect/types";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-
-export const removeExtraordinaryInstallments = async (
-  extraordinaryInstallments: IExtraordinaryInstallments,
+export const RemoveCreditProduct = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-): Promise<IExtraordinaryInstallments | undefined> => {
+  payload: IRemoveCreditProduct
+): Promise<IProspect | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -22,14 +21,12 @@ export const removeExtraordinaryInstallments = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "RemoveExtraordinaryInstallments",
+          "X-Action": "RemoveCreditProduct",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)
-        ),
+        body: JSON.stringify(payload),
         signal: controller.signal,
       };
 
@@ -64,7 +61,7 @@ export const removeExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar los Pagos Extras."
+          "Todos los intentos fallaron. No se pudo eliminar el producto de credito."
         );
       }
     }

@@ -30,7 +30,8 @@ import { IProspect } from "@services/prospect/types";
 
 import { dataAddSeriesModal } from "./config";
 import { TextLabels } from "../ExtraordinaryPaymentModal/config";
-import { saveExtraordinaryInstallment } from "../ExtraordinaryPaymentModal/utils";
+import { updateExtraordinaryInstallment } from "../ExtraordinaryPaymentModal/utils";
+
 
 export interface AddSeriesModalProps {
   handleClose: () => void;
@@ -151,14 +152,13 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         paymentChannelAbbreviatedName: "",
       },
     ],
-    prospectId: prospectData?.prospectId || "",
+    creditRequestCode: prospectData?.prospectCode || "",
   };
-
   const handleExtraordinaryInstallment = async (
     extraordinaryInstallments: IExtraordinaryInstallments
   ) => {
     try {
-      await saveExtraordinaryInstallment(
+      await updateExtraordinaryInstallment(
         businessUnitPublicCode,
         businessManagerCode,
         extraordinaryInstallments

@@ -779,6 +779,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   generateAndSharePdf={generateAndSharePdf}
                   setDataProspect={setDataProspect}
                   creditRequestCode={creditRequestCode}
+                  onProspectUpdate={(prospect) => setDataProspect([prospect])}
                 />
               )}
             </Stack>
