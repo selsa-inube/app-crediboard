@@ -4,10 +4,11 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
 
-export const saveExtraordinaryInstallments = async (
+import { mapExtraordinaryInstallmentsEntity } from "./mappers";
+
+export const updateExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string,
   businessManagerCode: string,
@@ -22,7 +23,7 @@ export const saveExtraordinaryInstallments = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "SaveExtraordinaryInstallments",
+          "X-Action": "UpdateExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
@@ -34,7 +35,7 @@ export const saveExtraordinaryInstallments = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
         options
       );
 

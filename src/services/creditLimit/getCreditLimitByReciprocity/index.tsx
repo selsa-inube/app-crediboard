@@ -3,45 +3,40 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { IMaximumCreditLimitReciprocity } from "../types";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-
-export const removeExtraordinaryInstallments = async (
-  extraordinaryInstallments: IExtraordinaryInstallments,
+export const GetCreditLimitByReciprocity = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-): Promise<IExtraordinaryInstallments | undefined> => {
+  clientIdentificationNumber: string,
+): Promise<IMaximumCreditLimitReciprocity | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "RemoveExtraordinaryInstallments",
+          "X-Action": "GetCreditLimitByReciprocity",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)
-        ),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/${clientIdentificationNumber}`,
+        options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -64,9 +59,11 @@ export const removeExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar los Pagos Extras."
+          "Todos los intentos fallaron. No se pudo obtener el monto máximo.",
         );
       }
     }
   }
+
+  return null;
 };

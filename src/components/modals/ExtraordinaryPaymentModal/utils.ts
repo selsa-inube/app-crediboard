@@ -1,16 +1,16 @@
-import { saveExtraordinaryInstallments } from "@services/prospect/saveExtraordinaryInstallments";
+import { updateExtraordinaryInstallments } from "@services/prospect/saveExtraordinaryInstallments";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
 
-const saveExtraordinaryInstallment = (
+const updateExtraordinaryInstallment = (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   extraordinaryInstallments: IExtraordinaryInstallments
 ) => {
-  return saveExtraordinaryInstallments(
+  return updateExtraordinaryInstallments(
     extraordinaryInstallments,
     businessUnitPublicCode,
     businessManagerCode,
   );
 };
 
-export { saveExtraordinaryInstallment };
+export { updateExtraordinaryInstallment };

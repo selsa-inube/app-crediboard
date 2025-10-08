@@ -182,7 +182,7 @@ export const TableExtraordinaryInstallment = (
             installment.paymentChannelAbbreviatedName
           ),
         })) || [],
-    prospectId: prospectData?.prospectId || "",
+    creditRequestCode: prospectData?.prospectCode || "",
   };
 
   const handleExtraordinaryInstallment = async (
