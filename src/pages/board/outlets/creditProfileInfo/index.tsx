@@ -42,12 +42,7 @@ export const CreditProfileInfo = () => {
     base_income: 0,
     percentage_used: 0,
   });
-  const [credit_behavior, setCredit_behavior] = useState({
-    core_risk_score: 0,
-    central_risk_score_date: 0,
-    number_of_internal_arrears: 0,
-    maximum_number_of_installments_in_arrears: 0,
-  });
+
   const [uncovered_wallet, setUncovered_wallet] = useState({
     overdraft_factor: 0,
     discovered_value: 0,
@@ -82,7 +77,6 @@ export const CreditProfileInfo = () => {
           riskScoring,
           credit_profileInfo,
           payment_capacity,
-          credit_behavior,
           uncovered_wallet,
           riskScoringMaximum,
         ] = await Promise.allSettled([
@@ -121,17 +115,6 @@ export const CreditProfileInfo = () => {
           setPaymentcapacity(true);
         }
 
-        if (credit_behavior.status === "fulfilled") {
-          const data = credit_behavior.value;
-          if (Array.isArray(data) && data.length > 0) {
-            setCredit_behavior((prevState) => ({
-              ...prevState,
-              ...data[0].credit_behavior,
-            }));
-          }
-        } else {
-          setBehaviorError(true);
-        }
         if (uncovered_wallet.status === "fulfilled") {
           const data = uncovered_wallet.value;
           if (Array.isArray(data) && data.length > 0) {
@@ -407,17 +390,11 @@ export const CreditProfileInfo = () => {
             dataWereObtained={dataWereObtained}
           />
           <CreditBehavior
-            centralScoreRisky={credit_behavior.core_risk_score}
-            centralScoreDate={String(credit_behavior.central_risk_score_date)}
-            numberInternalBlackberries={
-              credit_behavior.number_of_internal_arrears
-            }
-            maximumNumberInstallmentsArrears={
-              credit_behavior.maximum_number_of_installments_in_arrears
-            }
             isMobile={isMobile}
             dataBehaviorError={dataBehaviorError}
             setBehaviorError={setBehaviorError}
+            businessUnitPublicCode={businessUnitPublicCode}
+            customerIdentificationNumber={requests.clientIdentificationNumber}
           />
         </StyledGridPrint>
       </StyledContainerToCenter>

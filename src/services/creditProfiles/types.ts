@@ -10,3 +10,10 @@ export interface ICreditRiskScoreResponse {
   totalCreditRiskScore: number;
   variables: IVariables[];
 }
+
+export interface ICreditRepayamentBehavior {
+  bureauCreditRiskScoreDate: string,
+  bureauCreditRiskScoreValue: number,
+  internalDelinquenciesAmount: number,
+  maxOverdueInstallments: number
+}
