@@ -210,7 +210,6 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       const restoredData = JSON.parse(
         JSON.stringify(initialProspectSnapshot.current)
       );
-      console.log("restoredData: ", restoredData)
 
       await updateProspect(
         businessUnitPublicCode,
