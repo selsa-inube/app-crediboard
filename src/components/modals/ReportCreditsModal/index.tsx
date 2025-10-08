@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { MdAdd, MdCached, MdOutlineInfo } from "react-icons/md";
 import { FormikValues } from "formik";
 import {
@@ -8,6 +8,7 @@ import {
   Select,
   Text,
   Icon,
+  useFlag,
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
@@ -17,10 +18,12 @@ import { IProspect, IBorrower } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
-import { restoreFinancialObligationsByBorrowerId } from "@services/prospect/restoreFinancialObligationsByBorrowerId";
+import { updateProspect } from "@services/prospect/updateProspect";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+
 
 import { FinancialObligationModal } from "../financialObligationModal";
-import { defaultOptionsSelect, configSelect, restoreData } from "./config"
+import { defaultOptionsSelect, configSelect } from "./config"
 
 export interface ReportCreditsModalProps {
   handleClose: () => void;
@@ -65,6 +68,11 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   const [selectedBorrower, setSelectedBorrower] = useState<optionsSelect>();
   const [optionsBorrowers, setOptionsBorrowers] = useState<optionsSelect[]>([]);
   const [newObligation, setNewObligation] = useState<IFinancialObligation>();
+  const [localProspectData, setLocalProspectData] = useState<IProspect[]>(prospectData || []);
+  const [tableRefreshKey, setTableRefreshKey] = useState(0);
+  const initialProspectSnapshot = useRef<IProspect[] | null>(null);
+
+  const { addFlag } = useFlag();
 
   const initialValues: FormikValues = {
     type: "",
@@ -79,15 +87,39 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
+  useEffect(() => {
+    const loadCompleteData = async () => {
+      try {
+        const completeData = await getSearchProspectByCode(
+          businessUnitPublicCode,
+          businessManagerCode,
+          creditRequestCode
+        );
+
+        setLocalProspectData([completeData]);
+
+        if (!initialProspectSnapshot.current) {
+          initialProspectSnapshot.current = JSON.parse(JSON.stringify([completeData]));
+        }
+
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+
+    loadCompleteData();
+  }, [businessUnitPublicCode, businessManagerCode, creditRequestCode]);
+
   const handleCloseModal = () => {
     setOpenModal(false);
   };
 
   const filterListBorrowers = useCallback(
     (parameter: keyof IBorrower, value: string) => {
-      if (!prospectData) return;
+      if (!localProspectData) return;
 
-      const listsBorrowers = prospectData[0].borrowers?.filter((borrower) => {
+      const listsBorrowers = localProspectData[0].borrowers?.filter((borrower) => {
         if (borrower[parameter] === value) {
           return borrower;
         }
@@ -95,7 +127,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
       return listsBorrowers?.[0];
     },
-    [prospectData]
+    [localProspectData]
   );
 
   const buildObjectSelection = useCallback((name: string, value: string) => {
@@ -107,15 +139,15 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   }, []);
 
   const getOptionsSelect = useCallback(() => {
-    if (!prospectData) return;
+    if (!localProspectData) return;
 
-    return prospectData[0].borrowers?.map((borrower) => {
+    return localProspectData[0].borrowers?.map((borrower) => {
       return buildObjectSelection(
         borrower.borrowerName,
         borrower.borrowerIdentificationNumber
       );
     });
-  }, [prospectData, buildObjectSelection]);
+  }, [localProspectData, buildObjectSelection]);
 
   const handleObligationProcessed = () => {
     setNewObligation(undefined);
@@ -160,17 +192,58 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     useCase: getUseCaseValue("editCreditApplication"),
   });
 
+  const handleRestore = async () => {
+    setIsOpenModal(false);
 
-  const handleRestore = () => {
-    setIsOpenModal(false)
+    if (!selectedBorrower?.value || !initialProspectSnapshot.current) {
+      addFlag({
+        title: "Error",
+        description: "No se pudo restaurar: faltan datos necesarios",
+        appearance: "danger",
+        duration: 5000,
+      });
+      return;
+    }
 
-    restoreFinancialObligationsByBorrowerId(
-      businessUnitPublicCode, selectedBorrower?.value || "",
-      businessManagerCode,
-      prospectData![0].prospectCode,
-      restoreData.justification
-    );
-  }
+    try {
+
+      const restoredData = JSON.parse(
+        JSON.stringify(initialProspectSnapshot.current)
+      );
+      console.log("restoredData: ", restoredData)
+
+      await updateProspect(
+        businessUnitPublicCode,
+        businessManagerCode,
+        restoredData[0]
+      );
+
+      setTableRefreshKey(prev => prev + 1);
+
+      const refreshedData = await getSearchProspectByCode(
+        businessUnitPublicCode,
+        businessManagerCode,
+        creditRequestCode
+      );
+
+      setLocalProspectData([refreshedData]);
+
+      addFlag({
+        title: "Restauración exitosa",
+        description: "Las obligaciones financieras se han restaurado correctamente",
+        appearance: "success",
+        duration: 5000,
+      });
+
+    } catch (error) {
+      addFlag({
+        title: "Error al restaurar",
+        description: `No se pudieron restaurar las obligaciones: ${error}`,
+        appearance: "danger",
+        duration: 5000,
+      });
+    }
+  };
 
   return (
     <BaseModal
@@ -296,9 +369,10 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           )}
         </Stack>
         <TableFinancialObligations
+          key={tableRefreshKey}
           showActions={true}
           selectedBorrower={selectedBorrower}
-          prospectId={prospectData?.[0]?.prospectId || ""}
+          prospectId={localProspectData?.[0]?.prospectId || ""}
           newObligation={newObligation}
           businessUnitPublicCode={businessUnitPublicCode}
           onObligationProcessed={handleObligationProcessed}
