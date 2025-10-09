@@ -787,8 +787,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setDataProspect={setDataProspect}
                   creditRequestCode={creditRequestCode}
                   onProspectUpdate={(prospect) => {
-                    console.log("-------prospect--updated----", prospect);
-                    /* setDataProspect([prospect]) */
                     setLocalProspectData(prospect);
                     setRefreshKey(prev => prev + 1);
                   }}
