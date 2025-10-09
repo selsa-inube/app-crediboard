@@ -5,6 +5,7 @@ import {
   IBorrowerProperty,
   IOutlay,
   IOrdinaryInstallmentsForPrincipal,
+  IExtraordinaryInstallment,
 } from "./types";
 
 export const mapperProspectResponseToIProspect = (
@@ -25,7 +26,7 @@ export const mapperProspectResponseToIProspect = (
     gracePeriod: response.gracePeriod,
     clientComments: response.clientComments,
     clientManagerObservation: response.clientManagerObservation,
-    gracePeriodType: "",
+    gracePeriodType: response.gracePeriodType || "",
     moneyDestinationAbbreviatedName: response.moneyDestinationAbbreviatedName,
     bondValue: response.bondValue,
 
@@ -39,6 +40,7 @@ export const mapperProspectResponseToIProspect = (
           (property: IBorrowerProperty): IBorrowerProperty => ({
             propertyName: property.propertyName,
             propertyValue: property.propertyValue,
+            borrowerIdentificationNumber: property.borrowerIdentificationNumber,
           })
         ),
       })
@@ -51,21 +53,49 @@ export const mapperProspectResponseToIProspect = (
         lineOfCreditAbbreviatedName: product.lineOfCreditAbbreviatedName,
         interestRate: product.interestRate,
         loanTerm: product.loanTerm,
-        schedule: product.installmentFrequency || "",
+        schedule: product.installmentFrequency || product.schedule || "",
+        installmentFrequency: product.installmentFrequency,
         ordinaryInstallmentsForPrincipal:
           product.ordinaryInstallmentsForPrincipal.map(
             (
               installment: IOrdinaryInstallmentsForPrincipal
             ): IOrdinaryInstallmentsForPrincipal => ({
               numberOfInstallments: installment.numberOfInstallments,
-              schedule: installment.installmentFrequency || "",
+              schedule:
+                installment.installmentFrequency || installment.schedule || "",
               installmentAmount: installment.installmentAmount,
               paymentChannelAbbreviatedName:
                 installment.paymentChannelAbbreviatedName,
+              installmentAmountForCapital:
+                installment.installmentAmountForCapital,
+              gradientRate: installment.gradientRate,
+              gradientValue: installment.gradientValue,
+              gradientSchedule: installment.gradientSchedule,
+              firstGradientDate: installment.firstGradientDate,
+              installmentFrequency: installment.installmentFrequency,
             })
           ),
+        extraordinaryInstallments: product.extraordinaryInstallments?.map(
+          (
+            extraordinary: IExtraordinaryInstallment
+          ): IExtraordinaryInstallment => ({
+            installmentAmount: extraordinary.installmentAmount,
+            installmentDate: extraordinary.installmentDate,
+            paymentChannelAbbreviatedName:
+              extraordinary.paymentChannelAbbreviatedName,
+            humanChannelPaymentDay: extraordinary.humanChannelPaymentDay,
+            id: extraordinary.id,
+            creditProductCode: extraordinary.creditProductCode,
+            extraordinaryInstallments: extraordinary.extraordinaryInstallments,
+            prospectId: extraordinary.prospectId,
+            creditRequestCode: extraordinary.creditRequestCode,
+          })
+        ),
+        installmentsForInterest: product.installmentsForInterest,
+        acquiredCashFlows: product.acquiredCashFlows,
         referenceIndexForVariableInterestRate:
           product.referenceIndexForVariableInterestRate,
+        fixedPoints: product.fixedPoints,
       })
     ),
 
@@ -76,7 +106,7 @@ export const mapperProspectResponseToIProspect = (
       })
     ),
 
-    consolidatedCredits: response.consolidatedCredits || undefined,
+    consolidatedCredits: response.consolidatedCredits || [],
   };
 
   return prospect;

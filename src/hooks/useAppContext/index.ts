@@ -196,9 +196,16 @@ function useAppContext() {
     eventData.businessManager.publicCode,
     eventData?.user?.identificationDocumentNumber,
   ]);
+  useEffect(() => {
+    if (isIAuthLoading || !portalCode) return;
+
+    validateConsultation(portalCode).then((data) => {
+      setPortalData(data);
+    });
+  }, [portalCode, isIAuthLoading]);
 
   const userIdentifier = eventData?.user?.identificationDocumentNumber;
-  console.log(userIdentifier);
+
   useEffect(() => {
     const fetchOptionStaff = async () => {
       try {
@@ -232,14 +239,6 @@ function useAppContext() {
     isIAuthLoading,
     userIdentifier,
   ]);
-
-  useEffect(() => {
-    if (isIAuthLoading || !portalCode) return;
-
-    validateConsultation(portalCode).then((data) => {
-      setPortalData(data);
-    });
-  }, [portalCode, isIAuthLoading]);
 
   useEffect(() => {
     if (!portalCode || isIAuthLoading) return;

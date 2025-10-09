@@ -203,7 +203,6 @@ export const FinancialReporting = () => {
     creditRequestCode,
     businessManagerCode,
   ]);
-
   const generateAndSharePdf = async () => {
     setPdfState({ isGenerating: true, blob: null, showShareModal: false });
 

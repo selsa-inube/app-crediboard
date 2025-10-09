@@ -89,6 +89,11 @@ export interface IOutlay {
   date: Date;
   amount: number;
 }
+export interface ISimulateExtraordinaryInstallment {
+  installmentAmount: number;
+  installmentDate: string | Date;
+  paymentChannelAbbreviatedName: string;
+}
 export interface IProspect {
   prospectId: string;
   prospectCode: string;

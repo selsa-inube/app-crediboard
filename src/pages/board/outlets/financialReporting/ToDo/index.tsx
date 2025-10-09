@@ -329,6 +329,7 @@ function ToDo(props: ToDoProps) {
       )
     );
   }, [staff, eventData, taskData, taskRole]);
+
   return (
     <>
       <Fieldset
@@ -405,7 +406,7 @@ function ToDo(props: ToDoProps) {
                     type="submit"
                     fullwidth={isMobile}
                     spacing="compact"
-                    disabled={false}
+                    disabled={!hasPermitSend}
                   >
                     {button?.label || txtLabels.buttonText}
                   </Button>

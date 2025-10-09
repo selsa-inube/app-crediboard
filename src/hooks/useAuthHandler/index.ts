@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useIAuth } from "@inube/iauth-react";
-
 import { useSignOut } from "@hooks/useSignOut";
 
 interface AuthConfig {

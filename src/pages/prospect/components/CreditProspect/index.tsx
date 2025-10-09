@@ -33,6 +33,8 @@ import { IExtraordinaryInstallments } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard } from "@config/privilege";
+import { BaseModal } from "@components/modals/baseModal";
+import { CardGray } from "@components/cards/CardGray";
 
 import { dataCreditProspect } from "./config";
 import { StyledPrint } from "./styles";
@@ -207,7 +209,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         (property) => property.propertyName === "PeriodicSalary"
       )?.propertyValue || "",
   };
-
+  console.log(creditRequestCode);
   return (
     <Stack direction="column" gap="24px">
       {!isMobile && (
@@ -288,11 +290,11 @@ export function CreditProspect(props: ICreditProspectProps) {
                 only
                 options={menuOptions(
                   handleOpenModal,
-                  !prospectData?.creditProducts?.some(
+                  prospectData?.creditProducts?.some(
                     (product) =>
                       Array.isArray(product.extraordinaryInstallments) &&
                       product.extraordinaryInstallments.length > 0
-                  )
+                  ) || false
                 )}
                 onMouseLeave={showMenu}
               />
@@ -414,6 +416,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           prospectData={prospectData}
           sentData={sentData}
           setSentData={setSentData}
+          creditRequestCode={creditRequestCode || ""}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
         />
@@ -433,6 +436,23 @@ export function CreditProspect(props: ICreditProspectProps) {
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />
+      )}
+      {currentModal === "observationsModal" && (
+        <BaseModal
+          width={isMobile ? "300px" : "500px"}
+          title={dataCreditProspect.observations}
+          handleClose={handleCloseModal}
+          handleNext={handleCloseModal}
+          nextButton={dataCreditProspect.close}
+        >
+          <Stack direction="column" gap="16px">
+            <CardGray
+              apparencePlaceHolder="gray"
+              label={dataCreditProspect.approvalObservations}
+              placeHolder={dataProspect?.[0]?.clientManagerObservation}
+            />
+          </Stack>
+        </BaseModal>
       )}
     </Stack>
   );

@@ -825,6 +825,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 prospectData={prospectData}
                 sentData={sentData}
                 setSentData={setSentData}
+                creditRequestCode={creditRequestCode || ""}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
               />

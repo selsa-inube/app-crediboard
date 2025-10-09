@@ -42,6 +42,7 @@ export interface TableExtraordinaryInstallmentProps {
   setSentData?:
     | React.Dispatch<React.SetStateAction<IExtraordinaryInstallments | null>>
     | undefined;
+  creditRequestCode?: string | undefined;
 }
 
 const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
@@ -85,6 +86,7 @@ export const TableExtraordinaryInstallment = (
     setSentData,
     businessUnitPublicCode,
     businessManagerCode,
+    creditRequestCode,
   } = props;
 
   const headers = headersTableExtraordinaryInstallment;
@@ -161,6 +163,7 @@ export const TableExtraordinaryInstallment = (
 
       setExtraordinaryInstallments(extraordinaryInstallmentsUpdate);
     }
+
     setLoading(false);
   }, [prospectData, refreshKey]);
 
@@ -182,7 +185,7 @@ export const TableExtraordinaryInstallment = (
             installment.paymentChannelAbbreviatedName
           ),
         })) || [],
-    creditRequestCode: prospectData?.prospectCode || "",
+    creditRequestCode: creditRequestCode || "",
   };
 
   const handleExtraordinaryInstallment = async (
@@ -216,6 +219,7 @@ export const TableExtraordinaryInstallment = (
       });
     }
   };
+
   return (
     <Table>
       <Thead>
