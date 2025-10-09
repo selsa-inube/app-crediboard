@@ -32,7 +32,6 @@ import { dataAddSeriesModal } from "./config";
 import { TextLabels } from "../ExtraordinaryPaymentModal/config";
 import { updateExtraordinaryInstallment } from "../ExtraordinaryPaymentModal/utils";
 
-
 export interface AddSeriesModalProps {
   handleClose: () => void;
   onSubmit: (values: {
@@ -64,6 +63,7 @@ export interface AddSeriesModalProps {
   sentData?: IExtraordinaryInstallments | null;
   selectedModal?: IExtraordinaryInstallment | null;
   prospectData?: IProspect;
+  creditRequestCode: string | undefined;
 }
 
 export function AddSeriesModal(props: AddSeriesModalProps) {
@@ -76,6 +76,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     installmentState,
     setInstallmentState,
     prospectData,
+    creditRequestCode,
   } = props;
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -152,8 +153,9 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         paymentChannelAbbreviatedName: "",
       },
     ],
-    creditRequestCode: prospectData?.prospectCode || "",
+    creditRequestCode: creditRequestCode || "",
   };
+
   const handleExtraordinaryInstallment = async (
     extraordinaryInstallments: IExtraordinaryInstallments
   ) => {

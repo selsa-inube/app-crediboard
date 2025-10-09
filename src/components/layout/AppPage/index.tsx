@@ -23,6 +23,7 @@ import { CardNoveilties } from "@components/cards/CardsNoveilties";
 import { IUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnreadNoveltiesByUser/types";
 import { getUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnreadNoveltiesByUser";
 import { formatPrimaryDate } from "@utils/formatData/date";
+import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
 
 import {
   StyledAppPage,
@@ -55,6 +56,7 @@ function AppPage() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [collapse, setCollapse] = useState(false);
+  const [isLoadingBusinessUnit, setIsLoadingBusinessUnit] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const collapseMenuRef = useRef<HTMLDivElement>(null);
   const businessUnitChangeRef = useRef<HTMLDivElement>(null);
@@ -122,11 +124,16 @@ function AppPage() {
     };
   }, [showUserMenu]);
 
-  const handleLogoClick = (businessUnit: IBusinessUnitsPortalStaff) => {
+  const handleLogoClick = async (businessUnit: IBusinessUnitsPortalStaff) => {
+    setIsLoadingBusinessUnit(true);
+
     const selectJSON = JSON.stringify(businessUnit);
     setBusinessUnitSigla(selectJSON);
     setSelectedClient(businessUnit.abbreviatedName);
     setCollapse(false);
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     navigate("/");
   };
 
@@ -165,6 +172,8 @@ function AppPage() {
         setNoveltiesData(data);
       } catch (error) {
         console.error("Error fetching novelties:", error);
+      } finally {
+        setIsLoadingBusinessUnit(false);
       }
     };
 
@@ -173,7 +182,23 @@ function AppPage() {
     eventData.user.identificationDocumentNumber,
     businessUnitPublicCode,
     businessManagerCode,
+    businessUnitSigla,
   ]);
+
+  if (isLoadingBusinessUnit) {
+    return (
+      <StyledAppPage>
+        <Grid
+          templateRows="auto 1fr"
+          height="100vh"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <LoadingAppUI />
+        </Grid>
+      </StyledAppPage>
+    );
+  }
 
   return (
     <StyledAppPage>
