@@ -8,7 +8,7 @@ import {
   Select,
   Textfield,
 } from "@inubekit/inubekit";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
@@ -25,6 +25,8 @@ import {
   validateCurrencyField,
 } from "@utils/formatData/currency";
 import { getEffectiveInterestRate } from "@services/prospect/getEffectiveInterestRate";
+import { IProspect } from "@services/prospect/types";
+import { updateCreditProduct } from "@services/prospect/updateCreditProduct";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -33,24 +35,21 @@ import {
   rateTypeOptions,
   paymentCycleMap,
   interestRateTypeMap,
-  VALIDATED_NUMBER_REGEX,
   messagesErrorValidations,
   repaymentStructureMap,
 } from "./config";
 
 interface EditProductModalProps {
   onCloseModal: () => void;
-  onConfirm: (values: FormikValues) => void;
   title: string;
   confirmButtonText: string;
   initialValues: FormikValues;
   businessUnitPublicCode: string;
   businessManagerCode: string;
-  prospectData: {
-    lineOfCredit: string;
-    moneyDestination: string;
-    paymentChannelType?: string;
-  };
+  moneyDestination: string;
+  creditRequestCode: string;
+  prospectId: string;
+  onProspectUpdate: (prospect: IProspect) => void;
   iconBefore?: React.JSX.Element;
   iconAfter?: React.JSX.Element;
   clientIdentificationNumber: string;
@@ -79,17 +78,19 @@ interface IRuleDecision {
 function EditProductModal(props: EditProductModalProps) {
   const {
     onCloseModal,
-    onConfirm,
     title,
     confirmButtonText,
     initialValues,
     iconAfter,
     businessUnitPublicCode,
     businessManagerCode,
-    prospectData,
-    clientIdentificationNumber
+    moneyDestination,
+    clientIdentificationNumber,
+    creditRequestCode,
+    prospectId,
+    onProspectUpdate,
   } = props;
-  console.log("prospectData: ", prospectData);
+
   const [modifiedGroup, setModifiedGroup] = useState<FieldGroup | null>(null);
   const [loanAmountError, setLoanAmountError] = useState<string>("");
   const [paymentMethodsList, setPaymentMethodsList] = useState<
@@ -175,14 +176,13 @@ function EditProductModal(props: EditProductModalProps) {
 
   useEffect(() => {
     const loadAmortizationTypes = async () => {
+      if (!moneyDestination) return;
       setIsLoadingAmortizationTypes(true);
 
       try {
         const payload: IBusinessUnitRules = {
           ruleName: "RepaymentStructure",
-          conditions: [
-            { condition: "LineOfCredit", value: prospectData.lineOfCredit },
-          ],
+          conditions: []
         };
 
         const response = await postBusinessUnitRules(
@@ -208,7 +208,6 @@ function EditProductModal(props: EditProductModalProps) {
           setAmortizationTypesList(amortizationTypeOptions);
         }
       } catch (error) {
-        console.error("Error cargando tipos de amortización:", error);
         setAmortizationTypesList(amortizationTypeOptions);
       } finally {
         setIsLoadingAmortizationTypes(false);
@@ -216,7 +215,7 @@ function EditProductModal(props: EditProductModalProps) {
     };
 
     loadAmortizationTypes();
-  }, [businessUnitPublicCode, businessManagerCode, prospectData]);
+  }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
 
   useEffect(() => {
     const loadRateTypes = async () => {
@@ -226,10 +225,9 @@ function EditProductModal(props: EditProductModalProps) {
         const payload: IBusinessUnitRules = {
           ruleName: "InterestRateType",
           conditions: [
-            { condition: "LineOfCredit", value: prospectData.lineOfCredit },
             {
               condition: "MoneyDestination",
-              value: prospectData.moneyDestination,
+              value: moneyDestination,
             },
           ],
         };
@@ -265,7 +263,7 @@ function EditProductModal(props: EditProductModalProps) {
     };
 
     loadRateTypes();
-  }, [businessUnitPublicCode, businessManagerCode, prospectData]);
+  }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
 
   const getFieldGroup = (fieldName: string): FieldGroup | null => {
     if (fieldName === "creditAmount") return "creditAmount";
@@ -373,10 +371,9 @@ function EditProductModal(props: EditProductModalProps) {
       const payload: IBusinessUnitRules = {
         ruleName: "LoanAmountLimit",
         conditions: [
-          { condition: "LineOfCredit", value: prospectData.lineOfCredit },
           {
             condition: "MoneyDestination",
-            value: prospectData.moneyDestination,
+            value: moneyDestination,
           },
         ],
       };
@@ -428,10 +425,9 @@ function EditProductModal(props: EditProductModalProps) {
       const payload: IBusinessUnitRules = {
         ruleName: "LoanTerm",
         conditions: [
-          { condition: "LineOfCredit", value: prospectData.lineOfCredit },
           {
             condition: "MoneyDestination",
-            value: prospectData.moneyDestination,
+            value: moneyDestination,
           },
           { condition: "LoanAmount", value: loanAmount },
         ],
@@ -507,7 +503,12 @@ function EditProductModal(props: EditProductModalProps) {
     handleFieldModification("creditAmount");
     handleChangeWithCurrency(formik, event);
 
-    const rawValue = event.target.value.replace(VALIDATED_NUMBER_REGEX, "");
+    const rawValue = event.target.value
+      .replace(/\$/g, "")
+      .replace(/\./g, "")
+      .replace(/,/g, ".")
+      .trim();
+
     const numericValue = Number(rawValue);
 
     const initialAmount = initialValues.creditAmount;
@@ -538,6 +539,41 @@ function EditProductModal(props: EditProductModalProps) {
     }, 100);
   };
 
+  const handleConfirm = async (values: FormikValues) => {
+    if (!creditRequestCode || !prospectId) {
+      return;
+    }
+
+    try {
+      const payload = {
+        creditProductCode: creditRequestCode,
+        interestRate: values.interestRate,
+        loanTerm: Number(values.termInMonths),
+        prospectId: prospectId
+      };
+
+      const updatedProspect = await updateCreditProduct(
+        businessUnitPublicCode,
+        businessManagerCode,
+        payload,
+      );
+
+      const normalizedProspect = {
+        ...updatedProspect,
+        creditProducts: updatedProspect!.creditProducts?.map(product => ({
+          ...product,
+          schedule: product.schedule || product.installmentFrequency,
+        }))
+      };
+
+      onProspectUpdate(normalizedProspect as IProspect);
+
+      onCloseModal();
+    } catch (error) {
+      console.error("Error al agregar producto:", error);
+    }
+  };
+
   const validationSchema = Yup.object({
     creditLine: Yup.string(),
     creditAmount: Yup.number(),
@@ -549,6 +585,7 @@ function EditProductModal(props: EditProductModalProps) {
     interestRate: Yup.number().min(0, ""),
     rateType: Yup.string(),
   });
+
   return (
     <Formik
       initialValues={initialValues}
@@ -557,7 +594,7 @@ function EditProductModal(props: EditProductModalProps) {
         values: FormikValues,
         formikHelpers: FormikHelpers<FormikValues>,
       ) => {
-        onConfirm(values);
+        handleConfirm(values);
         formikHelpers.setSubmitting(false);
       }}
     >

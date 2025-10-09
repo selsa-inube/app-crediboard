@@ -124,3 +124,10 @@ export interface IProspectSummaryById {
 export interface IProspectId {
   prospectId: string;
 }
+
+export interface IUpdateCreditProduct {
+  creditProductCode: string;
+  interestRate: number;
+  loanTerm: number;
+  prospectId: string;
+}

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { FormikValues } from "formik";
 import {
   MdOutlineAdd,
   MdOutlineInfo,
@@ -17,7 +16,6 @@ import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
-import { addCreditProduct } from "@mocks/utils/addCreditProductMock.service";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
 import { IProspect } from "@services/prospect/types";
 import {
@@ -39,7 +37,6 @@ import { StyledPrint } from "./styles";
 import { IIncomeSources } from "./types";
 import { CreditLimitModal } from "../modals/CreditLimitModal";
 import { IncomeModal } from "../modals/IncomeModal";
-import { EditProductModal } from "../modals/ProspectProductModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
 import InfoModal from "../modals/InfoModal";
 
@@ -156,17 +153,6 @@ export function CreditProspect(props: ICreditProspectProps) {
     total: undefined,
   });
 
-  const initialValues: FormikValues = {
-    creditLine: "",
-    creditAmount: "",
-    paymentMethod: "",
-    paymentCycle: "",
-    firstPaymentCycle: "",
-    termInMonths: "",
-    amortizationType: "",
-    interestRate: "",
-    rateType: "",
-  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleInfo = () => {
     setIsModalOpen(true);
@@ -175,29 +161,12 @@ export function CreditProspect(props: ICreditProspectProps) {
     setForm((prevForm) => ({ ...prevForm, [name]: newValue }));
   };
 
-  const handleConfirm = async (values: FormikValues) => {
-    if (!creditRequestCode) {
-      console.error("ID no está definido");
-      return;
-    }
-
-    const result = await addCreditProduct(
-      creditRequestCode,
-      values,
-      mockProspectCredit
-    );
-
-    if (result) {
-      handleCloseModal();
-    }
-  };
-
   const handlePdfGeneration = () => {
     print();
   };
 
   const borrower = dataProspect?.[0]?.borrowers?.[0];
-  console.log("dataProspectdataProspect: ", dataProspect);
+
   const dataMaximumCreditLimitService = {
     identificationDocumentType: borrower?.borrowerIdentificationType || "",
     identificationDocumentNumber: borrower?.borrowerIdentificationNumber || "",
@@ -304,6 +273,9 @@ export function CreditProspect(props: ICreditProspectProps) {
         <CardCommercialManagement
           id={creditRequestCode!}
           dataRef={dataCommercialManagementRef}
+          moneyDestination={dataProspect?.[0]?.moneyDestinationAbbreviatedName}
+          businessManagerCode={businessManagerCode}
+          clientIdentificationNumber={dataMaximumCreditLimitService.identificationDocumentNumber}
           onClick={() => handleOpenModal("editProductModal")}
           prospectData={prospectData || undefined}
           onProspectUpdate={onProspectUpdate}
@@ -347,22 +319,6 @@ export function CreditProspect(props: ICreditProspectProps) {
           handleClose={() => setOpenModal(null)}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
-          clientIdentificationNumber={
-            dataMaximumCreditLimitService.identificationDocumentNumber
-          }
-        />
-      )}
-      {currentModal === "editProductModal" && (
-        <EditProductModal
-          title="Agregar productos"
-          confirmButtonText="Guardar"
-          initialValues={initialValues}
-          iconBefore={<MdOutlineAdd />}
-          onCloseModal={handleCloseModal}
-          onConfirm={handleConfirm}
-          businessUnitPublicCode={businessUnitPublicCode}
-          businessManagerCode={businessManagerCode}
-          prospectData={prospectData as IProspect}
           clientIdentificationNumber={
             dataMaximumCreditLimitService.identificationDocumentNumber
           }

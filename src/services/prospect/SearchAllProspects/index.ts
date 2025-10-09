@@ -3,14 +3,12 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IRemoveCreditProduct } from "@services/creditRequest/query/types";
-import { IProspect } from "@services/prospect/types";
-
-export const RemoveCreditProduct = async (
+import { IProspect } from "../types";
+const getSearchProspectByCode = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  payload: IRemoveCreditProduct
-): Promise<IProspect | undefined> => {
+  prospectCode: string,
+): Promise<IProspect> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -18,52 +16,52 @@ export const RemoveCreditProduct = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+      const queryParams = new URLSearchParams({
+        prospectCode: prospectCode,
+      });
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "RemoveCreditProduct",
+          "X-Action": "SearchAllProspects",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(payload),
         signal: controller.signal,
       };
-
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
+        `${environment.IPROSPECT_QUERY_PROCESS_SERVICE}/prospects?${queryParams.toString()}`,
         options,
       );
-
+      console.log("res:   ",res);
       clearTimeout(timeoutId);
-
       if (res.status === 204) {
-        return;
+        throw new Error("No hay tarea disponible.");
       }
-
+      
       const data = await res.json();
-
       if (!res.ok) {
         throw {
-          message: "Ha ocurrido un error: ",
+          message: "Error al obtener la tarea.",
           status: res.status,
           data,
         };
       }
 
+      if (Array.isArray(data)) {
+        return data[0] as IProspect;
+      }
+
       return data;
     } catch (error) {
+      console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
-        if (typeof error === "object" && error !== null) {
-          throw {
-            ...(error as object),
-            message: (error as Error).message,
-          };
-        }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar el producto de credito.",
+          "Todos los intentos fallaron. No se pudo obtener la tarea.",
         );
       }
     }
   }
+  throw new Error("No se pudo obtener la tarea después de varios intentos.");
 };
+export { getSearchProspectByCode };

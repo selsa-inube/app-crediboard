@@ -22,7 +22,6 @@ import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
 import { RemoveCreditProduct } from "@services/creditRequest/command/removeCreditProduct";
-import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { StyledCardsCredit, StyledPrint } from "./styles";
@@ -32,6 +31,9 @@ interface CardCommercialManagementProps {
   id: string;
   dataRef: React.RefObject<HTMLDivElement>;
   onClick: () => void;
+  moneyDestination: string;
+  businessManagerCode: string;
+  clientIdentificationNumber: string;
   prospectData?: IProspect;
   refreshProducts?: () => void;
   onProspectUpdate?: (prospect: IProspect) => void;
@@ -40,7 +42,15 @@ interface CardCommercialManagementProps {
 export const CardCommercialManagement = (
   props: CardCommercialManagementProps
 ) => {
-  const { dataRef, id, onClick, prospectData, onProspectUpdate } = props;
+  const {
+    dataRef,
+    id,
+    onClick,
+    prospectData,
+    onProspectUpdate,
+    moneyDestination,
+    clientIdentificationNumber
+  } = props;
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     []
   );
@@ -88,9 +98,9 @@ export const CardCommercialManagement = (
   const handleDelete = async () => {
     if (!prospectData || !prospectProducts.length) return;
     try {
-      await RemoveCreditProduct(businessUnitPublicCode, businessManagerCode, {
+      const updatedProspect = await RemoveCreditProduct(businessUnitPublicCode, businessManagerCode, {
         creditProductCode: selectedProductId,
-        creditRequestCode: prospectData?.prospectCode || "",
+        prospectId: prospectData?.prospectId || "",
       });
       setProspectProducts((prev) =>
         prev.filter(
@@ -98,16 +108,18 @@ export const CardCommercialManagement = (
         )
       );
 
-      if (prospectData?.prospectId) {
-        const updatedProspect = await getSearchProspectByCode(
-          businessUnitPublicCode,
-          businessManagerCode,
-          prospectData.prospectId
-        );
-        if (onProspectUpdate) {
-          onProspectUpdate(updatedProspect);
-        }
+      const normalizedProspect = {
+        ...updatedProspect,
+        creditProducts: updatedProspect!.creditProducts?.map(product => ({
+          ...product,
+          schedule: product.schedule || product.installmentFrequency,
+        }))
+      };
+
+      if (onProspectUpdate && updatedProspect) {
+        onProspectUpdate(normalizedProspect as IProspect);
       }
+
 
       setShowDeleteModal(false);
     } catch (error) {
@@ -209,9 +221,9 @@ export const CardCommercialManagement = (
                 editCreditApplication
                   ? handleInfo
                   : () => {
-                      setSelectedProduct(entry);
-                      setModalHistory((prev) => [...prev, "editProductModal"]);
-                    }
+                    setSelectedProduct(entry);
+                    setModalHistory((prev) => [...prev, "editProductModal"]);
+                  }
               }
               onDelete={
                 editCreditApplication
@@ -256,9 +268,9 @@ export const CardCommercialManagement = (
       {currentModal === "editProductModal" && selectedProduct && (
         <EditProductModal
           onCloseModal={() => setModalHistory((prev) => prev.slice(0, -1))}
-          onConfirm={() => setModalHistory((prev) => prev.slice(0, -1))}
           title={`Editar producto`}
           confirmButtonText="Guardar"
+          moneyDestination={moneyDestination}
           initialValues={{
             creditLine: selectedProduct.lineOfCreditAbbreviatedName || "",
             creditAmount: selectedProduct.loanAmount || 0,
@@ -272,6 +284,24 @@ export const CardCommercialManagement = (
             interestRate: selectedProduct.interestRate || 0,
             rateType: "",
           }}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          clientIdentificationNumber={clientIdentificationNumber}
+          creditRequestCode={selectedProduct?.creditProductCode || ""}
+          prospectId={prospectData?.prospectId || ""}
+          onProspectUpdate={(updatedProspect) => {
+
+            if (updatedProspect?.creditProducts) {
+              setProspectProducts(updatedProspect.creditProducts);
+            }
+
+            if (onProspectUpdate) {
+              onProspectUpdate(updatedProspect);
+            }
+
+            setModalHistory((prev) => prev.slice(0, -1));
+          }}
+
         />
       )}
 
