@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { FormikValues } from "formik";
 import {
   MdOutlineAdd,
   MdOutlineInfo,
@@ -8,6 +7,7 @@ import {
   MdOutlineShare,
 } from "react-icons/md";
 import { Stack, Icon, Button, IOption, useFlag } from "@inubekit/inubekit";
+import { FormikValues } from "formik";
 
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import { PaymentCapacity } from "@components/modals/PaymentCapacityModal";
@@ -162,17 +162,6 @@ export function CreditProspect(props: ICreditProspectProps) {
     total: undefined,
   });
 
-  const initialValues: FormikValues = {
-    creditLine: "",
-    creditAmount: "",
-    paymentMethod: "",
-    paymentCycle: "",
-    firstPaymentCycle: "",
-    termInMonths: "",
-    amortizationType: "",
-    interestRate: "",
-    rateType: "",
-  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleInfo = () => {
     setIsModalOpen(true);
@@ -259,6 +248,18 @@ const handleConfirm = async (values: FormikValues) => {
         (property) => property.propertyName === "PeriodicSalary"
       )?.propertyValue || "",
   };
+
+  const initialValues: FormikValues = {
+  creditLine: "",
+  creditAmount: "",
+  paymentMethod: "",
+  paymentCycle: "",
+  firstPaymentCycle: "",
+  termInMonths: "",
+  amortizationType: "",
+  interestRate: "",
+  rateType: "",
+};
 
   return (
     <Stack direction="column" gap="24px">
@@ -356,6 +357,9 @@ const handleConfirm = async (values: FormikValues) => {
         <CardCommercialManagement
           id={creditRequestCode!}
           dataRef={dataCommercialManagementRef}
+          moneyDestination={dataProspect?.[0]?.moneyDestinationAbbreviatedName}
+          businessManagerCode={businessManagerCode}
+          clientIdentificationNumber={dataMaximumCreditLimitService.identificationDocumentNumber}
           onClick={() => handleOpenModal("editProductModal")}
           prospectData={prospectData || undefined}
           onProspectUpdate={onProspectUpdate}

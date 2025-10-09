@@ -3,13 +3,13 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IRemoveCreditProduct } from "@services/creditRequest/query/types";
-import { IProspect } from "@services/prospect/types";
 
-export const RemoveCreditProduct = async (
+import { IProspect, IUpdateCreditProduct } from "../types";
+
+export const updateCreditProduct = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  payload: IRemoveCreditProduct
+  payload: IUpdateCreditProduct,
 ): Promise<IProspect | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -21,10 +21,10 @@ export const RemoveCreditProduct = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "RemoveCreditProduct",
+          "X-Action": "UpdateCreditProduct",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": businessManagerCode,
+          "X-Process-Manager": businessManagerCode,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
@@ -61,7 +61,7 @@ export const RemoveCreditProduct = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar el producto de credito.",
+          "Todos los intentos fallaron. No se pudo actualizar el producto de credito.",
         );
       }
     }

@@ -125,6 +125,12 @@ export interface IProspectId {
   prospectId: string;
 }
 
+export interface IUpdateCreditProduct {
+  creditProductCode: string;
+  interestRate: number;
+  loanTerm: number;
+  creditRequestCode: string;
+}
 export interface ILinesOfCreditByMoneyDestination {
   abbreviateName: string;
   amortizationType: string[];

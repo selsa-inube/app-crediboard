@@ -3,42 +3,41 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IRemoveCreditProduct } from "@services/creditRequest/query/types";
-import { IProspect } from "@services/prospect/types";
 
-export const RemoveCreditProduct = async (
+import { IEffectiveInterestRateResponse } from "./types";
+
+export const getEffectiveInterestRate = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  payload: IRemoveCreditProduct
-): Promise<IProspect | undefined> => {
+  lineOfCreditAbbreviatedName: string,
+  clientIdentificationNumber: string,
+): Promise<IEffectiveInterestRateResponse | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "RemoveCreditProduct",
+          "X-Action": "GetEffectiveInterestRate",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": businessManagerCode,
+          "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(payload),
         signal: controller.signal,
       };
-
+      console.log(businessUnitPublicCode);
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/lines-of-credit/effective-interest-rate/${lineOfCreditAbbreviatedName}/${clientIdentificationNumber}`,
         options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -61,9 +60,11 @@ export const RemoveCreditProduct = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar el producto de credito.",
+          "Todos los intentos fallaron. No se pudo obtener el la tasa de interés.",
         );
       }
     }
   }
+
+  return null;
 };
