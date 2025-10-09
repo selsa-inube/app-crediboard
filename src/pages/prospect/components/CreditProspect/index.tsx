@@ -197,7 +197,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   };
 
   const borrower = dataProspect?.[0]?.borrowers?.[0];
-
+  console.log("dataProspectdataProspect: ", dataProspect);
   const dataMaximumCreditLimitService = {
     identificationDocumentType: borrower?.borrowerIdentificationType || "",
     identificationDocumentNumber: borrower?.borrowerIdentificationNumber || "",
@@ -360,6 +360,12 @@ export function CreditProspect(props: ICreditProspectProps) {
           iconBefore={<MdOutlineAdd />}
           onCloseModal={handleCloseModal}
           onConfirm={handleConfirm}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          prospectData={prospectData as IProspect}
+          clientIdentificationNumber={
+            dataMaximumCreditLimitService.identificationDocumentNumber
+          }
         />
       )}
       {currentModal === "IncomeModal" && (
