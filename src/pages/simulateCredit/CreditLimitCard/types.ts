@@ -1,14 +1,5 @@
 import { CurrentDataRow } from "@components/modals/payCapacityModal/types";
 
-export interface ICreditLimitData {
-  maxPaymentCapacity: number;
-  maxReciprocity: number;
-  maxDebtFRC: number;
-  assignedLimit: number;
-  maxUsableLimit: number;
-  availableLimitWithoutGuarantee: number;
-}
-
 export interface IMaxLimitData {
   reportedIncomeSources: number;
   reportedFinancialObligations: number;
