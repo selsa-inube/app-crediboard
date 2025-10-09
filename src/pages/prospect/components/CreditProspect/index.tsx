@@ -395,18 +395,11 @@ const handleConfirm = async (values: FormikValues) => {
       {openModal === "scoreModal" && (
         <ScoreModal
           handleClose={() => setOpenModal(null)}
-          subTitle="Your Financial Score"
-          totalScore={150}
-          seniority={150}
-          centralRisk={50}
-          employmentStability={230}
-          maritalStatus={30}
-          economicActivity={118}
-          monthlyIncome={3000000}
-          maxIndebtedness={50000000}
-          incomeScore={5.56}
-          maxLimit={22000000}
-          totalPortafolio={10000000}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          clientIdentificationNumber={
+            dataMaximumCreditLimitService.identificationDocumentNumber
+          }
         />
       )}
       {currentModal === "editProductModal" && (
