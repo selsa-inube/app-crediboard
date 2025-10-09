@@ -13,13 +13,13 @@ import { useState, useEffect } from "react";
 import { BaseModal } from "@components/modals/baseModal";
 import { truncateTextToMaxLength } from "@utils/formatData/text";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
-import { getPaymentMethods } from "@services/prospect/getPaymentMethods";
+import { getPaymentMethods } from "@services/creditLimit/getPaymentMethods";
 import { IBusinessUnitRules } from "@services/businessUnitRules/types";
 import {
   IPaymentMethod,
   IPaymentCycle,
   IFirstPaymentCycle,
-} from "@services/prospect/getPaymentMethods/types";
+} from "@services/creditLimit/getPaymentMethods/types";
 import {
   handleChangeWithCurrency,
   validateCurrencyField,
