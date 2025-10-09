@@ -35,6 +35,8 @@ import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard } from "@config/privilege";
 import { addCreditProductService } from "@services/prospect/addCreditProduct";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+import { BaseModal } from "@components/modals/baseModal";
+import { CardGray } from "@components/cards/CardGray";
 
 import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect } from "./config";
@@ -338,11 +340,11 @@ const handleConfirm = async (values: FormikValues) => {
                 only
                 options={menuOptions(
                   handleOpenModal,
-                  !prospectData?.creditProducts?.some(
+                  prospectData?.creditProducts?.some(
                     (product) =>
                       Array.isArray(product.extraordinaryInstallments) &&
                       product.extraordinaryInstallments.length > 0
-                  )
+                  ) || false
                 )}
                 onMouseLeave={showMenu}
               />
@@ -461,6 +463,7 @@ const handleConfirm = async (values: FormikValues) => {
           prospectData={prospectData}
           sentData={sentData}
           setSentData={setSentData}
+          creditRequestCode={creditRequestCode || ""}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
         />
@@ -480,6 +483,23 @@ const handleConfirm = async (values: FormikValues) => {
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />
+      )}
+      {currentModal === "observationsModal" && (
+        <BaseModal
+          width={isMobile ? "300px" : "500px"}
+          title={dataCreditProspect.observations}
+          handleClose={handleCloseModal}
+          handleNext={handleCloseModal}
+          nextButton={dataCreditProspect.close}
+        >
+          <Stack direction="column" gap="16px">
+            <CardGray
+              apparencePlaceHolder="gray"
+              label={dataCreditProspect.approvalObservations}
+              placeHolder={dataProspect?.[0]?.clientManagerObservation}
+            />
+          </Stack>
+        </BaseModal>
       )}
     </Stack>
   );
