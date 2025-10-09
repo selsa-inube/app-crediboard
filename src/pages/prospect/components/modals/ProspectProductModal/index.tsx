@@ -24,7 +24,7 @@ import {
   handleChangeWithCurrency,
   validateCurrencyField,
 } from "@utils/formatData/currency";
-import { getEffectiveInterestRate } from "@services/prospect/getEffectiveInterestRate";
+import { getEffectiveInterestRate } from "@services/lineOfCredit/getEffectiveInterestRate";
 import { IProspect } from "@services/prospect/types";
 import { updateCreditProduct } from "@services/prospect/updateCreditProduct";
 
