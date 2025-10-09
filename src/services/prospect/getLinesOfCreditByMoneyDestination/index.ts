@@ -4,15 +4,14 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { ILinesOfCreditByMoneyDestination } from "../types";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-
-export const updateExtraordinaryInstallments = async (
-  extraordinaryInstallments: IExtraordinaryInstallments,
+const getLinesOfCreditByMoneyDestination = async (
   businessUnitPublicCode: string,
-  businessManagerCode: string
-): Promise<IExtraordinaryInstallments | undefined> => {
+  businessManagerCode: string,
+  moneyDestinationAbbreviatedName: string,
+  clientIdentificationNumber: string,
+): Promise<ILinesOfCreditByMoneyDestination | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -21,28 +20,25 @@ export const updateExtraordinaryInstallments = async (
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "SaveExtraordinaryInstallments",
+          "X-Action": "GetLinesOfCreditByMoneyDestination",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)
-        ),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/lines-of-credit/${moneyDestinationAbbreviatedName}/${clientIdentificationNumber}`,
+        options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -55,7 +51,7 @@ export const updateExtraordinaryInstallments = async (
         };
       }
 
-      return data;
+      return data as ILinesOfCreditByMoneyDestination;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -65,9 +61,13 @@ export const updateExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo guardar los Pagos Extras."
+          `Todos los intentos fallaron. No se pudo obtener las líneas de crédito para el destino de dinero ${moneyDestinationAbbreviatedName}.`,
         );
       }
     }
   }
+
+  return null;
 };
+
+export { getLinesOfCreditByMoneyDestination };

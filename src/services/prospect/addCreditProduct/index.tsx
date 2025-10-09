@@ -4,15 +4,13 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { IAddCreditProduct, IProspect } from "./types";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-
-export const updateExtraordinaryInstallments = async (
-  extraordinaryInstallments: IExtraordinaryInstallments,
+export const addCreditProductService = async (
   businessUnitPublicCode: string,
-  businessManagerCode: string
-): Promise<IExtraordinaryInstallments | undefined> => {
+  businessManagerCode: string,
+  payload: IAddCreditProduct,
+): Promise<IProspect | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -23,20 +21,18 @@ export const updateExtraordinaryInstallments = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "SaveExtraordinaryInstallments",
+          "X-Action": "AddCreditProduct",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)
-        ),
+        body: JSON.stringify(payload),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -65,7 +61,7 @@ export const updateExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo guardar los Pagos Extras."
+          "Todos los intentos fallaron. No se pudo agregar el producto de credito.",
         );
       }
     }

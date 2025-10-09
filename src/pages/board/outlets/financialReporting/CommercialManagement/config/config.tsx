@@ -406,7 +406,7 @@ export const menuOptions = (
       handleOpenModal("extraPayments");
     },
     icon: <MdOutlinePayments />,
-    visible: visibleExtraPayments,
+    visible: !visibleExtraPayments,
   },
   {
     title: "Observaciones de preaprobación",
@@ -414,7 +414,7 @@ export const menuOptions = (
       handleOpenModal("observationsModal");
     },
     icon: <MdOutlineMessage />,
-    visible: visibleExtraPayments,
+    visible: true,
   },
 ];
 
