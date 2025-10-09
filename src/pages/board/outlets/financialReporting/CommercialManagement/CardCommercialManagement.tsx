@@ -100,7 +100,7 @@ export const CardCommercialManagement = (
     try {
       const updatedProspect = await RemoveCreditProduct(businessUnitPublicCode, businessManagerCode, {
         creditProductCode: selectedProductId,
-        prospectId: prospectData?.prospectId || "",
+        creditRequestCode: id,
       });
       setProspectProducts((prev) =>
         prev.filter(
@@ -287,7 +287,8 @@ export const CardCommercialManagement = (
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
           clientIdentificationNumber={clientIdentificationNumber}
-          creditRequestCode={selectedProduct?.creditProductCode || ""}
+          creditRequestCode={id || ""}
+          creditProductCode={selectedProduct?.creditProductCode || ""}
           prospectId={prospectData?.prospectId || ""}
           onProspectUpdate={(updatedProspect) => {
 

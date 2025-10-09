@@ -53,6 +53,7 @@ interface EditProductModalProps {
   iconBefore?: React.JSX.Element;
   iconAfter?: React.JSX.Element;
   clientIdentificationNumber: string;
+  creditProductCode: string;
 }
 
 type FieldGroup =
@@ -89,6 +90,7 @@ function EditProductModal(props: EditProductModalProps) {
     creditRequestCode,
     prospectId,
     onProspectUpdate,
+    creditProductCode
   } = props;
 
   const [modifiedGroup, setModifiedGroup] = useState<FieldGroup | null>(null);
@@ -546,10 +548,10 @@ function EditProductModal(props: EditProductModalProps) {
 
     try {
       const payload = {
-        creditProductCode: creditRequestCode,
+        creditProductCode: creditProductCode,
         interestRate: values.interestRate,
         loanTerm: Number(values.termInMonths),
-        prospectId: prospectId
+        creditRequestCode: creditRequestCode
       };
 
       const updatedProspect = await updateCreditProduct(

@@ -252,7 +252,7 @@ export interface IOutlay {
 }
 export interface IRemoveCreditProduct {
   creditProductCode: string;
-  prospectId: string;
+  creditRequestCode: string;
 }
 export interface IProspect {
   prospect_id: string;

@@ -129,7 +129,7 @@ export interface IUpdateCreditProduct {
   creditProductCode: string;
   interestRate: number;
   loanTerm: number;
-  prospectId: string;
+  creditRequestCode: string;
 }
 export interface ILinesOfCreditByMoneyDestination {
   abbreviateName: string;
