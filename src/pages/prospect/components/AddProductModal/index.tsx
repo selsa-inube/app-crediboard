@@ -57,7 +57,7 @@ function AddProductModal(props: IAddProductModalProps) {
 
       setCreditLineTerms(result);
     })();
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, identificationDocumentNumber, moneyDestination, businessManagerCode]);
 
   const isMobile = useMediaQuery("(max-width: 550px)");
 

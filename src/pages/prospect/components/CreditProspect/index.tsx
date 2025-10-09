@@ -410,7 +410,7 @@ const handleConfirm = async (values: FormikValues) => {
           iconBefore={<MdOutlineAdd />}
           onCloseModal={handleCloseModal}
           onConfirm={handleConfirm}
-          moneyDestination={prospectData!.moneyDestinationAbbreviatedName}
+          moneyDestination={dataMaximumCreditLimitService.moneyDestination}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
           identificationDocumentNumber={dataMaximumCreditLimitService.identificationDocumentNumber}
