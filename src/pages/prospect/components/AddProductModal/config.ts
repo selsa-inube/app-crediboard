@@ -1,7 +1,5 @@
 import { ObjectSchema, AnyObject } from "yup";
 
-import { ICustomerData } from "./types";
-
 export const messageNotFound = "No se encontraron resultados";
 
 export interface IAddProductModalProps {

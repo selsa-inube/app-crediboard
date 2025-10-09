@@ -25,7 +25,7 @@ function AddProductModal(props: IAddProductModalProps) {
   } = props;
 
   const [creditLineTerms, setCreditLineTerms] = useState<TCreditLineTerms>({});
-  console.log("identificationDocumentNumber: ",identificationDocumentNumber);
+
   useEffect(() => {
     (async () => {
       if (!identificationDocumentNumber) return;

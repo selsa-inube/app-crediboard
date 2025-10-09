@@ -17,7 +17,7 @@ import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
-import { addCreditProduct } from "@mocks/utils/addCreditProductMock.service";
+import { IAddCreditProduct } from "@services/prospect/addCreditProduct/types";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
 import { IProspect } from "@services/prospect/types";
 import {
@@ -35,7 +35,6 @@ import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard } from "@config/privilege";
 import { addCreditProductService } from "@services/prospect/addCreditProduct";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
-import { IAddCreditProduct } from "@services/prospect/types";
 
 import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect } from "./config";
@@ -196,14 +195,12 @@ const handleConfirm = async (values: FormikValues) => {
       ],
     };
 
-    // El servicio retorna IProspect | undefined
     const updatedProspect = await addCreditProductService(
       businessUnitPublicCode,
       businessManagerCode,
       payload,
     );
 
-    console.log("updatedProspect: ", updatedProspect);
     if (prospectData?.prospectId) {
       const refreshedProspect = updatedProspect || await getSearchProspectByCode(
         businessUnitPublicCode,
@@ -212,11 +209,11 @@ const handleConfirm = async (values: FormikValues) => {
       );
       
       if (setDataProspect && refreshedProspect) {
-        setDataProspect([refreshedProspect]);
+        setDataProspect([refreshedProspect as IProspect]);
       }
       
       if (onProspectUpdate && refreshedProspect) {
-        onProspectUpdate(refreshedProspect);
+        onProspectUpdate(refreshedProspect as IProspect);
       }
     }
 
@@ -233,7 +230,6 @@ const handleConfirm = async (values: FormikValues) => {
     const code = err?.data?.code ? `[${err.data.code}] ` : "";
     let description = code + (err?.message || "Error desconocido") + (err?.data?.description || "");
 
-    // Personalizar mensajes de error específicos
     if (err?.data?.description === "Credit product already exists in prospect") {
       description = "El producto de crédito ya existe en el prospecto";
     }
