@@ -7,7 +7,7 @@ import {
   MdOutlinePictureAsPdf,
   MdOutlineShare,
 } from "react-icons/md";
-import { Stack, Icon, Button, IOption } from "@inubekit/inubekit";
+import { Stack, Icon, Button, IOption, useFlag } from "@inubekit/inubekit";
 
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import { PaymentCapacity } from "@components/modals/PaymentCapacityModal";
@@ -33,13 +33,16 @@ import { IExtraordinaryInstallments } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard } from "@config/privilege";
+import { addCreditProductService } from "@services/prospect/addCreditProduct";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+import { IAddCreditProduct } from "@services/prospect/types";
 
+import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect } from "./config";
 import { StyledPrint } from "./styles";
 import { IIncomeSources } from "./types";
 import { CreditLimitModal } from "../modals/CreditLimitModal";
 import { IncomeModal } from "../modals/IncomeModal";
-import { EditProductModal } from "../modals/ProspectProductModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
 import InfoModal from "../modals/InfoModal";
 
@@ -101,6 +104,8 @@ export function CreditProspect(props: ICreditProspectProps) {
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showShareModal, setShowShareModal] = useState(false);
   const [openModal, setOpenModal] = useState<string | null>(null);
+
+  const { addFlag } = useFlag();
 
   const handleOpenModal = (modalName: string) => {
     setModalHistory((prevHistory) => [...prevHistory, modalName]);
@@ -175,23 +180,72 @@ export function CreditProspect(props: ICreditProspectProps) {
     setForm((prevForm) => ({ ...prevForm, [name]: newValue }));
   };
 
-  const handleConfirm = async (values: FormikValues) => {
-    if (!creditRequestCode) {
-      console.error("ID no está definido");
-      return;
-    }
+const handleConfirm = async (values: FormikValues) => {
+  if (!prospectData?.prospectId) {
+    console.error("prospectId no está definido");
+    return;
+  }
 
-    const result = await addCreditProduct(
-      creditRequestCode,
-      values,
-      mockProspectCredit
+  try {
+    const payload: IAddCreditProduct = {
+      prospectId: prospectData.prospectId,
+      creditProducts: [
+        {
+          lineOfCreditAbbreviatedName: values.selectedProducts[0],
+        },
+      ],
+    };
+
+    // El servicio retorna IProspect | undefined
+    const updatedProspect = await addCreditProductService(
+      businessUnitPublicCode,
+      businessManagerCode,
+      payload,
     );
 
-    if (result) {
-      handleCloseModal();
+    console.log("updatedProspect: ", updatedProspect);
+    if (prospectData?.prospectId) {
+      const refreshedProspect = updatedProspect || await getSearchProspectByCode(
+        businessUnitPublicCode,
+        businessManagerCode,
+        prospectData.prospectId,
+      );
+      
+      if (setDataProspect && refreshedProspect) {
+        setDataProspect([refreshedProspect]);
+      }
+      
+      if (onProspectUpdate && refreshedProspect) {
+        onProspectUpdate(refreshedProspect);
+      }
     }
-  };
 
+    handleCloseModal();
+  } catch (error) {
+    handleCloseModal();
+    
+    const err = error as {
+      message?: string;
+      status?: number;
+      data?: { description?: string; code?: string };
+    };
+    
+    const code = err?.data?.code ? `[${err.data.code}] ` : "";
+    let description = code + (err?.message || "Error desconocido") + (err?.data?.description || "");
+
+    // Personalizar mensajes de error específicos
+    if (err?.data?.description === "Credit product already exists in prospect") {
+      description = "El producto de crédito ya existe en el prospecto";
+    }
+    
+    addFlag({
+      title: "Error",
+      description,
+      appearance: "danger",
+      duration: 5000,
+    });
+  }
+};
   const handlePdfGeneration = () => {
     print();
   };
@@ -360,13 +414,17 @@ export function CreditProspect(props: ICreditProspectProps) {
         />
       )}
       {currentModal === "editProductModal" && (
-        <EditProductModal
+        <AddProductModal
           title="Agregar productos"
           confirmButtonText="Guardar"
           initialValues={initialValues}
           iconBefore={<MdOutlineAdd />}
           onCloseModal={handleCloseModal}
           onConfirm={handleConfirm}
+          moneyDestination={prospectData!.moneyDestinationAbbreviatedName}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          identificationDocumentNumber={dataMaximumCreditLimitService.identificationDocumentNumber}
         />
       )}
       {currentModal === "IncomeModal" && (
