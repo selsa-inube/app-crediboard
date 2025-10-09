@@ -198,7 +198,6 @@ function useAppContext() {
   ]);
 
   const userIdentifier = eventData?.user?.identificationDocumentNumber;
-  console.log(userIdentifier);
   useEffect(() => {
     const fetchOptionStaff = async () => {
       try {

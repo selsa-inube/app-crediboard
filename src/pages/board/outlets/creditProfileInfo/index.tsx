@@ -54,7 +54,8 @@ export const CreditProfileInfo = () => {
   const [dataCreditProfile, setCreditProfile] = useState(false);
   const [dataPaymentcapacity, setPaymentcapacity] = useState(false);
   const [dataUncoveredWallet, setUncoveredWallet] = useState(false);
-
+  const [retryCount, setRetryCount] = useState(0);
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -160,7 +161,7 @@ export const CreditProfileInfo = () => {
     dataPaymentcapacity,
     dataUncoveredWallet,
     userAccount,
-    businessManagerCode
+    businessManagerCode,
   ]);
 
   return (
@@ -362,11 +363,17 @@ export const CreditProfileInfo = () => {
           <PaymentCapacity
             availableValue={payment_capacity.available_value}
             availablePercentage={100 - payment_capacity.percentage_used}
-            incomeB={payment_capacity.base_income}
             percentageUsed={payment_capacity.percentage_used}
             isMobile={isMobile}
             dataPaymentcapacity={dataPaymentcapacity}
             setPaymentcapacity={setPaymentcapacity}
+            businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
+            customerIdentificationNumber={requests.clientIdentificationNumber}
+            setLoading={setLoading}
+            loading={loading}
+            retryCount={retryCount}
+            setRetryCount={setRetryCount}
           />
           <OpenWallet
             overdraftFactor={uncovered_wallet.overdraft_factor}
@@ -375,6 +382,11 @@ export const CreditProfileInfo = () => {
             isMobile={isMobile}
             dataUncoveredWallet={dataUncoveredWallet}
             setUncoveredWallet={setUncoveredWallet}
+            businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
+            customerIdentificationNumber={requests.clientIdentificationNumber}
+            setLoading={setLoading}
+            setRetryCount={setRetryCount}
           />
           <RiskScoring
             isMobile={isMobile}
