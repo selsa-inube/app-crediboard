@@ -10,6 +10,10 @@ const getUnreadNoveltiesByUser = async (
   businessUnitPublicCode: string,
   businessManagerCode: string
 ): Promise<IUnreadNoveltiesByUser[]> => {
+  if (!userAccount || !businessUnitPublicCode || !businessManagerCode) {
+    throw new Error("Parámetros requeridos faltantes");
+  }
+
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -38,17 +42,19 @@ const getUnreadNoveltiesByUser = async (
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay tarea disponible.");
+        return [];
       }
 
-      const data = await res.json();
       if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
         throw {
           message: "Error al obtener la tarea.",
           status: res.status,
           data,
         };
       }
+
+      const data = await res.json();
 
       if (Array.isArray(data)) {
         return data;
@@ -58,14 +64,12 @@ const getUnreadNoveltiesByUser = async (
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
-        throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la tarea."
-        );
+        return [];
       }
     }
   }
 
-  throw new Error("No se pudo obtener la tarea después de varios intentos.");
+  return [];
 };
 
 export { getUnreadNoveltiesByUser };

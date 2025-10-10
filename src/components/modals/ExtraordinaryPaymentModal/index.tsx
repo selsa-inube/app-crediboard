@@ -19,7 +19,7 @@ import { IExtraordinaryPayment } from "./types";
 
 export interface ExtraordinaryPaymentModalProps {
   businessUnitPublicCode: string;
-  businessManagerCode: string,
+  businessManagerCode: string;
   dataTable: IExtraordinaryPayment[];
   prospectData?: IProspect;
   setSentData: React.Dispatch<
@@ -30,6 +30,7 @@ export interface ExtraordinaryPaymentModalProps {
   onClickDetails?: (id: string) => void;
   onClickEdit?: (id: string) => void;
   onClickEliminate?: (id: string) => void;
+  creditRequestCode: string | undefined;
 }
 
 export const ExtraordinaryPaymentModal = (
@@ -42,6 +43,7 @@ export const ExtraordinaryPaymentModal = (
     setSentData,
     businessUnitPublicCode,
     businessManagerCode,
+    creditRequestCode,
   } = props;
 
   const [installmentState, setInstallmentState] = useState({
@@ -130,6 +132,7 @@ export const ExtraordinaryPaymentModal = (
             handleClose={closeAddSeriesModal}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
+            creditRequestCode={creditRequestCode || ""}
           />
         </Stack>
         {isAddSeriesModalOpen && (
@@ -143,6 +146,7 @@ export const ExtraordinaryPaymentModal = (
             seriesModal={seriesModal}
             setSeriesModal={setSeriesModal}
             setAddModal={setAddModal}
+            creditRequestCode={creditRequestCode || ""}
             selectedModal={selectedModal}
             prospectData={prospectData}
           />

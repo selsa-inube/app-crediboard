@@ -23,7 +23,7 @@ const environment = {
     .VITE_ENV_STAFF_PORTAL_CATALOG_CODE,
   ORIGINATOR_ID: import.meta.env.VITE_ORIGINATOR_ID as string,
   IAUTH_URL: import.meta.env.VITE_IAUTH_URL as string,
-  IAUTH_SERVICE_URL: import.meta.env.VITE_IAUTH_SERVICE_URL as string,
+  IAUTH_SERVICE_URL: import.meta.env.VITE_IAUTH_SERVICE_URL as string
 };
 
 const maxRetriesServices = 5;

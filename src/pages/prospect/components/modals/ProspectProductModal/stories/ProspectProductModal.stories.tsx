@@ -51,11 +51,6 @@ export const Create: Story = (args: EditProductModalProps) => {
             action("onCloseModal")();
             args.onCloseModal();
           }}
-          onConfirm={(values) => {
-            setShowModal(false);
-            action("onConfirm")();
-            args.onConfirm(values);
-          }}
         />
       )}
     </>
@@ -93,11 +88,6 @@ export const Edit: Story = (args: EditProductModalProps) => {
             setShowModal(false);
             action("onCloseModal")();
             args.onCloseModal();
-          }}
-          onConfirm={(values) => {
-            setShowModal(false);
-            action("onConfirm")();
-            args.onConfirm(values);
           }}
         />
       )}

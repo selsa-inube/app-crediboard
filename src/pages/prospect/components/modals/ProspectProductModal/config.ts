@@ -161,6 +161,39 @@ const rateTypeOptions = [
   { id: RateType.Floating, label: "Flotante", value: RateType.Floating },
 ];
 
+export const paymentCycleMap: Record<string, string> = {
+  "Weekly": "Cada 10 días",
+  "Biweekly": "Bisemanal",
+  "Semimonthly": "Quincenal",
+  "Monthly": "Mensual",
+};
+
+export const interestRateTypeMap: Record<string, string> = {
+  "VariableInterestRate": "Tasa variable",
+  "FixedInterestRate": "Tasa fija",
+};
+
+export const VALIDATED_NUMBER_REGEX = /[^0-9]/g;
+
+export const messagesErrorValidations = {
+  loadPaymentOptions: "Error al cargar las opciones de pago",
+  validateLoanAmount: "Error al validar el monto del crédito",
+  validateLoanTermBusiness: "El plazo no cumple con las reglas de negocio",
+  validateLoanTermRange: "El plazo debe estar dentro del rango permitido",
+  validateLoanTermOther: "Error al validar el plazo",
+  validateInterestRateBusiness: "La tasa no cumple con las reglas de negocio",
+  validateInterestRateRange: "La tasa debe estar dentro del rango permitido",
+  validateInterestRateOther: "Error al validar la tasa de interés",
+};
+
+export const repaymentStructureMap: Record<string, string> = {
+  "FixedInstallment": "Cuota integral fija",
+  "ConstantAmortization": "Abonos fijos a capital",
+  "GeometricGradientRepayment": "Gradiente geométrico",
+  "ArithmeticGradientRepayment": "Gradiente aritmético",
+};
+
+
 export {
   creditLineOptions,
   paymentMethodOptions,

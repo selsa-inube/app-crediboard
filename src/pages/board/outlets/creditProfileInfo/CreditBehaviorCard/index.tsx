@@ -1,4 +1,6 @@
 import { MdTrendingUp } from "react-icons/md";
+import { useEffect, useState } from "react";
+
 import { Stack, Text } from "@inubekit/inubekit";
 
 import { CardInfoContainer } from "@components/cards/CardInfoContainer";
@@ -6,35 +8,49 @@ import { StyledDivider } from "@components/cards/SummaryCard/styles";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
+import { getCreditRepayamentBehavior } from "@services/creditProfiles/getCreditRepayamentBehavior";
+import { ICreditRepayamentBehavior } from "@services/creditProfiles/types";
 
 interface CreditBehaviorProps {
   setBehaviorError: (stade: boolean) => void;
-  centralScoreRisky: number;
-  centralScoreDate: string;
-  numberInternalBlackberries: number;
-  maximumNumberInstallmentsArrears: number;
   dataBehaviorError: boolean;
+  businessUnitPublicCode: string,
+  customerIdentificationNumber: string,
   isMobile?: boolean;
 }
 
 export function CreditBehavior(props: CreditBehaviorProps) {
   const {
-    centralScoreRisky,
-    centralScoreDate,
-    numberInternalBlackberries,
-    maximumNumberInstallmentsArrears,
     isMobile,
     dataBehaviorError,
-    setBehaviorError
-    
+    setBehaviorError,
+    businessUnitPublicCode,
+    customerIdentificationNumber
   } = props;
+
+  const [dataBehavior, setDataBehavior] = useState<ICreditRepayamentBehavior>();
 
   const handleRetry = () => {
     setBehaviorError(false);
   };
 
+  useEffect(() => {
+    (async () => {
+      const response = await getCreditRepayamentBehavior(
+        businessUnitPublicCode,
+        customerIdentificationNumber
+      );
 
-  const dateObject = new Date(centralScoreDate);
+      if (response === null) {
+        setBehaviorError(true);
+        return;
+      }
+
+      setDataBehavior(response);
+    })();
+  }, [businessUnitPublicCode, customerIdentificationNumber, setBehaviorError]);
+
+  const dateObject = new Date(dataBehavior?.bureauCreditRiskScoreDate || "");
 
   return (
     <CardInfoContainer
@@ -65,7 +81,7 @@ export function CreditBehavior(props: CreditBehaviorProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {centralScoreRisky}
+                {dataBehavior?.bureauCreditRiskScoreValue}
               </Text>
               <Text size={isMobile ? "small" : "medium"}>
                 / {formatPrimaryDate(dateObject)}
@@ -85,7 +101,7 @@ export function CreditBehavior(props: CreditBehaviorProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {numberInternalBlackberries}
+                {dataBehavior?.internalDelinquenciesAmount}
               </Text>
             </Stack>
           </Stack>
@@ -102,7 +118,7 @@ export function CreditBehavior(props: CreditBehaviorProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {maximumNumberInstallmentsArrears}
+                {dataBehavior?.maxOverdueInstallments}
               </Text>
             </Stack>
           </Stack>

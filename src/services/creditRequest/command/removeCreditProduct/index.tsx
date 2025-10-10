@@ -24,7 +24,7 @@ export const RemoveCreditProduct = async (
           "X-Action": "RemoveCreditProduct",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-Process-Manager": businessManagerCode,
+          "X-User-Name": businessManagerCode,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
@@ -32,7 +32,7 @@ export const RemoveCreditProduct = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -61,7 +61,7 @@ export const RemoveCreditProduct = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar el producto de credito."
+          "Todos los intentos fallaron. No se pudo eliminar el producto de credito.",
         );
       }
     }

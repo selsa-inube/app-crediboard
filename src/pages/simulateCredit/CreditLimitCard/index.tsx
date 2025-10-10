@@ -11,12 +11,9 @@ import { PayCapacityModal } from "@components/modals/payCapacityModal";
 
 import { StyledContainer } from "./styles";
 import {
-  ICreditLimitData,
   IdataMaximumCreditLimitService,
   IPaymentCapacityData,
-  IScoreData,
 } from "./types";
-import { dataCreditLimit } from "./config";
 
 export interface CreditLimitProps {
   businessUnitPublicCode: string;
@@ -24,9 +21,7 @@ export interface CreditLimitProps {
   dataMaximumCreditLimitService: IdataMaximumCreditLimitService;
   creditLine: number;
   creditLineTxt: string;
-  creditLimitData: ICreditLimitData;
   paymentCapacityData: IPaymentCapacityData;
-  scoreData: IScoreData;
   isMobile: boolean;
 }
 
@@ -37,9 +32,7 @@ export function CreditLimitCard(props: CreditLimitProps) {
     dataMaximumCreditLimitService,
     creditLine,
     creditLineTxt,
-    creditLimitData,
     paymentCapacityData,
-    scoreData,
     isMobile,
   } = props;
 
@@ -88,13 +81,17 @@ export function CreditLimitCard(props: CreditLimitProps) {
       {creditModal && (
         <CreditLimit
           handleClose={() => setCreditModal(false)}
-          title={dataCreditLimit.usedQuotas}
+          title="Cupos utilizados"
           loading={loadingCredit}
           onOpenMaxLimitModal={() => handleOpenModals("maxLimitModal")}
           onOpenPaymentCapacityModal={() => handleOpenModals("paymentCapacity")}
           onOpenReciprocityModal={() => handleOpenModals("reciprocityModal")}
           onOpenFrcModal={() => handleOpenModals("scoreModal")}
-          {...creditLimitData}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          clientIdentificationNumber={
+            dataMaximumCreditLimitService.identificationDocumentNumber
+          }
         />
       )}
 
@@ -135,9 +132,12 @@ export function CreditLimitCard(props: CreditLimitProps) {
       {openModal === "scoreModal" && (
         <ScoreModal
           handleClose={() => setOpenModal(null)}
-          subTitle="Your Financial Score"
           loading={loading}
-          {...scoreData}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          clientIdentificationNumber={
+            dataMaximumCreditLimitService.identificationDocumentNumber
+          }
         />
       )}
     </StyledContainer>
