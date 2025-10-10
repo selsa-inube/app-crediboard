@@ -3,8 +3,9 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+import { IProspect } from "@services/prospect/types";
 
-import { IAddCreditProduct, IProspect } from "./types";
+import { IAddCreditProduct } from "./types";
 
 export const addCreditProductService = async (
   businessUnitPublicCode: string,
@@ -31,7 +32,7 @@ export const addCreditProductService = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
         options,
       );
 

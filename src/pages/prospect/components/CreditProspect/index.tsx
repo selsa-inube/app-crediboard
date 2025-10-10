@@ -34,7 +34,6 @@ import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard } from "@config/privilege";
 import { addCreditProductService } from "@services/prospect/addCreditProduct";
-import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
 
@@ -170,69 +169,72 @@ export function CreditProspect(props: ICreditProspectProps) {
     setForm((prevForm) => ({ ...prevForm, [name]: newValue }));
   };
 
-const handleConfirm = async (values: FormikValues) => {
-  if (!prospectData?.prospectId) {
-    console.error("prospectId no está definido");
-    return;
-  }
+  const handleConfirm = async (values: FormikValues) => {
+    if (!prospectData?.prospectId) {
+      console.error("prospectId no está definido");
+      return;
+    }
 
-  try {
-    const payload: IAddCreditProduct = {
-      prospectId: prospectData.prospectId,
-      creditProducts: [
-        {
-          lineOfCreditAbbreviatedName: values.selectedProducts[0],
-        },
-      ],
-    };
+    try {
+      const payload: IAddCreditProduct = {
+        creditRequestCode: creditRequestCode || "",
+        creditProducts: [
+          {
+            lineOfCreditAbbreviatedName: values.selectedProducts[0],
+          },
+        ],
+      };
 
-    const updatedProspect = await addCreditProductService(
-      businessUnitPublicCode,
-      businessManagerCode,
-      payload,
-    );
-
-    if (prospectData?.prospectId) {
-      const refreshedProspect = updatedProspect || await getSearchProspectByCode(
+      const updatedProspect = await addCreditProductService(
         businessUnitPublicCode,
         businessManagerCode,
-        prospectData.prospectId,
+        payload,
       );
-      
+
+      const normalizedProspect = {
+        ...updatedProspect,
+        creditProducts: updatedProspect!.creditProducts?.map(product => ({
+          ...product,
+          schedule: product.schedule || product.installmentFrequency,
+        }))
+      };
+
+      const refreshedProspect = normalizedProspect as IProspect;
+
       if (setDataProspect && refreshedProspect) {
         setDataProspect([refreshedProspect as IProspect]);
       }
-      
+
       if (onProspectUpdate && refreshedProspect) {
         onProspectUpdate(refreshedProspect as IProspect);
       }
-    }
 
-    handleCloseModal();
-  } catch (error) {
-    handleCloseModal();
-    
-    const err = error as {
-      message?: string;
-      status?: number;
-      data?: { description?: string; code?: string };
-    };
-    
-    const code = err?.data?.code ? `[${err.data.code}] ` : "";
-    let description = code + (err?.message || "Error desconocido") + (err?.data?.description || "");
 
-    if (err?.data?.description === "Credit product already exists in prospect") {
-      description = "El producto de crédito ya existe en el prospecto";
+      handleCloseModal();
+    } catch (error) {
+      handleCloseModal();
+
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      let description = code + (err?.message || "Error desconocido") + (err?.data?.description || "");
+
+      if (err?.data?.description === "Credit product already exists in prospect") {
+        description = "El producto de crédito ya existe en el prospecto";
+      }
+
+      addFlag({
+        title: "Error",
+        description,
+        appearance: "danger",
+        duration: 5000,
+      });
     }
-    
-    addFlag({
-      title: "Error",
-      description,
-      appearance: "danger",
-      duration: 5000,
-    });
-  }
-};
+  };
   const handlePdfGeneration = () => {
     print();
   };
@@ -250,16 +252,16 @@ const handleConfirm = async (values: FormikValues) => {
   };
 
   const initialValues: FormikValues = {
-  creditLine: "",
-  creditAmount: "",
-  paymentMethod: "",
-  paymentCycle: "",
-  firstPaymentCycle: "",
-  termInMonths: "",
-  amortizationType: "",
-  interestRate: "",
-  rateType: "",
-};
+    creditLine: "",
+    creditAmount: "",
+    paymentMethod: "",
+    paymentCycle: "",
+    firstPaymentCycle: "",
+    termInMonths: "",
+    amortizationType: "",
+    interestRate: "",
+    rateType: "",
+  };
 
   return (
     <Stack direction="column" gap="24px">
@@ -297,24 +299,24 @@ const handleConfirm = async (values: FormikValues) => {
                 Array.isArray(product.extraordinaryInstallments) &&
                 product.extraordinaryInstallments.length > 0
             ) && (
-              <Button
-                type="button"
-                appearance="primary"
-                spacing="compact"
-                variant="outlined"
-                iconBefore={
-                  <Icon
-                    icon={<MdOutlinePayments />}
-                    appearance="primary"
-                    size="18px"
-                    spacing="narrow"
-                  />
-                }
-                onClick={() => handleOpenModal("extraPayments")}
-              >
-                {dataCreditProspect.extraPayment}
-              </Button>
-            )}
+                <Button
+                  type="button"
+                  appearance="primary"
+                  spacing="compact"
+                  variant="outlined"
+                  iconBefore={
+                    <Icon
+                      icon={<MdOutlinePayments />}
+                      appearance="primary"
+                      size="18px"
+                      spacing="narrow"
+                    />
+                  }
+                  onClick={() => handleOpenModal("extraPayments")}
+                >
+                  {dataCreditProspect.extraPayment}
+                </Button>
+              )}
             <StyledVerticalDivider />
             <StyledContainerIcon>
               {showPrint && (
@@ -369,7 +371,7 @@ const handleConfirm = async (values: FormikValues) => {
         <CreditLimitModal
           handleClose={handleCloseModal}
           isMobile={isMobile}
-          setRequestValue={setRequestValue || (() => {})}
+          setRequestValue={setRequestValue || (() => { })}
           requestValue={requestValue}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
