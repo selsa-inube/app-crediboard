@@ -3,8 +3,9 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+import { IProspect } from "@services/prospect/types";
 
-import { IAddCreditProduct, IProspect } from "./types";
+import { IAddCreditProduct } from "./types";
 
 export const addCreditProductService = async (
   businessUnitPublicCode: string,
