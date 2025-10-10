@@ -126,5 +126,5 @@ export interface IAddCreditProduct {
       lineOfCreditAbbreviatedName: string;
     },
   ];
-  prospectId: string;
+  creditRequestCode: string;
 }

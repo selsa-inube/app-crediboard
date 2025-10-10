@@ -177,7 +177,7 @@ export function CreditProspect(props: ICreditProspectProps) {
 
     try {
       const payload: IAddCreditProduct = {
-        prospectId: prospectData.prospectId,
+        creditRequestCode: creditRequestCode || "",
         creditProducts: [
           {
             lineOfCreditAbbreviatedName: values.selectedProducts[0],
