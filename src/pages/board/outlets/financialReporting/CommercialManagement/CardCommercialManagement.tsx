@@ -49,7 +49,7 @@ export const CardCommercialManagement = (
     prospectData,
     onProspectUpdate,
     moneyDestination,
-    clientIdentificationNumber
+    clientIdentificationNumber,
   } = props;
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     []
@@ -82,6 +82,9 @@ export const CardCommercialManagement = (
   });
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
+    const [consolidatedCredits, setConsolidatedCredits] = useState(
+    prospectData?.consolidatedCredits || [],
+  );
   const handleInfoModalClose = () => {
     setIsModalOpen(false);
   };
@@ -310,6 +313,13 @@ export const CardCommercialManagement = (
         <ConsolidatedCredits
           handleClose={() => setShowConsolidatedModal(false)}
           prospectData={prospectData}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          consolidatedCredits={consolidatedCredits}
+          setConsolidatedCredits={setConsolidatedCredits}
+          onProspectUpdated={()=>{}}
+          clientIdentificationNumber={clientIdentificationNumber}
+          creditRequestCode={id || ""}
         />
       )}
       {showDeductibleExpensesModal && (
