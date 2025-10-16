@@ -7,7 +7,7 @@ import { IConsolidatedCredit } from "../types";
 
 export const updateConsolidatedCredits = async (
   businessUnitPublicCode: string,
-  prospectId: string,
+  creditRequestCode: string,
   payload: IConsolidatedCredit[],
   businessManagerCode: string
 ): Promise<IConsolidatedCredit[] | null> => {
@@ -18,7 +18,7 @@ export const updateConsolidatedCredits = async (
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const body = JSON.stringify({
-        prospectId: prospectId,
+        creditRequestCode: creditRequestCode,
         consolidatedCredits: payload,
       });
       const options: RequestInit = {
