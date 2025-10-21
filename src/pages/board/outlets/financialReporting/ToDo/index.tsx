@@ -8,6 +8,7 @@ import {
   SkeletonLine,
   Select,
   Button,
+  Input,
 } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
@@ -329,6 +330,16 @@ function ToDo(props: ToDoProps) {
       )
     );
   }, [staff, eventData, taskData, taskRole]);
+
+  const hasSingleDecision = taskDecisions.length === 1;
+
+  useEffect(() => {
+    if (hasSingleDecision && !decisionValue.decision && taskDecisions[0]) {
+      setDecisionValue({ decision: taskDecisions[0].value });
+      setSelectedDecision(taskDecisions[0]);
+    }
+  }, [hasSingleDecision, taskDecisions, decisionValue.decision]);
+
   return (
     <>
       <Fieldset
@@ -383,18 +394,30 @@ function ToDo(props: ToDoProps) {
               alignItems="center"
             >
               <Stack width={isMobile ? "100%" : "340px"}>
-                <Select
-                  id="toDo"
-                  name="decision"
-                  label="Decisión"
-                  value={decisionValue.decision}
-                  placeholder="Selecciona una opción"
-                  size="compact"
-                  options={taskDecisions || []}
-                  onChange={onChangeDecision}
-                  onClick={handleSelectOpen}
-                  fullwidth={isMobile}
-                />
+                {hasSingleDecision ? (
+                  <Input
+                    id="toDo"
+                    name="decision"
+                    label="Decisión"
+                    value={taskDecisions[0]?.label || ""}
+                    size="compact"
+                    disabled
+                    fullwidth={isMobile}
+                  />
+                ) : (
+                  <Select
+                    id="toDo"
+                    name="decision"
+                    label="Decisión"
+                    value={decisionValue.decision}
+                    placeholder="Selecciona una opción"
+                    size="compact"
+                    options={taskDecisions || []}
+                    onChange={onChangeDecision}
+                    onClick={handleSelectOpen}
+                    fullwidth={isMobile}
+                  />
+                )}
               </Stack>
               <Stack padding="16px 0px 0px 0px" width="100%">
                 <Stack gap="2px" alignItems="center">

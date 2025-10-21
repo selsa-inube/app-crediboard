@@ -2,7 +2,13 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Stack, useMediaQuery, Select, useFlag } from "@inubekit/inubekit";
+import {
+  Stack,
+  useMediaQuery,
+  Select,
+  useFlag,
+  Input,
+} from "@inubekit/inubekit";
 
 import { getCommercialManagerAndAnalyst } from "@services/staff/commercialManagerAndAnalyst";
 
@@ -57,6 +63,10 @@ export function StaffModal(props: StaffModalProps) {
     useState<ICommercialManagerAndAnalyst | null>(null);
   const [selectedAnalyst, setSelectedAnalyst] =
     useState<ICommercialManagerAndAnalyst | null>(null);
+  const [initialValues, setInitialValues] = useState({
+    commercialManager: "",
+    analyst: "",
+  });
   const isMobile = useMediaQuery("(max-width: 700px)");
   const [showModal, setShowModal] = useState(false);
   const validationSchema = Yup.object().shape({
@@ -71,6 +81,8 @@ export function StaffModal(props: StaffModalProps) {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const { addFlag } = useFlag();
+
   const handleCommercialManagerChange = (
     name: string,
     value: string,
@@ -84,6 +96,7 @@ export function StaffModal(props: StaffModalProps) {
       setSelectedCommercialManager(selectedManager);
     }
   };
+
   const handleAnalystChange = (
     name: string,
     value: string,
@@ -126,7 +139,28 @@ export function StaffModal(props: StaffModalProps) {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const { addFlag } = useFlag();
+
+  useEffect(() => {
+    if (accountManagerList.length === 1) {
+      const singleManager = accountManagerList[0];
+      setInitialValues((prev) => ({
+        ...prev,
+        commercialManager: singleManager.staffName,
+      }));
+      setSelectedCommercialManager(singleManager);
+    }
+  }, [accountManagerList]);
+
+  useEffect(() => {
+    if (analystList.length === 1) {
+      const singleAnalyst = analystList[0];
+      setInitialValues((prev) => ({
+        ...prev,
+        analyst: singleAnalyst.staffName,
+      }));
+      setSelectedAnalyst(singleAnalyst);
+    }
+  }, [analystList]);
 
   const buildCreditRequest = (
     role: string,
@@ -148,6 +182,7 @@ export function StaffModal(props: StaffModalProps) {
       creditRequestCode: "",
     };
   };
+
   const handleCreditRequests = async () => {
     const managerRequest = buildCreditRequest(
       "CredicarAccountManager".substring(0, 20),
@@ -207,12 +242,14 @@ export function StaffModal(props: StaffModalProps) {
       }, 6000);
     }
   };
+
   const handleToggleModal = () => {
     if (handleRetry) {
       handleRetry();
     }
     setShowModal(!showModal);
   };
+
   const options = {
     commercialManager: accountManagerList.map((official) => ({
       id: official.staffId,
@@ -226,9 +263,14 @@ export function StaffModal(props: StaffModalProps) {
       value: official.staffName,
     })),
   };
+
+  const hasSingleCommercialManager = options.commercialManager.length === 1;
+  const hasSingleAnalyst = options.analyst.length === 1;
+
   return (
     <Formik
-      initialValues={{ commercialManager: "", analyst: "" }}
+      initialValues={initialValues}
+      enableReinitialize
       validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting }) => {
         onSubmit?.(values);
@@ -247,40 +289,63 @@ export function StaffModal(props: StaffModalProps) {
             nextButton={buttonText}
           >
             <Stack direction="column" gap="24px">
-              <Select
-                name="commercialManager"
-                id="commercialManager"
-                label="Gestor Comercial"
-                placeholder={
-                  options.commercialManager.length > 0
-                    ? "Selecciona una opción"
-                    : "No hay gestores disponibles"
-                }
-                options={options.commercialManager}
-                onChange={(name, value) =>
-                  handleCommercialManagerChange(name, value, setFieldValue)
-                }
-                value={values.commercialManager}
-                fullwidth
-                disabled={options.commercialManager.length === 0}
-              />
-              <Select
-                name="analyst"
-                id="analyst"
-                label="Analista"
-                placeholder={
-                  options.analyst.length > 0
-                    ? "Selecciona una opción"
-                    : "No hay analistas disponibles"
-                }
-                options={options.analyst}
-                onChange={(name, value) =>
-                  handleAnalystChange(name, value, setFieldValue)
-                }
-                value={values.analyst}
-                fullwidth
-                disabled={options.analyst.length === 0}
-              />
+              {hasSingleCommercialManager ? (
+                <Input
+                  name="commercialManager"
+                  id="commercialManager"
+                  label="Gestor Comercial"
+                  value={options.commercialManager[0]?.label || ""}
+                  fullwidth
+                  disabled
+                />
+              ) : (
+                <Select
+                  name="commercialManager"
+                  id="commercialManager"
+                  label="Gestor Comercial"
+                  placeholder={
+                    options.commercialManager.length > 0
+                      ? "Selecciona una opción"
+                      : "No hay gestores disponibles"
+                  }
+                  options={options.commercialManager}
+                  onChange={(name, value) =>
+                    handleCommercialManagerChange(name, value, setFieldValue)
+                  }
+                  value={values.commercialManager}
+                  fullwidth
+                  disabled={options.commercialManager.length === 0}
+                />
+              )}
+
+              {hasSingleAnalyst ? (
+                <Input
+                  name="analyst"
+                  id="analyst"
+                  label="Analista"
+                  value={options.analyst[0]?.label || ""}
+                  fullwidth
+                  disabled
+                />
+              ) : (
+                <Select
+                  name="analyst"
+                  id="analyst"
+                  label="Analista"
+                  placeholder={
+                    options.analyst.length > 0
+                      ? "Selecciona una opción"
+                      : "No hay analistas disponibles"
+                  }
+                  options={options.analyst}
+                  onChange={(name, value) =>
+                    handleAnalystChange(name, value, setFieldValue)
+                  }
+                  value={values.analyst}
+                  fullwidth
+                  disabled={options.analyst.length === 0}
+                />
+              )}
             </Stack>
           </BaseModal>
         </Form>

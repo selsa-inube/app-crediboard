@@ -1,6 +1,13 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Select, Stack, Text, Textarea, useFlag } from "@inubekit/inubekit";
+import {
+  Select,
+  Stack,
+  Text,
+  Textarea,
+  useFlag,
+  Input,
+} from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
@@ -16,7 +23,7 @@ interface IHumanValidationApprovalModalProps {
   isMobile: boolean;
   initialValues: IApprovalHuman;
   businessUnitPublicCode: string;
-  businessManagerCode: string,
+  businessManagerCode: string;
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
   rawRequirements: IPackagesOfRequirementsById[];
@@ -125,6 +132,12 @@ export function HumanValidationApprovalModal(
     },
   });
 
+  const hasSingleOption = optionsAnswer.length === 1;
+
+  if (hasSingleOption && !formik.values.answer) {
+    formik.setFieldValue("answer", optionsAnswer[0].value);
+  }
+
   return (
     <BaseModal
       title={approvalsConfig.title}
@@ -138,18 +151,30 @@ export function HumanValidationApprovalModal(
       <Stack direction="column" gap="24px">
         <Stack direction="column" gap="8px">
           <Text>{approvalsConfig.approval}</Text>
-          <Select
-            name="answer"
-            id="answer"
-            options={optionsAnswer}
-            label={approvalsConfig.answer}
-            placeholder={approvalsConfig.answerPlaceHoleder}
-            value={formik.values.answer}
-            onChange={(name, value) => formik.setFieldValue(name, value)}
-            onBlur={formik.handleBlur}
-            size="compact"
-            fullwidth
-          />
+          {hasSingleOption ? (
+            <Input
+              name="answer"
+              id="answer"
+              label={approvalsConfig.answer}
+              value={optionsAnswer[0].label}
+              disabled
+              size="compact"
+              fullwidth
+            />
+          ) : (
+            <Select
+              name="answer"
+              id="answer"
+              options={optionsAnswer}
+              label={approvalsConfig.answer}
+              placeholder={approvalsConfig.answerPlaceHoleder}
+              value={formik.values.answer}
+              onChange={(name, value) => formik.setFieldValue(name, value)}
+              onBlur={formik.handleBlur}
+              size="compact"
+              fullwidth
+            />
+          )}
         </Stack>
         <Textarea
           id="observations"

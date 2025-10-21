@@ -1,6 +1,7 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Stack, useMediaQuery, Select } from "@inubekit/inubekit";
+import { useEffect, useState } from "react";
+import { Stack, useMediaQuery, Select, Textfield } from "@inubekit/inubekit";
 
 import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 import { BaseModal } from "@components/modals/baseModal";
@@ -55,6 +56,18 @@ export function AddSystemValidation(props: IRequirements) {
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
+  const [initialValues, setInitialValues] = useState({
+    descriptionUseValues: "",
+    requirementCatalogName: "",
+    descriptionUse: "",
+  });
+
+  const getOptionLabel = (options: IOptionsSelect[], value: string) => {
+    const option = options?.find(
+      (opt) => opt.id === value || opt.value === value
+    );
+    return option?.label || option?.value || value;
+  };
 
   const validationSchema = Yup.object().shape({
     descriptionUseValues: Yup.string().required(
@@ -96,13 +109,35 @@ export function AddSystemValidation(props: IRequirements) {
       value: official.value,
     })),
   };
+
+  // Auto-select single requirement option
+  useEffect(
+    () => {
+      if (options.Requirement.length === 1) {
+        const singleOption = options.Requirement[0];
+        const optionValue = singleOption.value;
+
+        setInitialValues((prev) => ({
+          ...prev,
+          descriptionUseValues: optionValue,
+        }));
+        setdescriptionUseValues(optionValue);
+        const newPlaceholder = getPlaceholderText(optionValue);
+        setJustificationRequirement(newPlaceholder);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      options.Requirement.length,
+      setdescriptionUseValues,
+      setJustificationRequirement,
+    ]
+  );
+
   return (
     <Formik
-      initialValues={{
-        descriptionUseValues: "",
-        requirementCatalogName: "",
-        descriptionUse: "",
-      }}
+      initialValues={initialValues}
+      enableReinitialize
       validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting }) => {
         onSubmit?.(values);
@@ -122,23 +157,37 @@ export function AddSystemValidation(props: IRequirements) {
         >
           <Form>
             <Stack direction="column" gap="24px">
-              <Select
-                name="descriptionUseValues"
-                id="descriptionUseValues"
-                label={dataAddRequirement.labelPaymentMethod}
-                placeholder={
-                  options.Requirement.length > 0
-                    ? "Selecciona una opción"
-                    : "No hay disponibles"
-                }
-                options={options.Requirement}
-                onChange={(name, value) =>
-                  handleRequirementChange(name, value, setFieldValue)
-                }
-                value={values.descriptionUseValues}
-                fullwidth
-                disabled={options.Requirement.length === 0}
-              />
+              {options.Requirement && options.Requirement.length === 1 ? (
+                <Textfield
+                  name="descriptionUseValues"
+                  id="descriptionUseValues"
+                  label={dataAddRequirement.labelPaymentMethod}
+                  value={getOptionLabel(
+                    options.Requirement,
+                    values.descriptionUseValues
+                  )}
+                  disabled
+                  fullwidth
+                />
+              ) : (
+                <Select
+                  name="descriptionUseValues"
+                  id="descriptionUseValues"
+                  label={dataAddRequirement.labelPaymentMethod}
+                  placeholder={
+                    options.Requirement.length > 0
+                      ? "Selecciona una opción"
+                      : "No hay disponibles"
+                  }
+                  options={options.Requirement}
+                  onChange={(name, value) =>
+                    handleRequirementChange(name, value, setFieldValue)
+                  }
+                  value={values.descriptionUseValues}
+                  fullwidth
+                  disabled={options.Requirement.length === 0}
+                />
+              )}
               {values.descriptionUseValues && (
                 <CardGray
                   label={dataAddRequirement.titleJustification}

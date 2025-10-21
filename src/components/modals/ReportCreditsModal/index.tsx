@@ -9,6 +9,7 @@ import {
   Text,
   Icon,
   useFlag,
+  Textfield,
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
@@ -21,9 +22,8 @@ import { privilegeCrediboard } from "@config/privilege";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 
-
 import { FinancialObligationModal } from "../financialObligationModal";
-import { defaultOptionsSelect, configSelect } from "./config"
+import { defaultOptionsSelect, configSelect } from "./config";
 
 export interface ReportCreditsModalProps {
   handleClose: () => void;
@@ -33,7 +33,7 @@ export interface ReportCreditsModalProps {
   prospectData?: IProspect[];
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
   businessUnitPublicCode: string;
-  businessManagerCode: string,
+  businessManagerCode: string;
   creditRequestCode: string;
 }
 
@@ -68,7 +68,9 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   const [selectedBorrower, setSelectedBorrower] = useState<optionsSelect>();
   const [optionsBorrowers, setOptionsBorrowers] = useState<optionsSelect[]>([]);
   const [newObligation, setNewObligation] = useState<IFinancialObligation>();
-  const [localProspectData, setLocalProspectData] = useState<IProspect[]>(prospectData || []);
+  const [localProspectData, setLocalProspectData] = useState<IProspect[]>(
+    prospectData || []
+  );
   const [tableRefreshKey, setTableRefreshKey] = useState(0);
   const initialProspectSnapshot = useRef<IProspect[] | null>(null);
 
@@ -87,6 +89,13 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
+  const getOptionLabel = (options: optionsSelect[], value: string) => {
+    const option = options?.find(
+      (opt) => opt.id === value || opt.value === value
+    );
+    return option?.label || option?.value || value;
+  };
+
   useEffect(() => {
     const loadCompleteData = async () => {
       try {
@@ -99,7 +108,9 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         setLocalProspectData([completeData]);
 
         if (!initialProspectSnapshot.current) {
-          initialProspectSnapshot.current = JSON.parse(JSON.stringify([completeData]));
+          initialProspectSnapshot.current = JSON.parse(
+            JSON.stringify([completeData])
+          );
         }
 
         setLoading(false);
@@ -119,11 +130,13 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     (parameter: keyof IBorrower, value: string) => {
       if (!localProspectData) return;
 
-      const listsBorrowers = localProspectData[0].borrowers?.filter((borrower) => {
-        if (borrower[parameter] === value) {
-          return borrower;
+      const listsBorrowers = localProspectData[0].borrowers?.filter(
+        (borrower) => {
+          if (borrower[parameter] === value) {
+            return borrower;
+          }
         }
-      });
+      );
 
       return listsBorrowers?.[0];
     },
@@ -174,6 +187,17 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     return () => clearTimeout(timeout);
   }, [filterListBorrowers, getOptionsSelect, buildObjectSelection]);
 
+  useEffect(() => {
+    if (
+      optionsBorrowers &&
+      optionsBorrowers.length === 1 &&
+      !selectedBorrower
+    ) {
+      setSelectedBorrower(optionsBorrowers[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [optionsBorrowers]);
+
   const onChangeSelect = (name: string, value: string) => {
     setSelectedBorrower(buildObjectSelection(name, value));
   };
@@ -206,7 +230,6 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     }
 
     try {
-
       const restoredData = JSON.parse(
         JSON.stringify(initialProspectSnapshot.current)
       );
@@ -217,7 +240,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         restoredData[0]
       );
 
-      setTableRefreshKey(prev => prev + 1);
+      setTableRefreshKey((prev) => prev + 1);
 
       const refreshedData = await getSearchProspectByCode(
         businessUnitPublicCode,
@@ -229,11 +252,11 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
       addFlag({
         title: "Restauración exitosa",
-        description: "Las obligaciones financieras se han restaurado correctamente",
+        description:
+          "Las obligaciones financieras se han restaurado correctamente",
         appearance: "success",
         duration: 5000,
       });
-
     } catch (error) {
       addFlag({
         title: "Error al restaurar",
@@ -261,7 +284,20 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             direction={isMobile ? "column" : "row"}
             gap="16px"
           >
-            {optionsBorrowers && optionsBorrowers.length > 1 ? (
+            {optionsBorrowers && optionsBorrowers.length === 1 ? (
+              <Textfield
+                id="income"
+                name={configSelect.name}
+                label={configSelect.label}
+                value={getOptionLabel(
+                  optionsBorrowers,
+                  selectedBorrower?.value || ""
+                )}
+                disabled
+                size="compact"
+                fullwidth
+              />
+            ) : (
               <Select
                 id="income"
                 name={configSelect.name}
@@ -272,16 +308,6 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                 onChange={(name, value) => onChangeSelect(name, value)}
                 size="compact"
               />
-            ) : (
-              <Stack
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Text appearance="dark" as="h2">
-                  {optionsBorrowers[0]?.label}
-                </Text>
-              </Stack>
             )}
 
             <Stack
@@ -350,9 +376,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               handleClose={() => setIsOpenModal(false)}
               width={!isMobile ? "600px" : "290px"}
             >
-              <Text>
-                {dataReport.descriptionModal}
-              </Text>
+              <Text>{dataReport.descriptionModal}</Text>
             </BaseModal>
           )}
           {openModal && (
