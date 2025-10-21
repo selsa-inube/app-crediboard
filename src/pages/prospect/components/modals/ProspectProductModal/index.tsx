@@ -35,7 +35,8 @@ import {
   rateTypeOptions,
   paymentCycleMap,
   interestRateTypeMap,
-  messagesErrorValidations,
+  modalTexts,
+  defaultPaymentOptions,
   repaymentStructureMap,
 } from "./config";
 
@@ -90,7 +91,7 @@ function EditProductModal(props: EditProductModalProps) {
     creditRequestCode,
     prospectId,
     onProspectUpdate,
-    creditProductCode
+    creditProductCode,
   } = props;
 
   const [modifiedGroup, setModifiedGroup] = useState<FieldGroup | null>(null);
@@ -99,7 +100,7 @@ function EditProductModal(props: EditProductModalProps) {
     IPaymentMethod[]
   >([]);
   const [paymentCyclesList, setPaymentCyclesList] = useState<IPaymentCycle[]>(
-    [],
+    []
   );
   const [firstPaymentCyclesList, setFirstPaymentCyclesList] = useState<
     IFirstPaymentCycle[]
@@ -125,11 +126,11 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await getPaymentMethods(
           businessUnitPublicCode,
           businessManagerCode,
-          initialValues.creditLine,
+          initialValues.creditLine
         );
 
         if (!response) {
-          throw new Error(messagesErrorValidations.loadPaymentOptions);
+          throw new Error(modalTexts.messages.errors.loadPaymentOptions);
         }
 
         setPaymentMethodsList(response.paymentMethods);
@@ -143,33 +144,13 @@ function EditProductModal(props: EditProductModalProps) {
           (cycle) => ({
             ...cycle,
             label: paymentCycleMap[cycle.value] || cycle.label,
-          }),
+          })
         );
         setFirstPaymentCyclesList(mappedFirstPaymentCycles);
       } catch (error) {
-        setPaymentMethodsList([
-          {
-            id: "0",
-            value: "No hay opciones de pago disponibles",
-            label: "No hay opciones de pago disponibles",
-          },
-        ]);
-
-        setPaymentCyclesList([
-          {
-            id: "0",
-            value: "No hay opciones de pago disponibles",
-            label: "No hay opciones de pago disponibles",
-          },
-        ]);
-
-        setFirstPaymentCyclesList([
-          {
-            id: "0",
-            value: "No hay opciones de pago disponibles",
-            label: "No hay opciones de pago disponibles",
-          },
-        ]);
+        setPaymentMethodsList(defaultPaymentOptions);
+        setPaymentCyclesList(defaultPaymentOptions);
+        setFirstPaymentCyclesList(defaultPaymentOptions);
       }
     };
 
@@ -184,13 +165,13 @@ function EditProductModal(props: EditProductModalProps) {
       try {
         const payload: IBusinessUnitRules = {
           ruleName: "RepaymentStructure",
-          conditions: []
+          conditions: [],
         };
 
         const response = await postBusinessUnitRules(
           businessUnitPublicCode,
           businessManagerCode,
-          payload,
+          payload
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -237,7 +218,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await postBusinessUnitRules(
           businessUnitPublicCode,
           businessManagerCode,
-          payload,
+          payload
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -304,7 +285,7 @@ function EditProductModal(props: EditProductModalProps) {
     formik: FormikProps<FormikValues>,
     fieldName: string,
     name: string,
-    value: string,
+    value: string
   ) => {
     handleFieldModification(fieldName);
     formik.setFieldValue(name, value);
@@ -334,7 +315,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleTextChange = (
     formik: FormikProps<FormikValues>,
     fieldName: string,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     formik.handleChange(event);
 
@@ -383,7 +364,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await postBusinessUnitRules(
         businessUnitPublicCode,
         businessManagerCode,
-        payload,
+        payload
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -396,7 +377,7 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (amount < from || amount > to) {
             setLoanAmountError(
-              `El monto ingresado es $${amount.toLocaleString()}. Debe estar entre $${from.toLocaleString()} y $${to.toLocaleString()}`,
+              modalTexts.messages.errors.loanAmountRange(amount, from, to)
             );
           }
         } else if (typeof decision.value === "string") {
@@ -404,22 +385,22 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (!isNaN(maxAmount) && amount > maxAmount) {
             setLoanAmountError(
-              `El monto ingresado es $${amount.toLocaleString()}. El máximo permitido es $${maxAmount.toLocaleString()}`,
+              modalTexts.messages.errors.loanAmountMax(amount, maxAmount)
             );
           }
         }
       } else {
-        setLoanAmountError("No se pudo validar el monto del crédito");
+        setLoanAmountError(modalTexts.messages.errors.loanAmountValidation);
       }
     } catch (error) {
       console.error("Error validando monto del crédito:", error);
-      setLoanAmountError("Error al validar el monto del crédito");
+      setLoanAmountError(modalTexts.messages.errors.loanAmountGeneric);
     }
   };
 
   const validateLoanTerm = async (
     term: number,
-    loanAmount: number,
+    loanAmount: number
   ): Promise<void> => {
     try {
       setLoanTermError("");
@@ -438,7 +419,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await postBusinessUnitRules(
         businessUnitPublicCode,
         businessManagerCode,
-        payload,
+        payload
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -451,7 +432,7 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (term < from || term > to) {
             setLoanTermError(
-              `El plazo ingresado es ${term} meses. Debe estar entre ${from} y ${to} meses`,
+              modalTexts.messages.errors.loanTermRange(term, from, to)
             );
           }
         } else if (typeof decision.value === "string") {
@@ -460,19 +441,20 @@ function EditProductModal(props: EditProductModalProps) {
             const [min, max] = rangeParts.map(Number);
             if (!isNaN(min) && !isNaN(max) && (term < min || term > max)) {
               setLoanTermError(
-                `El plazo ingresado es ${term} meses. Debe estar entre ${min} y ${max} meses`,
+                modalTexts.messages.errors.loanTermRange(term, min, max)
               );
             }
           }
         }
       } else {
-        setLoanTermError("No se pudo validar el plazo");
+        setLoanTermError(modalTexts.messages.errors.loanTermValidation);
       }
     } catch (error) {
       console.error("Error validando plazo:", error);
-      setLoanTermError("Error al validar el plazo");
+      setLoanTermError(modalTexts.messages.errors.loanTermGeneric);
     }
   };
+
   const validateInterestRate = async (rate: number): Promise<void> => {
     try {
       setInterestRateError("");
@@ -481,7 +463,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessUnitPublicCode,
         businessManagerCode,
         initialValues.creditLine,
-        clientIdentificationNumber,
+        clientIdentificationNumber
       );
 
       const periodicInterestRateMin = response?.periodicInterestRateMin || 0;
@@ -489,18 +471,22 @@ function EditProductModal(props: EditProductModalProps) {
 
       if (rate <= periodicInterestRateMin || rate >= periodicInterestRateMax) {
         setInterestRateError(
-          `La tasa ingresada es ${rate}% mensual. Debe estar entre ${periodicInterestRateMin.toFixed(2)}% y ${periodicInterestRateMax.toFixed(2)}% mensual`,
+          modalTexts.messages.errors.interestRateRange(
+            rate,
+            periodicInterestRateMin,
+            periodicInterestRateMax
+          )
         );
       }
     } catch (error) {
       console.error("Error validando tasa de interés:", error);
-      setInterestRateError("Error al validar la tasa de interés");
+      setInterestRateError(modalTexts.messages.errors.interestRateValidation);
     }
   };
 
   const handleCurrencyChange = (
     formik: FormikProps<FormikValues>,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     handleFieldModification("creditAmount");
     handleChangeWithCurrency(formik, event);
@@ -551,21 +537,21 @@ function EditProductModal(props: EditProductModalProps) {
         creditProductCode: creditProductCode,
         interestRate: values.interestRate,
         loanTerm: Number(values.termInMonths),
-        creditRequestCode: creditRequestCode
+        creditRequestCode: creditRequestCode,
       };
 
       const updatedProspect = await updateCreditProduct(
         businessUnitPublicCode,
         businessManagerCode,
-        payload,
+        payload
       );
 
       const normalizedProspect = {
         ...updatedProspect,
-        creditProducts: updatedProspect!.creditProducts?.map(product => ({
+        creditProducts: updatedProspect!.creditProducts?.map((product) => ({
           ...product,
           schedule: product.schedule || product.installmentFrequency,
-        }))
+        })),
       };
 
       onProspectUpdate(normalizedProspect as IProspect);
@@ -594,7 +580,7 @@ function EditProductModal(props: EditProductModalProps) {
       validationSchema={validationSchema}
       onSubmit={(
         values: FormikValues,
-        formikHelpers: FormikHelpers<FormikValues>,
+        formikHelpers: FormikHelpers<FormikValues>
       ) => {
         handleConfirm(values);
         formikHelpers.setSubmitting(false);
@@ -603,16 +589,16 @@ function EditProductModal(props: EditProductModalProps) {
       {(formik) => (
         <BaseModal
           title={truncateTextToMaxLength(title, 25)}
-          backButton="Cancelar"
+          backButton={modalTexts.buttons.cancel}
           nextButton={confirmButtonText}
           handleNext={formik.submitForm}
           handleBack={onCloseModal}
           disabledNext={
             !formik.dirty ||
             !formik.isValid ||
-            !!loanAmountError ||
-            !!loanTermError ||
-            !!interestRateError
+            Boolean(loanAmountError) ||
+            Boolean(loanTermError) ||
+            Boolean(interestRateError)
           }
           iconAfterNext={iconAfter}
           finalDivider={true}
@@ -627,10 +613,10 @@ function EditProductModal(props: EditProductModalProps) {
               margin="0px 0px 30px 0"
             >
               <Textfield
-                label="Monto del crédito"
+                label={modalTexts.labels.creditAmount}
                 name="creditAmount"
                 id="creditAmount"
-                placeholder="Monto solicitado"
+                placeholder={modalTexts.placeholders.creditAmount}
                 value={validateCurrencyField("creditAmount", formik, false, "")}
                 status={loanAmountError ? "invalid" : undefined}
                 message={loanAmountError}
@@ -649,11 +635,11 @@ function EditProductModal(props: EditProductModalProps) {
                 disabled={isFieldDisabled("creditAmount")}
               />
               <Select
-                label="Medio de pago"
+                label={modalTexts.labels.paymentMethod}
                 name="paymentMethod"
                 id="paymentMethod"
                 size="compact"
-                placeholder="Selecciona una opción"
+                placeholder={modalTexts.placeholders.selectOption}
                 options={paymentMethodsList}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) =>
@@ -667,11 +653,11 @@ function EditProductModal(props: EditProductModalProps) {
                 disabled={true}
               />
               <Select
-                label="Ciclo de pagos"
+                label={modalTexts.labels.paymentCycle}
                 name="paymentCycle"
                 id="paymentCycle"
                 size="compact"
-                placeholder="Selecciona una opción"
+                placeholder={modalTexts.placeholders.selectOption}
                 options={paymentCyclesList}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) =>
@@ -685,11 +671,11 @@ function EditProductModal(props: EditProductModalProps) {
                 disabled={true}
               />
               <Select
-                label="Primer ciclo de pago"
+                label={modalTexts.labels.firstPaymentCycle}
                 name="firstPaymentCycle"
                 id="firstPaymentCycle"
                 size="compact"
-                placeholder="Selecciona una opción"
+                placeholder={modalTexts.placeholders.selectOption}
                 options={firstPaymentCyclesList}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) =>
@@ -700,11 +686,11 @@ function EditProductModal(props: EditProductModalProps) {
                 disabled={true}
               />
               <Select
-                label="Plazo en meses"
+                label={modalTexts.labels.termInMonths}
                 name="termInMonths"
                 id="termInMonths"
                 size="compact"
-                placeholder="Selecciona una opción"
+                placeholder={modalTexts.placeholders.selectOption}
                 options={termInMonthsOptions}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) =>
@@ -717,11 +703,11 @@ function EditProductModal(props: EditProductModalProps) {
                 disabled={isFieldDisabled("termInMonths")}
               />
               <Select
-                label="Tipo de amortización"
+                label={modalTexts.labels.amortizationType}
                 name="amortizationType"
                 id="amortizationType"
                 size="compact"
-                placeholder="Selecciona una opción"
+                placeholder={modalTexts.placeholders.selectOption}
                 options={amortizationTypesList}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) =>
@@ -735,10 +721,10 @@ function EditProductModal(props: EditProductModalProps) {
                 }
               />
               <Textfield
-                label="Tasa de interés"
+                label={modalTexts.labels.interestRate}
                 name="interestRate"
                 id="interestRate"
-                placeholder="Ej: 0.9"
+                placeholder={modalTexts.placeholders.interestRate}
                 value={formik.values.interestRate}
                 iconAfter={
                   <Icon
@@ -760,11 +746,11 @@ function EditProductModal(props: EditProductModalProps) {
                 status={interestRateError ? "invalid" : undefined}
               />
               <Select
-                label="Tipo de tasa"
+                label={modalTexts.labels.rateType}
                 name="rateType"
                 id="rateType"
                 size="compact"
-                placeholder="Selecciona una opción"
+                placeholder={modalTexts.placeholders.selectOption}
                 options={rateTypesList}
                 onBlur={formik.handleBlur}
                 onChange={(name, value) =>
