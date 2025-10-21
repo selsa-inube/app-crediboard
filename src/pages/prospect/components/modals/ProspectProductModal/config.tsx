@@ -215,7 +215,6 @@ const rateTypeOptions = [
   { id: RateType.Floating, label: "Flotante", value: RateType.Floating },
 ];
 
-// Mapeos
 export const paymentCycleMap: Record<string, string> = {
   "Weekly": "Cada 10 días",
   "Biweekly": "Bisemanal",
