@@ -10,7 +10,6 @@ import {
   StyledImg,
   StyledContainerOption,
 } from "./styles";
-import img from "@assets/images/fondecom.jpeg";
 
 interface BusinessUnitChangeProps {
   businessUnits: IBusinessUnitsPortalStaff[];
@@ -32,7 +31,7 @@ const BusinessUnitChange = (props: BusinessUnitChangeProps) => {
             >
               <StyledLi>
                 <StyledImg
-                  src={img}
+                  src={businessUnit.urlLogo}
                   alt={businessUnit.abbreviatedName}
                 />
                 {selectedClient === businessUnit.abbreviatedName && (
