@@ -10,10 +10,7 @@ import { MaxLimitModal } from "@components/modals/MaxLimitModal";
 import { PayCapacityModal } from "@components/modals/payCapacityModal";
 
 import { StyledContainer } from "./styles";
-import {
-  IdataMaximumCreditLimitService,
-  IPaymentCapacityData,
-} from "./types";
+import { IdataMaximumCreditLimitService, IPaymentCapacityData } from "./types";
 
 export interface CreditLimitProps {
   businessUnitPublicCode: string;
@@ -21,7 +18,7 @@ export interface CreditLimitProps {
   dataMaximumCreditLimitService: IdataMaximumCreditLimitService;
   creditLine: number;
   creditLineTxt: string;
-  paymentCapacityData: IPaymentCapacityData;
+  paymentCapacityData?: IPaymentCapacityData;
   isMobile: boolean;
 }
 
@@ -121,7 +118,7 @@ export function CreditLimitCard(props: CreditLimitProps) {
         />
       )}
 
-      {openModal === "paymentCapacity" && (
+      {openModal === "paymentCapacity" && paymentCapacityData && (
         <PayCapacityModal
           isMobile={isMobile}
           handleClose={() => setOpenModal(null)}
