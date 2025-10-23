@@ -17,6 +17,7 @@ export interface ICreditLimitModalProps {
   businessManagerCode: string;
   dataMaximumCreditLimitService: IdataMaximumCreditLimitService;
   isMobile: boolean;
+  moneyDestination: string;
   handleClose: () => void;
   setRequestValue: React.Dispatch<
     React.SetStateAction<IPaymentChannel[] | undefined>
@@ -30,6 +31,7 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
     businessManagerCode,
     dataMaximumCreditLimitService,
     isMobile,
+    moneyDestination,
     handleClose,
     setRequestValue,
   } = props;
@@ -58,7 +60,7 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
         const data = await getGlobalLimitByMoneyDestination(
           businessUnitPublicCode,
           businessManagerCode,
-          "cash",
+          moneyDestination,
           dataMaximumCreditLimitService.identificationDocumentNumber
         );
 
@@ -73,6 +75,7 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
     fetchData();
   }, [
     businessUnitPublicCode,
+    moneyDestination,
     businessManagerCode,
     dataMaximumCreditLimitService,
   ]);
