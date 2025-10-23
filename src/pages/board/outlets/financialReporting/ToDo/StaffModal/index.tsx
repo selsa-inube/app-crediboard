@@ -101,14 +101,14 @@ export function StaffModal(props: StaffModalProps) {
       try {
         const [accountManagers, analysts] = await Promise.all([
           getCommercialManagerAndAnalyst(
-            businessManagerCode,
-            "Selsa",
-            businessUnitPublicCode
+            "CredicarAccountManager",
+            businessUnitPublicCode,
+            businessManagerCode
           ),
           getCommercialManagerAndAnalyst(
-            businessManagerCode,
-            "Selsa",
-            businessUnitPublicCode
+            "CredicarAnalyst",
+            businessUnitPublicCode,
+            businessManagerCode
           ),
         ]);
 
