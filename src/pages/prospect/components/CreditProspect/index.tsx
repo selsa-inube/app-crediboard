@@ -6,7 +6,14 @@ import {
   MdOutlinePictureAsPdf,
   MdOutlineShare,
 } from "react-icons/md";
-import { Stack, Icon, Button, IOption, useFlag } from "@inubekit/inubekit";
+import {
+  Stack,
+  Icon,
+  Button,
+  IOption,
+  useFlag,
+  Textarea,
+} from "@inubekit/inubekit";
 import { FormikValues } from "formik";
 
 import { MenuProspect } from "@components/navigation/MenuProspect";
@@ -104,6 +111,9 @@ export function CreditProspect(props: ICreditProspectProps) {
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showShareModal, setShowShareModal] = useState(false);
   const [openModal, setOpenModal] = useState<string | null>(null);
+  const [showEditApprovalModal, setShowEditApprovalModal] = useState(false);
+  const [editedApprovalObservations, setEditedApprovalObservations] =
+    useState("");
 
   const { addFlag } = useFlag();
 
@@ -118,11 +128,12 @@ export function CreditProspect(props: ICreditProspectProps) {
       return newHistory;
     });
   };
+
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
-  const currentModal = modalHistory[modalHistory.length - 1];
 
+  const currentModal = modalHistory[modalHistory.length - 1];
   const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -162,11 +173,59 @@ export function CreditProspect(props: ICreditProspectProps) {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleInfo = () => {
     setIsModalOpen(true);
   };
+
   const onChanges = (name: string, newValue: string) => {
     setForm((prevForm) => ({ ...prevForm, [name]: newValue }));
+  };
+
+  const handleApprovalObservationsChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setEditedApprovalObservations(event.target.value);
+  };
+
+  const handleSaveApprovalObservations = async () => {
+    try {
+      if (!prospectData) return;
+      const updatedProspect: IProspect = {
+        ...prospectData,
+        clientManagerObservation: editedApprovalObservations,
+      };
+
+      if (onProspectUpdate) {
+        onProspectUpdate(updatedProspect);
+      }
+
+      if (setDataProspect) {
+        setDataProspect((prev) =>
+          prev.map((p) =>
+            p.prospectId === prospectData.prospectId ? updatedProspect : p
+          )
+        );
+      }
+
+      setShowEditApprovalModal(false);
+      handleCloseModal();
+
+      addFlag({
+        title: "Observaciones actualizadas",
+        description:
+          "Las observaciones de aprobación se han guardado correctamente",
+        appearance: "success",
+        duration: 5000,
+      });
+    } catch (error) {
+      addFlag({
+        title: "Error",
+        description: "No se pudieron guardar las observaciones",
+        appearance: "danger",
+        duration: 5000,
+      });
+    }
   };
 
   const handleConfirm = async (values: FormikValues) => {
@@ -188,15 +247,15 @@ export function CreditProspect(props: ICreditProspectProps) {
       const updatedProspect = await addCreditProductService(
         businessUnitPublicCode,
         businessManagerCode,
-        payload,
+        payload
       );
 
       const normalizedProspect = {
         ...updatedProspect,
-        creditProducts: updatedProspect!.creditProducts?.map(product => ({
+        creditProducts: updatedProspect!.creditProducts?.map((product) => ({
           ...product,
           schedule: product.schedule || product.installmentFrequency,
-        }))
+        })),
       };
 
       const refreshedProspect = normalizedProspect as IProspect;
@@ -209,7 +268,6 @@ export function CreditProspect(props: ICreditProspectProps) {
         onProspectUpdate(refreshedProspect as IProspect);
       }
 
-
       handleCloseModal();
     } catch (error) {
       handleCloseModal();
@@ -221,9 +279,14 @@ export function CreditProspect(props: ICreditProspectProps) {
       };
 
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      let description = code + (err?.message || "Error desconocido") + (err?.data?.description || "");
+      let description =
+        code +
+        (err?.message || "Error desconocido") +
+        (err?.data?.description || "");
 
-      if (err?.data?.description === "Credit product already exists in prospect") {
+      if (
+        err?.data?.description === "Credit product already exists in prospect"
+      ) {
         description = "El producto de crédito ya existe en el prospecto";
       }
 
@@ -235,6 +298,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       });
     }
   };
+
   const handlePdfGeneration = () => {
     print();
   };
@@ -299,24 +363,24 @@ export function CreditProspect(props: ICreditProspectProps) {
                 Array.isArray(product.extraordinaryInstallments) &&
                 product.extraordinaryInstallments.length > 0
             ) && (
-                <Button
-                  type="button"
-                  appearance="primary"
-                  spacing="compact"
-                  variant="outlined"
-                  iconBefore={
-                    <Icon
-                      icon={<MdOutlinePayments />}
-                      appearance="primary"
-                      size="18px"
-                      spacing="narrow"
-                    />
-                  }
-                  onClick={() => handleOpenModal("extraPayments")}
-                >
-                  {dataCreditProspect.extraPayment}
-                </Button>
-              )}
+              <Button
+                type="button"
+                appearance="primary"
+                spacing="compact"
+                variant="outlined"
+                iconBefore={
+                  <Icon
+                    icon={<MdOutlinePayments />}
+                    appearance="primary"
+                    size="18px"
+                    spacing="narrow"
+                  />
+                }
+                onClick={() => handleOpenModal("extraPayments")}
+              >
+                {dataCreditProspect.extraPayment}
+              </Button>
+            )}
             <StyledVerticalDivider />
             <StyledContainerIcon>
               {showPrint && (
@@ -361,7 +425,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           dataRef={dataCommercialManagementRef}
           moneyDestination={dataProspect?.[0]?.moneyDestinationAbbreviatedName}
           businessManagerCode={businessManagerCode}
-          clientIdentificationNumber={dataMaximumCreditLimitService.identificationDocumentNumber}
+          clientIdentificationNumber={
+            dataMaximumCreditLimitService.identificationDocumentNumber
+          }
           onClick={() => handleOpenModal("editProductModal")}
           prospectData={prospectData || undefined}
           onProspectUpdate={onProspectUpdate}
@@ -371,7 +437,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         <CreditLimitModal
           handleClose={handleCloseModal}
           isMobile={isMobile}
-          setRequestValue={setRequestValue || (() => { })}
+          setRequestValue={setRequestValue || (() => {})}
           requestValue={requestValue}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
@@ -421,7 +487,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           moneyDestination={dataMaximumCreditLimitService.moneyDestination}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
-          identificationDocumentNumber={dataMaximumCreditLimitService.identificationDocumentNumber}
+          identificationDocumentNumber={
+            dataMaximumCreditLimitService.identificationDocumentNumber
+          }
         />
       )}
       {currentModal === "IncomeModal" && (
@@ -490,19 +558,59 @@ export function CreditProspect(props: ICreditProspectProps) {
           isMobile={isMobile}
         />
       )}
+
+      {/* Modal de observaciones - Vista */}
       {currentModal === "observationsModal" && (
         <BaseModal
           width={isMobile ? "300px" : "500px"}
           title={dataCreditProspect.observations}
           handleClose={handleCloseModal}
-          handleNext={handleCloseModal}
-          nextButton={dataCreditProspect.close}
+          handleNext={() => {
+            setEditedApprovalObservations(
+              dataProspect?.[0]?.clientManagerObservation || ""
+            );
+            setShowEditApprovalModal(true);
+          }}
+          nextButton="Modificar"
+          backButton="Cancelar"
         >
           <Stack direction="column" gap="16px">
             <CardGray
               apparencePlaceHolder="gray"
               label={dataCreditProspect.approvalObservations}
               placeHolder={dataProspect?.[0]?.clientManagerObservation}
+            />
+            <CardGray
+              apparencePlaceHolder="gray"
+              label={dataCreditProspect.clientsObservations}
+              placeHolder={dataProspect?.[0]?.clientComments}
+            />
+          </Stack>
+        </BaseModal>
+      )}
+
+      {/* Modal de edición de observaciones de aprobación */}
+      {showEditApprovalModal && (
+        <BaseModal
+          width={isMobile ? "300px" : "500px"}
+          title={dataCreditProspect.observations}
+          handleClose={() => setShowEditApprovalModal(false)}
+          handleNext={handleSaveApprovalObservations}
+          nextButton="Guardar"
+          backButton="Cancelar"
+        >
+          <Stack direction="column" gap="16px">
+            <Textarea
+              id="approvalObservations"
+              label={dataCreditProspect.approvalObservations}
+              value={editedApprovalObservations}
+              onChange={handleApprovalObservationsChange}
+              maxLength={250}
+            />
+            <CardGray
+              apparencePlaceHolder="gray"
+              label={dataCreditProspect.clientsObservations}
+              placeHolder={dataProspect?.[0]?.clientComments}
             />
           </Stack>
         </BaseModal>
