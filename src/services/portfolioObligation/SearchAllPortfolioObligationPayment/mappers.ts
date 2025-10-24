@@ -8,7 +8,6 @@ import { IPayment, IPaymentOption } from "./types";
 const mapObligationPaymentApiToEntity = (
   creditPayment: Record<string, string | number | object>,
 ): IPayment => {
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   const dateWithoutZone = String(creditPayment.nextPaymentDate).replace(
     "Z",
     "",
@@ -128,7 +127,6 @@ const mapObligationPaymentApiToEntity = (
     Number(totalPenaltyInterest >= 0 ? totalPenaltyInterest : 0);
 
   const paymentMethodName = capitalizeFirstLetterEachWord(
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     String(creditPayment.paymentMethodName),
   );
 
@@ -157,7 +155,6 @@ const mapObligationPaymentApiToEntity = (
   }
 
   const otherValueAvailable = otherValueAvailableDM.valueOf(
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     String(creditPayment.paymentOtherValueAvailable),
   )?.id;
 
@@ -169,16 +166,12 @@ const mapObligationPaymentApiToEntity = (
   }
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     id: String(creditPayment.obligationNumber),
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     title: capitalizeText(String(creditPayment.productName).toLowerCase()),
     paymentMethodName,
     options,
     tags,
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     lineCode: String(creditPayment.lineCode),
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     paymentMethod: String(creditPayment.paymentMethod),
     allowCustomValue:
       otherValueAvailable !== otherValueAvailableDM.NOT_ALLOW.id,

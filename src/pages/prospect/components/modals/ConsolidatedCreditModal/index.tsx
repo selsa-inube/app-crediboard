@@ -8,7 +8,6 @@ import {
   Button,
   useFlag,
 } from "@inubekit/inubekit";
-import {useIAuth} from "@inube/iauth-react";
 
 import { currencyFormat } from "@utils/formatData/currency";
 import { InvestmentCreditCard } from "@components/cards/InvestmentCreditCard";
@@ -53,7 +52,6 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
 
   const isMobile = useMediaQuery("(max-width:880px)");
   const { addFlag } = useFlag();
-  const { user } = useIAuth();
 
   const [editOpen, setEditOpen] = useState(true);
   const [obligationPayment, setObligationPayment] = useState<IPayment[] | null>(
@@ -79,6 +77,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
         },
         {} as Record<string, { amount: number; type: string }>
       ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isInitializedRef.current]
   );
 
@@ -128,9 +127,10 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       });
     }
   };
-
+  
   useEffect(() => {
     fetchDataObligationPayment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

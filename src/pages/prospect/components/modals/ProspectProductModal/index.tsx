@@ -608,6 +608,7 @@ function EditProductModal(props: EditProductModalProps) {
           handleNext={formik.submitForm}
           handleBack={onCloseModal}
           disabledNext={
+            /* eslint-disable no-implicit-coercion */
             !formik.dirty ||
             !formik.isValid ||
             !!loanAmountError ||
