@@ -9,7 +9,6 @@ import {
   Text,
   Icon,
   useFlag,
-  Textfield,
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
@@ -88,15 +87,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   };
 
   const isMobile = useMediaQuery("(max-width:880px)");
-
-  const getOptionLabel = (options: optionsSelect[], value: string) => {
-    const option = options?.find(
-      (opt) => opt.id === value || opt.value === value
-    );
-    return option?.label || option?.value || value;
-  };
-
-  useEffect(() => {
+  -useEffect(() => {
     const loadCompleteData = async () => {
       try {
         const completeData = await getSearchProspectByCode(
@@ -285,18 +276,15 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             gap="16px"
           >
             {optionsBorrowers && optionsBorrowers.length === 1 ? (
-              <Textfield
-                id="income"
-                name={configSelect.name}
-                label={configSelect.label}
-                value={getOptionLabel(
-                  optionsBorrowers,
-                  selectedBorrower?.value || ""
-                )}
-                disabled
-                size="compact"
-                fullwidth
-              />
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Text appearance="dark" as="h2">
+                  {optionsBorrowers[0]?.label}
+                </Text>
+              </Stack>
             ) : (
               <Select
                 id="income"

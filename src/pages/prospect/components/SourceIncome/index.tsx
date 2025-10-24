@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { MdCached, MdOutlineEdit } from "react-icons/md";
-import { Stack, Text, Grid, useMediaQuery, Button } from "@inubekit/inubekit";
+import {
+  Stack,
+  Text,
+  Grid,
+  useMediaQuery,
+  Button,
+  IOption,
+} from "@inubekit/inubekit";
 
 import { incomeCardData } from "@components/cards/IncomeCard/config";
 import { CardGray } from "@components/cards/CardGray";
@@ -29,6 +36,7 @@ interface ISourceIncomeProps {
   showEdit?: boolean;
   businessUnitPublicCode?: string;
   creditRequestCode?: string;
+  borrowerOptions: IOption[];
 }
 
 export function SourceIncome(props: ISourceIncomeProps) {
@@ -42,6 +50,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
     data,
     businessUnitPublicCode,
     creditRequestCode,
+    borrowerOptions,
   } = props;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -222,7 +231,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
                   {incomeCardData.borrower}
                 </Text>
                 <Text type="title" size="medium">
-                  {borrowerIncome?.borrower}
+                  {borrowerOptions[0].label}
                 </Text>
               </Stack>
             )}
@@ -321,6 +330,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
           disabled={false}
           onSubmit={() => {}}
           businessManagerCode={businessManagerCode}
+          borrowerOptions={borrowerOptions}
         />
       )}
       {showErrorModal && (
