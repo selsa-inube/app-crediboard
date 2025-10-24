@@ -43,6 +43,8 @@ import { privilegeCrediboard } from "@config/privilege";
 import { addCreditProductService } from "@services/prospect/addCreditProduct";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
+import { updateProspect } from "@services/prospect/updateProspect";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect } from "./config";
@@ -114,7 +116,8 @@ export function CreditProspect(props: ICreditProspectProps) {
   const [showEditApprovalModal, setShowEditApprovalModal] = useState(false);
   const [editedApprovalObservations, setEditedApprovalObservations] =
     useState("");
-
+  const [messageError, setMessageError] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const { addFlag } = useFlag();
 
   const handleOpenModal = (modalName: string) => {
@@ -189,42 +192,46 @@ export function CreditProspect(props: ICreditProspectProps) {
   };
 
   const handleSaveApprovalObservations = async () => {
-    try {
-      if (!prospectData) return;
-      const updatedProspect: IProspect = {
-        ...prospectData,
-        clientManagerObservation: editedApprovalObservations,
-      };
+    if (!prospectData) return;
 
-      if (onProspectUpdate) {
-        onProspectUpdate(updatedProspect);
-      }
+    const updatedProspect: IProspect = {
+      ...prospectData,
+      clientManagerObservation: editedApprovalObservations,
+    };
+
+    try {
+      await updateProspect(
+        businessUnitPublicCode,
+        businessManagerCode,
+        updatedProspect
+      );
 
       if (setDataProspect) {
         setDataProspect((prev) =>
           prev.map((p) =>
-            p.prospectId === prospectData.prospectId ? updatedProspect : p
+            p.prospectId === prospectData.prospectId
+              ? { ...p, clientManagerObservation: editedApprovalObservations }
+              : p
           )
         );
+      }
+
+      if (onProspectUpdate) {
+        onProspectUpdate(updatedProspect);
       }
 
       setShowEditApprovalModal(false);
       handleCloseModal();
 
       addFlag({
-        title: "Observaciones actualizadas",
-        description:
-          "Las observaciones de aprobación se han guardado correctamente",
+        title: dataCreditProspect.successTitle,
+        description: dataCreditProspect.successDescription,
         appearance: "success",
         duration: 5000,
       });
     } catch (error) {
-      addFlag({
-        title: "Error",
-        description: "No se pudieron guardar las observaciones",
-        appearance: "danger",
-        duration: 5000,
-      });
+      setShowErrorModal(true);
+      setMessageError(dataCreditProspect.errorCredit);
     }
   };
 
@@ -558,8 +565,6 @@ export function CreditProspect(props: ICreditProspectProps) {
           isMobile={isMobile}
         />
       )}
-
-      {/* Modal de observaciones - Vista */}
       {currentModal === "observationsModal" && (
         <BaseModal
           width={isMobile ? "300px" : "500px"}
@@ -589,7 +594,6 @@ export function CreditProspect(props: ICreditProspectProps) {
         </BaseModal>
       )}
 
-      {/* Modal de edición de observaciones de aprobación */}
       {showEditApprovalModal && (
         <BaseModal
           width={isMobile ? "300px" : "500px"}
@@ -614,6 +618,15 @@ export function CreditProspect(props: ICreditProspectProps) {
             />
           </Stack>
         </BaseModal>
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
       )}
     </Stack>
   );

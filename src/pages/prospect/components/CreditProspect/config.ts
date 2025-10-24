@@ -10,4 +10,8 @@ export const dataCreditProspect = {
   approvalObservations: "Observaciones de preaprobación",
   clientsObservations: "Obsevaciones del cliente",
   observations: "Observaciones",
+  successTitle: "Observaciones actualizadas",
+  successDescription:
+    "Las observaciones de aprobación se han guardado correctamente",
+  errorCredit: "No se pudo obtener el prospecto de credito",
 };
