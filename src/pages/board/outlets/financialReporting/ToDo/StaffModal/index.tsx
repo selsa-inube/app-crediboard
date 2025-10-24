@@ -38,6 +38,8 @@ export interface StaffModalProps {
 
 export function StaffModal(props: StaffModalProps) {
   const {
+    commercialManager,
+    analyst,
     portalId = "portal",
     onSubmit,
     onCloseModal,
@@ -71,6 +73,7 @@ export function StaffModal(props: StaffModalProps) {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const businessManagerCode = eventData.businessManager.abbreviatedName;
+
   const handleCommercialManagerChange = (
     name: string,
     value: string,
@@ -84,6 +87,7 @@ export function StaffModal(props: StaffModalProps) {
       setSelectedCommercialManager(selectedManager);
     }
   };
+
   const handleAnalystChange = (
     name: string,
     value: string,
@@ -95,6 +99,7 @@ export function StaffModal(props: StaffModalProps) {
       setSelectedAnalyst(selected);
     }
   };
+  const { addFlag } = useFlag();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,37 +131,44 @@ export function StaffModal(props: StaffModalProps) {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const { addFlag } = useFlag();
 
   const buildCreditRequest = (
     role: string,
-    user: ICommercialManagerAndAnalyst | null
+    user: ICommercialManagerAndAnalyst | null,
+    previousUserName: string = ""
   ): ICreditRequests | null => {
     if (!user) return null;
 
+    let roleLabel = "usuario";
+
+    if (role.includes("Manager")) {
+      roleLabel = "gestor";
+    } else if (role.includes("Analyst")) {
+      roleLabel = "analista";
+    }
+
     return {
       creditRequestId: taskData?.creditRequestId || "",
-      executed_task: taskData?.taskToBeDone || "",
-      execution_date: new Date().toISOString().split("T")[0],
-      identificationNumber: user.identificationDocumentNumber || "",
-      identificationType: "C",
-      role: role,
-      transactionOperation: "Insert",
-      userId: user.staffId || "",
-      userName: user.staffName || "",
-      justification: "Justificacion",
       creditRequestCode: "",
+      executed_task: taskData?.taskToBeDone || "",
+      execution_date: new Date().toISOString(),
+      identificationNumber: user.identificationDocumentNumber || "",
+      role: role,
+      justification: `Se realiza la asignación de un nuevo ${roleLabel}. Anterior: ${previousUserName || "N/A"}. Nuevo: ${user.staffName}`,
+      transactionOperation: "Insert",
     };
   };
   const handleCreditRequests = async () => {
     const managerRequest = buildCreditRequest(
-      "CredicarAccountManager".substring(0, 20),
-      selectedCommercialManager
+      "CredicarAccountManager",
+      selectedCommercialManager,
+      commercialManager
     );
 
     const analystRequest = buildCreditRequest(
       "CredicarAnalyst",
-      selectedAnalyst
+      selectedAnalyst,
+      analyst
     );
 
     try {
@@ -215,15 +227,16 @@ export function StaffModal(props: StaffModalProps) {
   };
   const options = {
     commercialManager: accountManagerList.map((official) => ({
-      id: official.staffId,
+      id: official.identificationDocumentNumber,
       label: official.staffName,
       value: official.staffName,
       document: official.identificationDocumentNumber,
     })),
     analyst: analystList.map((official) => ({
-      id: official.staffId,
+      id: official.identificationDocumentNumber,
       label: official.staffName,
       value: official.staffName,
+      document: official.identificationDocumentNumber,
     })),
   };
   return (

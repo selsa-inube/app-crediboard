@@ -177,7 +177,7 @@ function ToDo(props: ToDoProps) {
       setStaff(formattedStaff);
 
       const firstAccountManager = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAccountManag"
+        (staffMember) => staffMember.role === "CredicarAccountManager"
       );
 
       const firstAnalyst = formattedStaff.find(
@@ -324,8 +324,7 @@ function ToDo(props: ToDoProps) {
     setHasPermitSend(
       staff.some(
         (s) =>
-          s.role === taskRole?.substring(0, 20) &&
-          s.userId === eventData?.user?.staff?.staffId
+          s.role === taskRole && s.userId === eventData?.user?.staff?.staffId
       )
     );
   }, [staff, eventData, taskData, taskRole]);
