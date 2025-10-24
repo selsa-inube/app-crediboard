@@ -6,4 +6,9 @@ export const dataCreditLimitModal = {
   textImport:
     "Recuerde que no se suman, usted puede usar como máximo uno de los valores.",
   close: "Cerrar",
+  error: {
+    title: "Error cargando datos",
+    message:
+      "No se pudieron cargar los datos. Por favor, intente nuevamente más tarde.",
+  },
 };
