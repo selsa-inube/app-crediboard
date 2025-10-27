@@ -14,4 +14,6 @@ export const dataCreditProspect = {
   successDescription:
     "Las observaciones de aprobación se han guardado correctamente",
   errorCredit: "No se pudo obtener el prospecto de credito",
+  errorCreditDescription: "El producto de crédito ya existe en el prospecto",
+  errorCreditProduct: "Credit product already exists in prospect",
 };

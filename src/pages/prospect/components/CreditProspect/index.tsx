@@ -207,11 +207,14 @@ export function CreditProspect(props: ICreditProspectProps) {
       );
 
       if (setDataProspect) {
-        setDataProspect((prev) =>
-          prev.map((p) =>
-            p.prospectId === prospectData.prospectId
-              ? { ...p, clientManagerObservation: editedApprovalObservations }
-              : p
+        setDataProspect((prevProspects) =>
+          prevProspects.map((prospect) =>
+            prospect.prospectId === prospectData.prospectId
+              ? {
+                  ...prospect,
+                  clientManagerObservation: editedApprovalObservations,
+                }
+              : prospect
           )
         );
       }
@@ -286,15 +289,10 @@ export function CreditProspect(props: ICreditProspectProps) {
       };
 
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      let description =
-        code +
-        (err?.message || "Error desconocido") +
-        (err?.data?.description || "");
+      let description = code + err?.message + (err?.data?.description || "");
 
-      if (
-        err?.data?.description === "Credit product already exists in prospect"
-      ) {
-        description = "El producto de crédito ya existe en el prospecto";
+      if (err?.data?.description === dataCreditProspect.errorCreditProduct) {
+        description = dataCreditProspect.errorCreditDescription;
       }
 
       addFlag({
