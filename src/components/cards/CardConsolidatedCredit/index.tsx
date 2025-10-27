@@ -1,4 +1,3 @@
-//CREDIBOARD - CardConsolidatedCredit refactorizado
 import { useState, useRef } from "react";
 import { MdClear } from "react-icons/md";
 import { Stack, Text, Tag, Divider, Button } from "@inubekit/inubekit";
@@ -47,7 +46,7 @@ export function CardConsolidatedCredit(props: ICardConsolidatedCreditProps) {
     initialType,
     handleRemoveCredit,
   } = props;
-  console.log("initialType: ", initialType);
+  
   const hasInitialValue = initialValue !== undefined && initialValue > 0;
 
   const [isRadioSelected, setIsRadioSelected] = useState(
@@ -104,7 +103,6 @@ export function CardConsolidatedCredit(props: ICardConsolidatedCreditProps) {
         if (radio) radio.checked = false;
       });
 
-      // Llamar a handleRemoveCredit si existe
       if (handleRemoveCredit) {
         handleRemoveCredit(code);
       }
