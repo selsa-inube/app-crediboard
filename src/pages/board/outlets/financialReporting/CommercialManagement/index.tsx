@@ -105,7 +105,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     []
   );
-  const [localProspectData, setLocalProspectData] = useState<IProspect>(prospectData);
+  const [localProspectData, setLocalProspectData] =
+    useState<IProspect>(prospectData);
   const [internal, setInternal] = useState<IModeOfDisbursement | null>(null);
   const [external, setExternal] = useState<IModeOfDisbursement | null>(null);
   const [checkEntity, setCheckEntity] = useState<IModeOfDisbursement | null>(
@@ -152,7 +153,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   useEffect(() => {
-    console.log("prospectData   ",prospectData);
     setLocalProspectData(prospectData);
   }, [prospectData]);
 
@@ -402,7 +402,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               ) || "",
             Leases: parseFloat(
               getPropertyValue(selectedBorrower.borrowerProperties, "Leases") ||
-              "0"
+                "0"
             ),
             Dividends: parseFloat(
               getPropertyValue(
@@ -696,25 +696,25 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       {prospectProducts?.some(
                         (product) => product.extraordinaryInstallments
                       ) && (
-                          <Button
-                            type="button"
-                            appearance="primary"
-                            spacing="compact"
-                            variant="outlined"
-                            fullwidth
-                            iconBefore={
-                              <Icon
-                                icon={<MdOutlinePayments />}
-                                appearance="primary"
-                                size="18px"
-                                spacing="narrow"
-                              />
-                            }
-                            onClick={() => handleOpenModal("extraPayments")}
-                          >
-                            {tittleOptions.titleExtraPayments}
-                          </Button>
-                        )}
+                        <Button
+                          type="button"
+                          appearance="primary"
+                          spacing="compact"
+                          variant="outlined"
+                          fullwidth
+                          iconBefore={
+                            <Icon
+                              icon={<MdOutlinePayments />}
+                              appearance="primary"
+                              size="18px"
+                              spacing="narrow"
+                            />
+                          }
+                          onClick={() => handleOpenModal("extraPayments")}
+                        >
+                          {tittleOptions.titleExtraPayments}
+                        </Button>
+                      )}
                     </Stack>
                   )}
                 </>
@@ -788,7 +788,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   creditRequestCode={creditRequestCode}
                   onProspectUpdate={(prospect) => {
                     setLocalProspectData(prospect);
-                    setRefreshKey(prev => prev + 1);
+                    setRefreshKey((prev) => prev + 1);
                   }}
                 />
               )}
@@ -797,7 +797,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <CreditLimitModal
                 isMobile={isMobile}
                 handleClose={handleCloseModal}
-                setRequestValue={() => { }}
+                setRequestValue={() => {}}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
                 dataMaximumCreditLimitService={dataMaximumCreditLimitService}
@@ -851,6 +851,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 creditRequestCode={creditRequestCode}
                 businessManagerCode={businessManagerCode}
+                borrowerOptions={borrowerOptions}
               />
             )}
             {currentModal === "disbursementModal" && (

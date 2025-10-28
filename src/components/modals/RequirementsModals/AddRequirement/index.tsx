@@ -1,5 +1,6 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
+import { useEffect, useState } from "react";
 import {
   Stack,
   useMediaQuery,
@@ -52,11 +53,25 @@ export function AddRequirement(props: IRequirement) {
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
+  const [initialValues, setInitialValues] = useState({
+    typeOfRequirementToEvaluated: "",
+    requirementCatalogName: "",
+    descriptionUse: "",
+  });
+
+  const getOptionLabel = (options: IOptionsSelect[], value: string) => {
+    const option = options?.find(
+      (opt) => opt.id === value || opt.value === value
+    );
+    return option?.label || option?.value || value;
+  };
+
   const validationSchema = Yup.object().shape({
     typeOfRequirementToEvaluated: Yup.string().required(""),
     requirementCatalogName: Yup.string().required(""),
     descriptionUse: Yup.string().required(""),
   });
+
   const isButtonDisabled = (
     values: {
       typeOfRequirementToEvaluated: string;
@@ -72,6 +87,7 @@ export function AddRequirement(props: IRequirement) {
       isSubmitting
     );
   };
+
   const handleRequirementChange = (
     name: string,
     value: string,
@@ -94,13 +110,22 @@ export function AddRequirement(props: IRequirement) {
     })),
   };
 
+  useEffect(() => {
+    if (options.Requirement.length === 1) {
+      const singleOption = options.Requirement[0];
+      setInitialValues((prev) => ({
+        ...prev,
+        typeOfRequirementToEvaluated: singleOption.value,
+      }));
+      setTypeOfRequirementToEvaluated(singleOption.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.Requirement.length, setTypeOfRequirementToEvaluated]);
+
   return (
     <Formik
-      initialValues={{
-        typeOfRequirementToEvaluated: "",
-        requirementCatalogName: "",
-        descriptionUse: "",
-      }}
+      initialValues={initialValues}
+      enableReinitialize
       validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting }) => {
         onSubmit?.(values);
@@ -120,23 +145,37 @@ export function AddRequirement(props: IRequirement) {
         >
           <Form>
             <Stack direction="column" gap="24px">
-              <Select
-                name="typeOfRequirementToEvaluated"
-                id="typeOfRequirementToEvaluated"
-                label={dataAddRequirement.labelPaymentMethod}
-                placeholder={
-                  options.Requirement.length > 0
-                    ? "Selecciona una opción"
-                    : "No hay disponibles"
-                }
-                options={options.Requirement}
-                onChange={(name, value) =>
-                  handleRequirementChange(name, value, setFieldValue)
-                }
-                value={values.typeOfRequirementToEvaluated}
-                fullwidth
-                disabled={options.Requirement.length === 0}
-              />
+              {options.Requirement && options.Requirement.length === 1 ? (
+                <Textfield
+                  name="typeOfRequirementToEvaluated"
+                  id="typeOfRequirementToEvaluated"
+                  label={dataAddRequirement.labelPaymentMethod}
+                  value={getOptionLabel(
+                    options.Requirement,
+                    values.typeOfRequirementToEvaluated
+                  )}
+                  disabled
+                  fullwidth
+                />
+              ) : (
+                <Select
+                  name="typeOfRequirementToEvaluated"
+                  id="typeOfRequirementToEvaluated"
+                  label={dataAddRequirement.labelPaymentMethod}
+                  placeholder={
+                    options.Requirement.length > 0
+                      ? "Selecciona una opción"
+                      : "No hay disponibles"
+                  }
+                  options={options.Requirement}
+                  onChange={(name, value) =>
+                    handleRequirementChange(name, value, setFieldValue)
+                  }
+                  value={values.typeOfRequirementToEvaluated}
+                  fullwidth
+                  disabled={options.Requirement.length === 0}
+                />
+              )}
               <Textfield
                 name="descriptionUse"
                 id="descriptionUse"
