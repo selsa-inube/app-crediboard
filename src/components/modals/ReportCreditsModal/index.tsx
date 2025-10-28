@@ -245,7 +245,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       });
     }
   };
-  console.log("availableEditCreditRequest: ",availableEditCreditRequest);
+
   return (
     <BaseModal
       title={dataReport.title}
