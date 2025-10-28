@@ -1,5 +1,9 @@
 import { useContext, useEffect, useState } from "react";
+
 import { Stack, Divider, useMediaQuery, useFlag } from "@inubekit/inubekit";
+import {
+  MdOutlineRemoveRedEye,
+} from "react-icons/md";
 
 import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
@@ -20,7 +24,7 @@ import { dataTableExtraordinaryInstallment } from "@pages/prospect/components/Ta
 import { ConsolidatedCredits } from "@pages/prospect/components/modals/ConsolidatedCreditModal";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
-import { privilegeCrediboard } from "@config/privilege";
+import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { RemoveCreditProduct } from "@services/creditRequest/command/removeCreditProduct";
 import { ErrorModal } from "@components/modals/ErrorModal";
 
@@ -34,6 +38,7 @@ interface CardCommercialManagementProps {
   moneyDestination: string;
   businessManagerCode: string;
   clientIdentificationNumber: string;
+  availableEditCreditRequest: boolean;
   prospectData?: IProspect;
   refreshProducts?: () => void;
   onProspectUpdate?: (prospect: IProspect) => void;
@@ -49,7 +54,8 @@ export const CardCommercialManagement = (
     prospectData,
     onProspectUpdate,
     moneyDestination,
-    clientIdentificationNumber
+    clientIdentificationNumber,
+    availableEditCreditRequest,
   } = props;
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     []
@@ -217,6 +223,7 @@ export const CardCommercialManagement = (
                 entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
               }
               schedule={entry.schedule as Schedule}
+              availableEditCreditRequest={availableEditCreditRequest}
               onEdit={
                 editCreditApplication
                   ? handleInfo
@@ -232,9 +239,13 @@ export const CardCommercialManagement = (
               }
             />
           ))}
-          <StyledPrint>
-            <NewCreditProductCard onClick={onClick} />
-          </StyledPrint>
+          {
+            !availableEditCreditRequest && (
+              <StyledPrint>
+                <NewCreditProductCard onClick={onClick} />
+              </StyledPrint>
+            )
+          }
         </Stack>
       </StyledCardsCredit>
       {isMobile && <Divider />}
@@ -250,6 +261,9 @@ export const CardCommercialManagement = (
             items={entry.item.map((item) => ({
               ...item,
               amount: String(prospectSummaryData?.[item.id] ?? 0),
+              icon: item.id === "totalConsolidatedAmount" && availableEditCreditRequest
+                ? <MdOutlineRemoveRedEye />
+                : item.icon,
             }))}
             showIcon={entry.iconEdit}
             isMobile={isMobile}
@@ -310,6 +324,8 @@ export const CardCommercialManagement = (
         <ConsolidatedCredits
           handleClose={() => setShowConsolidatedModal(false)}
           prospectData={prospectData}
+          availableEditCreditRequest={availableEditCreditRequest}
+          handleInfo={handleInfo}
         />
       )}
       {showDeductibleExpensesModal && (
@@ -325,7 +341,7 @@ export const CardCommercialManagement = (
           onClose={handleInfoModalClose}
           title={privilegeCrediboard.title}
           subtitle={privilegeCrediboard.subtitle}
-          description={privilegeCrediboard.description}
+          description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />

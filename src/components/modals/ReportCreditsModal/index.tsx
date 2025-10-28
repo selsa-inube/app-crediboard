@@ -17,7 +17,7 @@ import { TableFinancialObligations } from "@pages/prospect/components/TableOblig
 import { IProspect, IBorrower } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
-import { privilegeCrediboard } from "@config/privilege";
+import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 
@@ -27,6 +27,7 @@ import { defaultOptionsSelect, configSelect } from "./config"
 
 export interface ReportCreditsModalProps {
   handleClose: () => void;
+  availableEditCreditRequest: boolean;
   onChange: (name: string, newValue: string) => void;
   options: { id: string; label: string; value: string }[];
   debtor: string;
@@ -61,6 +62,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     businessUnitPublicCode,
     businessManagerCode,
     creditRequestCode,
+    availableEditCreditRequest
   } = props;
   const [loading, setLoading] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -243,7 +245,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       });
     }
   };
-
+  console.log("availableEditCreditRequest: ",availableEditCreditRequest);
   return (
     <BaseModal
       title={dataReport.title}
@@ -296,11 +298,11 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                   fullwidth={isMobile}
                   variant="outlined"
                   spacing="wide"
-                  disabled={editCreditApplication}
+                  disabled={editCreditApplication || availableEditCreditRequest}
                   onClick={() => setIsOpenModal(true)}
                 />
                 <Stack alignItems="center">
-                  {editCreditApplication ? (
+                  {editCreditApplication || availableEditCreditRequest ? (
                     <Icon
                       icon={<MdOutlineInfo />}
                       appearance="primary"
@@ -319,12 +321,12 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                     children={dataReport.addObligations}
                     iconBefore={<MdAdd />}
                     fullwidth={isMobile}
-                    disabled={editCreditApplication}
+                    disabled={editCreditApplication || availableEditCreditRequest}
                     onClick={() => setOpenModal(true)}
                   />
                 </Stack>
                 <Stack alignItems="center">
-                  {editCreditApplication ? (
+                  {editCreditApplication || availableEditCreditRequest ? (
                     <Icon
                       icon={<MdOutlineInfo />}
                       appearance="primary"
@@ -369,7 +371,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         </Stack>
         <TableFinancialObligations
           key={tableRefreshKey}
-          showActions={true}
+          showActions={!availableEditCreditRequest}
           selectedBorrower={selectedBorrower}
           prospectId={localProspectData?.[0]?.prospectId || ""}
           newObligation={newObligation}
@@ -384,7 +386,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           onClose={handleInfoModalClose}
           title={privilegeCrediboard.title}
           subtitle={privilegeCrediboard.subtitle}
-          description={privilegeCrediboard.description}
+          description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />
