@@ -178,7 +178,7 @@ function ToDo(props: ToDoProps) {
       setStaff(formattedStaff);
 
       const firstAccountManager = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAccountManag"
+        (staffMember) => staffMember.role === "CredicarAccountManager"
       );
 
       const firstAnalyst = formattedStaff.find(

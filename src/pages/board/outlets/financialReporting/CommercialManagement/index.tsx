@@ -801,6 +801,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
                 dataMaximumCreditLimitService={dataMaximumCreditLimitService}
+                moneyDestination={prospectData.moneyDestinationAbbreviatedName}
               />
             )}
             {currentModal === "IncomeModal" && (
