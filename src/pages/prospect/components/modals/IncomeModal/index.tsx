@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useFlag, useMediaQuery } from "@inubekit/inubekit";
+import { IOption, useFlag, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
@@ -12,6 +12,7 @@ interface IncomeModalProps {
   disabled?: boolean;
   businessUnitPublicCode?: string;
   businessManagerCode: string;
+  borrowerOptions: IOption[];
   creditRequestCode?: string;
   handleClose: () => void;
   onSubmit: (data: IIncomeSources) => void;
@@ -25,6 +26,7 @@ export function IncomeModal(props: IncomeModalProps) {
     businessUnitPublicCode,
     creditRequestCode,
     businessManagerCode,
+    borrowerOptions,
     handleClose,
     openModal,
     onSubmit,
@@ -74,6 +76,7 @@ export function IncomeModal(props: IncomeModalProps) {
         businessUnitPublicCode={businessUnitPublicCode}
         businessManagerCode={businessManagerCode}
         creditRequestCode={creditRequestCode}
+        borrowerOptions={borrowerOptions}
       />
     </BaseModal>
   );

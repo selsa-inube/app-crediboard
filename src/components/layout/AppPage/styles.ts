@@ -7,6 +7,10 @@ interface IStyledCollapseIcon {
   $isTablet: boolean;
 }
 
+interface IStyledLogo {
+  onTheFooter: boolean;
+}
+
 export const StyledAppPage = styled.div`
   display: inherit;
   box-sizing: border-box;
@@ -39,12 +43,16 @@ export const StyledMain = styled.main`
 `;
 
 export const StyledContentImg = styled(Link)`
-  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
-export const StyledLogo = styled.img`
-  max-width: 90px;
-  transform: translateY(-8px);
+export const StyledLogo = styled.img<IStyledLogo>`
+  max-width: 130px;
+  justify-self: center;
+  height: ${({ onTheFooter }) => (onTheFooter ? "50px" : "100%")};
+  object-fit: contain;
 `;
 
 export const StyledHeaderContainer = styled.div`
@@ -80,7 +88,7 @@ export const StyledMenuContainer = styled.div`
 
   hr {
     color: ${({ theme }) =>
-      theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
   }
 `;
 
@@ -93,7 +101,7 @@ export const StyledFooter = styled.footer`
   margin-top: auto;
   display: flex;
   justify-content: center;
-  padding: 16px 24px;
+  padding: 6px 4px;
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N10 || inube.palette.neutral.N10};
 `;
