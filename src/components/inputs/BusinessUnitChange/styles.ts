@@ -18,7 +18,7 @@ export const StyledUl = styled.ul`
   flex-direction: column;
   width: 100%;
   margin: 0px;
-  padding: 0px 2px;
+  padding: 0px;
 `;
 
 export const StyledLi = styled.li`
@@ -34,6 +34,7 @@ export const StyledLi = styled.li`
 `;
 
 export const StyledContainerOption = styled.div`
+  width: 220px;
   cursor: pointer;
   border-radius: 0;
 `;
