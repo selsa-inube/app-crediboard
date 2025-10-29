@@ -2,13 +2,14 @@ import styled from "styled-components";
 import { inube } from "@inubekit/inubekit";
 
 export const StyledContainer = styled.div`
+  width: 220px;
   box-shadow: 2px 2px 3px 2px
     ${({ theme }) => theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};
   border-radius: 8px;
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
   margin-top: 10px;
-  margin-left: 10px;
+  margin-left: 5px;
   z-index: 3;
 `;
 
