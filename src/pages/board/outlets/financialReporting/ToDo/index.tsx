@@ -298,7 +298,7 @@ function ToDo(props: ToDoProps) {
       justification: "",
     },
     businessUnit: businessUnitPublicCode,
-    user: userAccount,
+    user: eventData.user.identificationDocumentNumber || "",
     xAction: getXAction(
       selectedDecision?.code || selectedDecision?.label.split(":")[0] || "",
       validationId()
