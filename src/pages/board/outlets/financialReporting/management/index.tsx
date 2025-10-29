@@ -148,7 +148,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       await registerNewsToCreditRequest(
         businessUnitPublicCode,
         businessManagerCode,
-        userAccount,
+        eventData.user.identificationDocumentNumber || "",
         newTrace
       );
       setTraces((prev) => [...prev, newTrace]);

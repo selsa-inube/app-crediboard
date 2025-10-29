@@ -78,8 +78,6 @@ export function StaffModal(props: StaffModalProps) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { businessUnitSigla, eventData } = useContext(AppContext);
-  const { userAccount } =
-    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const businessManagerCode = eventData.businessManager.abbreviatedName;
@@ -211,7 +209,7 @@ export function StaffModal(props: StaffModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           managerRequest,
-          userAccount
+          eventData.user.identificationDocumentNumber || ""
         );
         setAssignedStaff((prev) => ({
           ...prev,
@@ -224,7 +222,7 @@ export function StaffModal(props: StaffModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           analystRequest,
-          userAccount
+          eventData.user.identificationDocumentNumber || ""
         );
         setAssignedStaff((prev) => ({
           ...prev,
