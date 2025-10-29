@@ -99,7 +99,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     setSentData,
     setRequestValue,
   } = props;
-  // data.stage
+
   const [showMenu, setShowMenu] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [modalHistory, setModalHistory] = useState<string[]>([]);

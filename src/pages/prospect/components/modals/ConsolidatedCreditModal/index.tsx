@@ -9,7 +9,6 @@ import {
   Button,
   Icon
 } from "@inubekit/inubekit";
-
 import {
   MdOutlineInfo,
 } from "react-icons/md";

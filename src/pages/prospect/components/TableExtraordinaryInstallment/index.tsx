@@ -109,7 +109,6 @@ export const TableExtraordinaryInstallment = (
     ? headers.filter((header) => rowsVisbleMobile.includes(header.key))
     : headers;
  
-
   let visbleActions = isMobile
     ? rowsActions.filter((action) => rowsVisbleMobile.includes(action.key))
     : rowsActions;
