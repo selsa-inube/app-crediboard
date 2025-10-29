@@ -290,7 +290,6 @@ export function CreditProspect(props: ICreditProspectProps) {
 
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       let description = code + err?.message + (err?.data?.description || "");
-
       if (err?.data?.description === dataCreditProspect.errorCreditProduct) {
         description = dataCreditProspect.errorCreditDescription;
       }
@@ -447,6 +446,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
           dataMaximumCreditLimitService={dataMaximumCreditLimitService}
+          moneyDestination={prospectData?.moneyDestinationAbbreviatedName || ""}
         />
       )}
       {openModal === "paymentCapacity" && (
@@ -517,6 +517,7 @@ export function CreditProspect(props: ICreditProspectProps) {
             selectedBorrower && incomeData[selectedBorrower.borrowerName]
           }
           onSubmit={handleIncomeSubmit}
+          borrowerOptions={borrowerOptions}
           businessUnitPublicCode={businessUnitPublicCode}
           creditRequestCode={creditRequestCode}
           businessManagerCode={businessManagerCode}

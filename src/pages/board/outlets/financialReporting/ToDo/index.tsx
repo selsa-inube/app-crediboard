@@ -8,6 +8,7 @@ import {
   SkeletonLine,
   Select,
   Button,
+  Input,
 } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
@@ -177,7 +178,7 @@ function ToDo(props: ToDoProps) {
       setStaff(formattedStaff);
 
       const firstAccountManager = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAccountManag"
+        (staffMember) => staffMember.role === "CredicarAccountManager"
       );
 
       const firstAnalyst = formattedStaff.find(
@@ -324,11 +325,20 @@ function ToDo(props: ToDoProps) {
     setHasPermitSend(
       staff.some(
         (s) =>
-          s.role === taskRole?.substring(0, 20) &&
-          s.userId === eventData?.user?.staff?.staffId
+          s.role === taskRole && s.userId === eventData?.user?.staff?.staffId
       )
     );
   }, [staff, eventData, taskData, taskRole]);
+
+  const hasSingleDecision = taskDecisions.length === 1;
+
+  useEffect(() => {
+    if (hasSingleDecision && !decisionValue.decision && taskDecisions[0]) {
+      setDecisionValue({ decision: taskDecisions[0].value });
+      setSelectedDecision(taskDecisions[0]);
+    }
+  }, [hasSingleDecision, taskDecisions, decisionValue.decision]);
+
   return (
     <>
       <Fieldset
@@ -383,18 +393,30 @@ function ToDo(props: ToDoProps) {
               alignItems="center"
             >
               <Stack width={isMobile ? "100%" : "340px"}>
-                <Select
-                  id="toDo"
-                  name="decision"
-                  label="Decisión"
-                  value={decisionValue.decision}
-                  placeholder="Selecciona una opción"
-                  size="compact"
-                  options={taskDecisions || []}
-                  onChange={onChangeDecision}
-                  onClick={handleSelectOpen}
-                  fullwidth={isMobile}
-                />
+                {hasSingleDecision ? (
+                  <Input
+                    id="toDo"
+                    name="decision"
+                    label="Decisión"
+                    value={taskDecisions[0]?.label || ""}
+                    size="compact"
+                    disabled
+                    fullwidth={isMobile}
+                  />
+                ) : (
+                  <Select
+                    id="toDo"
+                    name="decision"
+                    label="Decisión"
+                    value={decisionValue.decision}
+                    placeholder="Selecciona una opción"
+                    size="compact"
+                    options={taskDecisions || []}
+                    onChange={onChangeDecision}
+                    onClick={handleSelectOpen}
+                    fullwidth={isMobile}
+                  />
+                )}
               </Stack>
               <Stack padding="16px 0px 0px 0px" width="100%">
                 <Stack gap="2px" alignItems="center">
