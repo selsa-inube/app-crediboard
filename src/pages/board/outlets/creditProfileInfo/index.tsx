@@ -56,7 +56,8 @@ export const CreditProfileInfo = () => {
   const [dataUncoveredWallet, setUncoveredWallet] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { id } = useParams();
+  const { creditRequestCode } = useParams();
+
   const navigate = useNavigate();
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -81,11 +82,36 @@ export const CreditProfileInfo = () => {
           uncovered_wallet,
           riskScoringMaximum,
         ] = await Promise.allSettled([
-          getById<IRiskScoring>("risk-scoring", "credit_request_id", id!, true),
-          getById("credit_profileInfo", "credit_request_id", id!, true),
-          getById("payment_capacity", "credit_request_id", id!, true),
-          getById("credit_behavior", "credit_request_id", id!, true),
-          getById("uncovered_wallet", "credit_request_id", id!, true),
+          getById<IRiskScoring>(
+            "risk-scoring",
+            "credit_request_id",
+            creditRequestCode!,
+            true
+          ),
+          getById(
+            "credit_profileInfo",
+            "credit_request_id",
+            creditRequestCode!,
+            true
+          ),
+          getById(
+            "payment_capacity",
+            "credit_request_id",
+            creditRequestCode!,
+            true
+          ),
+          getById(
+            "credit_behavior",
+            "credit_request_id",
+            creditRequestCode!,
+            true
+          ),
+          getById(
+            "uncovered_wallet",
+            "credit_request_id",
+            creditRequestCode!,
+            true
+          ),
           get("range_requered_Business_Unit"),
         ]);
 
@@ -143,8 +169,8 @@ export const CreditProfileInfo = () => {
     getCreditRequestByCode(
       businessUnitPublicCode,
       businessManagerCode,
-      id!,
-      userAccount
+      creditRequestCode!,
+      eventData.user.identificationDocumentNumber || ""
     )
       .then((data) => {
         setRequests(data[0] as ICreditRequest);
@@ -152,9 +178,10 @@ export const CreditProfileInfo = () => {
       .catch((error) => {
         console.error(error);
       });
+    //eslint-disable-next-line
   }, [
     businessUnitPublicCode,
-    id,
+    creditRequestCode,
     dataWereObtained,
     dataBehaviorError,
     dataCreditProfile,
