@@ -43,6 +43,7 @@ export interface TableExtraordinaryInstallmentProps {
     | React.Dispatch<React.SetStateAction<IExtraordinaryInstallments | null>>
     | undefined;
   creditRequestCode?: string | undefined;
+  availableEditCreditRequest?: boolean;
 }
 
 const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
@@ -87,6 +88,7 @@ export const TableExtraordinaryInstallment = (
     businessUnitPublicCode,
     businessManagerCode,
     creditRequestCode,
+    availableEditCreditRequest
   } = props;
 
   const headers = headersTableExtraordinaryInstallment;
@@ -95,7 +97,7 @@ export const TableExtraordinaryInstallment = (
     TableExtraordinaryInstallmentProps[]
   >([]);
   const [selectedDebtor, setSelectedDebtor] =
-    useState<TableExtraordinaryInstallmentProps>({});
+    useState<TableExtraordinaryInstallmentProps>({} as TableExtraordinaryInstallmentProps);
 
   const [loading, setLoading] = useState(true);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
@@ -106,9 +108,12 @@ export const TableExtraordinaryInstallment = (
   const visbleHeaders = isMobile
     ? headers.filter((header) => rowsVisbleMobile.includes(header.key))
     : headers;
-  const visbleActions = isMobile
+ 
+  let visbleActions = isMobile
     ? rowsActions.filter((action) => rowsVisbleMobile.includes(action.key))
     : rowsActions;
+
+  visbleActions = availableEditCreditRequest ? visbleActions.filter((action) => action.key !== "actions") : visbleActions;
 
   const {
     totalRecords,
@@ -282,7 +287,8 @@ export const TableExtraordinaryInstallment = (
                   })()}
                 </Td>
               ))}
-              {visbleActions &&
+              {!availableEditCreditRequest &&
+                visbleActions &&
                 visbleActions.length > 0 &&
                 visbleActions.map((action) => (
                   <Td key={action.key} type="custom">

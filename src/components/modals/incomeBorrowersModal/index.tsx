@@ -11,7 +11,7 @@ import {
 } from "@inubekit/inubekit";
 
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
-import { privilegeCrediboard } from "@config/privilege";
+import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { IProspect } from "@services/prospect/types";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
@@ -29,6 +29,7 @@ interface IIncomeBorrowersModalProps {
   handleCloseModal: () => void;
   handleChange: (name: string, newValue: string) => void;
   setOpenModal: (modal: string) => void;
+  availableEditCreditRequest: boolean;
 }
 
 export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
@@ -42,6 +43,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
     handleCloseModal,
     handleChange,
     setOpenModal,
+    availableEditCreditRequest
   } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const currentBorrower =
@@ -135,11 +137,11 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
               <Button
                 onClick={handleEditClick}
                 fullwidth={isMobile}
-                disabled={editCreditApplication}
+                disabled={editCreditApplication || availableEditCreditRequest}
               >
                 {dataCreditProspect.edit}
               </Button>
-              {editCreditApplication ? (
+              {editCreditApplication || availableEditCreditRequest ? (
                 <Icon
                   icon={<MdOutlineInfo />}
                   appearance="primary"
@@ -168,7 +170,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
           onClose={handleInfoModalClose}
           title={privilegeCrediboard.title}
           subtitle={privilegeCrediboard.subtitle}
-          description={privilegeCrediboard.description}
+          description={ availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />

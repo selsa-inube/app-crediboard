@@ -39,7 +39,7 @@ import { CardCommercialManagement } from "@pages/board/outlets/financialReportin
 import { IExtraordinaryInstallments } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
-import { privilegeCrediboard } from "@config/privilege";
+import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { addCreditProductService } from "@services/prospect/addCreditProduct";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
@@ -81,6 +81,7 @@ interface ICreditProspectProps {
   handleChange: (name: string, newValue: string) => void;
   handleIncomeSubmit: (values: IIncomeSources) => void;
   generateAndSharePdf: () => void;
+  availableEditCreditRequest: boolean;
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
 }
 
@@ -107,6 +108,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     handleIncomeSubmit,
     generateAndSharePdf,
     setDataProspect,
+    availableEditCreditRequest
   } = props;
 
   const [modalHistory, setModalHistory] = useState<string[]>([]);
@@ -340,7 +342,7 @@ export function CreditProspect(props: ICreditProspectProps) {
               type="button"
               appearance="primary"
               spacing="compact"
-              disabled={editCreditApplication}
+              disabled={editCreditApplication || availableEditCreditRequest}
               iconBefore={
                 <Icon
                   icon={<MdOutlineAdd />}
@@ -353,7 +355,7 @@ export function CreditProspect(props: ICreditProspectProps) {
             >
               {dataCreditProspect.addProduct}
             </Button>
-            {editCreditApplication && (
+            {editCreditApplication || availableEditCreditRequest && (
               <Icon
                 icon={<MdOutlineInfo />}
                 appearance="primary"
@@ -435,6 +437,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           onClick={() => handleOpenModal("editProductModal")}
           prospectData={prospectData || undefined}
           onProspectUpdate={onProspectUpdate}
+          availableEditCreditRequest={availableEditCreditRequest}
         />
       </Stack>
       {currentModal === "creditLimit" && (
@@ -508,6 +511,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           handleCloseModal={handleCloseModal}
           handleChange={handleChange}
           setOpenModal={setOpenModal}
+           availableEditCreditRequest={availableEditCreditRequest}
         />
       )}
       {openModal === "IncomeModalEdit" && (
@@ -521,6 +525,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           businessUnitPublicCode={businessUnitPublicCode}
           creditRequestCode={creditRequestCode}
           businessManagerCode={businessManagerCode}
+         
         />
       )}
       {currentModal === "reportCreditsModal" && (
@@ -534,6 +539,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           businessUnitPublicCode={businessUnitPublicCode}
           creditRequestCode={creditRequestCode || ""}
           businessManagerCode={businessManagerCode}
+           availableEditCreditRequest={availableEditCreditRequest}
         />
       )}
       {currentModal === "extraPayments" && (
@@ -546,6 +552,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           creditRequestCode={creditRequestCode || ""}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
+          availableEditCreditRequest={availableEditCreditRequest}
         />
       )}
       {showShareModal && (
@@ -559,7 +566,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           onClose={() => setIsModalOpen(false)}
           title={privilegeCrediboard.title}
           subtitle={privilegeCrediboard.subtitle}
-          description={privilegeCrediboard.description}
+          description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />

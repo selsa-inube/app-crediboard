@@ -12,6 +12,7 @@ interface CreditProductCardProps {
   schedule: Schedule;
   onEdit: () => void;
   onDelete: () => void;
+  availableEditCreditRequest: boolean;
 }
 
 function CreditProductCard(props: CreditProductCardProps) {
@@ -25,6 +26,7 @@ function CreditProductCard(props: CreditProductCardProps) {
     schedule,
     onEdit,
     onDelete,
+    availableEditCreditRequest
   } = props;
 
   return (
@@ -38,6 +40,7 @@ function CreditProductCard(props: CreditProductCardProps) {
       schedule={schedule}
       onEdit={onEdit}
       onDelete={onDelete}
+      availableEditCreditRequest={availableEditCreditRequest}
     />
   );
 }

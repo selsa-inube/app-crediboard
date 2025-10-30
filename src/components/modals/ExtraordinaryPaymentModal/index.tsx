@@ -12,7 +12,7 @@ import {
 } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
-import { privilegeCrediboard } from "@config/privilege";
+import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 
 import { TextLabels } from "./config";
 import { IExtraordinaryPayment } from "./types";
@@ -21,6 +21,7 @@ export interface ExtraordinaryPaymentModalProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
   dataTable: IExtraordinaryPayment[];
+  availableEditCreditRequest: boolean;
   prospectData?: IProspect;
   setSentData: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallments | null>
@@ -44,6 +45,7 @@ export const ExtraordinaryPaymentModal = (
     businessUnitPublicCode,
     businessManagerCode,
     creditRequestCode,
+    availableEditCreditRequest
   } = props;
 
   const [installmentState, setInstallmentState] = useState({
@@ -101,7 +103,7 @@ export const ExtraordinaryPaymentModal = (
             appearance="primary"
             spacing="wide"
             fullwidth={isMobile}
-            disabled={editCreditApplication}
+            disabled={editCreditApplication || availableEditCreditRequest}
             iconBefore={
               <Icon
                 icon={<MdOutlineAdd />}
@@ -114,7 +116,7 @@ export const ExtraordinaryPaymentModal = (
           >
             {TextLabels.addSeries}
           </Button>
-          {editCreditApplication && (
+          {editCreditApplication || availableEditCreditRequest && (
             <Icon
               icon={<MdOutlineInfo />}
               appearance="primary"
@@ -133,6 +135,7 @@ export const ExtraordinaryPaymentModal = (
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
             creditRequestCode={creditRequestCode || ""}
+            availableEditCreditRequest={availableEditCreditRequest}
           />
         </Stack>
         {isAddSeriesModalOpen && (
@@ -156,7 +159,7 @@ export const ExtraordinaryPaymentModal = (
             onClose={handleInfoModalClose}
             title={privilegeCrediboard.title}
             subtitle={privilegeCrediboard.subtitle}
-            description={privilegeCrediboard.description}
+            description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
             nextButtonText={privilegeCrediboard.nextButtonText}
             isMobile={isMobile}
           />

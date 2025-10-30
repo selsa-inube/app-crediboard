@@ -23,6 +23,7 @@ function CreditProductCardUI(props: CreditProductCardProps) {
     schedule,
     onEdit,
     onDelete,
+    availableEditCreditRequest
   } = props;
 
   return (
@@ -75,27 +76,31 @@ function CreditProductCardUI(props: CreditProductCardProps) {
           </Text>
         </Stack>
       </Stack>
-      <Stack direction="column" padding="0px 12px">
-        <StyledPrint>
-          <StyledDivider />
-          <Stack gap="8px" justifyContent="flex-end" padding="8px 0px">
-            <Icon
-              icon={<MdOutlineEdit />}
-              appearance="primary"
-              size="24px"
-              cursorHover
-              onClick={onEdit}
-            />
-            <Icon
-              icon={<MdOutlineDelete />}
-              appearance="primary"
-              size="24px"
-              cursorHover
-              onClick={onDelete}
-            />
+      {
+        !availableEditCreditRequest && (
+          <Stack direction="column" padding="0px 12px">
+            <StyledPrint>
+              <StyledDivider />
+              <Stack gap="8px" justifyContent="flex-end" padding="8px 0px">
+                <Icon
+                  icon={<MdOutlineEdit />}
+                  appearance="primary"
+                  size="24px"
+                  cursorHover
+                  onClick={onEdit}
+                />
+                <Icon
+                  icon={<MdOutlineDelete />}
+                  appearance="primary"
+                  size="24px"
+                  cursorHover
+                  onClick={onDelete}
+                />
+              </Stack>
+            </StyledPrint>
           </Stack>
-        </StyledPrint>
-      </Stack>
+        )
+      }
     </StyledCreditProductCard>
   );
 }

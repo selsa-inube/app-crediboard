@@ -6,8 +6,12 @@ import {
   Divider,
   useMediaQuery,
   Button,
+  Icon,
   useFlag,
 } from "@inubekit/inubekit";
+import {
+  MdOutlineInfo,
+} from "react-icons/md";
 
 import { currencyFormat } from "@utils/formatData/currency";
 import { InvestmentCreditCard } from "@components/cards/InvestmentCreditCard";
@@ -24,6 +28,8 @@ import { ModalConfig, feedback } from "./config";
 
 export interface ConsolidatedCreditsProps {
   handleClose: () => void;
+  handleInfo: () => void;
+  availableEditCreditRequest: boolean;
   businessUnitPublicCode: string;
   businessManagerCode: string;
   loading?: boolean;
@@ -47,7 +53,9 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
     consolidatedCredits,
     onProspectUpdated,
     clientIdentificationNumber,
-    creditRequestCode
+    creditRequestCode,
+    availableEditCreditRequest,
+    handleInfo,
   } = props;
 
   const isMobile = useMediaQuery("(max-width:880px)");
@@ -388,16 +396,27 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
               {ModalConfig.collectedValue}
             </Text>
           </Stack>
-          <Button
-            onClick={() => setEditOpen(false)}
-            variant="outlined"
-            appearance="primary"
-            spacing="wide"
-            fullwidth={isMobile}
-            disabled={!editOpen}
-          >
-            {ModalConfig.edit}
-          </Button>
+          <Stack direction="row" gap="8px" justifyContent="center" alignContent="center" alignItems="center">
+            <Button
+              onClick={() => setEditOpen(false)}
+              variant="outlined"
+              appearance="primary"
+              spacing="wide"
+              fullwidth={isMobile}
+              disabled={!editOpen || availableEditCreditRequest}
+            >
+              {ModalConfig.edit}
+            </Button>
+            {availableEditCreditRequest && (
+              <Icon
+                icon={<MdOutlineInfo />}
+                appearance="primary"
+                size="16px"
+                cursorHover
+                onClick={handleInfo}
+              />
+            )}
+          </Stack>
         </Stack>
         <Divider dashed />
         <ScrollableContainer>

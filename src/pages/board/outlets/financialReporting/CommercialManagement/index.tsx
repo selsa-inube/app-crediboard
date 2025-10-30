@@ -99,6 +99,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     setSentData,
     setRequestValue,
   } = props;
+
   const [showMenu, setShowMenu] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [modalHistory, setModalHistory] = useState<string[]>([]);
@@ -466,6 +467,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       )?.propertyValue || "",
   };
 
+  const availableEditCreditRequest = !(data.stage === "GESTION_COMERCIAL" || data.stage === "VERIFICACION_APROBACION");
+
   return (
     <>
       <Fieldset
@@ -682,6 +685,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             spacing="narrow"
                           />
                         }
+                        disabled={availableEditCreditRequest}
                       >
                         {tittleOptions.titleAddProduct}
                       </Button>
@@ -696,25 +700,25 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       {prospectProducts?.some(
                         (product) => product.extraordinaryInstallments
                       ) && (
-                        <Button
-                          type="button"
-                          appearance="primary"
-                          spacing="compact"
-                          variant="outlined"
-                          fullwidth
-                          iconBefore={
-                            <Icon
-                              icon={<MdOutlinePayments />}
-                              appearance="primary"
-                              size="18px"
-                              spacing="narrow"
-                            />
-                          }
-                          onClick={() => handleOpenModal("extraPayments")}
-                        >
-                          {tittleOptions.titleExtraPayments}
-                        </Button>
-                      )}
+                          <Button
+                            type="button"
+                            appearance="primary"
+                            spacing="compact"
+                            variant="outlined"
+                            fullwidth
+                            iconBefore={
+                              <Icon
+                                icon={<MdOutlinePayments />}
+                                appearance="primary"
+                                size="18px"
+                                spacing="narrow"
+                              />
+                            }
+                            onClick={() => handleOpenModal("extraPayments")}
+                          >
+                            {tittleOptions.titleExtraPayments} 
+                          </Button>
+                        )}
                     </Stack>
                   )}
                 </>
@@ -786,6 +790,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   generateAndSharePdf={generateAndSharePdf}
                   setDataProspect={setDataProspect}
                   creditRequestCode={creditRequestCode}
+                  availableEditCreditRequest={availableEditCreditRequest}
                   onProspectUpdate={(prospect) => {
                     setLocalProspectData(prospect);
                     setRefreshKey((prev) => prev + 1);
@@ -815,6 +820,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 handleCloseModal={handleCloseModal}
                 handleChange={handleChangeIncome}
                 setOpenModal={setOpenModal}
+                availableEditCreditRequest={availableEditCreditRequest}
               />
             )}
             {currentModal === "reportCreditsModal" && (
@@ -827,6 +833,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 creditRequestCode={creditRequestCode}
                 businessManagerCode={businessManagerCode}
+                availableEditCreditRequest={availableEditCreditRequest}
               />
             )}
             {currentModal === "extraPayments" && (
@@ -839,6 +846,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 creditRequestCode={creditRequestCode}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
+                availableEditCreditRequest={availableEditCreditRequest}
               />
             )}
             {openModal === "IncomeModalEdit" && (
