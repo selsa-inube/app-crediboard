@@ -294,7 +294,7 @@ function BoardLayout() {
         await patchChangeAnchorToCreditRequest(
           businessUnitPublicCode,
           businessManagerCode,
-          userAccount,
+          eventData.user.identificationDocumentNumber || "",
           creditRequestId,
           isPinned
         );

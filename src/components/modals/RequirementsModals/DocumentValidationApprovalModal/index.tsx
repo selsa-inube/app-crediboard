@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
   Textarea,
+  Textfield,
   useFlag,
 } from "@inubekit/inubekit";
 
@@ -76,6 +77,13 @@ export function DocumentValidationApprovalModal(
   const [fileName, setFileName] = useState<string | null>(null);
 
   const { addFlag } = useFlag();
+
+  const getOptionLabel = (options: typeof optionsAnswer, value: string) => {
+    const option = options?.find(
+      (opt) => opt.id === value || opt.value === value
+    );
+    return option?.label || option?.value || value;
+  };
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
@@ -169,6 +177,17 @@ export function DocumentValidationApprovalModal(
       }
     },
   });
+
+  useEffect(() => {
+    if (optionsAnswer && optionsAnswer.length === 1) {
+      const singleOption = optionsAnswer[0];
+      const optionValue = singleOption.id || singleOption.value;
+      if (!formik.values.answer && optionValue) {
+        formik.setFieldValue("answer", optionValue);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -306,18 +325,30 @@ export function DocumentValidationApprovalModal(
             {approvalsConfig.newDocument}
           </Button>
         </Fieldset>
-        <Select
-          name="answer"
-          id="answer"
-          options={optionsAnswer}
-          label={approvalsConfig.answer}
-          placeholder={approvalsConfig.answerPlaceHoleder}
-          value={formik.values.answer}
-          onChange={(name, value) => formik.setFieldValue(name, value)}
-          onBlur={formik.handleBlur}
-          size="compact"
-          fullwidth
-        />
+        {optionsAnswer && optionsAnswer.length === 1 ? (
+          <Textfield
+            name="answer"
+            id="answer"
+            label={approvalsConfig.answer}
+            value={getOptionLabel(optionsAnswer, formik.values.answer)}
+            disabled
+            size="compact"
+            fullwidth
+          />
+        ) : (
+          <Select
+            name="answer"
+            id="answer"
+            options={optionsAnswer}
+            label={approvalsConfig.answer}
+            placeholder={approvalsConfig.answerPlaceHoleder}
+            value={formik.values.answer}
+            onChange={(name, value) => formik.setFieldValue(name, value)}
+            onBlur={formik.handleBlur}
+            size="compact"
+            fullwidth
+          />
+        )}
         <Textarea
           id="observations"
           name="observations"

@@ -1,6 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdOutlineInfo } from "react-icons/md";
-import { Button, Icon, IOption, Select, Stack, Text } from "@inubekit/inubekit";
+import {
+  Button,
+  Icon,
+  IOption,
+  Select,
+  Stack,
+  Text,
+  Textfield,
+} from "@inubekit/inubekit";
 
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { privilegeCrediboard } from "@config/privilege";
@@ -22,6 +30,7 @@ interface IIncomeBorrowersModalProps {
   handleChange: (name: string, newValue: string) => void;
   setOpenModal: (modal: string) => void;
 }
+
 export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
   const {
     borrowersProspect,
@@ -44,6 +53,29 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
+
+  const getOptionLabel = (options: IOption[], value: string) => {
+    const option = options?.find(
+      (opt) => opt.id === value || opt.value === value
+    );
+    return option?.label || option?.value || value;
+  };
+
+  useEffect(() => {
+    if (
+      borrowerOptions &&
+      borrowerOptions.length === 1 &&
+      selectedIndex === -1
+    ) {
+      const singleOption = borrowerOptions[0];
+      const optionValue = singleOption.id || singleOption.value;
+      if (optionValue) {
+        handleChange("borrower", optionValue);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [borrowerOptions, selectedIndex]);
+
   const handleInfo = () => {
     setIsModalOpen(true);
   };
@@ -74,16 +106,31 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
             width="100%"
             gap="16px"
           >
-            <Select
-              label="Deudor"
-              id="borrower"
-              name="borrower"
-              options={borrowerOptions}
-              value={borrowerOptions[selectedIndex]?.value}
-              onChange={handleChange}
-              fullwidth={isMobile}
-              size="compact"
-            />
+            {borrowerOptions && borrowerOptions.length === 1 ? (
+              <Textfield
+                label="Deudor"
+                id="borrower"
+                name="borrower"
+                value={getOptionLabel(
+                  borrowerOptions,
+                  borrowerOptions[selectedIndex]?.value
+                )}
+                disabled
+                fullwidth={isMobile}
+                size="compact"
+              />
+            ) : (
+              <Select
+                label="Deudor"
+                id="borrower"
+                name="borrower"
+                options={borrowerOptions}
+                value={borrowerOptions[selectedIndex]?.value}
+                onChange={handleChange}
+                fullwidth={isMobile}
+                size="compact"
+              />
+            )}
             <Stack alignItems="center" justifyContent="center" gap="2px">
               <Button
                 onClick={handleEditClick}

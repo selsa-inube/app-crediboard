@@ -3,42 +3,46 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IRemoveCreditProduct } from "@services/creditRequest/query/types";
-import { IProspect } from "@services/prospect/types";
 
-export const RemoveCreditProduct = async (
+import { IPayment } from "./types";
+import { mapCreditPaymentsApiToEntities } from "./mappers";
+
+const getCreditPayments = async (
+  userIdentification: string,
   businessUnitPublicCode: string,
-  userName: string,
-  payload: IRemoveCreditProduct
-): Promise<IProspect | undefined> => {
+  businessManagerCode: string,
+): Promise<IPayment[] | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+      const queryParams = new URLSearchParams({
+        customerCode: userIdentification,
+      });
+
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "RemoveCreditProduct",
+          "X-Action": "SearchAllPortfolioObligationPayment",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": userName,
+          "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${
+          environment.VITE_ICLIENT_QUERY_PROCESS_SERVICE
+        }/portfolio-obligations/payment?${queryParams.toString()}`,
         options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return [];
       }
 
       const data = await res.json();
@@ -51,7 +55,11 @@ export const RemoveCreditProduct = async (
         };
       }
 
-      return data;
+      const normalizedCreditPayments = Array.isArray(data)
+        ? mapCreditPaymentsApiToEntities(data)
+        : [];
+
+      return normalizedCreditPayments;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -61,9 +69,11 @@ export const RemoveCreditProduct = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar el producto de credito.",
+          "Todos los intentos fallaron. No se pudo obtener el portafolio de obligaciones.",
         );
       }
     }
   }
 };
+
+export { getCreditPayments };

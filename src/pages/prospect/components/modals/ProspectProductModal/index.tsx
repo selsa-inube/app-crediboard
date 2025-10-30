@@ -74,6 +74,11 @@ interface IRuleDecision {
   effectiveFrom?: string;
   validUntil?: string;
 }
+interface SelectOption {
+  id: string;
+  value: string;
+  label: string;
+}
 
 function EditProductModal(props: EditProductModalProps) {
   const {
@@ -118,14 +123,12 @@ function EditProductModal(props: EditProductModalProps) {
 
   const [loanTermError, setLoanTermError] = useState<string>("");
   const [amortizationTypesList, setAmortizationTypesList] = useState<
-    { id: string; value: string; label: string }[]
+    SelectOption[]
   >([]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
   const [interestRateError, setInterestRateError] = useState<string>("");
-  const [rateTypesList, setRateTypesList] = useState<
-    { id: string; value: string; label: string }[]
-  >([]);
+  const [rateTypesList, setRateTypesList] = useState<SelectOption[]>([]);
   const [isLoadingRateTypes, setIsLoadingRateTypes] = useState(false);
 
   const isMobile = useMediaQuery("(max-width: 550px)");

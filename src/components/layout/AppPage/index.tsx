@@ -42,10 +42,10 @@ import {
 } from "./styles";
 import { emptyNoveltiesConfig } from "./config/errorNovelties";
 
-const renderLogo = (imgUrl: string) => {
+const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
   return (
-    <StyledContentImg to="/">
-      <StyledLogo src={imgUrl} />
+    <StyledContentImg to="/" >
+      <StyledLogo src={imgUrl}  onTheFooter={onTheFooter} />
     </StyledContentImg>
   );
 };
@@ -332,7 +332,7 @@ function AppPage() {
             <Outlet />
           </StyledMain>
           <StyledFooter>
-            {renderLogo(eventData.businessManager.urlBrand)}
+            {renderLogo(eventData.businessManager.urlBrand, true)}
           </StyledFooter>
         </StyledContainer>
       </Grid>
