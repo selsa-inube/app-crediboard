@@ -3,31 +3,34 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IRemoveCreditProduct } from "@services/creditRequest/query/types";
-import { IProspect } from "@services/prospect/types";
+import { IConsolidatedCredit } from "../types";
 
-export const RemoveCreditProduct = async (
+export const updateConsolidatedCredits = async (
   businessUnitPublicCode: string,
-  userName: string,
-  payload: IRemoveCreditProduct
-): Promise<IProspect | undefined> => {
+  creditRequestCode: string,
+  payload: IConsolidatedCredit[],
+  businessManagerCode: string
+): Promise<IConsolidatedCredit[] | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+      const body = JSON.stringify({
+        creditRequestCode: creditRequestCode,
+        consolidatedCredits: payload,
+      });
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "RemoveCreditProduct",
+          "X-Action": "UpdateConsolidatedCredits",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": userName,
+          "X-User-Name": businessManagerCode
         },
-        body: JSON.stringify(payload),
         signal: controller.signal,
+        body,
       };
 
       const res = await fetch(
@@ -38,7 +41,7 @@ export const RemoveCreditProduct = async (
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -51,7 +54,7 @@ export const RemoveCreditProduct = async (
         };
       }
 
-      return data;
+      return data.consolidatedCredits;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -61,9 +64,11 @@ export const RemoveCreditProduct = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar el producto de credito.",
+          "Todos los intentos fallaron. No se pudo actualizar la información de créditos consolidados.",
         );
       }
     }
   }
+
+  return null;
 };
