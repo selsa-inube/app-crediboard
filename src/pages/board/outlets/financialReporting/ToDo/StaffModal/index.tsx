@@ -18,9 +18,10 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IToDo } from "@services/creditRequest/query/types";
 import { ICommercialManagerAndAnalyst } from "@services/staff/types";
 import { ICreditRequests } from "@services/creditRequest/command/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { changeUsersByCreditRequest } from "./utils";
-import { txtFlags } from "../config";
+import { txtFlags, errorMessages } from "../config";
 
 export interface StaffModalProps {
   commercialManager: string;
@@ -70,7 +71,11 @@ export function StaffModal(props: StaffModalProps) {
     analyst: "",
   });
   const isMobile = useMediaQuery("(max-width: 700px)");
+
   const [showModal, setShowModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const validationSchema = Yup.object().shape({
     commercialManager: Yup.string(),
     analyst: Yup.string(),
@@ -108,7 +113,7 @@ export function StaffModal(props: StaffModalProps) {
       setSelectedAnalyst(selected);
     }
   };
- 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -237,12 +242,8 @@ export function StaffModal(props: StaffModalProps) {
         duration: 5000,
       });
     } catch (error) {
-      addFlag({
-        title: textFlagsUsers.titleError,
-        description: textFlagsUsers.descriptionError,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setErrorMessage(errorMessages.patchChangeUsersByCreditRequest.description);
+      setErrorModal(true);
     } finally {
       if (onCloseModal) onCloseModal();
       handleToggleModal();
@@ -278,88 +279,101 @@ export function StaffModal(props: StaffModalProps) {
   const hasSingleAnalyst = options.analyst.length === 1;
 
   return (
-    <Formik
-      initialValues={initialValues}
-      enableReinitialize
-      validationSchema={validationSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        onSubmit?.(values);
-        setSubmitting(false);
-      }}
-    >
-      {({ setFieldValue, values }) => (
-        <Form>
-          <BaseModal
-            title={title}
-            handleNext={handleCreditRequests}
-            width={isMobile ? "280px" : "500px"}
-            handleBack={onCloseModal}
-            handleClose={onCloseModal}
-            portalId={portalId}
-            nextButton={buttonText}
-          >
-            <Stack direction="column" gap="24px">
-              {hasSingleCommercialManager ? (
-                <Input
-                  name="commercialManager"
-                  id="commercialManager"
-                  label="Gestor Comercial"
-                  value={options.commercialManager[0]?.label || ""}
-                  fullwidth
-                  disabled
-                />
-              ) : (
-                <Select
-                  name="commercialManager"
-                  id="commercialManager"
-                  label="Gestor Comercial"
-                  placeholder={
-                    options.commercialManager.length > 0
-                      ? "Selecciona una opción"
-                      : "No hay gestores disponibles"
-                  }
-                  options={options.commercialManager}
-                  onChange={(name, value) =>
-                    handleCommercialManagerChange(name, value, setFieldValue)
-                  }
-                  value={values.commercialManager}
-                  fullwidth
-                  disabled={options.commercialManager.length === 0}
-                />
-              )}
+    <>
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        validationSchema={validationSchema}
+        onSubmit={(values, { setSubmitting }) => {
+          onSubmit?.(values);
+          setSubmitting(false);
+        }}
+      >
+        {({ setFieldValue, values }) => (
+          <Form>
+            <BaseModal
+              title={title}
+              handleNext={handleCreditRequests}
+              width={isMobile ? "280px" : "500px"}
+              handleBack={onCloseModal}
+              handleClose={onCloseModal}
+              portalId={portalId}
+              nextButton={buttonText}
+            >
+              <Stack direction="column" gap="24px">
+                {hasSingleCommercialManager ? (
+                  <Input
+                    name="commercialManager"
+                    id="commercialManager"
+                    label="Gestor Comercial"
+                    value={options.commercialManager[0]?.label || ""}
+                    fullwidth
+                    disabled
+                  />
+                ) : (
+                  <Select
+                    name="commercialManager"
+                    id="commercialManager"
+                    label="Gestor Comercial"
+                    placeholder={
+                      options.commercialManager.length > 0
+                        ? "Selecciona una opción"
+                        : "No hay gestores disponibles"
+                    }
+                    options={options.commercialManager}
+                    onChange={(name, value) =>
+                      handleCommercialManagerChange(name, value, setFieldValue)
+                    }
+                    value={values.commercialManager}
+                    fullwidth
+                    disabled={options.commercialManager.length === 0}
+                  />
+                )}
 
-              {hasSingleAnalyst ? (
-                <Input
-                  name="analyst"
-                  id="analyst"
-                  label="Analista"
-                  value={options.analyst[0]?.label || ""}
-                  fullwidth
-                  disabled
-                />
-              ) : (
-                <Select
-                  name="analyst"
-                  id="analyst"
-                  label="Analista"
-                  placeholder={
-                    options.analyst.length > 0
-                      ? "Selecciona una opción"
-                      : "No hay analistas disponibles"
-                  }
-                  options={options.analyst}
-                  onChange={(name, value) =>
-                    handleAnalystChange(name, value, setFieldValue)
-                  }
-                  value={values.analyst}
-                  fullwidth
-                  disabled={options.analyst.length === 0}
-                />
-              )}
-            </Stack>
-          </BaseModal>
-        </Form>
-      )}
-    </Formik>
+                {hasSingleAnalyst ? (
+                  <Input
+                    name="analyst"
+                    id="analyst"
+                    label="Analista"
+                    value={options.analyst[0]?.label || ""}
+                    fullwidth
+                    disabled
+                  />
+                ) : (
+                  <Select
+                    name="analyst"
+                    id="analyst"
+                    label="Analista"
+                    placeholder={
+                      options.analyst.length > 0
+                        ? "Selecciona una opción"
+                        : "No hay analistas disponibles"
+                    }
+                    options={options.analyst}
+                    onChange={(name, value) =>
+                      handleAnalystChange(name, value, setFieldValue)
+                    }
+                    value={values.analyst}
+                    fullwidth
+                    disabled={options.analyst.length === 0}
+                  />
+                )}
+              </Stack>
+            </BaseModal>
+          </Form>
+        )}
+      </Formik>
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
+    </>
   );
 }

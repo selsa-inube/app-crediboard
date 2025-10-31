@@ -24,6 +24,7 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { privilegeCrediboard } from "@config/privilege";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { usePagination } from "./utils";
 import { dataReport, ROWS_PER_PAGE } from "./config";
@@ -62,6 +63,9 @@ interface UIProps {
   gotEndPage: boolean;
   showDeleteModal: boolean;
   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  errorMessage?: string;
+  errorModal?: boolean;
 }
 
 export const TableFinancialObligationsUI = ({
@@ -82,6 +86,9 @@ export const TableFinancialObligationsUI = ({
   gotEndPage,
   showDeleteModal,
   setShowDeleteModal,
+  setErrorModal,
+  errorModal,
+  errorMessage
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(
@@ -411,6 +418,17 @@ export const TableFinancialObligationsUI = ({
           isMobile={isMobile}
         />
       )}
+      {
+        errorModal && setErrorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false);
+            }}
+          />
+        )
+      }
     </>
   );
 };

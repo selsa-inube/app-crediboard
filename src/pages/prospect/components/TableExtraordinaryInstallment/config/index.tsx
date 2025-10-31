@@ -36,4 +36,10 @@ export const dataTableExtraordinaryInstallment = {
   cancel: "Cancelar",
 };
 
+export const messageError = {
+  removeExtraordinaryInstallments: {
+    description: "Error no se pudo eliminar los Pagos Extras."
+  }
+}
+
 export const pageLength = 5;

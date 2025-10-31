@@ -11,7 +11,6 @@ import {
   Th,
   Thead,
   Tr,
-  useFlag,
 } from "@inubekit/inubekit";
 
 import { ActionMobile } from "@components/feedback/ActionMobile";
@@ -20,7 +19,7 @@ import { formatPrimaryDate } from "@utils/formatData/date";
 import { IProspect } from "@services/prospect/types";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
-import { TextLabels } from "@components/modals/ExtraordinaryPaymentModal/config";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { Detail } from "./Detail";
 import {
@@ -28,6 +27,7 @@ import {
   rowsVisbleMobile,
   rowsActions,
   dataTableExtraordinaryInstallment,
+  messageError
 } from "./config";
 import { removeExtraordinaryInstallment } from "./utils";
 
@@ -40,8 +40,8 @@ export interface TableExtraordinaryInstallmentProps {
   refreshKey?: number;
   id?: string;
   setSentData?:
-    | React.Dispatch<React.SetStateAction<IExtraordinaryInstallments | null>>
-    | undefined;
+  | React.Dispatch<React.SetStateAction<IExtraordinaryInstallments | null>>
+  | undefined;
   creditRequestCode?: string | undefined;
   availableEditCreditRequest?: boolean;
 }
@@ -101,14 +101,15 @@ export const TableExtraordinaryInstallment = (
 
   const [loading, setLoading] = useState(true);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const visbleHeaders = isMobile
     ? headers.filter((header) => rowsVisbleMobile.includes(header.key))
     : headers;
- 
+
   let visbleActions = isMobile
     ? rowsActions.filter((action) => rowsVisbleMobile.includes(action.key))
     : rowsActions;
@@ -131,12 +132,12 @@ export const TableExtraordinaryInstallment = (
         (product) =>
           Array.isArray(product.extraordinaryInstallments)
             ? product.extraordinaryInstallments.map((installment) => ({
-                id: `${product.creditProductCode},${installment.installmentDate},${installment.paymentChannelAbbreviatedName}`,
-                datePayment: installment.installmentDate,
-                value: installment.installmentAmount,
-                paymentMethod: installment.paymentChannelAbbreviatedName,
-                creditProductCode: product.creditProductCode,
-              }))
+              id: `${product.creditProductCode},${installment.installmentDate},${installment.paymentChannelAbbreviatedName}`,
+              datePayment: installment.installmentDate,
+              value: installment.installmentAmount,
+              paymentMethod: installment.paymentChannelAbbreviatedName,
+              creditProductCode: product.creditProductCode,
+            }))
             : []
       );
       const installmentsByUniqueKey = extraordinaryInstallmentsFlat.reduce(
@@ -215,12 +216,8 @@ export const TableExtraordinaryInstallment = (
       const description =
         code + (err?.message || "") + (err?.data?.description || "");
 
-      addFlag({
-        title: TextLabels.titleError,
-        description,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setErrorMessage(`${messageError.removeExtraordinaryInstallments.description} ${description}`);
+      setErrorModal(true);
     }
   };
   return (
@@ -357,6 +354,17 @@ export const TableExtraordinaryInstallment = (
           TextDelete={dataTableExtraordinaryInstallment.content}
         />
       )}
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
     </Table>
   );
 };

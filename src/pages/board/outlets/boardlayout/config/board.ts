@@ -13,13 +13,13 @@ interface SelectConfigProps {
   fullwidth: boolean;
 }
 
-type BoardColumn = {
+export type TBoardColumn = {
   id: string;
   value: string;
   sectionBackground: SectionBackground;
 };
 
-const boardColumns: BoardColumn[] = [
+const boardColumns: TBoardColumn[] = [
   {
     id: "GESTION_COMERCIAL",
     value: "Gestión Comercial",

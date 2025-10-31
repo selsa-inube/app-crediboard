@@ -206,6 +206,15 @@ export const errorMessages = {
     description:
       "Hubo un problema al cargar los datos. Por favor, inténtelo de nuevo más tarde.",
     button: "Volver a intentar",
+  },
+  lateRejectionOfACreditRequest: {
+    description: "Error no se pudo rechazar la solicitud de crédito."
+  },
+  registerNewsToACreditRequest: {
+    description: "Error al enviar el mensaje. Intente nuevamente."
+  },
+  searchAllUnreadErrorsById: {
+    description: "Error no se pudo traer los errores no leídos."
   }
 };
 

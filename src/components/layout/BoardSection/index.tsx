@@ -21,7 +21,7 @@ import {
 import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
-import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
+import { ErrorModal } from "@components/modals/ErrorModal";
 import { getCanUnpin } from "@utils/configRules/permissions";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
@@ -30,7 +30,7 @@ import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmta
 
 import { StyledBoardSection, StyledCollapseIcon } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
-import { configOption } from "./config";
+import { configOption, messagesError } from "./config";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -74,6 +74,8 @@ function BoardSection(props: BoardSectionProps) {
   const [currentOrientation, setCurrentOrientation] =
     useState<SectionOrientation>(orientation);
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const flagMessage = useRef(false);
 
@@ -148,12 +150,8 @@ function BoardSection(props: BoardSectionProps) {
         businessManagerCode
       );
     } catch (error) {
-      addFlag({
-        title: textFlagsUsers.titleError,
-        description: JSON.stringify(error),
-        appearance: "danger",
-        duration: 5000,
-      });
+      setErrorMessage(messagesError.changeTracesToReadById.description);
+      setErrorModal(true);
     }
   };
 
@@ -176,8 +174,8 @@ function BoardSection(props: BoardSectionProps) {
 
           const extractedValues = Array.isArray(values)
             ? values
-                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-                .filter((val): val is string => val !== "")
+              .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+              .filter((val): val is string => val !== "")
             : [];
 
           setValueRule((prev) => {
@@ -348,6 +346,17 @@ function BoardSection(props: BoardSectionProps) {
           )}
         </Stack>
       )}
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
     </StyledBoardSection>
   );
 }

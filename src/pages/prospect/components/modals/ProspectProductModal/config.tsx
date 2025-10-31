@@ -304,6 +304,12 @@ export const fieldPlaceholders = {
   interestRate: "Ingrese la tasa",
 };
 
+export const errorMessages = {
+  updateCreditProduct: {
+    description: "Error no se pudo actualizar el producto de credito."
+  }
+}
+
 export {
   creditLineOptions,
   paymentMethodOptions,

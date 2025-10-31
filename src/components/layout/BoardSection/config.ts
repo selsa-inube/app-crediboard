@@ -11,3 +11,9 @@ export const totalsKeyBySection = {
   guaranteeFormalization: "Formalización Garantías",
   requirementsFulfillment: "Cumplimiento Requisitos",
 };
+
+export const messagesError = {
+  changeTracesToReadById: {
+    description:"Error al hacer el cambiar trazas",
+  }
+};

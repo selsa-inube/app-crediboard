@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useMediaQuery, useFlag } from "@inubekit/inubekit";
+import { useMediaQuery } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
 import { updateProspect } from "@services/prospect/updateProspect";
@@ -52,6 +52,8 @@ export const TableFinancialObligations = (
   const [gotEndPage, setGotEndPage] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isProcessingObligation, setIsProcessingObligation] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleEdit = useCallback((debtor: ITableFinancialObligationsProps, index: number) => {
     let balance = "";
@@ -154,17 +156,6 @@ export const TableFinancialObligations = (
     return newContentTable;
   }, [dataProspect, selectedBorrower?.value]);
 
-  const { addFlag } = useFlag();
-
-  const handleFlag = useCallback((description: string, typeError: string) => {
-    addFlag({
-      title: typeError,
-      description: description,
-      appearance: "danger",
-      duration: 5000,
-    });
-  }, [addFlag]);
-
   const findFinancialObligation = useCallback((indexPropertyOnTable: number, borrowerIdentificationNumber: string) => {
     let indexBorrower = 0;
     let indexPropertyFinancialObligation = -1;
@@ -221,7 +212,8 @@ export const TableFinancialObligations = (
 
     } catch (error) {
       setIsProcessingObligation(false);
-      handleFlag(errorMessages.save.description, errorMessages.save.title);
+      setErrorMessage(errorMessages.save.description);
+      setErrorModal(true);
     } finally {
       setIsProcessingObligation(false);
     }
@@ -234,7 +226,6 @@ export const TableFinancialObligations = (
     borrowersListFinancialObligation.length,
     setGotEndPage,
     setDataProspect,
-    handleFlag,
     onObligationProcessed
   ]);
 
@@ -244,15 +235,15 @@ export const TableFinancialObligations = (
     }
   }, [newObligation, saveNewObligation, isProcessingObligation]);
 
-    useEffect(() => {
-      const timeout = setTimeout(() => setLoading(false), 500);
+  useEffect(() => {
+    const timeout = setTimeout(() => setLoading(false), 500);
 
-      getSearchProspectByCode(businessUnitPublicCode || "", businessManagerCode || "",creditRequestCode || "").then((res) => {
-        setDataProspect([res]);
-      });
+    getSearchProspectByCode(businessUnitPublicCode || "", businessManagerCode || "", creditRequestCode || "").then((res) => {
+      setDataProspect([res]);
+    });
 
-      return () => clearTimeout(timeout);
-    }, [businessUnitPublicCode, creditRequestCode, businessManagerCode]);
+    return () => clearTimeout(timeout);
+  }, [businessUnitPublicCode, creditRequestCode, businessManagerCode]);
 
   useEffect(() => {
     const financialObligationBorrowers = filterListBorrowersFinancialObligation();
@@ -398,9 +389,10 @@ export const TableFinancialObligations = (
 
       setIsModalOpenEdit(false);
     } catch (error) {
-      handleFlag(errorMessages.update.description, errorMessages.update.title);
+      setErrorMessage(errorMessages.update.description);
+      setErrorModal(true);
     }
-  }, [editFinancialObligation, businessUnitPublicCode, businessManagerCode, handleFlag]);
+  }, [editFinancialObligation, businessUnitPublicCode, businessManagerCode]);
 
   return (
     <TableFinancialObligationsUI
@@ -421,6 +413,9 @@ export const TableFinancialObligations = (
       setGotEndPage={setGotEndPage}
       showDeleteModal={showDeleteModal}
       setShowDeleteModal={setShowDeleteModal}
+      setErrorModal={setErrorModal}
+      errorMessage={errorMessage}
+      errorModal={errorModal}
     />
   );
 };
