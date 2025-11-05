@@ -23,7 +23,7 @@ import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectB
 import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { FinancialObligationModal } from "../financialObligationModal";
-import { defaultOptionsSelect, configSelect, errorMessages } from "./config";
+import { defaultOptionsSelect, configSelect, errorMessages, restoreData } from "./config";
 
 export interface ReportCreditsModalProps {
   handleClose: () => void;
@@ -308,7 +308,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               >
                 <Stack gap="2px">
                   <Button
-                    children="Restablecer"
+                    children={restoreData.label}
                     iconBefore={<MdCached />}
                     fullwidth={isMobile}
                     variant="outlined"
@@ -372,13 +372,13 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             )}
             {openModal && (
               <FinancialObligationModal
-                title="Agregar obligaciones"
+                title={dataReport.addObligations}
                 onCloseModal={handleCloseModal}
                 onConfirm={(values) =>
                   handleSaveNewObligation(values as IFinancialObligation)
                 }
                 initialValues={initialValues}
-                confirmButtonText="Agregar"
+                confirmButtonText={dataReport.add}
               />
             )}
           </Stack>

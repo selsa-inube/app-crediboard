@@ -224,3 +224,7 @@ export const labelsAndValuesShare = {
   text: "Reporte Comercial para compartir",
 
 }
+
+export const editCreditApplicationLabels = {
+    placeholderExample: "Ej.: Escribe tu mensaje"
+}

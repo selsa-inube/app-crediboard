@@ -48,6 +48,7 @@ export const configSelect = {
 
 export const restoreData = {
   justification: "Restore financial obligations",
+  label: "Restaurar",
 };
 
 export const errorMessages = {

@@ -29,6 +29,7 @@ import {
   errorObserver,
   errorMessages,
   optionButtons,
+  editCreditApplicationLabels
 } from "../config";
 import { DetailsModal } from "./DetailsModal";
 
@@ -266,7 +267,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   />
                   <Textfield
                     id="text"
-                    placeholder="Ej.: Escribe tu mensaje"
+                    placeholder={editCreditApplicationLabels.placeholderExample}
                     fullwidth
                     value={newMessage}
                     onChange={handleInputChange}
