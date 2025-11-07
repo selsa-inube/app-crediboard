@@ -22,6 +22,7 @@ import { getCreditPayments } from "@services/portfolioObligation/SearchAllPortfo
 import { IPayment } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
 import { paymentOptionValues } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
 import { updateConsolidatedCredits } from "@services/prospect/updateConsolidatedCredits";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { ScrollableContainer } from "./styles";
 import { ModalConfig, feedback } from "./config";
@@ -69,6 +70,8 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
     IPayment[]
   >([]);
   const [totalCollected, setTotalCollected] = useState(0);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const initialConsolidatedCreditsRef = useRef<IConsolidatedCredit[]>([]);
   const isInitializedRef = useRef(false);
@@ -126,16 +129,11 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       const description = code + err?.message + (err?.data?.description || "");
 
-      addFlag({
-        title: feedback.fetchDataObligationPayment.title,
-        description:
-          description || feedback.fetchDataObligationPayment.description,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setErrorMessage(`${feedback.fetchDataObligationPayment.description} ${description}`);
+      setErrorModal(true);
     }
   };
-  
+
   useEffect(() => {
     fetchDataObligationPayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -258,9 +256,9 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
     if (!isInitializedRef.current) {
       return false;
     }
-    
+
     const initialCredits = initialConsolidatedCreditsRef.current;
-    
+
     if (initialCredits.length === 0 && consolidatedCredits.length === 0) {
       return false;
     }
@@ -345,203 +343,204 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
         duration: 4000,
       });
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      addFlag({
-        title: feedback.handleSaveChanges.error.title,
-        description:
-          description || feedback.handleSaveChanges.error.description,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setConsolidatedCredits([]);
+      setErrorMessage(feedback.handleSaveChanges.error.description);
+      setErrorModal(true);
     }
   };
 
   return (
-    <BaseModal
-      title={ModalConfig.title}
-      nextButton={ModalConfig.keep}
-      disabledNext={!hasRealChanges}
-      handleNext={handleSaveChanges}
-      width={isMobile ? "300px" : "640px"}
-      height={isMobile ? "auto" : "688px"}
-      handleBack={handleClose}
-      finalDivider={true}
-      backButton={ModalConfig.close}
-    >
-      <Stack direction="column" gap="24px">
-        <Stack
-          direction={isMobile ? "column" : "row"}
-          alignItems="center"
-          justifyContent={isMobile ? "center" : "space-between"}
-          gap={isMobile ? "10px" : "0px"}
-        >
-          <Stack direction="column">
-            <Text
-              appearance="primary"
-              weight="bold"
-              type="headline"
-              size="large"
-            >
-              ${currencyFormat(totalCollected, false)}
-            </Text>
-            <Text type="body" appearance="gray" size="small" textAlign="center">
-              {ModalConfig.collectedValue}
-            </Text>
-          </Stack>
-          <Stack direction="row" gap="8px" justifyContent="center" alignContent="center" alignItems="center">
-            <Button
-              onClick={() => setEditOpen(false)}
-              variant="outlined"
-              appearance="primary"
-              spacing="wide"
-              fullwidth={isMobile}
-              disabled={!editOpen || availableEditCreditRequest}
-            >
-              {ModalConfig.edit}
-            </Button>
-            {availableEditCreditRequest && (
-              <Icon
-                icon={<MdOutlineInfo />}
-                appearance="primary"
-                size="16px"
-                cursorHover
-                onClick={handleInfo}
-              />
-            )}
-          </Stack>
-        </Stack>
-        <Divider dashed />
-        <ScrollableContainer>
+    <>
+      <BaseModal
+        title={ModalConfig.title}
+        nextButton={ModalConfig.keep}
+        disabledNext={!hasRealChanges}
+        handleNext={handleSaveChanges}
+        width={isMobile ? "300px" : "640px"}
+        height={isMobile ? "auto" : "688px"}
+        handleBack={handleClose}
+        finalDivider={true}
+        backButton={ModalConfig.close}
+      >
+        <Stack direction="column" gap="24px">
           <Stack
-            direction="column"
-            gap="16px"
-            height={isMobile ? "auto" : "420px"}
-            padding="0px 0px 0px 2px"
+            direction={isMobile ? "column" : "row"}
+            alignItems="center"
+            justifyContent={isMobile ? "center" : "space-between"}
+            gap={isMobile ? "10px" : "0px"}
           >
-            {editOpen ? (
-              <>
-                <Text type="body" appearance="gray" size="small" weight="bold">
-                  {ModalConfig.selectedText}
-                </Text>
-                <Grid
-                  autoRows="auto"
-                  templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
-                  gap="16px"
-                  width="100%"
-                >
-                  {consolidatedCredits.map((item) => (
-                    <InvestmentCreditCard
-                      key={item.creditProductCode}
-                      codeValue={item.creditProductCode}
-                      expired={ModalConfig.terminated}
-                      expiredValue={item.consolidatedAmount}
-                      title={item.lineOfCreditDescription}
-                    />
-                  ))}
-                </Grid>
-              </>
-            ) : (
-              <>
-                <Text type="body" appearance="gray" size="small" weight="bold">
-                  {ModalConfig.newObligations}
-                </Text>
-                <Grid
-                  autoRows="auto"
-                  templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
-                  gap="16px"
-                  width="100%"
-                >
-                  {sortedObligationPayment.map((creditData) => (
-                    <CardConsolidatedCredit
-                      key={creditData.id}
-                      title={creditData.title}
-                      code={creditData.id}
-                      expiredValue={
-                        creditData.options.find(
-                          (option) =>
-                            option.label === paymentOptionValues.EXPIREDVALUE
-                        )?.value ?? 0
-                      }
-                      nextDueDate={
-                        creditData.options.find(
-                          (option) =>
-                            option.label === paymentOptionValues.NEXTVALUE
-                        )?.value ?? 0
-                      }
-                      fullPayment={
-                        creditData.options.find(
-                          (option) =>
-                            option.label === paymentOptionValues.TOTALVALUE
-                        )?.value ?? 0
-                      }
-                      date={
-                        creditData.options.find((option) => option.date)
-                          ?.date ?? new Date()
-                      }
-                      onUpdateTotal={(
-                        oldValue,
-                        newValue,
-                        label,
-                        title,
-                        selectedDate,
-                        code = creditData.id
-                      ) =>
-                        handleUpdateTotal(
+            <Stack direction="column">
+              <Text
+                appearance="primary"
+                weight="bold"
+                type="headline"
+                size="large"
+              >
+                ${currencyFormat(totalCollected, false)}
+              </Text>
+              <Text type="body" appearance="gray" size="small" textAlign="center">
+                {ModalConfig.collectedValue}
+              </Text>
+            </Stack>
+            <Stack direction="row" gap="8px" justifyContent="center" alignContent="center" alignItems="center">
+              <Button
+                onClick={() => setEditOpen(false)}
+                variant="outlined"
+                appearance="primary"
+                spacing="wide"
+                fullwidth={isMobile}
+                disabled={!editOpen || availableEditCreditRequest}
+              >
+                {ModalConfig.edit}
+              </Button>
+              {availableEditCreditRequest && (
+                <Icon
+                  icon={<MdOutlineInfo />}
+                  appearance="primary"
+                  size="16px"
+                  cursorHover
+                  onClick={handleInfo}
+                />
+              )}
+            </Stack>
+          </Stack>
+          <Divider dashed />
+          <ScrollableContainer>
+            <Stack
+              direction="column"
+              gap="16px"
+              height={isMobile ? "auto" : "420px"}
+              padding="0px 0px 0px 2px"
+            >
+              {editOpen ? (
+                <>
+                  <Text type="body" appearance="gray" size="small" weight="bold">
+                    {ModalConfig.selectedText}
+                  </Text>
+                  <Grid
+                    autoRows="auto"
+                    templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
+                    gap="16px"
+                    width="100%"
+                  >
+                    {consolidatedCredits.map((item) => (
+                      <InvestmentCreditCard
+                        key={item.creditProductCode}
+                        codeValue={item.creditProductCode}
+                        expired={ModalConfig.terminated}
+                        expiredValue={item.consolidatedAmount}
+                        title={item.lineOfCreditDescription}
+                      />
+                    ))}
+                  </Grid>
+                </>
+              ) : (
+                <>
+                  <Text type="body" appearance="gray" size="small" weight="bold">
+                    {ModalConfig.newObligations}
+                  </Text>
+                  <Grid
+                    autoRows="auto"
+                    templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
+                    gap="16px"
+                    width="100%"
+                  >
+                    {sortedObligationPayment.map((creditData) => (
+                      <CardConsolidatedCredit
+                        key={creditData.id}
+                        title={creditData.title}
+                        code={creditData.id}
+                        expiredValue={
+                          creditData.options.find(
+                            (option) =>
+                              option.label === paymentOptionValues.EXPIREDVALUE
+                          )?.value ?? 0
+                        }
+                        nextDueDate={
+                          creditData.options.find(
+                            (option) =>
+                              option.label === paymentOptionValues.NEXTVALUE
+                          )?.value ?? 0
+                        }
+                        fullPayment={
+                          creditData.options.find(
+                            (option) =>
+                              option.label === paymentOptionValues.TOTALVALUE
+                          )?.value ?? 0
+                        }
+                        date={
+                          creditData.options.find((option) => option.date)
+                            ?.date ?? new Date()
+                        }
+                        onUpdateTotal={(
                           oldValue,
                           newValue,
                           label,
-                          code || creditData.id,
-                          creditData.id,
                           title,
                           selectedDate,
-                        )
-                      }
-                      initialValue={
-                        initialValuesMap[creditData.id]?.amount || 0
-                      }
-                      isMobile={isMobile}
-                      initialType={initialValuesMap[creditData.id]?.type}
-                      handleRemoveCredit={handleRemoveCredit}
-                    />
-                  ))}
-                </Grid>
-                <Text type="body" appearance="gray" size="small" weight="bold">
-                  {ModalConfig.selectedText}
-                </Text>
-                <Grid
-                  autoRows="auto"
-                  templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
-                  gap="16px"
-                  width="100%"
-                >
-                  {consolidatedCredits.length === 0 && (
-                    <Text type="body" size="small">
-                      {ModalConfig.noSelected}
-                    </Text>
-                  )}
-                  {consolidatedCredits.map((item) => (
-                    <InvestmentCreditCard
-                      key={item.creditProductCode}
-                      codeValue={item.creditProductCode}
-                      expired={ModalConfig.terminated}
-                      expiredValue={item.consolidatedAmount}
-                      title={item.lineOfCreditDescription}
-                    />
-                  ))}
-                </Grid>
-              </>
-            )}
-          </Stack>
-        </ScrollableContainer>
-      </Stack>
-    </BaseModal>
+                          code = creditData.id
+                        ) =>
+                          handleUpdateTotal(
+                            oldValue,
+                            newValue,
+                            label,
+                            code || creditData.id,
+                            creditData.id,
+                            title,
+                            selectedDate,
+                          )
+                        }
+                        initialValue={
+                          initialValuesMap[creditData.id]?.amount || 0
+                        }
+                        isMobile={isMobile}
+                        initialType={initialValuesMap[creditData.id]?.type}
+                        handleRemoveCredit={handleRemoveCredit}
+                      />
+                    ))}
+                  </Grid>
+                  <Text type="body" appearance="gray" size="small" weight="bold">
+                    {ModalConfig.selectedText}
+                  </Text>
+                  <Grid
+                    autoRows="auto"
+                    templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
+                    gap="16px"
+                    width="100%"
+                  >
+                    {consolidatedCredits.length === 0 && (
+                      <Text type="body" size="small">
+                        {ModalConfig.noSelected}
+                      </Text>
+                    )}
+                    {consolidatedCredits.map((item) => (
+                      <InvestmentCreditCard
+                        key={item.creditProductCode}
+                        codeValue={item.creditProductCode}
+                        expired={ModalConfig.terminated}
+                        expiredValue={item.consolidatedAmount}
+                        title={item.lineOfCreditDescription}
+                      />
+                    ))}
+                  </Grid>
+                </>
+              )}
+            </Stack>
+          </ScrollableContainer>
+        </Stack>
+      </BaseModal>
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false);
+              handleClose();
+            }}
+          />
+        )
+      }
+    </>
   );
 }

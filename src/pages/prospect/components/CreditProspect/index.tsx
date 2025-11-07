@@ -47,7 +47,7 @@ import { updateProspect } from "@services/prospect/updateProspect";
 import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { AddProductModal } from "../AddProductModal";
-import { dataCreditProspect } from "./config";
+import { dataCreditProspect, errorMessage } from "./config";
 import { StyledPrint } from "./styles";
 import { IIncomeSources } from "./types";
 import { CreditLimitModal } from "../modals/CreditLimitModal";
@@ -213,9 +213,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           prevProspects.map((prospect) =>
             prospect.prospectId === prospectData.prospectId
               ? {
-                  ...prospect,
-                  clientManagerObservation: editedApprovalObservations,
-                }
+                ...prospect,
+                clientManagerObservation: editedApprovalObservations,
+              }
               : prospect
           )
         );
@@ -283,25 +283,8 @@ export function CreditProspect(props: ICreditProspectProps) {
       handleCloseModal();
     } catch (error) {
       handleCloseModal();
-
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      let description = code + err?.message + (err?.data?.description || "");
-      if (err?.data?.description === dataCreditProspect.errorCreditProduct) {
-        description = dataCreditProspect.errorCreditDescription;
-      }
-
-      addFlag({
-        title: "Error",
-        description,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setMessageError(`${errorMessage.addCreditProduct.description}.`);
+      setShowErrorModal(true);
     }
   };
 
@@ -369,24 +352,24 @@ export function CreditProspect(props: ICreditProspectProps) {
                 Array.isArray(product.extraordinaryInstallments) &&
                 product.extraordinaryInstallments.length > 0
             ) && (
-              <Button
-                type="button"
-                appearance="primary"
-                spacing="compact"
-                variant="outlined"
-                iconBefore={
-                  <Icon
-                    icon={<MdOutlinePayments />}
-                    appearance="primary"
-                    size="18px"
-                    spacing="narrow"
-                  />
-                }
-                onClick={() => handleOpenModal("extraPayments")}
-              >
-                {dataCreditProspect.extraPayment}
-              </Button>
-            )}
+                <Button
+                  type="button"
+                  appearance="primary"
+                  spacing="compact"
+                  variant="outlined"
+                  iconBefore={
+                    <Icon
+                      icon={<MdOutlinePayments />}
+                      appearance="primary"
+                      size="18px"
+                      spacing="narrow"
+                    />
+                  }
+                  onClick={() => handleOpenModal("extraPayments")}
+                >
+                  {dataCreditProspect.extraPayment}
+                </Button>
+              )}
             <StyledVerticalDivider />
             <StyledContainerIcon>
               {showPrint && (
@@ -444,7 +427,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         <CreditLimitModal
           handleClose={handleCloseModal}
           isMobile={isMobile}
-          setRequestValue={setRequestValue || (() => {})}
+          setRequestValue={setRequestValue || (() => { })}
           requestValue={requestValue}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
@@ -511,7 +494,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           handleCloseModal={handleCloseModal}
           handleChange={handleChange}
           setOpenModal={setOpenModal}
-           availableEditCreditRequest={availableEditCreditRequest}
+          availableEditCreditRequest={availableEditCreditRequest}
         />
       )}
       {openModal === "IncomeModalEdit" && (
@@ -525,7 +508,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           businessUnitPublicCode={businessUnitPublicCode}
           creditRequestCode={creditRequestCode}
           businessManagerCode={businessManagerCode}
-         
+
         />
       )}
       {currentModal === "reportCreditsModal" && (
@@ -539,7 +522,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           businessUnitPublicCode={businessUnitPublicCode}
           creditRequestCode={creditRequestCode || ""}
           businessManagerCode={businessManagerCode}
-           availableEditCreditRequest={availableEditCreditRequest}
+          availableEditCreditRequest={availableEditCreditRequest}
         />
       )}
       {currentModal === "extraPayments" && (

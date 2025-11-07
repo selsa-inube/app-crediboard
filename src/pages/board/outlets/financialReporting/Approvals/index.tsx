@@ -6,7 +6,6 @@ import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
 import { BaseModal } from "@components/modals/baseModal";
 import { IEntries } from "@components/data/TableBoard/types";
-import { TextAreaModal } from "@components/modals/TextAreaModal";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { getNotificationOnApprovals } from "@services/creditRequest/command/notificationOnApprovals";
@@ -24,6 +23,7 @@ import {
   getActionsMobileIcon,
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
 import { AppContext } from "@context/AppContext";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { errorObserver, errorMessages } from "../config";
 import { dataInfoApprovals } from "./config";
@@ -40,7 +40,8 @@ export const Approvals = (props: IApprovalsProps) => {
   const [loading, setLoading] = useState(true);
   const [approvalsEntries, setApprovalsEntries] = useState<IEntries[]>([]);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [selectedData, setSelectedData] = useState<IEntries | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { addFlag } = useFlag();
@@ -114,7 +115,7 @@ export const Approvals = (props: IApprovalsProps) => {
   };
 
   const handleErrorClickBound = (data: IEntries) => {
-    handleErrorClick(data, setSelectedData, setShowErrorModal);
+    handleErrorClick(data, setSelectedData, setErrorModal);
   };
 
   const desktopActionsConfig = !isMobile
@@ -123,10 +124,10 @@ export const Approvals = (props: IApprovalsProps) => {
 
   const mobileActions = !isMobile
     ? getMobileActionsConfig(
-        actionMobileApprovals,
-        handleNotificationClickBound,
-        handleErrorClickBound
-      )
+      actionMobileApprovals,
+      handleNotificationClickBound,
+      handleErrorClickBound
+    )
     : [];
 
   const handleSubmit = async () => {
@@ -148,14 +149,10 @@ export const Approvals = (props: IApprovalsProps) => {
       });
       setShowNotificationModal(false);
     } catch (error) {
-      console.error("Error:", error);
-      addFlag({
-        title: dataInfoApprovals.error,
-        description: `${error}.`,
-        appearance: "danger",
-        duration: 5000,
-      });
       setShowNotificationModal(false);
+
+      setErrorMessage(dataInfoApprovals.error);
+      setErrorModal(true);
     }
   };
 
@@ -212,19 +209,19 @@ export const Approvals = (props: IApprovalsProps) => {
           <Text>{dataInfoApprovals.notifyModal}</Text>
         </BaseModal>
       )}
-      {showErrorModal && selectedData && (
-        <TextAreaModal
-          title="Error"
-          buttonText="Entendido"
-          inputLabel="Descripción del error"
-          inputPlaceholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nec mollis felis. Donec eget sapien viverra, tincidunt ex ut, ornare nisi. Nulla eget fermentum velit."
-          readOnly
-          disableTextarea={true}
-          onCloseModal={() => setShowErrorModal(false)}
-          handleNext={() => setShowErrorModal(false)}
-          showSecundaryButton={false}
-        />
-      )}
+
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
+
     </>
   );
 };

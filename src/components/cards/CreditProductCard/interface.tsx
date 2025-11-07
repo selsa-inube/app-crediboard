@@ -51,7 +51,7 @@ function CreditProductCardUI(props: CreditProductCardProps) {
           <Text size="small" appearance="gray" weight="bold">
             {CREDIT_PRODUCT_TEXTS.interestRate}
           </Text>
-          <Text>{interestRate} %</Text>
+          <Text>{interestRate.toFixed(2)} %</Text>
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">

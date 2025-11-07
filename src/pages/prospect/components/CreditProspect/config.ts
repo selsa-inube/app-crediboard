@@ -17,3 +17,9 @@ export const dataCreditProspect = {
   errorCreditDescription: "El producto de crédito ya existe en el prospecto",
   errorCreditProduct: "Credit product already exists in prospect",
 };
+
+export const errorMessage = {
+  addCreditProduct: {
+    description: "Error al agregar el producto de crédito. ",
+  }
+};

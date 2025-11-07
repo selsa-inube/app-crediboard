@@ -93,8 +93,6 @@ export const FinancialReporting = () => {
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
 
   const [showGuarantee, setShowGuarantee] = useState(false);
 
@@ -126,6 +124,9 @@ export const FinancialReporting = () => {
   const [showModal, setShowModal] = useState(false);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
@@ -211,7 +212,7 @@ export const FinancialReporting = () => {
       const pdfBlob = await generatePDF(
         dataCommercialManagementRef,
         labelsAndValuesShare.titleOnPdf,
-        setShowErrorModal,
+        setErrorModal,
         true
       );
 
@@ -224,8 +225,8 @@ export const FinancialReporting = () => {
       }
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-      setMessageError(errorMessages.share.description);
-      setShowErrorModal(true);
+      setErrorMessage(errorMessages.share.description);
+      setErrorModal(true);
     }
   };
 
@@ -246,8 +247,8 @@ export const FinancialReporting = () => {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-      setMessageError(errorMessages.share.description);
-      setShowErrorModal(true);
+      setErrorMessage(errorMessages.share.description);
+      setErrorModal(true);
     }
   };
 
@@ -310,13 +311,8 @@ export const FinancialReporting = () => {
         duration: 5000,
       });
     } catch (error) {
-      console.error(error);
-      addFlag({
-        title: textFlagsReject.titleError,
-        description: textFlagsReject.descriptionError,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setErrorMessage(errorMessages.lateRejectionOfACreditRequest.description);
+      setErrorModal(true);
     }
   };
 
@@ -335,8 +331,6 @@ export const FinancialReporting = () => {
           businessManagerCode,
           user?.id ?? ""
         );
-      } catch (error) {
-        setMessageError(errorMessages.getData.description);
       } finally {
         handleToggleModal();
       }
@@ -367,7 +361,8 @@ export const FinancialReporting = () => {
         setErrorsService(mappedErrors);
       }
     } catch (error) {
-      console.error("Error fetching unread errors", error);
+      setErrorModal(true);
+      setErrorMessage(errorMessages.searchAllUnreadErrorsById.description);
     }
   };
 
@@ -413,10 +408,6 @@ export const FinancialReporting = () => {
   };
   const handleToggleModal = () => {
     setShowModal(!showModal);
-  };
-
-  const handleErrorModal = () => {
-    setShowErrorModal(false);
   };
 
   const handleSharePdfModal = () => {
@@ -620,8 +611,12 @@ export const FinancialReporting = () => {
           )}
         </Stack>
       </StyledMarginPrint>
-      {showErrorModal && (
-        <ErrorModal message={messageError} handleClose={handleErrorModal} />
+      {errorModal && (
+        <ErrorModal
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false)
+          }} />
       )}
       {pdfState.isGenerating && (
         <Blanket>

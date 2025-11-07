@@ -12,3 +12,9 @@ export const dataAddSeriesModal = {
   placeHolderAmount: "Número de pagos",
   placeHolderValue: "Valor a pagar",
 };
+
+export const errorMessages = {
+  saveExtraordinaryInstallments: {
+    description: "Error no se pudo guardar los Pagos Extras."
+  }
+}

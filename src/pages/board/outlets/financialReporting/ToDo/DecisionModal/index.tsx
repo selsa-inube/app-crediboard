@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, FieldProps, FormikHelpers } from "formik";
 import * as Yup from "yup";
@@ -13,6 +14,7 @@ import {
 import { BaseModal } from "@components/modals/baseModal";
 import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   IMakeDecisionsCreditRequestWithXAction,
@@ -64,12 +66,15 @@ export function DecisionModal(props: DecisionModalProps) {
 
   const isMobile = useMediaQuery("(max-width: 700px)");
 
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const validationSchema = Yup.object().shape({
     textarea: readOnly
       ? Yup.string()
       : Yup.string()
-          .max(maxLength, validationMessages.maxCharacters(maxLength))
-          .required(validationMessages.required),
+        .max(maxLength, validationMessages.maxCharacters(maxLength))
+        .required(validationMessages.required),
   });
 
   const handleNonCompliantDocuments = (formValues: FormValues): string[] => {
@@ -129,20 +134,12 @@ export function DecisionModal(props: DecisionModalProps) {
           duration: txtFlags.duration,
         });
       } else {
-        addFlag({
-          title: txtFlags.titleWarning,
-          description: `${txtFlags.descriptionWarning} ${response?.statusServices}`,
-          appearance: "warning",
-          duration: txtFlags.duration,
-        });
+        setErrorMessage(txtFlags.descriptionWarning);
+        setErrorModal(true);
       }
     } catch (error) {
-      addFlag({
-        title: txtFlags.titleDanger,
-        description: txtFlags.descriptionDanger,
-        appearance: "danger",
-        duration: txtFlags.duration,
-      });
+      setErrorMessage(txtFlags.descriptionDanger);
+      setErrorModal(true);
     } finally {
       onCloseModal?.();
     }
@@ -154,94 +151,107 @@ export function DecisionModal(props: DecisionModalProps) {
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={(
-        values: FormValues,
-        { setSubmitting }: FormikHelpers<FormValues>
-      ) => {
-        onSubmit?.(values);
-        setSubmitting(false);
-        sendData(values);
-      }}
-    >
-      {({ errors, touched, handleSubmit, values }) => (
-        <BaseModal
-          title={title}
-          nextButton={buttonText}
-          backButton={secondaryButtonText}
-          handleNext={handleSubmit}
-          handleBack={onSecondaryButtonClick}
-          handleClose={onCloseModal}
-          disabledNext={
-            data.makeDecision.humanDecision && values.textarea ? false : true
-          }
-          width={isMobile ? "290px" : "500px"}
-        >
-          <Form>
-            <StyledContainerTextField $smallScreen={isMobile}>
-              <Stack direction="column">
-                <Text type="label" size="large" appearance="dark" weight="bold">
-                  {txtOthersOptions.txtDecision}
-                </Text>
-                <Text
-                  type="body"
-                  size="medium"
-                  appearance="gray"
-                  weight="normal"
-                  textAlign="justify"
-                >
-                  {data.humanDecisionDescription
-                    ? data.humanDecisionDescription
-                    : txtOthersOptions.txtNoSelect}
-                </Text>
-              </Stack>
-            </StyledContainerTextField>
-            {data.makeDecision.humanDecision === "SOPORTES_INVALIDOS" && (
-              <Stack margin="0 0 20px 0">
-                <Field name="selectedOptions">
-                  {({ field, form }: FieldProps) => (
-                    <Checkpicker
-                      id="selectedOptions"
-                      name="selectedOptions"
-                      options={soporteInvalidOptions}
-                      values={field.name}
-                      onChange={(name, values) =>
-                        form.setFieldValue(name, values)
-                      }
-                      fullwidth
-                    />
-                  )}
-                </Field>
-              </Stack>
-            )}
-            <Field name="textarea">
-              {({ field, form: { setFieldTouched } }: FieldProps) => (
-                <Textarea
-                  {...field}
-                  id="textarea"
-                  label={inputLabel}
-                  placeholder={inputPlaceholder}
-                  maxLength={maxLength}
-                  status={
-                    touched.textarea && errors.textarea ? "invalid" : "pending"
-                  }
-                  message={
-                    touched.textarea && errors.textarea ? errors.textarea : ""
-                  }
-                  fullwidth
-                  disabled={disableTextarea}
-                  onBlur={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setFieldTouched("textarea");
-                    field.onBlur(e);
-                  }}
-                />
+    <>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={(
+          values: FormValues,
+          { setSubmitting }: FormikHelpers<FormValues>
+        ) => {
+          onSubmit?.(values);
+          setSubmitting(false);
+          sendData(values);
+        }}
+      >
+        {({ errors, touched, handleSubmit, values }) => (
+          <BaseModal
+            title={title}
+            nextButton={buttonText}
+            backButton={secondaryButtonText}
+            handleNext={handleSubmit}
+            handleBack={onSecondaryButtonClick}
+            handleClose={onCloseModal}
+            disabledNext={
+              data.makeDecision.humanDecision && values.textarea ? false : true
+            }
+            width={isMobile ? "290px" : "500px"}
+          >
+            <Form>
+              <StyledContainerTextField $smallScreen={isMobile}>
+                <Stack direction="column">
+                  <Text type="label" size="large" appearance="dark" weight="bold">
+                    {txtOthersOptions.txtDecision}
+                  </Text>
+                  <Text
+                    type="body"
+                    size="medium"
+                    appearance="gray"
+                    weight="normal"
+                    textAlign="justify"
+                  >
+                    {data.humanDecisionDescription
+                      ? data.humanDecisionDescription
+                      : txtOthersOptions.txtNoSelect}
+                  </Text>
+                </Stack>
+              </StyledContainerTextField>
+              {data.makeDecision.humanDecision === "SOPORTES_INVALIDOS" && (
+                <Stack margin="0 0 20px 0">
+                  <Field name="selectedOptions">
+                    {({ field, form }: FieldProps) => (
+                      <Checkpicker
+                        id="selectedOptions"
+                        name="selectedOptions"
+                        options={soporteInvalidOptions}
+                        values={field.name}
+                        onChange={(name, values) =>
+                          form.setFieldValue(name, values)
+                        }
+                        fullwidth
+                      />
+                    )}
+                  </Field>
+                </Stack>
               )}
-            </Field>
-          </Form>
-        </BaseModal>
-      )}
-    </Formik>
+              <Field name="textarea">
+                {({ field, form: { setFieldTouched } }: FieldProps) => (
+                  <Textarea
+                    {...field}
+                    id="textarea"
+                    label={inputLabel}
+                    placeholder={inputPlaceholder}
+                    maxLength={maxLength}
+                    status={
+                      touched.textarea && errors.textarea ? "invalid" : "pending"
+                    }
+                    message={
+                      touched.textarea && errors.textarea ? errors.textarea : ""
+                    }
+                    fullwidth
+                    disabled={disableTextarea}
+                    onBlur={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setFieldTouched("textarea");
+                      field.onBlur(e);
+                    }}
+                  />
+                )}
+              </Field>
+            </Form>
+          </BaseModal>
+        )}
+      </Formik>
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
+    </>
   );
 }

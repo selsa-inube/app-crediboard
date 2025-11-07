@@ -369,6 +369,10 @@ export const Requirements = (props: IRequirementsProps) => {
   const { disabledButton: canAddRequirements } = useValidateUseCase({
     useCase: getUseCaseValue("canAddRequirements"),
   });
+  
+  let hasEntriesRequirements = []
+  hasEntriesRequirements = dataRequirements.filter(item => item.entriesRequirements.length >=1)
+
   return (
     <>
       <Fieldset
@@ -383,7 +387,7 @@ export const Requirements = (props: IRequirementsProps) => {
         hasError={error ? true : false}
         hasOverflow={isMobile}
       >
-        {error ? (
+        {hasEntriesRequirements.length === 0 ? (
           <ItemNotFound
             image={userNotFound}
             title={errorMessages.Requirements.title}

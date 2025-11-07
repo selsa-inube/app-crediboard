@@ -21,6 +21,7 @@ import { ListModal } from "@components/modals/ListModal";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { ChatContent, SkeletonContainer, SkeletonLine } from "./styles";
 import {
@@ -28,6 +29,7 @@ import {
   errorObserver,
   errorMessages,
   optionButtons,
+  editCreditApplicationLabels
 } from "../config";
 import { DetailsModal } from "./DetailsModal";
 
@@ -53,6 +55,9 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     { id: string; name: string; file: File }[]
   >([]);
   const [showAttachments, setShowAttachments] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -154,8 +159,8 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       setTraces((prev) => [...prev, newTrace]);
       setNewMessage("");
     } catch (error) {
-      console.error("Error al enviar el mensaje:", error);
-      notifyError("Error al enviar el mensaje. Intente nuevamente.");
+      setErrorMessage(errorMessages.registerNewsToACreditRequest.description);
+      setErrorModal(true);
     }
   };
 
@@ -224,103 +229,116 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     useCase: getUseCaseValue("editCreditApplication"),
   });
   return (
-    <Fieldset
-      title={errorMessages.Management.titleCard}
-      heightFieldset="340px"
-      aspectRatio={isMobile ? "auto" : "1"}
-      hasError={error ? true : false}
-    >
-      {!creditRequest || error ? (
-        <ItemNotFound
-          image={userNotFound}
-          title={errorMessages.Management.title}
-          description={errorMessages.Management.description}
-          buttonDescription={errorMessages.Management.button}
-          onRetry={handleRetry}
-        />
-      ) : (
-        <>
-          <Stack direction="column" height={!isMobile ? "100%" : "292px"}>
-            <ChatContent ref={chatContentRef}>
-              {loading ? renderSkeletons() : renderMessages()}
-            </ChatContent>
-            <form>
-              <Stack
-                alignItems="center"
-                direction="row"
-                gap="16px"
-                margin="2px 4px"
-              >
-                <Icon
-                  appearance="primary"
-                  cursorHover
-                  size="24px"
-                  icon={<MdAttachFile />}
-                  onClick={() => setShowAttachments(true)}
-                  disabled={editCreditApplication}
-                />
-                <Textfield
-                  id="text"
-                  placeholder="Ej.: Escribe tu mensaje"
-                  fullwidth
-                  value={newMessage}
-                  onChange={handleInputChange}
-                  disabled={editCreditApplication}
-                />
-                <Icon
-                  appearance="primary"
-                  cursorHover
-                  size="24px"
-                  icon={<MdOutlineSend />}
-                  onClick={handleFormSubmit}
-                  disabled={editCreditApplication}
-                />
-                {editCreditApplication ? (
+    <>
+      <Fieldset
+        title={errorMessages.Management.titleCard}
+        heightFieldset="340px"
+        aspectRatio={isMobile ? "auto" : "1"}
+        hasError={error ? true : false}
+      >
+        {!creditRequest || error ? (
+          <ItemNotFound
+            image={userNotFound}
+            title={errorMessages.Management.title}
+            description={errorMessages.Management.description}
+            buttonDescription={errorMessages.Management.button}
+            onRetry={handleRetry}
+          />
+        ) : (
+          <>
+            <Stack direction="column" height={!isMobile ? "100%" : "292px"}>
+              <ChatContent ref={chatContentRef}>
+                {loading ? renderSkeletons() : renderMessages()}
+              </ChatContent>
+              <form>
+                <Stack
+                  alignItems="center"
+                  direction="row"
+                  gap="16px"
+                  margin="2px 4px"
+                >
                   <Icon
-                    icon={<MdOutlineInfo />}
                     appearance="primary"
-                    size="16px"
                     cursorHover
-                    onClick={handleInfo}
+                    size="24px"
+                    icon={<MdAttachFile />}
+                    onClick={() => setShowAttachments(true)}
+                    disabled={editCreditApplication}
                   />
-                ) : (
-                  <></>
-                )}
-              </Stack>
-            </form>
-          </Stack>
-          {detailsOpen && selectedMessage && (
-            <DetailsModal
-              data={selectedMessage as ITraceType}
-              handleClose={() => setDetailsOpen(false)}
-            />
-          )}
-          {showAttachments && (
-            <ListModal
-              title="Adjuntar"
-              handleClose={() => setShowAttachments(false)}
-              optionButtons={optionButtons}
-              buttonLabel="Guardar"
-              id={creditRequest.creditRequestId}
-              isViewing={false}
-              uploadedFiles={uploadedFiles}
-              setUploadedFiles={setUploadedFiles}
-            />
-          )}
-          {isModalOpen ? (
-            <InfoModal
-              onClose={handleInfoModalClose}
-              title={privilegeCrediboard.title}
-              subtitle={privilegeCrediboard.subtitle}
-              description={privilegeCrediboard.description}
-              nextButtonText={privilegeCrediboard.nextButtonText}
-              isMobile={isMobile}
-            />
-          ) : (
-            <></>
-          )}
-        </>
-      )}
-    </Fieldset>
+                  <Textfield
+                    id="text"
+                    placeholder={editCreditApplicationLabels.placeholderExample}
+                    fullwidth
+                    value={newMessage}
+                    onChange={handleInputChange}
+                    disabled={editCreditApplication}
+                  />
+                  <Icon
+                    appearance="primary"
+                    cursorHover
+                    size="24px"
+                    icon={<MdOutlineSend />}
+                    onClick={handleFormSubmit}
+                    disabled={editCreditApplication}
+                  />
+                  {editCreditApplication ? (
+                    <Icon
+                      icon={<MdOutlineInfo />}
+                      appearance="primary"
+                      size="16px"
+                      cursorHover
+                      onClick={handleInfo}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </Stack>
+              </form>
+            </Stack>
+            {detailsOpen && selectedMessage && (
+              <DetailsModal
+                data={selectedMessage as ITraceType}
+                handleClose={() => setDetailsOpen(false)}
+              />
+            )}
+            {showAttachments && (
+              <ListModal
+                title="Adjuntar"
+                handleClose={() => setShowAttachments(false)}
+                optionButtons={optionButtons}
+                buttonLabel="Guardar"
+                id={creditRequest.creditRequestId}
+                isViewing={false}
+                uploadedFiles={uploadedFiles}
+                setUploadedFiles={setUploadedFiles}
+              />
+            )}
+            {isModalOpen ? (
+              <InfoModal
+                onClose={handleInfoModalClose}
+                title={privilegeCrediboard.title}
+                subtitle={privilegeCrediboard.subtitle}
+                description={privilegeCrediboard.description}
+                nextButtonText={privilegeCrediboard.nextButtonText}
+                isMobile={isMobile}
+              />
+            ) : (
+              <></>
+            )}
+          </>
+        )}
+      </Fieldset>
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
+    </>
   );
 };

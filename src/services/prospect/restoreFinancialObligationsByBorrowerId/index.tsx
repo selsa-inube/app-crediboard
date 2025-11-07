@@ -56,7 +56,7 @@ export const restoreFinancialObligationsByBorrowerId = async (
           data,
         };
       }
-      console.log("data:  ",data);
+
       return data;
     } catch (error) {
       if (attempt === maxRetries) {

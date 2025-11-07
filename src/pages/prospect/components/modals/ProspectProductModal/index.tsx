@@ -29,6 +29,7 @@ import { IProspect } from "@services/prospect/types";
 import { updateCreditProduct } from "@services/prospect/updateCreditProduct";
 import { validateIncrement } from "@services/prospect/validateIncrement";
 import { IValidateIncrementRequest } from "@services/prospect/validateIncrement/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -43,7 +44,8 @@ import {
   validationMessages,
   REPAYMENT_STRUCTURES_WITH_INCREMENT,
   fieldLabels,
-  fieldPlaceholders
+  fieldPlaceholders, 
+  errorMessages
 } from "./config";
 
 interface EditProductModalProps {
@@ -130,6 +132,8 @@ function EditProductModal(props: EditProductModalProps) {
   const [interestRateError, setInterestRateError] = useState<string>("");
   const [rateTypesList, setRateTypesList] = useState<SelectOption[]>([]);
   const [isLoadingRateTypes, setIsLoadingRateTypes] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const isMobile = useMediaQuery("(max-width: 550px)");
 
@@ -539,7 +543,8 @@ function EditProductModal(props: EditProductModalProps) {
 
       onCloseModal();
     } catch (error) {
-      console.error("Error al agregar producto:", error);
+      setErrorMessage(errorMessages.updateCreditProduct.description);
+      setErrorModal(true);
     }
   };
 
@@ -647,248 +652,261 @@ function EditProductModal(props: EditProductModalProps) {
     incrementValuesStatus = undefined;
   }
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={(
-        values: FormikValues,
-        formikHelpers: FormikHelpers<FormikValues>
-      ) => {
-        handleConfirm(values);
-        formikHelpers.setSubmitting(false);
-      }}
-    >
-      {(formik) => (
-        <BaseModal
-          title={truncateTextToMaxLength(title, 25)}
-          backButton={modalTexts.buttons.cancel}
-          nextButton={confirmButtonText}
-          handleNext={formik.submitForm}
-          handleBack={onCloseModal}
-          disabledNext={
-            /* eslint-disable no-implicit-coercion */
-            !formik.dirty ||
-            !formik.isValid ||
-            !!loanAmountError ||
-            !!loanTermError ||
-            !!interestRateError ||
-            !!incrementError ||
-            isValidatingIncrement ||
-            (showIncrementField && !incrementValue)
-          }
-          iconAfterNext={iconAfter}
-          finalDivider={true}
-          width={isMobile ? "290px" : "500px"}
-        >
-          <ScrollableContainer $smallScreen={isMobile}>
-            <Stack
-              direction="column"
-              gap="24px"
-              width="100%"
-              height={isMobile ? "auto" : "600px"}
-              margin="0px 0px 30px 0"
-            >
-              <Textfield
-                label={modalTexts.labels.creditAmount}
-                name="creditAmount"
-                id="creditAmount"
-                placeholder={modalTexts.placeholders.creditAmount}
-                value={validateCurrencyField("creditAmount", formik, false, "")}
-                status={loanAmountError ? "invalid" : undefined}
-                message={loanAmountError}
-                iconBefore={
-                  <Icon
-                    icon={<MdAttachMoney />}
-                    appearance="success"
-                    size="18px"
-                    spacing="narrow"
-                  />
-                }
-                size="compact"
-                onBlur={formik.handleBlur}
-                onChange={(event) => handleCurrencyChange(formik, event)}
-                fullwidth
-                disabled={isCreditAmountDisabled()}
-              />
-              <Select
-                label={modalTexts.labels.paymentMethod}
-                name="paymentMethod"
-                id="paymentMethod"
-                size="compact"
-                placeholder={modalTexts.placeholders.selectOption}
-                options={paymentMethodsList}
-                onBlur={formik.handleBlur}
-                onChange={(name, value) =>
-                  handleSelectChange(formik, "paymentMethod", name, value)
-                }
-                value={
-                  formik.values.paymentMethod.charAt(0).toUpperCase() +
-                  formik.values.paymentMethod.slice(1)
-                }
-                fullwidth
-                disabled={true}
-              />
-              <Select
-                label={modalTexts.labels.paymentCycle}
-                name="paymentCycle"
-                id="paymentCycle"
-                size="compact"
-                placeholder={modalTexts.placeholders.selectOption}
-                options={paymentCyclesList}
-                onBlur={formik.handleBlur}
-                onChange={(name, value) =>
-                  handleSelectChange(formik, "paymentCycle", name, value)
-                }
-                value={
-                  paymentCycleMap[formik.values.paymentCycle] ||
-                  formik.values.paymentCycle
-                }
-                fullwidth
-                disabled={true}
-              />
-              <Select
-                label={modalTexts.labels.firstPaymentCycle}
-                name="firstPaymentCycle"
-                id="firstPaymentCycle"
-                size="compact"
-                placeholder={modalTexts.placeholders.selectOption}
-                options={firstPaymentCyclesList}
-                onBlur={formik.handleBlur}
-                onChange={(name, value) =>
-                  handleSelectChange(formik, "firstPaymentCycle", name, value)
-                }
-                value={formik.values.firstPaymentCycle}
-                fullwidth
-                disabled={true}
-              />
-              <Select
-                label={modalTexts.labels.termInMonths}
-                name="termInMonths"
-                id="termInMonths"
-                size="compact"
-                placeholder={modalTexts.placeholders.selectOption}
-                options={termInMonthsOptions}
-                onBlur={formik.handleBlur}
-                onChange={(name, value) =>
-                  handleSelectChange(formik, "termInMonths", name, value)
-                }
-                value={formik.values.termInMonths}
-                fullwidth
-                message={loanTermError}
-                invalid={loanTermError ? true : false}
-                disabled={isTermInMonthsDisabled()}
-              />
-              <Select
-                label={modalTexts.labels.amortizationType}
-                name="amortizationType"
-                id="amortizationType"
-                size="compact"
-                placeholder={modalTexts.placeholders.selectOption}
-                options={amortizationTypesList}
-                onBlur={formik.handleBlur}
-                onChange={(name, value) =>
-                  handleAmortizationTypeChange(formik, name, value)
-                }
-                disabled={isLoadingAmortizationTypes}
-                value={formik.values.amortizationType}
-                fullwidth
-              />
-              {showIncrementField && (
+    <>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={(
+          values: FormikValues,
+          formikHelpers: FormikHelpers<FormikValues>
+        ) => {
+          handleConfirm(values);
+          formikHelpers.setSubmitting(false);
+        }}
+      >
+        {(formik) => (
+          <BaseModal
+            title={truncateTextToMaxLength(title, 25)}
+            backButton={modalTexts.buttons.cancel}
+            nextButton={confirmButtonText}
+            handleNext={formik.submitForm}
+            handleBack={onCloseModal}
+            disabledNext={
+              /* eslint-disable no-implicit-coercion */
+              !formik.dirty ||
+              !formik.isValid ||
+              !!loanAmountError ||
+              !!loanTermError ||
+              !!interestRateError ||
+              !!incrementError ||
+              isValidatingIncrement ||
+              (showIncrementField && !incrementValue)
+            }
+            iconAfterNext={iconAfter}
+            finalDivider={true}
+            width={isMobile ? "290px" : "500px"}
+          >
+            <ScrollableContainer $smallScreen={isMobile}>
+              <Stack
+                direction="column"
+                gap="24px"
+                width="100%"
+                height={isMobile ? "auto" : "600px"}
+                margin="0px 0px 30px 0"
+              >
                 <Textfield
-                  label={
-                    incrementType === "value"
-                      ? fieldLabels.incrementValue
-                      : fieldLabels.incrementPercentage
-                  }
-                  name="incrementValue"
-                  id="incrementValue"
-                  placeholder={
-                    incrementType === "value" ? fieldPlaceholders.incrementValue : fieldPlaceholders.incrementPercentage
-                  }
-                  value={incrementValue}
-                  status={incrementValuesStatus}
-                  message={
-                    incrementError ||
-                    (isValidatingIncrement ? validationMessages.incrementValidating : "")
-                  }
+                  label={modalTexts.labels.creditAmount}
+                  name="creditAmount"
+                  id="creditAmount"
+                  placeholder={modalTexts.placeholders.creditAmount}
+                  value={validateCurrencyField("creditAmount", formik, false, "")}
+                  status={loanAmountError ? "invalid" : undefined}
+                  message={loanAmountError}
                   iconBefore={
-                    incrementType === "value" ? (
-                      <Icon
-                        icon={<MdAttachMoney />}
-                        appearance="success"
-                        size="18px"
-                        spacing="narrow"
-                      />
-                    ) : (
-                      <Icon
-                        icon={<MdPercent />}
-                        appearance="dark"
-                        size="18px"
-                        spacing="narrow"
-                      />
-                    )
+                    <Icon
+                      icon={<MdAttachMoney />}
+                      appearance="success"
+                      size="18px"
+                      spacing="narrow"
+                    />
+                  }
+                  size="compact"
+                  onBlur={formik.handleBlur}
+                  onChange={(event) => handleCurrencyChange(formik, event)}
+                  fullwidth
+                  disabled={isCreditAmountDisabled()}
+                />
+                <Select
+                  label={modalTexts.labels.paymentMethod}
+                  name="paymentMethod"
+                  id="paymentMethod"
+                  size="compact"
+                  placeholder={modalTexts.placeholders.selectOption}
+                  options={paymentMethodsList}
+                  onBlur={formik.handleBlur}
+                  onChange={(name, value) =>
+                    handleSelectChange(formik, "paymentMethod", name, value)
+                  }
+                  value={
+                    formik.values.paymentMethod.charAt(0).toUpperCase() +
+                    formik.values.paymentMethod.slice(1)
+                  }
+                  fullwidth
+                  disabled={true}
+                />
+                <Select
+                  label={modalTexts.labels.paymentCycle}
+                  name="paymentCycle"
+                  id="paymentCycle"
+                  size="compact"
+                  placeholder={modalTexts.placeholders.selectOption}
+                  options={paymentCyclesList}
+                  onBlur={formik.handleBlur}
+                  onChange={(name, value) =>
+                    handleSelectChange(formik, "paymentCycle", name, value)
+                  }
+                  value={
+                    paymentCycleMap[formik.values.paymentCycle] ||
+                    formik.values.paymentCycle
+                  }
+                  fullwidth
+                  disabled={true}
+                />
+                <Select
+                  label={modalTexts.labels.firstPaymentCycle}
+                  name="firstPaymentCycle"
+                  id="firstPaymentCycle"
+                  size="compact"
+                  placeholder={modalTexts.placeholders.selectOption}
+                  options={firstPaymentCyclesList}
+                  onBlur={formik.handleBlur}
+                  onChange={(name, value) =>
+                    handleSelectChange(formik, "firstPaymentCycle", name, value)
+                  }
+                  value={formik.values.firstPaymentCycle}
+                  fullwidth
+                  disabled={true}
+                />
+                <Select
+                  label={modalTexts.labels.termInMonths}
+                  name="termInMonths"
+                  id="termInMonths"
+                  size="compact"
+                  placeholder={modalTexts.placeholders.selectOption}
+                  options={termInMonthsOptions}
+                  onBlur={formik.handleBlur}
+                  onChange={(name, value) =>
+                    handleSelectChange(formik, "termInMonths", name, value)
+                  }
+                  value={formik.values.termInMonths}
+                  fullwidth
+                  message={loanTermError}
+                  invalid={loanTermError ? true : false}
+                  disabled={isTermInMonthsDisabled()}
+                />
+                <Select
+                  label={modalTexts.labels.amortizationType}
+                  name="amortizationType"
+                  id="amortizationType"
+                  size="compact"
+                  placeholder={modalTexts.placeholders.selectOption}
+                  options={amortizationTypesList}
+                  onBlur={formik.handleBlur}
+                  onChange={(name, value) =>
+                    handleAmortizationTypeChange(formik, name, value)
+                  }
+                  disabled={isLoadingAmortizationTypes}
+                  value={formik.values.amortizationType}
+                  fullwidth
+                />
+                {showIncrementField && (
+                  <Textfield
+                    label={
+                      incrementType === "value"
+                        ? fieldLabels.incrementValue
+                        : fieldLabels.incrementPercentage
+                    }
+                    name="incrementValue"
+                    id="incrementValue"
+                    placeholder={
+                      incrementType === "value" ? fieldPlaceholders.incrementValue : fieldPlaceholders.incrementPercentage
+                    }
+                    value={incrementValue}
+                    status={incrementValuesStatus}
+                    message={
+                      incrementError ||
+                      (isValidatingIncrement ? validationMessages.incrementValidating : "")
+                    }
+                    iconBefore={
+                      incrementType === "value" ? (
+                        <Icon
+                          icon={<MdAttachMoney />}
+                          appearance="success"
+                          size="18px"
+                          spacing="narrow"
+                        />
+                      ) : (
+                        <Icon
+                          icon={<MdPercent />}
+                          appearance="dark"
+                          size="18px"
+                          spacing="narrow"
+                        />
+                      )
+                    }
+                    type="number"
+                    size="compact"
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setIncrementValue(value);
+
+                      const timeoutId = setTimeout(() => {
+                        validateIncrementValue(value, formik);
+                      }, 500);
+
+                      return () => clearTimeout(timeoutId);
+                    }}
+                    onBlur={() => validateIncrementValue(incrementValue, formik)}
+                    fullwidth
+                  />
+                )}
+                <Textfield
+                  label={modalTexts.labels.interestRate}
+                  name="interestRate"
+                  id="interestRate"
+                  placeholder={modalTexts.placeholders.interestRate}
+                  value={formik.values.interestRate}
+                  iconAfter={
+                    <Icon
+                      icon={<MdPercent />}
+                      appearance="dark"
+                      size="18px"
+                      spacing="narrow"
+                    />
                   }
                   type="number"
                   size="compact"
-                  onChange={(event) => {
-                    const value = event.target.value;
-                    setIncrementValue(value);
-
-                    const timeoutId = setTimeout(() => {
-                      validateIncrementValue(value, formik);
-                    }, 500);
-
-                    return () => clearTimeout(timeoutId);
-                  }}
-                  onBlur={() => validateIncrementValue(incrementValue, formik)}
+                  onBlur={formik.handleBlur}
+                  onChange={(event) =>
+                    handleTextChange(formik, "interestRate", event)
+                  }
                   fullwidth
+                  message={interestRateError}
+                  status={interestRateError ? "invalid" : undefined}
                 />
-              )}
-              <Textfield
-                label={modalTexts.labels.interestRate}
-                name="interestRate"
-                id="interestRate"
-                placeholder={modalTexts.placeholders.interestRate}
-                value={formik.values.interestRate}
-                iconAfter={
-                  <Icon
-                    icon={<MdPercent />}
-                    appearance="dark"
-                    size="18px"
-                    spacing="narrow"
-                  />
-                }
-                type="number"
-                size="compact"
-                onBlur={formik.handleBlur}
-                onChange={(event) =>
-                  handleTextChange(formik, "interestRate", event)
-                }
-                fullwidth
-                message={interestRateError}
-                status={interestRateError ? "invalid" : undefined}
-              />
-              <Select
-                label={modalTexts.labels.rateType}
-                name="rateType"
-                id="rateType"
-                size="compact"
-                placeholder={modalTexts.placeholders.selectOption}
-                options={rateTypesList}
-                onBlur={formik.handleBlur}
-                onChange={(name, value) =>
-                  handleSelectChange(formik, "rateType", name, value)
-                }
-                onFocus={() => handleSelectFocus("rateType")}
-                value={formik.values.rateType}
-                fullwidth
-                disabled={isLoadingRateTypes}
-              />
-            </Stack>
-          </ScrollableContainer>
-        </BaseModal>
-      )}
-    </Formik>
+                <Select
+                  label={modalTexts.labels.rateType}
+                  name="rateType"
+                  id="rateType"
+                  size="compact"
+                  placeholder={modalTexts.placeholders.selectOption}
+                  options={rateTypesList}
+                  onBlur={formik.handleBlur}
+                  onChange={(name, value) =>
+                    handleSelectChange(formik, "rateType", name, value)
+                  }
+                  onFocus={() => handleSelectFocus("rateType")}
+                  value={formik.values.rateType}
+                  fullwidth
+                  disabled={isLoadingRateTypes}
+                />
+              </Stack>
+            </ScrollableContainer>
+          </BaseModal>
+        )}
+      </Formik>
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
+    </>
   );
 }
 

@@ -13,11 +13,13 @@ import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { dataInformationModal } from "./config/board";
 import { BoardLayoutUI } from "./interface";
 import { selectCheckOptions } from "./config/select";
 import { IBoardData } from "./types";
+import { errorMessages } from "./config";
 
 export interface IFilterFormValues {
   assignment: string;
@@ -42,6 +44,7 @@ function BoardLayout() {
 
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1439px)");
 
   const missionName = eventData.user.staff.missionName;
@@ -91,9 +94,9 @@ function BoardLayout() {
           ),
           page === 1
             ? getCreditRequestPinned(
-                businessUnitPublicCode,
-                businessManagerCode
-              )
+              businessUnitPublicCode,
+              businessManagerCode
+            )
             : Promise.resolve([]),
         ]);
 
@@ -251,8 +254,8 @@ function BoardLayout() {
 
           const extractedValues = Array.isArray(values)
             ? values
-                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-                .filter((val): val is string => val !== "")
+              .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+              .filter((val): val is string => val !== "")
             : [];
 
           setValueRule((prev) => {
@@ -305,7 +308,7 @@ function BoardLayout() {
         return;
       }
     } catch (error) {
-      handleFlag(errorData.anchor[0], errorData.anchor[1]);
+      setErrorModal(true);
     }
   };
 
@@ -496,7 +499,7 @@ function BoardLayout() {
         handleRemoveFilter={handleRemoveFilter}
         isMenuOpen={isMenuOpen}
         selectOptions={[]}
-        handleSelectCheckChange={() => {}}
+        handleSelectCheckChange={() => { }}
         closeFilterModal={closeFilterModal}
         filterValues={filterValues}
         shouldCollapseAll={shouldCollapseAll}
@@ -517,6 +520,17 @@ function BoardLayout() {
           </Stack>
         </BaseModal>
       )}
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessages.changeAnchorToCreditRequest.description}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
     </>
   );
 }

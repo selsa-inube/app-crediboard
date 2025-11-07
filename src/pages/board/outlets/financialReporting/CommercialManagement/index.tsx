@@ -54,7 +54,9 @@ import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitM
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
+import { boardColumns } from "@config/pages/board/board";
 
+import { TBoardColumn } from "../../boardlayout/config/board";
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
 import { incomeOptions, menuOptions, tittleOptions } from "./config/config";
@@ -403,7 +405,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               ) || "",
             Leases: parseFloat(
               getPropertyValue(selectedBorrower.borrowerProperties, "Leases") ||
-                "0"
+              "0"
             ),
             Dividends: parseFloat(
               getPropertyValue(
@@ -469,11 +471,21 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
   const availableEditCreditRequest = !(data.stage === "GESTION_COMERCIAL" || data.stage === "VERIFICACION_APROBACION");
 
+  let normalizedStageTitle: TBoardColumn[] | string = boardColumns.filter((item) => {
+    return item.id === data.stage;
+  }) as TBoardColumn[];
+
+  if(normalizedStageTitle[0]) {
+    normalizedStageTitle = normalizedStageTitle[0].value;
+  } else {
+    normalizedStageTitle = "";
+  }
+  
   return (
     <>
       <Fieldset
         title={errorMessages.comercialManagement.titleCard}
-        descriptionTitle={errorMessages.comercialManagement.descriptionCard}
+        descriptionTitle={normalizedStageTitle}
         hasError={!data ? true : false}
       >
         {!data ? (
@@ -526,7 +538,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     <Text type="title" size="small">
                       {data.clientName &&
                         capitalizeFirstLetter(
-                          truncateTextToMaxLength(data.moneyDestinationId, 60)
+                          truncateTextToMaxLength(data.moneyDestinationAbreviatedName, 60)
                         )}
                     </Text>
                   </Stack>
@@ -716,7 +728,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             }
                             onClick={() => handleOpenModal("extraPayments")}
                           >
-                            {tittleOptions.titleExtraPayments} 
+                            {tittleOptions.titleExtraPayments}
                           </Button>
                         )}
                     </Stack>
@@ -802,7 +814,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <CreditLimitModal
                 isMobile={isMobile}
                 handleClose={handleCloseModal}
-                setRequestValue={() => {}}
+                setRequestValue={() => { }}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
                 dataMaximumCreditLimitService={dataMaximumCreditLimitService}
