@@ -37,6 +37,8 @@ export interface IBaseModalProps {
   initialDivider?: boolean;
   finalDivider?: boolean;
   portalId?: string;
+  $height?: string;
+  isSendingData?: boolean
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -61,6 +63,8 @@ export function BaseModal(props: IBaseModalProps) {
     initialDivider = true,
     finalDivider = false,
     portalId = "portal",
+    $height,
+    isSendingData
   } = props;
 
   const node = document.getElementById(portalId ?? "portal");
@@ -70,7 +74,9 @@ export function BaseModal(props: IBaseModalProps) {
 
   return createPortal(
     <Blanket>
-      <StyledContainer>
+      <StyledContainer
+        $height={$height}
+      >
         <Stack
           direction="column"
           padding="24px"
@@ -120,6 +126,7 @@ export function BaseModal(props: IBaseModalProps) {
                 iconBefore={iconBeforeNext}
                 appearance={apparenceNext}
                 variant={variantNext}
+                loading={isSendingData}
               >
                 {nextButton}
               </Button>

@@ -126,7 +126,28 @@ function EditProductModal(props: EditProductModalProps) {
   const [loanTermError, setLoanTermError] = useState<string>("");
   const [amortizationTypesList, setAmortizationTypesList] = useState<
     SelectOption[]
-  >([]);
+  >( [
+  {
+    id: "1",
+    value: "cuota_integral_fija",
+    label: "Cuota integral fija"
+  },
+  {
+    id: "2",
+    value: "abonos_fijos_capital",
+    label: "Abonos fijos a capital"
+  },
+  {
+    id: "3",
+    value: "Pagos valor de incremento",
+    label: "Pagos valor de incremento"
+  },
+  {
+    id: "4",
+    value: "Pagos con porcentaje de incremento",
+    label: "Pagos con porcentaje de incremento"
+  }
+]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
   const [interestRateError, setInterestRateError] = useState<string>("");
@@ -686,7 +707,10 @@ function EditProductModal(props: EditProductModalProps) {
             finalDivider={true}
             width={isMobile ? "290px" : "500px"}
           >
-            <ScrollableContainer $smallScreen={isMobile}>
+            <ScrollableContainer 
+            $smallScreen={isMobile}
+            showIncrementField={showIncrementField}
+            >
               <Stack
                 direction="column"
                 gap="24px"
@@ -795,7 +819,7 @@ function EditProductModal(props: EditProductModalProps) {
                   onChange={(name, value) =>
                     handleAmortizationTypeChange(formik, name, value)
                   }
-                  disabled={isLoadingAmortizationTypes}
+                  /* disabled={isLoadingAmortizationTypes} */
                   value={formik.values.amortizationType}
                   fullwidth
                 />

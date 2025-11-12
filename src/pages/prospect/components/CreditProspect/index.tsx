@@ -59,7 +59,7 @@ interface ICreditProspectProps {
   borrowersProspect: IProspect | undefined;
   borrowerOptions: IOption[];
   selectedIndex: number;
-  dataProspect: IProspect[];
+  dataProspect: IProspect;
   selectedBorrower: IProspect["borrowers"][number] | undefined;
   incomeData: Record<string, IIncomeSources>;
   isMobile: boolean;
@@ -120,6 +120,8 @@ export function CreditProspect(props: ICreditProspectProps) {
     useState("");
   const [messageError, setMessageError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [isSendingData, setIsSendingData] = useState(false);
+
   const { addFlag } = useFlag();
 
   const handleOpenModal = (modalName: string) => {
@@ -255,7 +257,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           },
         ],
       };
-
+      setIsSendingData(true);
       const updatedProspect = await addCreditProductService(
         businessUnitPublicCode,
         businessManagerCode,
@@ -281,9 +283,10 @@ export function CreditProspect(props: ICreditProspectProps) {
       }
 
       handleCloseModal();
+      setIsSendingData(false);
     } catch (error) {
-      handleCloseModal();
-      setMessageError(`${errorMessage.addCreditProduct.description}.`);
+      setIsSendingData(false);
+      setMessageError(`${errorMessage.addCreditProduct.description}`);
       setShowErrorModal(true);
     }
   };
@@ -292,12 +295,12 @@ export function CreditProspect(props: ICreditProspectProps) {
     print();
   };
 
-  const borrower = dataProspect?.[0]?.borrowers?.[0];
+  const borrower = dataProspect?.borrowers?.[0];
 
   const dataMaximumCreditLimitService = {
     identificationDocumentType: borrower?.borrowerIdentificationType || "",
     identificationDocumentNumber: borrower?.borrowerIdentificationNumber || "",
-    moneyDestination: dataProspect?.[0]?.moneyDestinationAbbreviatedName || "",
+    moneyDestination: dataProspect?.moneyDestinationAbbreviatedName || "",
     primaryIncomeType:
       borrower?.borrowerProperties?.find(
         (property) => property.propertyName === "PeriodicSalary"
@@ -315,7 +318,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     interestRate: "",
     rateType: "",
   };
-
+  console.log("prospectData: ", prospectData);
   return (
     <Stack direction="column" gap="24px">
       {!isMobile && (
@@ -412,7 +415,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         <CardCommercialManagement
           id={creditRequestCode!}
           dataRef={dataCommercialManagementRef}
-          moneyDestination={dataProspect?.[0]?.moneyDestinationAbbreviatedName}
+          moneyDestination={dataProspect?.moneyDestinationAbbreviatedName}
           businessManagerCode={businessManagerCode}
           clientIdentificationNumber={
             dataMaximumCreditLimitService.identificationDocumentNumber
@@ -469,8 +472,8 @@ export function CreditProspect(props: ICreditProspectProps) {
       )}
       {currentModal === "editProductModal" && (
         <AddProductModal
-          title="Agregar productos"
-          confirmButtonText="Guardar"
+          title={dataCreditProspect.addProduct}
+          confirmButtonText={dataCreditProspect.save}
           initialValues={initialValues}
           iconBefore={<MdOutlineAdd />}
           onCloseModal={handleCloseModal}
@@ -478,9 +481,14 @@ export function CreditProspect(props: ICreditProspectProps) {
           moneyDestination={dataMaximumCreditLimitService.moneyDestination}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
+          isSendingData={isSendingData}
           identificationDocumentNumber={
             dataMaximumCreditLimitService.identificationDocumentNumber
           }
+          identificationDocumentType={
+            dataMaximumCreditLimitService.identificationDocumentType
+          }
+          dataProspect={dataProspect as IProspect}
         />
       )}
       {currentModal === "IncomeModal" && (
@@ -561,7 +569,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           handleClose={handleCloseModal}
           handleNext={() => {
             setEditedApprovalObservations(
-              dataProspect?.[0]?.clientManagerObservation || ""
+              dataProspect?.clientManagerObservation || ""
             );
             setShowEditApprovalModal(true);
           }}
@@ -572,12 +580,12 @@ export function CreditProspect(props: ICreditProspectProps) {
             <CardGray
               apparencePlaceHolder="gray"
               label={dataCreditProspect.approvalObservations}
-              placeHolder={dataProspect?.[0]?.clientManagerObservation}
+              placeHolder={dataProspect?.clientManagerObservation}
             />
             <CardGray
               apparencePlaceHolder="gray"
               label={dataCreditProspect.clientsObservations}
-              placeHolder={dataProspect?.[0]?.clientComments}
+              placeHolder={dataProspect?.clientComments}
             />
           </Stack>
         </BaseModal>
@@ -603,7 +611,7 @@ export function CreditProspect(props: ICreditProspectProps) {
             <CardGray
               apparencePlaceHolder="gray"
               label={dataCreditProspect.clientsObservations}
-              placeHolder={dataProspect?.[0]?.clientComments}
+              placeHolder={dataProspect?.clientComments}
             />
           </Stack>
         </BaseModal>

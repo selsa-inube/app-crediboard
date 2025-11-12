@@ -3,6 +3,7 @@ import { inube } from "@inubekit/inubekit";
 
 interface IStyledModal {
   $smallScreen: boolean;
+  showIncrementField?: boolean;
 }
 
 export const ScrollableContainer = styled.div<IStyledModal>`
@@ -11,6 +12,8 @@ export const ScrollableContainer = styled.div<IStyledModal>`
   display: flex;
   z-index: 1; 
   position: relative;
+  height: ${({ showIncrementField }) =>
+    showIncrementField ? "820px" : "700px"};
   max-height: width: ${({ $smallScreen }) => ($smallScreen ? "auto" : "500px")};
 
   &::-webkit-scrollbar {

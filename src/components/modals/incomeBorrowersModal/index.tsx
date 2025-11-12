@@ -23,7 +23,7 @@ interface IIncomeBorrowersModalProps {
   borrowersProspect: IProspect | undefined;
   borrowerOptions: IOption[];
   selectedIndex: number;
-  dataProspect: IProspect[];
+  dataProspect: IProspect;
   selectedBorrower: IProspect["borrowers"][number] | undefined;
   isMobile: boolean;
   handleCloseModal: () => void;
@@ -47,7 +47,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
   } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const currentBorrower =
-    dataProspect[0]?.borrowers?.find(
+    dataProspect.borrowers?.find(
       (borrower) =>
         borrower.borrowerName === borrowerOptions[selectedIndex]?.value
     ) || selectedBorrower;
