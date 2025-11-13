@@ -28,7 +28,7 @@ const getAllDeductibleExpensesById = async (
         },
         signal: controller.signal,
       };
-
+      
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
         options
@@ -41,7 +41,7 @@ const getAllDeductibleExpensesById = async (
       }
 
       const data = await res.json();
-
+console.log(data);
       if (!res.ok) {
         throw {
           message: "Error al obtener los gastos descontables.",

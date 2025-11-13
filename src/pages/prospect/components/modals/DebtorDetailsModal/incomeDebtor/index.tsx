@@ -31,7 +31,9 @@ export function IncomeBorrower(props: IIncomeBorrower) {
   const { initialIncome } = props;
 
   return (
-    <Fieldset>
+    <Fieldset
+      borderColor="none"
+    >
       <Stack direction="column" padding="10px 16px" gap="16px">
         {incomeFields.map((field, index) => {
           const sum = field.keys.reduce((acc, key) => {
