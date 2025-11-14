@@ -42,8 +42,7 @@ export const StyledDivider = styled.hr`
 
 export const StyledPinWrapper = styled.div<IStyledContainer>`
   opacity: ${(props) => (!props.$canUnpin && props.$isPinned ? 0.5 : 1)};
-  cursor: ${(props) =>
-    !props.$canUnpin && props.$isPinned ? "not-allowed" : "pointer"};
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;

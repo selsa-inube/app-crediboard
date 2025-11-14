@@ -41,6 +41,7 @@ interface BoardSectionProps {
   errorLoadingPins: boolean;
   searchRequestValue: string;
   sectionCounter?: number;
+  sectionId?: string; 
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
@@ -62,6 +63,7 @@ function BoardSection(props: BoardSectionProps) {
     pinnedRequests,
     errorLoadingPins,
     searchRequestValue,
+    sectionId,
     handlePinRequest,
     handleLoadMoreData,
     onOrientationChange,
@@ -78,6 +80,7 @@ function BoardSection(props: BoardSectionProps) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const flagMessage = useRef(false);
+  const sectionRef = useRef<HTMLDivElement>(null); 
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
@@ -96,6 +99,7 @@ function BoardSection(props: BoardSectionProps) {
       setCollapse(true);
     }
   }, [shouldCollapseAll, disabledCollapse]);
+
   const handleCollapse = () => {
     if (!disabledCollapse) {
       setCollapse((prev) => !prev);
@@ -119,13 +123,24 @@ function BoardSection(props: BoardSectionProps) {
     }
     return "";
   };
+
   const handleToggleOrientation = () => {
     const newOrientation =
       currentOrientation === "vertical" ? "horizontal" : "vertical";
     if (newOrientation === "horizontal") {
       setCollapse(true);
+      setTimeout(() => {
+        if (sectionRef.current) {
+          sectionRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
+          });
+        }
+      }, 100);
+    } else {
+      setCollapse(false);
     }
-
     setCurrentOrientation(newOrientation);
     onOrientationChange(newOrientation);
   };
@@ -174,8 +189,8 @@ function BoardSection(props: BoardSectionProps) {
 
           const extractedValues = Array.isArray(values)
             ? values
-              .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-              .filter((val): val is string => val !== "")
+                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+                .filter((val): val is string => val !== "")
             : [];
 
           setValueRule((prev) => {
@@ -216,6 +231,8 @@ function BoardSection(props: BoardSectionProps) {
 
   return (
     <StyledBoardSection
+      ref={sectionRef}
+      id={sectionId}
       $sectionBackground={sectionBackground}
       $orientation={orientation}
       $isTablet={isTablet}
@@ -333,7 +350,7 @@ function BoardSection(props: BoardSectionProps) {
             </Stack>
           )}
 
-          {orientation === "horizontal" && (
+          {orientation === "horizontal" && sectionInformation.length > 0 && (
             <Stack justifyContent="center" width="100%">
               <Button
                 variant="outlined"
@@ -346,17 +363,15 @@ function BoardSection(props: BoardSectionProps) {
           )}
         </Stack>
       )}
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </StyledBoardSection>
   );
 }
