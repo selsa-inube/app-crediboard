@@ -41,7 +41,7 @@ interface BoardSectionProps {
   errorLoadingPins: boolean;
   searchRequestValue: string;
   sectionCounter?: number;
-  sectionId?: string; 
+  sectionId?: string;
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
@@ -80,7 +80,7 @@ function BoardSection(props: BoardSectionProps) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const flagMessage = useRef(false);
-  const sectionRef = useRef<HTMLDivElement>(null); 
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
@@ -343,7 +343,12 @@ function BoardSection(props: BoardSectionProps) {
               />
             ))
           ) : (
-            <Stack gap="24px" alignItems="center" height="533px" width="100%">
+            <Stack
+              gap="24px"
+              alignItems="center"
+              height={orientation === "vertical" ? "533px" : "200px"}
+              width="100%"
+            >
               <Text type="title" size="small" appearance="gray">
                 {getNoDataMessage()}
               </Text>

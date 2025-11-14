@@ -15,7 +15,7 @@ import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { ErrorModal } from "@components/modals/ErrorModal";
 
-import { dataInformationModal } from "./config/board";
+import { dataInformationModal, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
 import { selectCheckOptions } from "./config/select";
 import { IBoardData } from "./types";
@@ -75,6 +75,8 @@ function BoardLayout() {
     status: "",
   });
 
+  const boardColumns = getBoardColumns(activeOptions, filters.boardOrientation);
+
   const fetchBoardData = async (
     businessUnitPublicCode: string,
     businessManagerCode: string,
@@ -133,6 +135,7 @@ function BoardLayout() {
     fetchValidationRulesData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode]);
+
   const handleLoadMoreData = () => {
     const nextPage = currentPage + 1;
     setCurrentPage(nextPage);
@@ -157,7 +160,9 @@ function BoardLayout() {
       true
     );
   };
+
   const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
+
   const handleApplyFilters = async (values: IFilterFormValues) => {
     setFilterValues(values);
     setFilters((prev) => ({
@@ -184,6 +189,24 @@ function BoardLayout() {
     setActiveOptions(activeFilteredValues);
     setCurrentPage(1);
 
+    const hasCompletedFilter = activeFilteredValues.some(
+      (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+    );
+
+    if (hasCompletedFilter) {
+      setFilters((prev) => ({
+        ...prev,
+        boardOrientation: "horizontal",
+      }));
+
+      const updatedEventData = { ...eventData };
+      updatedEventData.user.preferences = {
+        ...updatedEventData.user.preferences,
+        boardOrientation: "horizontal",
+      };
+      setEventData(updatedEventData);
+    }
+
     await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
       filter: `${queryFilterString}`,
     });
@@ -191,6 +214,19 @@ function BoardLayout() {
     setIsFilterModalOpen(false);
     setShouldCollapseAll(true);
     setTimeout(() => setShouldCollapseAll(false), 100);
+
+    if (hasCompletedFilter) {
+      setTimeout(() => {
+        const tramitadaSection = document.getElementById("TRAMITADA");
+        if (tramitadaSection) {
+          tramitadaSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
+          });
+        }
+      }, 100);
+    }
   };
 
   const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
@@ -207,6 +243,46 @@ function BoardLayout() {
       };
 
       setEventData(updatedEventData);
+
+      if (newFilters.boardOrientation === "vertical") {
+        const hasCompletedFilter = activeOptions.some(
+          (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+        );
+
+        if (hasCompletedFilter) {
+          const updatedActiveOptions = activeOptions.filter(
+            (option) => option.value !== "completedLessThan30DaysAgo=Y"
+          );
+
+          setActiveOptions(updatedActiveOptions);
+          setCurrentPage(1);
+          setFilterValues((prev) => {
+            const newValues = { ...prev };
+            if (newValues.assignment) {
+              const assignmentIds = newValues.assignment
+                .split(",")
+                .filter((id) => id.trim() !== "");
+              const updatedAssignmentIds = assignmentIds.filter((id) => {
+                const option = selectCheckOptions.find((opt) => opt.id === id);
+                return option?.value !== "completedLessThan30DaysAgo";
+              });
+              newValues.assignment = updatedAssignmentIds.join(",");
+            }
+            return newValues;
+          });
+          if (updatedActiveOptions.length === 0) {
+            fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
+          } else {
+            const updatedFilterString = updatedActiveOptions
+              .map((filter) => filter.value)
+              .join("&")
+              .trim();
+            fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
+              filter: updatedFilterString,
+            });
+          }
+        }
+      }
     }
 
     if (newFilters.showPinnedOnly !== undefined) {
@@ -317,6 +393,10 @@ function BoardLayout() {
   }, []);
 
   const handleClearFilters = async (keepSearchValue = false) => {
+    const hasCompletedFilter = activeOptions.some(
+      (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+    );
+
     setFilterValues({ assignment: "", status: "" });
     setActiveOptions([]);
     setCurrentPage(1);
@@ -326,7 +406,17 @@ function BoardLayout() {
       searchRequestValue: keepSearchValue ? prev.searchRequestValue : "",
       showPinnedOnly: false,
       selectOptions: selectCheckOptions,
+      boardOrientation: hasCompletedFilter ? "vertical" : prev.boardOrientation,
     }));
+
+    if (hasCompletedFilter) {
+      const updatedEventData = { ...eventData };
+      updatedEventData.user.preferences = {
+        ...updatedEventData.user.preferences,
+        boardOrientation: "vertical",
+      };
+      setEventData(updatedEventData);
+    }
 
     if (keepSearchValue && filters.searchRequestValue.trim().length >= 3) {
       await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
@@ -344,6 +434,25 @@ function BoardLayout() {
 
     setActiveOptions(updatedActiveOptions);
     setCurrentPage(1);
+
+    const removedFilter = activeOptions.find(
+      (option) => option.id === filterIdToRemove
+    );
+    const isRemovingCompletedFilter =
+      removedFilter?.value === "completedLessThan30DaysAgo=Y";
+    if (isRemovingCompletedFilter) {
+      setFilters((prev) => ({
+        ...prev,
+        boardOrientation: "vertical",
+      }));
+
+      const updatedEventData = { ...eventData };
+      updatedEventData.user.preferences = {
+        ...updatedEventData.user.preferences,
+        boardOrientation: "vertical",
+      };
+      setEventData(updatedEventData);
+    }
 
     setFilterValues((prev) => {
       const newValues = { ...prev };
@@ -466,6 +575,7 @@ function BoardLayout() {
       pinnedIds.includes(request.creditRequestId as string)
     );
   }
+
   return (
     <>
       <BoardLayoutUI
@@ -501,6 +611,7 @@ function BoardLayout() {
         closeFilterModal={closeFilterModal}
         filterValues={filterValues}
         shouldCollapseAll={shouldCollapseAll}
+        boardColumns={boardColumns}
       />
       {isOpenModal && (
         <BaseModal
