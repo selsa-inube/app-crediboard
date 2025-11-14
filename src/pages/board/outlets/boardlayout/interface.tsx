@@ -284,17 +284,35 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     handleClearFilters();
     setIsTextSearchModalOpen(false);
     setHasBeenFocused(false);
+    const input = document.getElementById(
+      "SearchCardsDesktop"
+    ) as HTMLInputElement | null;
+    input?.focus();
   };
+
+  useState(false);
+  const [hasAnsweredModal, setHasAnsweredModal] = useState(false);
 
   const handleTextSearchModalNext = () => {
     setIsTextSearchModalOpen(false);
+    setHasAnsweredModal(true);
+
+    const input = document.getElementById(
+      "SearchCardsDesktop"
+    ) as HTMLInputElement | null;
+    input?.focus();
   };
 
   const handleTextSearchModalClose = () => {
     setIsTextSearchModalOpen(false);
     setHasBeenFocused(false);
   };
-
+  const handleTextfieldBlur = () => {
+    if (hasAnsweredModal) {
+      setHasBeenFocused(false);
+      setHasShownModalForCurrentFilters(false);
+    }
+  };
   return (
     <StyledContainerToCenter>
       <Stack
@@ -330,6 +348,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                       disabled={isTextSearchModalOpen}
                       fullwidth
                       onFocus={handleTextfieldFocus}
+                      focused={false}
                     />
                     {!isExpanded && (
                       <>
@@ -400,6 +419,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   disabled={isTextSearchModalOpen}
                   fullwidth
                   onFocus={handleTextfieldFocus}
+                  onBlur={handleTextfieldBlur}
                 />
               </StyledRequestsContainerVoiceSearch>
             )}
@@ -478,7 +498,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             </Stack>
           </Stack>
         </StyledInputsContainer>
-
         <StyledBoardContainer
           $orientation={boardOrientation}
           $isMobile={isMobile}

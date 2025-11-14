@@ -98,6 +98,10 @@ export const ListModal = (props: IListModalProps) => {
   if (!node) {
     throw new Error(validationMessages.errorNodo);
   }
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
+  }
   const { addFlag } = useFlag();
   const MAX_FILE_SIZE = 2.5 * 1024 * 1024;
   const isMobile = useMediaQuery("(max-width: 700px)");
@@ -295,7 +299,7 @@ export const ListModal = (props: IListModalProps) => {
         id,
         eventData.user.identificationDocumentNumber || "",
         businessUnitPublicCode,
-        businessManagerCode,
+        businessManagerCode
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);

@@ -94,9 +94,9 @@ function BoardLayout() {
           ),
           page === 1
             ? getCreditRequestPinned(
-              businessUnitPublicCode,
-              businessManagerCode
-            )
+                businessUnitPublicCode,
+                businessManagerCode
+              )
             : Promise.resolve([]),
         ]);
 
@@ -124,7 +124,7 @@ function BoardLayout() {
   };
 
   useEffect(() => {
-    if (activeOptions.length > 0 || filters.searchRequestValue.length >= 3)
+    if (activeOptions.length > 0 || filters.searchRequestValue.length >= 1)
       return;
 
     fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
@@ -133,7 +133,6 @@ function BoardLayout() {
     fetchValidationRulesData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode]);
-
   const handleLoadMoreData = () => {
     const nextPage = currentPage + 1;
     setCurrentPage(nextPage);
@@ -254,8 +253,8 @@ function BoardLayout() {
 
           const extractedValues = Array.isArray(values)
             ? values
-              .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-              .filter((val): val is string => val !== "")
+                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+                .filter((val): val is string => val !== "")
             : [];
 
           setValueRule((prev) => {
@@ -396,7 +395,6 @@ function BoardLayout() {
     handleFiltersChange({ searchRequestValue: value });
     const trimmedValue = value.trim();
     setCurrentPage(1);
-
     if (trimmedValue.length >= 1) {
       if (activeOptions.length > 0) {
         const currentFilters = activeOptions
@@ -499,7 +497,7 @@ function BoardLayout() {
         handleRemoveFilter={handleRemoveFilter}
         isMenuOpen={isMenuOpen}
         selectOptions={[]}
-        handleSelectCheckChange={() => { }}
+        handleSelectCheckChange={() => {}}
         closeFilterModal={closeFilterModal}
         filterValues={filterValues}
         shouldCollapseAll={shouldCollapseAll}
@@ -520,17 +518,15 @@ function BoardLayout() {
           </Stack>
         </BaseModal>
       )}
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessages.changeAnchorToCreditRequest.description}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessages.changeAnchorToCreditRequest.description}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

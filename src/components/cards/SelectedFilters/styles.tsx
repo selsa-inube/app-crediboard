@@ -23,6 +23,9 @@ const StyledContainerFilters = styled.div<IStyledContainerFilters>`
   border: 1px solid
     ${({ theme }) => theme?.palette?.neutral?.N40 ?? inube.palette.neutral.N40};
   position: relative;
+  & > div > div > div > figure {
+    cursor: pointer;
+  }
 `;
 
 const MoreFiltersWrapper = styled.div`
