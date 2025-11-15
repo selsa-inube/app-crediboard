@@ -1,19 +1,20 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { MdInfoOutline } from "react-icons/md";
-import { Stack, Icon, Text, useMediaQuery, useFlag } from "@inubekit/inubekit";
+import { Stack, Icon, Text, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
+
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { getCreditRequestPinned } from "@services/creditRequest/query/isPinned";
 import { getCreditRequestInProgress } from "@services/creditRequest/query/getCreditRequestInProgress";
 import { patchChangeAnchorToCreditRequest } from "@services/creditRequest/command/anchorCreditRequest";
 import { AppContext } from "@context/AppContext";
-import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { ErrorPage } from "@components/layout/ErrorPage";
 
 import { dataInformationModal, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
@@ -45,6 +46,9 @@ function BoardLayout() {
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
+
+  const [hasServerError, setHasServerError] = useState(false);
+
   const isMobile = useMediaQuery("(max-width: 1439px)");
 
   const missionName = eventData.user.staff.missionName;
@@ -65,9 +69,6 @@ function BoardLayout() {
 
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-
-  const errorData = mockErrorBoard[0];
-
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [filterValues, setFilterValues] = useState<IFilterFormValues>({
@@ -101,6 +102,14 @@ function BoardLayout() {
               )
             : Promise.resolve([]),
         ]);
+      if (
+        boardRequestsResult.status === "rejected" &&
+        (page === 1 ? requestsPinnedResult.status === "rejected" : true)
+      ) {
+        console.error("Error crítico: servicios principales fallaron");
+        setHasServerError(true);
+        return;
+      }
 
       if (boardRequestsResult.status === "fulfilled") {
         setBoardData((prevState) => ({
@@ -109,6 +118,13 @@ function BoardLayout() {
             ? [...prevState.boardRequests, ...boardRequestsResult.value]
             : boardRequestsResult.value,
         }));
+      } else if (boardRequestsResult.status === "rejected") {
+        console.error(
+          "Error al obtener solicitudes:",
+          boardRequestsResult.reason
+        );
+        setHasServerError(true);
+        return;
       }
 
       if (requestsPinnedResult.status === "fulfilled" && page === 1) {
@@ -117,11 +133,15 @@ function BoardLayout() {
           requestsPinned: requestsPinnedResult.value,
         }));
       } else if (requestsPinnedResult.status === "rejected" && page === 1) {
-        handleFlag(errorData.Summary[0], errorData.Summary[1]);
+        console.error(
+          "Error al obtener anclados:",
+          requestsPinnedResult.reason
+        );
+        setErrorLoadingPins(true);
       }
     } catch (error) {
       console.error("Error fetching board data:", error);
-      setErrorLoadingPins(true);
+      setHasServerError(true);
     }
   };
 
@@ -296,20 +316,6 @@ function BoardLayout() {
       setEventData(updatedEventData);
     }
   };
-
-  const { addFlag } = useFlag();
-
-  const handleFlag = useCallback(
-    (title: string, description: string) => {
-      addFlag({
-        title: title,
-        description: description,
-        appearance: "danger",
-        duration: 5000,
-      });
-    },
-    [addFlag]
-  );
 
   const fetchValidationRulesData = useCallback(async () => {
     const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
@@ -573,6 +579,22 @@ function BoardLayout() {
 
     return boardRequests.filter((request) =>
       pinnedIds.includes(request.creditRequestId as string)
+    );
+  }
+
+  const handleRetryFromError = () => {
+    setHasServerError(false);
+    setCurrentPage(1);
+    fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
+  };
+
+  if (hasServerError) {
+    return (
+      <ErrorPage
+        errorCode={500}
+        nameButton="Reintentar"
+        onClick={handleRetryFromError}
+      />
     );
   }
 

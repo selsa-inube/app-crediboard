@@ -97,7 +97,7 @@ export const StyledMenuContainer = styled.div`
 export const StyledCollapse = styled.div`
   position: absolute;
   top: 48px;
-  z-index: 1;
+  z-index: 3;
 `;
 export const StyledFooter = styled.footer`
   margin-top: auto;

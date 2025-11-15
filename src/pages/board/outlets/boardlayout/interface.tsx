@@ -15,7 +15,6 @@ import {
   Textfield,
   Toggle,
   Button,
-  useFlag,
 } from "@inubekit/inubekit";
 
 import { SectionOrientation } from "@components/layout/BoardSection/types";
@@ -25,7 +24,6 @@ import { Filter } from "@components/cards/SelectedFilters/interface";
 import { SelectedFilters } from "@components/cards/SelectedFilters";
 import { FilterRequestModal } from "@components/modals/FilterRequestModal";
 import { AppContext } from "@context/AppContext";
-import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { totalsKeyBySection } from "@components/layout/BoardSection/config";
 import { BaseModal } from "@components/modals/baseModal";
 import { getCreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage";
@@ -118,7 +116,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const [hasShownModalForCurrentFilters, setHasShownModalForCurrentFilters] =
     useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const { addFlag } = useFlag();
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -258,13 +255,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         );
         if (result) setTotalsData(normalizedTotalData(result));
       } catch (error) {
-        addFlag({
-          title: textFlagsUsers.titleError,
-          description: JSON.stringify(error),
-          appearance: "danger",
-          duration: 5000,
-        });
-
         console.error("Error fetching totals:", error);
       }
     };
@@ -535,6 +525,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 dragIcon={dragIcon}
                 onOrientationChange={onOrientationChange}
                 shouldCollapseAll={shouldCollapseAll}
+                hasActiveFilters={activeOptions.length > 0}
+                showPinnedOnly={showPinnedOnly}
               />
             );
           })}
