@@ -68,7 +68,7 @@ export interface IListModalProps {
   isViewing?: boolean;
   uploadedFiles?: IDocumentUpload[];
   onlyDocumentReceived?: boolean;
-  handleClose: () => void;
+  handleClose: (filesSaved?: boolean) => void; // MODIFICADO: Ahora acepta un parámetro
   handleSubmit?: () => void;
   onSubmit?: () => void;
   setUploadedFiles?: React.Dispatch<React.SetStateAction<IDocumentUpload[]>>;
@@ -245,9 +245,11 @@ export const ListModal = (props: IListModalProps) => {
   const handleUpload = async () => {
     if (uploadMode === "local") {
       console.log("Archivos guardados en estado:", uploadedFiles);
-      handleClose();
+      handleClose(false);
       return;
     }
+
+    let filesSaved = false;
 
     try {
       if (uploadedFiles!.length) {
@@ -273,7 +275,8 @@ export const ListModal = (props: IListModalProps) => {
           setUploadedFiles([]);
         }
 
-        handleClose();
+        filesSaved = true; 
+
         handleFlag(
           optionFlags.title,
           optionFlags.description,
@@ -286,6 +289,8 @@ export const ListModal = (props: IListModalProps) => {
         optionFlags.description,
         optionFlags.appearanceError as FlagAppearance
       );
+    } finally {
+      handleClose(filesSaved);
     }
   };
 
@@ -295,7 +300,7 @@ export const ListModal = (props: IListModalProps) => {
         id,
         eventData.user.identificationDocumentNumber || "",
         businessUnitPublicCode,
-        businessManagerCode,
+        businessManagerCode
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);
@@ -343,7 +348,7 @@ export const ListModal = (props: IListModalProps) => {
           <Text type="headline" size="small">
             {title}
           </Text>
-          <StyledContainerClose onClick={handleClose}>
+          <StyledContainerClose onClick={() => handleClose(false)}>
             <Stack alignItems="center" gap="8px">
               <Text>Cerrar</Text>
               <Icon
@@ -485,7 +490,7 @@ export const ListModal = (props: IListModalProps) => {
           </>
         ) : (
           <Stack justifyContent="flex-end" margin="16px 0 0 0" gap="16px">
-            <Button onClick={handleClose}>{buttonLabel}</Button>
+            <Button onClick={() => handleClose(false)}>{buttonLabel}</Button>
           </Stack>
         )}
         {cancelButton && optionButtons && (
@@ -498,7 +503,9 @@ export const ListModal = (props: IListModalProps) => {
             >
               {cancelButton}
             </Button>
-            <Button onClick={onSubmit ?? handleClose}>{buttonLabel}</Button>
+            <Button onClick={onSubmit ?? (() => handleClose(false))}>
+              {buttonLabel}
+            </Button>
           </Stack>
         )}
         {selectedFile && open && (

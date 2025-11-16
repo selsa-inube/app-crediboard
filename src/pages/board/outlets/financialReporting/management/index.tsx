@@ -29,7 +29,7 @@ import {
   errorObserver,
   errorMessages,
   optionButtons,
-  editCreditApplicationLabels
+  editCreditApplicationLabels,
 } from "../config";
 import { DetailsModal } from "./DetailsModal";
 
@@ -218,6 +218,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         }}
       />
     ));
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleInfo = () => {
     setIsModalOpen(true);
@@ -225,9 +226,20 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   const handleInfoModalClose = () => {
     setIsModalOpen(false);
   };
+
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
+
+
+  const handleAttachmentsClose = async (filesSaved: boolean = false) => {
+    setShowAttachments(false);
+    if (filesSaved) {
+      setLoading(true);
+      await fetchData();
+    }
+  };
+
   return (
     <>
       <Fieldset
@@ -304,7 +316,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
             {showAttachments && (
               <ListModal
                 title="Adjuntar"
-                handleClose={() => setShowAttachments(false)}
+                handleClose={handleAttachmentsClose}
                 optionButtons={optionButtons}
                 buttonLabel="Guardar"
                 id={creditRequest.creditRequestId}
@@ -328,17 +340,15 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
           </>
         )}
       </Fieldset>
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 };
