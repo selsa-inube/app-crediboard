@@ -68,7 +68,7 @@ export interface IListModalProps {
   isViewing?: boolean;
   uploadedFiles?: IDocumentUpload[];
   onlyDocumentReceived?: boolean;
-  handleClose: (filesSaved?: boolean) => void; // MODIFICADO: Ahora acepta un parámetro
+  handleClose: (filesSaved?: boolean) => void; 
   handleSubmit?: () => void;
   onSubmit?: () => void;
   setUploadedFiles?: React.Dispatch<React.SetStateAction<IDocumentUpload[]>>;
