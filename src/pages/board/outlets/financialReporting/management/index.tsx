@@ -36,7 +36,7 @@ import { DetailsModal } from "./DetailsModal";
 interface IManagementProps {
   id: string;
   isMobile: boolean;
-  updateData?: boolean;
+  updateData?: number;
 }
 
 export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
@@ -230,7 +230,6 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
-
 
   const handleAttachmentsClose = async (filesSaved: boolean = false) => {
     setShowAttachments(false);
