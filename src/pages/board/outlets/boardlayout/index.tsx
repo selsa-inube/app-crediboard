@@ -591,7 +591,7 @@ function BoardLayout() {
   if (hasServerError) {
     return (
       <ErrorPage
-        errorCode={500}
+        errorCode={400}
         nameButton="Reintentar"
         onClick={handleRetryFromError}
       />
