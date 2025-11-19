@@ -84,15 +84,23 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
         finalDivider={true}
         width={
           isMobile
-            ? "auto"
-            : "520px"
+            ? "330px"
+            : "550px"
         }
-        height="100%"
-        $height="80vh"
+        $height="calc(100vh - 64px)"
         isSendingData={isSendingData}
+        internalWidth={isMobile ? "280px" : "500px"}
       >
         <ModalContentWrapper>
-        <Stack direction="column" gap="16px" height="100%">
+        <Stack 
+            direction="column" 
+            gap="16px" 
+            width={
+              isMobile
+                ? "280px"
+                : "500px"
+            }
+        >
           <Assisted
             step={currentStepsNumber}
             totalSteps={steps.length}
@@ -109,8 +117,12 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
           <Divider />
           <ScrollableContainer
             $smallScreen={isMobile}
-            $height="100%"
-            $width="100%"
+            $height="calc(100vh - 440px)"
+            $width={
+              isMobile
+                ? "280px"
+                : "auto"
+            }
           >
 
             {currentStepsNumber.id === stepsAddProduct.creditLineSelection.id && (

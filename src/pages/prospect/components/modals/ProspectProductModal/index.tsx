@@ -113,6 +113,7 @@ function EditProductModal(props: EditProductModalProps) {
   const [termInMonthsModified, setTermInMonthsModified] =
     useState<boolean>(false);
   const [loanAmountError, setLoanAmountError] = useState<string>("");
+  const [isUsingServices, setIsUsingServices] = useState<boolean>(false);
   const [paymentMethodsList, setPaymentMethodsList] = useState<
     IPaymentMethod[]
   >([]);
@@ -546,6 +547,7 @@ function EditProductModal(props: EditProductModalProps) {
         creditRequestCode: creditRequestCode,
       };
 
+      setIsUsingServices(true);
       const updatedProspect = await updateCreditProduct(
         businessUnitPublicCode,
         businessManagerCode,
@@ -562,8 +564,10 @@ function EditProductModal(props: EditProductModalProps) {
 
       onProspectUpdate(normalizedProspect as IProspect);
 
+      setIsUsingServices(false);
       onCloseModal();
     } catch (error) {
+      setIsUsingServices(false);
       setErrorMessage(errorMessages.updateCreditProduct.description);
       setErrorModal(true);
     }
@@ -706,10 +710,12 @@ function EditProductModal(props: EditProductModalProps) {
             iconAfterNext={iconAfter}
             finalDivider={true}
             width={isMobile ? "290px" : "500px"}
+            $height="calc(100vh - 64px)"
+            isSendingData={isUsingServices}
           >
             <ScrollableContainer 
-            $smallScreen={isMobile}
-            showIncrementField={showIncrementField}
+            $smallScreen={!isMobile}
+            $width="auto"
             >
               <Stack
                 direction="column"

@@ -20,7 +20,6 @@ import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { DeductibleExpensesModal } from "@pages/prospect/components/modals/DeductibleExpensesModal";
 import { getAllDeductibleExpensesById } from "@services/creditRequest/query/deductibleExpenses";
 import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
-import { dataTableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment/config";
 import { ConsolidatedCredits } from "@pages/prospect/components/modals/ConsolidatedCreditModal";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
@@ -88,9 +87,10 @@ export const CardCommercialManagement = (
   });
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
-    const [consolidatedCredits, setConsolidatedCredits] = useState(
+  const [consolidatedCredits, setConsolidatedCredits] = useState(
     prospectData?.consolidatedCredits || [],
   );
+  const [isSendingData, setIsSendingData] = useState(false);
   const handleInfoModalClose = () => {
     setIsModalOpen(false);
   };
@@ -107,6 +107,7 @@ export const CardCommercialManagement = (
   const handleDelete = async () => {
     if (!prospectData || !prospectProducts.length) return;
     try {
+      setIsSendingData(true);
       const updatedProspect = await RemoveCreditProduct(businessUnitPublicCode, eventData.user.identificationDocumentNumber || "", {
         creditProductCode: selectedProductId,
         creditRequestCode: id,
@@ -129,8 +130,15 @@ export const CardCommercialManagement = (
         onProspectUpdate(normalizedProspect as IProspect);
       }
 
-
+      setIsSendingData(false);
       setShowDeleteModal(false);
+
+      addFlag({
+        title: tittleOptions.successDeleteTitle,
+        description: tittleOptions.successDeleteDescription,
+        appearance: "success",
+        duration: 5000,
+      });
     } catch (error) {
       setShowDeleteModal(false);
       const err = error as {
@@ -141,7 +149,9 @@ export const CardCommercialManagement = (
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       const description = code + err?.message + (err?.data?.description || "");
       setShowErrorModal(true);
-      setMessageError(description);
+      setMessageError(tittleOptions.errorDeleteProduct || description);
+      setIsSendingData(false);
+      
     }
   };
 
@@ -251,6 +261,7 @@ export const CardCommercialManagement = (
           }
         </Stack>
       </StyledCardsCredit>
+      <div style={{pageBreakInside: "avoid"}}>
       {isMobile && <Divider />}
       <Stack
         gap="24px"
@@ -275,11 +286,13 @@ export const CardCommercialManagement = (
           />
         ))}
       </Stack>
+      </div>
       {showDeleteModal && (
         <DeleteModal
           handleClose={() => setShowDeleteModal(false)}
           handleDelete={handleDelete}
-          TextDelete={dataTableExtraordinaryInstallment.content}
+          TextDelete={tittleOptions.descriptionDelete}
+          isSendingData={isSendingData}
         />
       )}
       {currentModal === "editProductModal" && selectedProduct && (
@@ -333,7 +346,7 @@ export const CardCommercialManagement = (
           businessManagerCode={businessManagerCode}
           consolidatedCredits={consolidatedCredits}
           setConsolidatedCredits={setConsolidatedCredits}
-          onProspectUpdated={()=>{}}
+          onProspectUpdated={() => { }}
           clientIdentificationNumber={clientIdentificationNumber}
           creditRequestCode={id || ""}
         />

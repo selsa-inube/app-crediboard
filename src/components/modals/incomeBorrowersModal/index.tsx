@@ -15,6 +15,7 @@ import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { IProspect } from "@services/prospect/types";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
+import { CardGray } from "@components/cards/CardGray";
 
 import { BaseModal } from "../baseModal";
 import { dataCreditProspect } from "./config";
@@ -98,6 +99,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
       handleNext={handleCloseModal}
       handleClose={handleCloseModal}
       width={isMobile ? "300px" : "auto"}
+      $height="auto"
     >
       {borrowersProspect ? (
         <>
@@ -109,17 +111,11 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
             gap="16px"
           >
             {borrowerOptions && borrowerOptions.length === 1 ? (
-              <Textfield
+              <CardGray
+                isMobile={isMobile}
                 label="Deudor"
-                id="borrower"
-                name="borrower"
-                value={getOptionLabel(
-                  borrowerOptions,
-                  borrowerOptions[selectedIndex]?.value
-                )}
-                disabled
-                fullwidth={isMobile}
-                size="compact"
+                placeHolder={borrowerOptions[selectedIndex]?.value}
+                apparencePlaceHolder="gray"
               />
             ) : (
               <Select
@@ -133,7 +129,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
                 size="compact"
               />
             )}
-            <Stack alignItems="center" justifyContent="center" gap="2px">
+            <Stack alignItems="center" justifyContent="center" gap="2px" width={isMobile ? "100%" : "auto"}>
               <Button
                 onClick={handleEditClick}
                 fullwidth={isMobile}
@@ -170,7 +166,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
           onClose={handleInfoModalClose}
           title={privilegeCrediboard.title}
           subtitle={privilegeCrediboard.subtitle}
-          description={ availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
+          description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />

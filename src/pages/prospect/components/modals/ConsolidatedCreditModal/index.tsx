@@ -356,7 +356,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
         nextButton={ModalConfig.keep}
         disabledNext={!hasRealChanges}
         handleNext={handleSaveChanges}
-        width={isMobile ? "320px" : "640px"}
+        width={isMobile ? "370px" : "690px"}
         height={isMobile ? "auto" : "688px"}
         handleBack={handleClose}
         finalDivider={true}
@@ -456,7 +456,6 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
                     autoRows="auto"
                     templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
                     gap="16px"
-                    width="100%"
                   >
                     {sortedObligationPayment.map((creditData) => (
                       <CardConsolidatedCredit

@@ -12,6 +12,13 @@ const GlobalStyles = createGlobalStyle`
     margin: 0;
     padding: 0;
   }
+
+  @media print {
+  body, html, #root, .app-container {
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
 `;
 
 export { GlobalStyles };

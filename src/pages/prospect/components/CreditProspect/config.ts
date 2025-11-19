@@ -9,7 +9,9 @@ export const dataCreditProspect = {
   errorDescription: "Error al obtener los prospectos: ",
   noDataIncome: "No se han encontrado fuentes de ingreso.",
   approvalObservations: "Observaciones de preaprobación",
+  approvalObservationsNotFound: "No hay observaciones de preaprobación",
   clientsObservations: "Obsevaciones del cliente",
+  clientsObservationsNotFound: "No hay obsevaciones del cliente",
   observations: "Observaciones",
   successTitle: "Observaciones actualizadas",
   successDescription:

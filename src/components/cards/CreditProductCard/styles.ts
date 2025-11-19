@@ -12,6 +12,8 @@ export const StyledCreditProductCard = styled.div<IStyledProduct>`
   width: 217px;
   height: 414px;
   border-radius: 8px;
+  page-break-inside: avoid;
+  
   outline: 2px solid
     ${({ theme }) => theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};
   background-color: ${({ theme }) =>

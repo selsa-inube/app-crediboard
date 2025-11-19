@@ -9,11 +9,12 @@ interface IStyledModal {
 
 export const ScrollableContainer = styled.div<IStyledModal>`
   width: ${({ $width }) => ($width ? $width : "auto")};
+  min-height: ${({ $height }) => ($height ? $height : "auto")};
+  max-height: ${({ $height }) => ($height ? $height : "auto")};
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
-  min-height: 0;
-  position: relative; // ← Agrega esto
+  position: relative;
 
   & > * {
     position: relative;
@@ -32,9 +33,8 @@ export const ScrollableContainer = styled.div<IStyledModal>`
 `;
 
 export const ModalContentWrapper = styled.div`
-  height: calc(80vh - 224px);
+  min-height: calc(100vh - 290px);
   overflow: visible;
-  min-height: 0;
   display: flex;
   flex-direction: column;
 `;

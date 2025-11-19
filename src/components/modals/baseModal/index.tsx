@@ -39,6 +39,7 @@ export interface IBaseModalProps {
   portalId?: string;
   $height?: string;
   isSendingData?: boolean
+  internalWidth?: string
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -64,24 +65,26 @@ export function BaseModal(props: IBaseModalProps) {
     finalDivider = false,
     portalId = "portal",
     $height,
-    isSendingData
+    isSendingData,
+    internalWidth
   } = props;
 
   const node = document.getElementById(portalId ?? "portal");
   if (!node) {
     throw new Error(validationMessages.errorNodo);
   }
-
+  console.log("BASE MODAL WIDTH ", width);
   return createPortal(
     <Blanket>
       <StyledContainer
         $height={$height}
+        $width={width}
       >
         <Stack
           direction="column"
           padding="24px"
           gap="24px"
-          width={width}
+          width={internalWidth || "auto"}
           height={height}
         >
           <Stack justifyContent="space-between" alignItems="center">

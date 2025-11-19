@@ -66,6 +66,9 @@ interface ICreditProspectProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
   sentData: IExtraordinaryInstallments | null;
+  currentModal: string;
+  handleOpenModal: (modalName: string) => void;
+  handleCloseModal: () => void;
   creditRequestCode?: string;
   setSentData: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallments | null>
@@ -83,6 +86,8 @@ interface ICreditProspectProps {
   generateAndSharePdf: () => void;
   availableEditCreditRequest: boolean;
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
+  setOpenModal?: React.Dispatch<React.SetStateAction<string | null>> | null;
+  openModal?: string | null;
 }
 
 export function CreditProspect(props: ICreditProspectProps) {
@@ -108,13 +113,17 @@ export function CreditProspect(props: ICreditProspectProps) {
     handleIncomeSubmit,
     generateAndSharePdf,
     setDataProspect,
-    availableEditCreditRequest
+    availableEditCreditRequest,
+    openModal,
+    setOpenModal,
+    currentModal,
+    handleOpenModal,
+    handleCloseModal
   } = props;
 
-  const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showShareModal, setShowShareModal] = useState(false);
-  const [openModal, setOpenModal] = useState<string | null>(null);
+
   const [showEditApprovalModal, setShowEditApprovalModal] = useState(false);
   const [editedApprovalObservations, setEditedApprovalObservations] =
     useState("");
@@ -124,23 +133,23 @@ export function CreditProspect(props: ICreditProspectProps) {
 
   const { addFlag } = useFlag();
 
-  const handleOpenModal = (modalName: string) => {
-    setModalHistory((prevHistory) => [...prevHistory, modalName]);
-  };
+  /*   const handleOpenModal = (modalName: string) => {
+      setModalHistory((prevHistory) => [...prevHistory, modalName]);
+    }; */
 
-  const handleCloseModal = () => {
-    setModalHistory((prevHistory) => {
-      const newHistory = [...prevHistory];
-      newHistory.pop();
-      return newHistory;
-    });
-  };
+  /*   const handleCloseModal = () => {
+      setModalHistory((prevHistory) => {
+        const newHistory = [...prevHistory];
+        newHistory.pop();
+        return newHistory;
+      });
+    }; */
 
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
 
-  const currentModal = modalHistory[modalHistory.length - 1];
+  /*   const currentModal = modalHistory[modalHistory.length - 1]; */
   const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -318,7 +327,12 @@ export function CreditProspect(props: ICreditProspectProps) {
     interestRate: "",
     rateType: "",
   };
-  console.log("prospectData: ", prospectData);
+  useEffect(() => {
+    console.log("currentModal------------ ", currentModal);
+  }, [currentModal])
+  console.log("current Modal:=== ", currentModal);
+  console.log("dataCreditProspect: ", dataCreditProspect);
+  console.log("===================================================");
   return (
     <Stack direction="column" gap="24px">
       {!isMobile && (
@@ -441,7 +455,10 @@ export function CreditProspect(props: ICreditProspectProps) {
       {openModal === "paymentCapacity" && (
         <PaymentCapacity
           title="Cupo máx. capacidad de pago"
-          handleClose={() => setOpenModal(null)}
+          handleClose={() =>{ 
+            if(setOpenModal)
+            setOpenModal(null)
+          }}
           reportedIncomeSources={2000000}
           reportedFinancialObligations={6789000}
           subsistenceReserve={2000000}
@@ -452,7 +469,10 @@ export function CreditProspect(props: ICreditProspectProps) {
       )}
       {openModal === "reciprocityModal" && (
         <ReciprocityModal
-          handleClose={() => setOpenModal(null)}
+          handleClose={() => {
+            if(setOpenModal)
+            setOpenModal(null)
+          }}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
           clientIdentificationNumber={
@@ -462,7 +482,10 @@ export function CreditProspect(props: ICreditProspectProps) {
       )}
       {openModal === "scoreModal" && (
         <ScoreModal
-          handleClose={() => setOpenModal(null)}
+          handleClose={() => {
+            if(setOpenModal) 
+            setOpenModal(null)
+          }}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
           clientIdentificationNumber={
@@ -501,13 +524,17 @@ export function CreditProspect(props: ICreditProspectProps) {
           isMobile={isMobile}
           handleCloseModal={handleCloseModal}
           handleChange={handleChange}
-          setOpenModal={setOpenModal}
+          setOpenModal={setOpenModal as (modal: string) => void}
           availableEditCreditRequest={availableEditCreditRequest}
         />
       )}
       {openModal === "IncomeModalEdit" && (
         <IncomeModal
-          handleClose={() => setOpenModal(null)}
+          handleClose={() => {
+            if (setOpenModal) {
+              setOpenModal(null)
+            }
+          }}
           initialValues={
             selectedBorrower && incomeData[selectedBorrower.borrowerName]
           }
@@ -563,32 +590,42 @@ export function CreditProspect(props: ICreditProspectProps) {
         />
       )}
       {currentModal === "observationsModal" && (
-        <BaseModal
-          width={isMobile ? "300px" : "500px"}
-          title={dataCreditProspect.observations}
-          handleClose={handleCloseModal}
-          handleNext={() => {
-            setEditedApprovalObservations(
-              dataProspect?.clientManagerObservation || ""
-            );
-            setShowEditApprovalModal(true);
-          }}
-          nextButton="Modificar"
-          backButton="Cancelar"
-        >
-          <Stack direction="column" gap="16px">
-            <CardGray
-              apparencePlaceHolder="gray"
-              label={dataCreditProspect.approvalObservations}
-              placeHolder={dataProspect?.clientManagerObservation}
-            />
-            <CardGray
-              apparencePlaceHolder="gray"
-              label={dataCreditProspect.clientsObservations}
-              placeHolder={dataProspect?.clientComments}
-            />
-          </Stack>
-        </BaseModal>
+        <>
+          <BaseModal
+            width={isMobile ? "300px" : "500px"}
+            title={dataCreditProspect.observations}
+            handleClose={handleCloseModal}
+            handleNext={() => {
+              setEditedApprovalObservations(
+                dataProspect?.clientManagerObservation || ""
+              );
+              setShowEditApprovalModal(true);
+            }}
+            nextButton="Modificar"
+            backButton="Cancelar"
+          >
+            <Stack direction="column" gap="16px">
+              <CardGray
+                apparencePlaceHolder="gray"
+                label={dataCreditProspect.approvalObservations}
+                placeHolder={
+                  dataProspect?.clientManagerObservation === ""
+                    ? dataCreditProspect.approvalObservations
+                    : dataCreditProspect.approvalObservationsNotFound
+                }
+              />
+              <CardGray
+                apparencePlaceHolder="gray"
+                label={dataCreditProspect.clientsObservations}
+                placeHolder={
+                  dataProspect?.clientManagerObservation === ""
+                    ? dataCreditProspect.approvalObservations
+                    : dataCreditProspect.clientsObservationsNotFound
+                }
+              />
+            </Stack>
+          </BaseModal>
+        </>
       )}
 
       {showEditApprovalModal && (
@@ -607,6 +644,7 @@ export function CreditProspect(props: ICreditProspectProps) {
               value={editedApprovalObservations}
               onChange={handleApprovalObservationsChange}
               maxLength={250}
+              fullwidth
             />
             <CardGray
               apparencePlaceHolder="gray"

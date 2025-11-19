@@ -4,17 +4,17 @@ import { inube } from "@inubekit/inubekit";
 interface IStyledModal {
   $smallScreen: boolean;
   showIncrementField?: boolean;
+  $width?: string;
 }
 
 export const ScrollableContainer = styled.div<IStyledModal>`
-  width: ${({ $smallScreen }) => ($smallScreen ? "270px" : "auto")};
+  width: ${({ $smallScreen, $width }) => ($smallScreen ? $width || "270px" : "auto")};
   padding: 10px;
   display: flex;
   z-index: 1; 
   position: relative;
-  height: ${({ showIncrementField }) =>
-    showIncrementField ? "820px" : "700px"};
-  max-height: width: ${({ $smallScreen }) => ($smallScreen ? "auto" : "500px")};
+  overflow-y: auto;
+  height:  ${({ $smallScreen }) => ($smallScreen ? "calc(100vh - 300px)" : "calc(100vh - 330px)")};
 
   &::-webkit-scrollbar {
     width: 8px;

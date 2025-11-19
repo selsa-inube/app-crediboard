@@ -411,6 +411,7 @@ export const menuOptions = (
   {
     title: "Observaciones de preaprobación",
     onClick: () => {
+      console.log("Observaciones de preaprobación######");
       handleOpenModal("observationsModal");
     },
     icon: <MdOutlineMessage />,
@@ -431,4 +432,8 @@ export const tittleOptions = {
   titleError: "¡Uy, algo ha salido mal!",
   descriptionError: "No se han podido guardar los cambios.",
   deductibleExpensesErrorTitle: "Error al cargar gastos descontables",
+  descriptionDelete: "¿Realmente desea eliminar este producto?",
+  successDeleteDescription: "El producto fue eliminado correctamente",
+  successDeleteTitle: "Producto eliminado",
+  errorDeleteProduct: "No se pudo eliminar el producto",
 };

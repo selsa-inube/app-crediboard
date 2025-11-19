@@ -148,8 +148,8 @@ export const TableFinancialObligationsUI = ({
   const renderHeaders = () => {
     return visibleHeaders.map((header, index) =>
       loading ? (
-        <Td key={index} type="custom">
-          <SkeletonIcon />
+        <Td key={index} type="custom" width="100%">
+          <SkeletonIcon animated />
         </Td>
       ) : (
         <Th
@@ -167,8 +167,8 @@ export const TableFinancialObligationsUI = ({
   const renderLoadingRow = (key: number) => (
     <Tr key={key}>
       {visibleHeaders.map((_, index) => (
-        <Td key={index} type="custom">
-          <SkeletonLine />
+        <Td key={index} type="custom" width="100%">
+          <SkeletonLine animated width="100%" />
         </Td>
       ))}
     </Tr>
@@ -322,7 +322,7 @@ export const TableFinancialObligationsUI = ({
   return (
     <>
       <Stack direction="column" width="100%" gap="16px">
-        <Table tableLayout="auto">
+        <Table tableLayout="fixed">
           <Thead>
             <Tr>{renderHeaders()}</Tr>
           </Thead>

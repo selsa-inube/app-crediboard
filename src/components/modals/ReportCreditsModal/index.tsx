@@ -21,6 +21,8 @@ import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles"
+import { CardGray } from "@components/cards/CardGray";
 
 import { FinancialObligationModal } from "../financialObligationModal";
 import { defaultOptionsSelect, configSelect, errorMessages, restoreData } from "./config";
@@ -246,14 +248,6 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       );
 
       setLocalProspectData([refreshedData]);
-
-      addFlag({
-        title: "Restauración exitosa",
-        description:
-          "Las obligaciones financieras se han restaurado correctamente",
-        appearance: "success",
-        duration: 5000,
-      });
     } catch (error) {
       setErrorMessage(errorMessages.updateProspect.description);
       setErrorModal(true);
@@ -267,8 +261,13 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         nextButton={dataReport.close}
         handleNext={handleClose}
         handleClose={handleClose}
-        width={!isMobile ? "1050px" : "290px"}
+        width={!isMobile ? "1050px" : "320px"}
+        $height="calc(100vh - 64px)"
       >
+        <ScrollableContainer
+        $smallScreen={isMobile}
+        $width={isMobile ? "270px" : "auto"}
+        >
         <Stack direction="column" gap="16px">
           {loading ? (
             <></>
@@ -279,15 +278,10 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               gap="16px"
             >
               {optionsBorrowers && optionsBorrowers.length === 1 ? (
-                <Stack
-                  direction="row"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Text appearance="dark" as="h2">
-                    {optionsBorrowers[0]?.label}
-                  </Text>
-                </Stack>
+                <CardGray
+                  label={"Deudor"}
+                  placeHolder={optionsBorrowers[0]?.label}
+                />
               ) : (
                 <Select
                   id="income"
@@ -305,8 +299,20 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                 direction={isMobile ? "column" : "row"}
                 alignItems="center"
                 gap="16px"
+                width={
+                  isMobile 
+                  ? "100%" 
+                  : "auto"
+                }
               >
-                <Stack gap="2px">
+                <Stack 
+                  gap="2px"
+                  width={
+                  isMobile 
+                    ? "100%" 
+                    : "auto"
+                }
+                >
                   <Button
                     children={restoreData.label}
                     iconBefore={<MdCached />}
@@ -330,8 +336,22 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                     )}
                   </Stack>
                 </Stack>
-                <Stack gap="2px">
-                  <Stack gap="16px">
+                <Stack 
+                gap="2px"
+                width={
+                  isMobile 
+                  ? "100%" 
+                  : "auto"
+                }
+                >
+                  <Stack 
+                  gap="16px"
+                  width={
+                    isMobile 
+                    ? "100%" 
+                    : "auto"
+                  }
+                  >
                     <Button
                       children={dataReport.addObligations}
                       iconBefore={<MdAdd />}
@@ -406,6 +426,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         ) : (
           <></>
         )}
+        </ScrollableContainer>
       </BaseModal>
       {
         errorModal && (

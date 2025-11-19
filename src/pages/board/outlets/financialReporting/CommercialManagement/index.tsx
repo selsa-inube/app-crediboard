@@ -475,12 +475,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     return item.id === data.stage;
   }) as TBoardColumn[];
 
-  if(normalizedStageTitle[0]) {
+  if (normalizedStageTitle[0]) {
     normalizedStageTitle = normalizedStageTitle[0].value;
   } else {
     normalizedStageTitle = "";
   }
-  
+  console.log("principal component ***********");
   return (
     <>
       <Fieldset
@@ -630,6 +630,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   </StyledCollapseIcon>
                 </Stack>
               </Stack>
+
               {isMobile && (
                 <>
                   <StyledPrint>
@@ -698,6 +699,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           />
                         }
                         disabled={availableEditCreditRequest}
+                        onClick={() => handleOpenModal("editProductModal")}
                       >
                         {tittleOptions.titleAddProduct}
                       </Button>
@@ -777,7 +779,10 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   )}
                 </>
               )}
-              {collapse && <Stack>{isMobile && <Divider />}</Stack>}
+              <div
+                style={{ breakAfter: "avoid" }}>
+                {collapse && <Stack>{isMobile && <Divider />}</Stack>}
+              </div>
               {collapse && (
                 <CreditProspect
                   key={refreshKey}
@@ -803,6 +808,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setDataProspect={setDataProspect}
                   creditRequestCode={creditRequestCode}
                   availableEditCreditRequest={availableEditCreditRequest}
+                  openModal={openModal}
+                  setOpenModal={setOpenModal}
+                  currentModal={currentModal}
+                  handleOpenModal={handleOpenModal}
+                  handleCloseModal={handleCloseModal}
                   onProspectUpdate={(prospect) => {
                     setLocalProspectData(prospect);
                     setRefreshKey((prev) => prev + 1);

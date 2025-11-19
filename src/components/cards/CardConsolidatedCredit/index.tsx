@@ -48,7 +48,7 @@ export interface ICardConsolidatedCreditProps {
 
 export function CardConsolidatedCredit(props: ICardConsolidatedCreditProps) {
   const {
-        onUpdateTotal,
+    onUpdateTotal,
     title,
     code,
     expiredValue,
@@ -218,7 +218,6 @@ const hasInitialValue = initialValue !== undefined && initialValue > 0;
         </Stack>
         <Stack justifyContent="space-between" alignItems="center" width="100%">
           <Button
-            children={dataConsolidatedCredit.button}
             iconBefore={<MdOutlineDelete />}
             variant="outlined"
             appearance="danger"

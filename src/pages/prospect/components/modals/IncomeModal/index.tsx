@@ -4,6 +4,7 @@ import { IOption, useFlag, useMediaQuery } from "@inubekit/inubekit";
 import { BaseModal } from "@components/modals/baseModal";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { SourceIncome } from "@pages/prospect/components/SourceIncome";
+import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles"
 
 import { dataIncomeModal } from "./config";
 
@@ -35,6 +36,7 @@ export function IncomeModal(props: IncomeModalProps) {
   const [formData, setFormData] = useState<IIncomeSources | undefined>(
     initialValues
   );
+  const [isShowingEdit, setIsShowingEdit] = useState<boolean>(false);
 
   const handleDataChange = (newData: IIncomeSources) => {
     setFormData(newData);
@@ -55,7 +57,7 @@ export function IncomeModal(props: IncomeModalProps) {
       duration: 5000,
     });
   };
-
+  console.log("(isMobile && isShowingEdit): ", (isMobile && isShowingEdit));
   return (
     <BaseModal
       title={dataIncomeModal.title}
@@ -65,19 +67,23 @@ export function IncomeModal(props: IncomeModalProps) {
       handleBack={handleClose}
       width={isMobile ? "auto" : "1002px"}
       finalDivider={true}
+      $height={(isMobile) ? "calc(100vh - 64px)" : "auto"}
     >
-      <SourceIncome
-        ShowSupport={false}
-        disabled={disabled}
-        openModal={openModal}
-        data={initialValues}
-        showEdit={false}
-        onDataChange={handleDataChange}
-        businessUnitPublicCode={businessUnitPublicCode}
-        businessManagerCode={businessManagerCode}
-        creditRequestCode={creditRequestCode}
-        borrowerOptions={borrowerOptions}
-      />
+      <ScrollableContainer $smallScreen={(isMobile)}>
+        <SourceIncome
+          ShowSupport={false}
+          disabled={disabled}
+          openModal={openModal}
+          data={initialValues}
+          showEdit={false}
+          onDataChange={handleDataChange}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          creditRequestCode={creditRequestCode}
+          borrowerOptions={borrowerOptions}
+          setIsShowingEdit={setIsShowingEdit}
+        />
+      </ScrollableContainer>
     </BaseModal>
   );
 }

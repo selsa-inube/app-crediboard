@@ -278,7 +278,7 @@ export const stepsAddProduct = {
     id: 3,
     number: 3,
     name: "Restricciones de la solicitud",
-    description: "Restricciones del cliente en cuota o plazo de pago.",
+    description: "Restricciones del cliente.",
   },
   amountCapture: {
     id: 4,
