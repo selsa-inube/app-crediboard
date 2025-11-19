@@ -134,10 +134,15 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   }, [fetchData]);
 
   useEffect(() => {
-    if (chatContentRef.current) {
-      chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+    if (chatContentRef.current && !loading && traces.length > 0) {
+      requestAnimationFrame(() => {
+        if (chatContentRef.current) {
+          chatContentRef.current.scrollTop =
+            chatContentRef.current.scrollHeight;
+        }
+      });
     }
-  }, [traces]);
+  }, [traces, loading]);
 
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -145,7 +150,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     const newTrace: ITraceType = {
       creditRequestId: creditRequest?.creditRequestId,
       traceValue: newMessage,
-      traceType: "Message",
+      traceType: "Novelty",
       executionDate: new Date().toISOString(),
     };
 
@@ -158,6 +163,13 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       );
       setTraces((prev) => [...prev, newTrace]);
       setNewMessage("");
+
+      requestAnimationFrame(() => {
+        if (chatContentRef.current) {
+          chatContentRef.current.scrollTop =
+            chatContentRef.current.scrollHeight;
+        }
+      });
     } catch (error) {
       setErrorMessage(errorMessages.registerNewsToACreditRequest.description);
       setErrorModal(true);
@@ -206,18 +218,25 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   };
 
   const renderMessages = () =>
-    traces.map((trace, index) => (
-      <Message
-        key={index}
-        type={getMessageType(trace.traceType)}
-        timestamp={trace.executionDate || ""}
-        message={trace.traceValue}
-        icon={<MdInfoOutline size={14} />}
-        onIconClick={() => {
-          handleIconClick(trace);
-        }}
-      />
-    ));
+    traces
+      .slice()
+      .sort((a, b) => {
+        const dateA = new Date(a.executionDate || 0).getTime();
+        const dateB = new Date(b.executionDate || 0).getTime();
+        return dateA - dateB;
+      })
+      .map((trace, index) => (
+        <Message
+          key={index}
+          type={getMessageType(trace.traceType)}
+          timestamp={trace.executionDate || ""}
+          message={trace.traceValue}
+          icon={<MdInfoOutline size={14} />}
+          onIconClick={() => {
+            handleIconClick(trace);
+          }}
+        />
+      ));
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleInfo = () => {
@@ -261,7 +280,12 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
               <ChatContent ref={chatContentRef}>
                 {loading ? renderSkeletons() : renderMessages()}
               </ChatContent>
-              <form>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  sendMessage();
+                }}
+              >
                 <Stack
                   alignItems="center"
                   direction="row"
