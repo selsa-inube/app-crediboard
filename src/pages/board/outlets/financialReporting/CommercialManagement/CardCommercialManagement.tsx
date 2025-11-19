@@ -27,7 +27,7 @@ import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { RemoveCreditProduct } from "@services/creditRequest/command/removeCreditProduct";
 import { ErrorModal } from "@components/modals/ErrorModal";
 
-import { StyledCardsCredit, StyledPrint } from "./styles";
+import { StyledCardsCredit, StyledPrint, StylePrintCardSummary } from "./styles";
 import { SummaryProspectCredit, tittleOptions } from "./config/config";
 
 interface CardCommercialManagementProps {
