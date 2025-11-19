@@ -96,3 +96,11 @@ export const StyledPrint = styled.div`
     display: none;
   }
 `;
+
+export const StylePrintCardSummary = styled.div`
+  @media print {
+    & > div {
+      zoom: 1.9;
+    }
+  }
+`;
