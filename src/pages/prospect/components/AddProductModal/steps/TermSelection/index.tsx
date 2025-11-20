@@ -39,6 +39,7 @@ export function TermSelection(props: ITermSelection) {
         maximumTermEnabled: false,
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initialValues: ITermSelectionValuesMain = {

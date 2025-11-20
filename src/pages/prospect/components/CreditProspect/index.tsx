@@ -48,7 +48,7 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect, errorMessage } from "./config";
-import { StyledPrint } from "./styles";
+import { StyledPrint, StyledPrintCardProspect } from "./styles";
 import { IIncomeSources } from "./types";
 import { CreditLimitModal } from "../modals/CreditLimitModal";
 import { IncomeModal } from "../modals/IncomeModal";
@@ -133,23 +133,10 @@ export function CreditProspect(props: ICreditProspectProps) {
 
   const { addFlag } = useFlag();
 
-  /*   const handleOpenModal = (modalName: string) => {
-      setModalHistory((prevHistory) => [...prevHistory, modalName]);
-    }; */
-
-  /*   const handleCloseModal = () => {
-      setModalHistory((prevHistory) => {
-        const newHistory = [...prevHistory];
-        newHistory.pop();
-        return newHistory;
-      });
-    }; */
-
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
 
-  /*   const currentModal = modalHistory[modalHistory.length - 1]; */
   const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -327,12 +314,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     interestRate: "",
     rateType: "",
   };
-  useEffect(() => {
-    console.log("currentModal------------ ", currentModal);
-  }, [currentModal])
-  console.log("current Modal:=== ", currentModal);
-  console.log("dataCreditProspect: ", dataCreditProspect);
-  console.log("===================================================");
+
   return (
     <Stack direction="column" gap="24px">
       {!isMobile && (
@@ -425,21 +407,23 @@ export function CreditProspect(props: ICreditProspectProps) {
           </Stack>
         </StyledPrint>
       )}
-      <Stack direction="column">
-        <CardCommercialManagement
-          id={creditRequestCode!}
-          dataRef={dataCommercialManagementRef}
-          moneyDestination={dataProspect?.moneyDestinationAbbreviatedName}
-          businessManagerCode={businessManagerCode}
-          clientIdentificationNumber={
-            dataMaximumCreditLimitService.identificationDocumentNumber
-          }
-          onClick={() => handleOpenModal("editProductModal")}
-          prospectData={prospectData || undefined}
-          onProspectUpdate={onProspectUpdate}
-          availableEditCreditRequest={availableEditCreditRequest}
-        />
-      </Stack>
+      <StyledPrintCardProspect>
+        <Stack direction="column">
+          <CardCommercialManagement
+            id={creditRequestCode!}
+            dataRef={dataCommercialManagementRef}
+            moneyDestination={dataProspect?.moneyDestinationAbbreviatedName}
+            businessManagerCode={businessManagerCode}
+            clientIdentificationNumber={
+              dataMaximumCreditLimitService.identificationDocumentNumber
+            }
+            onClick={() => handleOpenModal("editProductModal")}
+            prospectData={prospectData || undefined}
+            onProspectUpdate={onProspectUpdate}
+            availableEditCreditRequest={availableEditCreditRequest}
+          />
+        </Stack>
+      </StyledPrintCardProspect>
       {currentModal === "creditLimit" && (
         <CreditLimitModal
           handleClose={handleCloseModal}
@@ -455,9 +439,9 @@ export function CreditProspect(props: ICreditProspectProps) {
       {openModal === "paymentCapacity" && (
         <PaymentCapacity
           title="Cupo máx. capacidad de pago"
-          handleClose={() =>{ 
-            if(setOpenModal)
-            setOpenModal(null)
+          handleClose={() => {
+            if (setOpenModal)
+              setOpenModal(null)
           }}
           reportedIncomeSources={2000000}
           reportedFinancialObligations={6789000}
@@ -470,8 +454,8 @@ export function CreditProspect(props: ICreditProspectProps) {
       {openModal === "reciprocityModal" && (
         <ReciprocityModal
           handleClose={() => {
-            if(setOpenModal)
-            setOpenModal(null)
+            if (setOpenModal)
+              setOpenModal(null)
           }}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
@@ -483,8 +467,8 @@ export function CreditProspect(props: ICreditProspectProps) {
       {openModal === "scoreModal" && (
         <ScoreModal
           handleClose={() => {
-            if(setOpenModal) 
-            setOpenModal(null)
+            if (setOpenModal)
+              setOpenModal(null)
           }}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}

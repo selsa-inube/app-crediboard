@@ -5,3 +5,14 @@ export const StyledPrint = styled.div`
     display: none;
   }
 `;
+
+export const StyledPrintCardProspect = styled.div`
+  @media print {
+    zoom: 1;
+      height: auto !important;       
+      max-height: none !important;   
+      overflow: visible !important;  
+      display: block !important; 
+      align-items: start !important;
+  }
+`

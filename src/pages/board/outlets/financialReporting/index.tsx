@@ -42,6 +42,7 @@ import {
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ShareModal } from "@components/modals/ShareModal";
 
+import { StyledPrint } from "./CommercialManagement/styles"; 
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";
 import {
@@ -600,6 +601,7 @@ export const FinancialReporting = () => {
             />
           )}
           {showMenu && isMobile && (
+            <StyledPrint>
             <MobileMenu
               onClose={() => setShowMenu(false)}
               onReject={hanleOnReject}
@@ -608,6 +610,7 @@ export const FinancialReporting = () => {
               onViewAttachments={handleOnViewAttachments}
               onGuarantee={() => setShowGuarantee(true)}
             />
+            </StyledPrint>
           )}
         </Stack>
       </StyledMarginPrint>
@@ -621,8 +624,8 @@ export const FinancialReporting = () => {
       {pdfState.isGenerating && (
         <Blanket>
           <StyledContainerSpinner>
-            <Spinner size="large" />
-            <Text size="large" weight="bold">
+            <Spinner size="large" appearance="primary" />
+            <Text size="large" weight="bold" appearance="light">
               {errorMessages.share.spinner}
             </Text>
           </StyledContainerSpinner>

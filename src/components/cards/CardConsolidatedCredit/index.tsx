@@ -16,7 +16,6 @@ import {
   dataConsolidatedCredit,
   IApplyPayOption
  } from "./config";
-import { getInitialLabel } from "./utils";
 
 export interface ICardConsolidatedCreditProps {
   onUpdateTotal: (
@@ -44,6 +43,7 @@ export interface ICardConsolidatedCreditProps {
     value: number,
   ) => void;
   handleRemoveCredit?: (code: string) => void;
+  arrears?: boolean;
 }
 
 export function CardConsolidatedCredit(props: ICardConsolidatedCreditProps) {

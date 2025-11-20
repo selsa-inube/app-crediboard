@@ -87,6 +87,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
     } else {
       setDisplayValue("");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCurrencyChange = (event: React.ChangeEvent<HTMLInputElement>) => {

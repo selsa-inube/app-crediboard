@@ -480,7 +480,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   } else {
     normalizedStageTitle = "";
   }
-  console.log("principal component ***********");
+
   return (
     <>
       <Fieldset
@@ -684,6 +684,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               {collapse && (
                 <>
                   {isMobile && (
+                    <StyledPrint>
                     <Stack padding="10px 0px" width="100%">
                       <Button
                         type="button"
@@ -704,11 +705,13 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                         {tittleOptions.titleAddProduct}
                       </Button>
                     </Stack>
+                    </StyledPrint>
                   )}
                 </>
               )}
               {collapse && (
                 <>
+                <StyledPrint>
                   {isMobile && (
                     <Stack padding="0px 0px 10px">
                       {prospectProducts?.some(
@@ -735,11 +738,13 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                         )}
                     </Stack>
                   )}
+                  </StyledPrint>
                 </>
               )}
               {collapse && (
                 <>
                   {isMobile && (
+                    <StyledPrint>
                     <Stack justifyContent="end">
                       <StyledContainerIcon>
                         <Icon
@@ -768,7 +773,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           <MenuProspect
                             options={menuOptions(
                               handleOpenModal,
-                              !prospectProducts?.some(
+                              prospectProducts?.some(
                                 (product) => product.extraordinaryInstallments
                               )
                             )}
@@ -776,6 +781,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                         )}
                       </StyledContainerIcon>
                     </Stack>
+                    </StyledPrint>
                   )}
                 </>
               )}
@@ -789,7 +795,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   borrowersProspect={borrowersProspect}
                   borrowerOptions={borrowerOptions}
                   selectedIndex={selectedIndex}
-                  dataProspect={dataProspect}
+                  dataProspect={dataProspect[0]}
                   selectedBorrower={selectedBorrower}
                   incomeData={incomeData}
                   isMobile={isMobile}
@@ -836,7 +842,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 borrowersProspect={borrowersProspect}
                 borrowerOptions={borrowerOptions}
                 selectedIndex={selectedIndex}
-                dataProspect={dataProspect}
+                dataProspect={dataProspect[0]}
                 selectedBorrower={selectedBorrower}
                 isMobile={isMobile}
                 handleCloseModal={handleCloseModal}

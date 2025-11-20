@@ -17,41 +17,6 @@ const getLinesOfCreditByMoneyDestination = async (
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      return [
-  {
-    abbreviateName: "Libre destino",
-    amortizationType: ["CUOTA_FIJA", "ABONOS_CAPITAL"],
-    description: "Libre destino",
-    maxAmount: 20000000,
-    maxEffectiveInterestRate: 1.049,
-    maxTerm: 120,
-    minAmount: 1000000,
-    minEffectiveInterestRate: 0.95,
-    minTerm: 6,
-  },
-  {
-    abbreviateName: "Hogar",
-    amortizationType: ["Vehiculo"],
-    description: "Crédito de vehículo",
-    maxAmount: 50000000,
-    maxEffectiveInterestRate: 1.2,
-    maxTerm: 60,
-    minAmount: 5000000,
-    minEffectiveInterestRate: 0.85,
-    minTerm: 12,
-  },
-  {
-    abbreviateName: "Vivienda",
-    amortizationType: ["CUOTA_FIJA", "ABONOS_CAPITAL", "CUOTA_VARIABLE"],
-    description: "Crédito hipotecario",
-    maxAmount: 200000000,
-    maxEffectiveInterestRate: 1.15,
-    maxTerm: 240,
-    minAmount: 20000000,
-    minEffectiveInterestRate: 0.75,
-    minTerm: 60,
-  },
-];
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const options: RequestInit = {

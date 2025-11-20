@@ -72,6 +72,8 @@ export const StyledCardsCredit = styled.div<IStyledCardsCredit>`
     & > div {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
+      margin: 0;
+      align-items: start;
     }
   }
 `;
@@ -99,8 +101,19 @@ export const StyledPrint = styled.div`
 
 export const StylePrintCardSummary = styled.div`
   @media print {
-    & > div {
-      zoom: 1.9;
-    }
+    zoom: .9;
+    page-break-inside: avoid;
   }
 `;
+
+export const StyledPrintCardProspect = styled.div`
+  @media print {
+    zoom: 1;
+    height: auto !important;       
+    max-height: none !important;   
+    overflow: visible !important;  
+    display: block !important; 
+    margin: 0px !important;
+  }
+
+`

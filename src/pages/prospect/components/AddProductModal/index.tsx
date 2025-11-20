@@ -97,7 +97,7 @@ function AddProductModal(props: IAddProductModalProps) {
         setLoading(false);
       }
       })();
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode]);
 
   useEffect(() => {
@@ -142,6 +142,7 @@ function AddProductModal(props: IAddProductModalProps) {
     };
 
     loadPaymentOptions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
 
   useEffect(() => {
@@ -151,9 +152,9 @@ function AddProductModal(props: IAddProductModalProps) {
         setIsCurrentFormValid(isValid);
       } else if (currentStep === stepsAddProduct.paymentConfiguration.id) {
         const isValid =
-          !!formData.paymentConfiguration.paymentMethod &&
-          !!formData.paymentConfiguration.paymentCycle &&
-          !!formData.paymentConfiguration.firstPaymentDate;
+          !!formData.paymentConfiguration.paymentMethod && // eslint-disable-line no-implicit-coercion
+          !!formData.paymentConfiguration.paymentCycle && // eslint-disable-line no-implicit-coercion
+          !!formData.paymentConfiguration.firstPaymentDate; // eslint-disable-line no-implicit-coercion
         setIsCurrentFormValid(isValid);
       }
     };

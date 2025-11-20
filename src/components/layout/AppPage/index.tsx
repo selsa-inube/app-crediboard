@@ -231,6 +231,7 @@ function AppPage() {
           </StyledCollapseIcon>
         </StyledPrint>
         {collapse && (
+          <StyledPrint>
           <StyledCollapse ref={businessUnitChangeRef}>
             <BusinessUnitChange
               businessUnits={businessUnitsToTheStaff}
@@ -238,7 +239,9 @@ function AppPage() {
               onLogoClick={handleLogoClick}
             />
           </StyledCollapse>
+          </StyledPrint>
         )}
+        
         <StyledContainer>
           {showUserMenu && (
             <StyledMenuContainer ref={userMenuRef}>

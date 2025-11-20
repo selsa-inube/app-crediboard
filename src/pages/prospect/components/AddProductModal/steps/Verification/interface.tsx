@@ -20,7 +20,7 @@ export const VerificationAddProductUI = (
 
   return (
     <Stack gap="8px" direction="column" margin="0 6px 0 0">
-      {dataVerificationStep.map((dataStept, __) =>
+      {dataVerificationStep.map((dataStept) =>
         keySections.map((keySection) => {
           const section = dataStept.sections[keySection];
           const hasContent =

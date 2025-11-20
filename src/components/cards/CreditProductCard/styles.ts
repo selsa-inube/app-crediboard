@@ -21,7 +21,7 @@ export const StyledCreditProductCard = styled.div<IStyledProduct>`
   box-shadow: 0px 4px 8px 3px rgba(9, 30, 66, 0.13);
   cursor: ${({ $new }) => ($new ? "pointer" : "normal")};
   @media print {
-    height: 365px;
+    height: 335px;
   }
 `;
 export const StyledDivider = styled.hr`

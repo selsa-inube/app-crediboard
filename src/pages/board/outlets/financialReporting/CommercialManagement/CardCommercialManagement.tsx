@@ -27,7 +27,7 @@ import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { RemoveCreditProduct } from "@services/creditRequest/command/removeCreditProduct";
 import { ErrorModal } from "@components/modals/ErrorModal";
 
-import { StyledCardsCredit, StyledPrint, StylePrintCardSummary } from "./styles";
+import { StyledCardsCredit, StyledPrint, StylePrintCardSummary, StyledPrintCardProspect } from "./styles";
 import { SummaryProspectCredit, tittleOptions } from "./config/config";
 
 interface CardCommercialManagementProps {
@@ -151,7 +151,7 @@ export const CardCommercialManagement = (
       setShowErrorModal(true);
       setMessageError(tittleOptions.errorDeleteProduct || description);
       setIsSendingData(false);
-      
+
     }
   };
 
@@ -213,169 +213,173 @@ export const CardCommercialManagement = (
   }, [businessUnitPublicCode, prospectData?.prospectId]);
 
   return (
-    <div ref={dataRef}>
-      <StyledCardsCredit $isMobile={isMobile}>
-        <Stack
-          gap="24px"
-          width="fit-content"
-          padding="4px 8px 16px 8px"
-          direction={isMobile ? "column" : "row"}
-        >
-          {prospectProducts.map((entry, index) => (
-            <CreditProductCard
-              key={`${entry.creditProductCode}-${index}`}
-              lineOfCredit={entry.lineOfCreditAbbreviatedName}
-              paymentMethod={
-                entry.ordinaryInstallmentsForPrincipal?.[0]
-                  ?.paymentChannelAbbreviatedName
-              }
-              loanAmount={entry.loanAmount}
-              interestRate={entry.interestRate}
-              termMonths={entry.loanTerm}
-              periodicFee={
-                entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
-              }
-              schedule={entry.schedule as Schedule}
-              availableEditCreditRequest={availableEditCreditRequest}
-              onEdit={
-                editCreditApplication
-                  ? handleInfo
-                  : () => {
-                    setSelectedProduct(entry);
-                    setModalHistory((prev) => [...prev, "editProductModal"]);
-                  }
-              }
-              onDelete={
-                editCreditApplication
-                  ? handleInfo
-                  : () => handleDeleteClick(entry.creditProductCode)
-              }
-            />
-          ))}
-          {
-            !availableEditCreditRequest && (
-              <StyledPrint>
-                <NewCreditProductCard onClick={onClick} />
-              </StyledPrint>
-            )
-          }
-        </Stack>
-      </StyledCardsCredit>
-      <div style={{pageBreakInside: "avoid"}}>
-      {isMobile && <Divider />}
-      <Stack
-        gap="24px"
-        margin="36px 16px 8px 8px"
-        direction={isMobile ? "column" : "row"}
-        justifyContent="space-between"
-      >
-        {SummaryProspectCredit.map((entry, index) => (
-          <CardValues
-            key={index}
-            items={entry.item.map((item) => ({
-              ...item,
-              amount: String(prospectSummaryData?.[item.id] ?? 0),
-              icon: item.id === "totalConsolidatedAmount" && availableEditCreditRequest
-                ? <MdOutlineRemoveRedEye />
-                : item.icon,
-            }))}
-            showIcon={entry.iconEdit}
-            isMobile={isMobile}
-            handleEdit={() => setShowConsolidatedModal(true)}
-            handleView={() => setDeductibleExpensesModal(true)}
+    <StyledPrintCardProspect>
+      <div ref={dataRef}>
+        <StyledCardsCredit $isMobile={isMobile}>
+          <Stack
+            gap="24px"
+            width="fit-content"
+            padding="4px 8px 16px 8px"
+            direction={isMobile ? "column" : "row"}
+          >
+            {prospectProducts.map((entry, index) => (
+              <CreditProductCard
+                key={`${entry.creditProductCode}-${index}`}
+                lineOfCredit={entry.lineOfCreditAbbreviatedName}
+                paymentMethod={
+                  entry.ordinaryInstallmentsForPrincipal?.[0]
+                    ?.paymentChannelAbbreviatedName
+                }
+                loanAmount={entry.loanAmount}
+                interestRate={entry.interestRate}
+                termMonths={entry.loanTerm}
+                periodicFee={
+                  entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
+                }
+                schedule={entry.schedule as Schedule}
+                availableEditCreditRequest={availableEditCreditRequest}
+                onEdit={
+                  editCreditApplication
+                    ? handleInfo
+                    : () => {
+                      setSelectedProduct(entry);
+                      setModalHistory((prev) => [...prev, "editProductModal"]);
+                    }
+                }
+                onDelete={
+                  editCreditApplication
+                    ? handleInfo
+                    : () => handleDeleteClick(entry.creditProductCode)
+                }
+              />
+            ))}
+            {
+              !availableEditCreditRequest && (
+                <StyledPrint>
+                  <NewCreditProductCard onClick={onClick} />
+                </StyledPrint>
+              )
+            }
+          </Stack>
+        </StyledCardsCredit>
+        <div style={{ pageBreakInside: "avoid" }}>
+          {isMobile && <Divider />}
+          <StylePrintCardSummary>
+            <Stack
+              gap="24px"
+              margin="36px 16px 8px 8px"
+              direction={isMobile ? "column" : "row"}
+              justifyContent="space-between"
+            >
+              {SummaryProspectCredit.map((entry, index) => (
+                <CardValues
+                  key={index}
+                  items={entry.item.map((item) => ({
+                    ...item,
+                    amount: String(prospectSummaryData?.[item.id] ?? 0),
+                    icon: item.id === "totalConsolidatedAmount" && availableEditCreditRequest
+                      ? <MdOutlineRemoveRedEye />
+                      : item.icon,
+                  }))}
+                  showIcon={entry.iconEdit}
+                  isMobile={isMobile}
+                  handleEdit={() => setShowConsolidatedModal(true)}
+                  handleView={() => setDeductibleExpensesModal(true)}
+                />
+              ))}
+            </Stack>
+          </StylePrintCardSummary>
+        </div>
+        {showDeleteModal && (
+          <DeleteModal
+            handleClose={() => setShowDeleteModal(false)}
+            handleDelete={handleDelete}
+            TextDelete={tittleOptions.descriptionDelete}
+            isSendingData={isSendingData}
           />
-        ))}
-      </Stack>
+        )}
+        {currentModal === "editProductModal" && selectedProduct && (
+          <EditProductModal
+            onCloseModal={() => setModalHistory((prev) => prev.slice(0, -1))}
+            title={`Editar producto`}
+            confirmButtonText="Guardar"
+            moneyDestination={moneyDestination}
+            initialValues={{
+              creditLine: selectedProduct.lineOfCreditAbbreviatedName || "",
+              creditAmount: selectedProduct.loanAmount || 0,
+              paymentMethod:
+                selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
+                  ?.paymentChannelAbbreviatedName || "",
+              paymentCycle: selectedProduct.schedule || "",
+              firstPaymentCycle: "",
+              termInMonths: selectedProduct.loanTerm || 0,
+              amortizationType: "",
+              interestRate: selectedProduct.interestRate || 0,
+              rateType: "",
+            }}
+            businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
+            clientIdentificationNumber={clientIdentificationNumber}
+            creditRequestCode={id || ""}
+            creditProductCode={selectedProduct?.creditProductCode || ""}
+            prospectId={prospectData?.prospectId || ""}
+            onProspectUpdate={(updatedProspect) => {
+
+              if (updatedProspect?.creditProducts) {
+                setProspectProducts(updatedProspect.creditProducts);
+              }
+
+              if (onProspectUpdate) {
+                onProspectUpdate(updatedProspect);
+              }
+
+              setModalHistory((prev) => prev.slice(0, -1));
+            }}
+
+          />
+        )}
+
+        {showConsolidatedModal && (
+          <ConsolidatedCredits
+            handleClose={() => setShowConsolidatedModal(false)}
+            prospectData={prospectData}
+            availableEditCreditRequest={availableEditCreditRequest}
+            handleInfo={handleInfo}
+            businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
+            consolidatedCredits={consolidatedCredits}
+            setConsolidatedCredits={setConsolidatedCredits}
+            onProspectUpdated={() => { }}
+            clientIdentificationNumber={clientIdentificationNumber}
+            creditRequestCode={id || ""}
+          />
+        )}
+        {showDeductibleExpensesModal && (
+          <DeductibleExpensesModal
+            handleClose={() => setDeductibleExpensesModal(false)}
+            initialValues={deductibleExpenses}
+            loading={isLoading}
+            isMobile={isMobile}
+          />
+        )}
+        {isModalOpen && (
+          <InfoModal
+            onClose={handleInfoModalClose}
+            title={privilegeCrediboard.title}
+            subtitle={privilegeCrediboard.subtitle}
+            description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
+            nextButtonText={privilegeCrediboard.nextButtonText}
+            isMobile={isMobile}
+          />
+        )}
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => setShowErrorModal(false)}
+            isMobile={isMobile}
+            message={messageError}
+          />
+        )}
       </div>
-      {showDeleteModal && (
-        <DeleteModal
-          handleClose={() => setShowDeleteModal(false)}
-          handleDelete={handleDelete}
-          TextDelete={tittleOptions.descriptionDelete}
-          isSendingData={isSendingData}
-        />
-      )}
-      {currentModal === "editProductModal" && selectedProduct && (
-        <EditProductModal
-          onCloseModal={() => setModalHistory((prev) => prev.slice(0, -1))}
-          title={`Editar producto`}
-          confirmButtonText="Guardar"
-          moneyDestination={moneyDestination}
-          initialValues={{
-            creditLine: selectedProduct.lineOfCreditAbbreviatedName || "",
-            creditAmount: selectedProduct.loanAmount || 0,
-            paymentMethod:
-              selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
-                ?.paymentChannelAbbreviatedName || "",
-            paymentCycle: selectedProduct.schedule || "",
-            firstPaymentCycle: "",
-            termInMonths: selectedProduct.loanTerm || 0,
-            amortizationType: "",
-            interestRate: selectedProduct.interestRate || 0,
-            rateType: "",
-          }}
-          businessUnitPublicCode={businessUnitPublicCode}
-          businessManagerCode={businessManagerCode}
-          clientIdentificationNumber={clientIdentificationNumber}
-          creditRequestCode={id || ""}
-          creditProductCode={selectedProduct?.creditProductCode || ""}
-          prospectId={prospectData?.prospectId || ""}
-          onProspectUpdate={(updatedProspect) => {
-
-            if (updatedProspect?.creditProducts) {
-              setProspectProducts(updatedProspect.creditProducts);
-            }
-
-            if (onProspectUpdate) {
-              onProspectUpdate(updatedProspect);
-            }
-
-            setModalHistory((prev) => prev.slice(0, -1));
-          }}
-
-        />
-      )}
-
-      {showConsolidatedModal && (
-        <ConsolidatedCredits
-          handleClose={() => setShowConsolidatedModal(false)}
-          prospectData={prospectData}
-          availableEditCreditRequest={availableEditCreditRequest}
-          handleInfo={handleInfo}
-          businessUnitPublicCode={businessUnitPublicCode}
-          businessManagerCode={businessManagerCode}
-          consolidatedCredits={consolidatedCredits}
-          setConsolidatedCredits={setConsolidatedCredits}
-          onProspectUpdated={() => { }}
-          clientIdentificationNumber={clientIdentificationNumber}
-          creditRequestCode={id || ""}
-        />
-      )}
-      {showDeductibleExpensesModal && (
-        <DeductibleExpensesModal
-          handleClose={() => setDeductibleExpensesModal(false)}
-          initialValues={deductibleExpenses}
-          loading={isLoading}
-          isMobile={isMobile}
-        />
-      )}
-      {isModalOpen && (
-        <InfoModal
-          onClose={handleInfoModalClose}
-          title={privilegeCrediboard.title}
-          subtitle={privilegeCrediboard.subtitle}
-          description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
-          nextButtonText={privilegeCrediboard.nextButtonText}
-          isMobile={isMobile}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => setShowErrorModal(false)}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
-    </div>
+    </StyledPrintCardProspect>
   );
 };

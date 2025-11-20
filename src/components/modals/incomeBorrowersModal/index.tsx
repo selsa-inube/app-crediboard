@@ -7,7 +7,6 @@ import {
   Select,
   Stack,
   Text,
-  Textfield,
 } from "@inubekit/inubekit";
 
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
@@ -56,13 +55,6 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
-
-  const getOptionLabel = (options: IOption[], value: string) => {
-    const option = options?.find(
-      (opt) => opt.id === value || opt.value === value
-    );
-    return option?.label || option?.value || value;
-  };
 
   useEffect(() => {
     if (

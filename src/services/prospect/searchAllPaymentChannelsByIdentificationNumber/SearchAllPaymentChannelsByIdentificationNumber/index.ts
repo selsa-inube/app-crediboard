@@ -19,39 +19,6 @@ export const GetSearchAllPaymentChannels = async (
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      return [
-  {
-    abbreviatedName: "Nomina",
-    paymentChannel: "Transferencia digital",
-    regularCycles: [
-      {
-        cycleName: "QUINCENAL",
-        detailOfPaymentDate: [
-          "2025-01-15T00:00:00Z",
-          "2025-01-30T00:00:00Z",
-          "2025-02-14T00:00:00Z",
-        ],
-      },
-      {
-        cycleName: "MENSUAL",
-        detailOfPaymentDate: [
-          "2025-01-31T00:00:00Z",
-          "2025-02-28T00:00:00Z",
-          "2025-03-31T00:00:00Z",
-        ],
-      },
-      {
-        cycleName: "SEMANAL",
-        detailOfPaymentDate: [
-          "2025-01-08T00:00:00Z",
-          "2025-01-15T00:00:00Z",
-          "2025-01-22T00:00:00Z",
-        ],
-      },
-    ],
-  },
-
-];
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
 

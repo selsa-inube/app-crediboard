@@ -53,6 +53,8 @@ Default.args = {
   fullPayment: 8000,
   arrears: false,
   date: new Date(),
+  tags: [],
+  description: "Próximo pago a realizar",
 } satisfies ICardConsolidatedCreditProps;
 
 export default story;

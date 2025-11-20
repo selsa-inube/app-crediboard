@@ -235,10 +235,12 @@ function EditProductModal(props: EditProductModalProps) {
         setAmortizationTypesList(amortizationTypeOptions);
       } finally {
         setIsLoadingAmortizationTypes(false);
+        isLoadingAmortizationTypes;
       }
     };
 
     loadAmortizationTypes();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
 
   useEffect(() => {
