@@ -1,24 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Stack, Text, Textarea, Toggle, useFlag } from "@inubekit/inubekit";
+import { Stack, Text, Textarea, Toggle } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
-import { dataFlags } from "@config/components/flags/flag.config";
 
 import { IApprovalSystem } from "../types";
 import { approvalsConfig } from "./config";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 interface ISystemValidationApprovalModalProps {
   isMobile: boolean;
   initialValues: IApprovalSystem;
   questionToBeAskedInModal: string;
   businessUnitPublicCode: string;
-  businessManagerCode: string,
+  businessManagerCode: string;
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
   rawRequirements: IPackagesOfRequirementsById[];
@@ -42,7 +42,8 @@ export function SystemValidationApprovalModal(
     onCloseModal,
   } = props;
 
-  const { addFlag } = useFlag();
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const validationSchema = Yup.object({
     toggleChecked: Yup.boolean(),
@@ -97,21 +98,9 @@ export function SystemValidationApprovalModal(
         if (onCloseModal) {
           onCloseModal();
         }
-      } catch (error: unknown) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-        addFlag({
-          title: approvalsConfig.titleError,
-          description,
-          appearance: "danger",
-          duration: dataFlags.duration,
-        });
+      } catch (error) {
+        setShowErrorModal(true);
+        setMessageError(approvalsConfig.titleError);
       }
     },
   });
@@ -169,6 +158,15 @@ export function SystemValidationApprovalModal(
           required
           fullwidth
         />
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
+            message={messageError}
+          />
+        )}
       </Stack>
     </BaseModal>
   );

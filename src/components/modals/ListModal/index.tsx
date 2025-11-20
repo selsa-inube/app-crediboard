@@ -68,7 +68,7 @@ export interface IListModalProps {
   isViewing?: boolean;
   uploadedFiles?: IDocumentUpload[];
   onlyDocumentReceived?: boolean;
-  handleClose: (filesSaved?: boolean) => void; 
+  handleClose: (filesSaved?: boolean) => void;
   handleSubmit?: () => void;
   onSubmit?: () => void;
   setUploadedFiles?: React.Dispatch<React.SetStateAction<IDocumentUpload[]>>;
@@ -275,11 +275,11 @@ export const ListModal = (props: IListModalProps) => {
           setUploadedFiles([]);
         }
 
-        filesSaved = true; 
+        filesSaved = true;
 
         handleFlag(
           optionFlags.title,
-          optionFlags.description,
+          optionFlags. descriptionSuccess,
           optionFlags.appearance as FlagAppearance
         );
       }
@@ -405,7 +405,7 @@ export const ListModal = (props: IListModalProps) => {
               </Button>
               <input
                 type="file"
-                accept=".pdf,image/jpeg,image/jpg,image/png/JPG"
+                accept="application/pdf,image/jpeg,image/jpg,image/png"
                 style={{ display: "none" }}
                 ref={fileInputRef}
                 multiple

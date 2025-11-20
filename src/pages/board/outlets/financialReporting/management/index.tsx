@@ -152,6 +152,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       traceValue: newMessage,
       traceType: "Novelty",
       executionDate: new Date().toISOString(),
+      userName: eventData.user.userName || userAccount,
     };
 
     try {

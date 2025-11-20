@@ -1,20 +1,15 @@
+import { useState } from "react";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  Select,
-  Stack,
-  Text,
-  Textarea,
-  useFlag,
-  Input,
-} from "@inubekit/inubekit";
+import { Select, Stack, Text, Textarea, Input } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
-import { dataFlags } from "@config/components/flags/flag.config";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { IApprovalHuman } from "../types";
 import { approvalsConfig, optionsAnswer } from "./config";
@@ -46,7 +41,8 @@ export function HumanValidationApprovalModal(
     onCloseModal,
   } = props;
 
-  const { addFlag } = useFlag();
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
@@ -113,21 +109,9 @@ export function HumanValidationApprovalModal(
         if (onCloseModal) {
           onCloseModal();
         }
-      } catch (error: unknown) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-        addFlag({
-          title: approvalsConfig.titleError,
-          description,
-          appearance: "danger",
-          duration: dataFlags.duration,
-        });
+      } catch (error) {
+        setShowErrorModal(true);
+        setMessageError(approvalsConfig.titleError);
       }
     },
   });
@@ -187,6 +171,15 @@ export function HumanValidationApprovalModal(
           onBlur={formik.handleBlur}
           fullwidth
         />
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
+            message={messageError}
+          />
+        )}
       </Stack>
     </BaseModal>
   );

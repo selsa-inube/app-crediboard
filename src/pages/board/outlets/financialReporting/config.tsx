@@ -143,6 +143,7 @@ export const configHandleactions = ({
 export const optionFlags = {
   title: "Adjuntar archivo",
   description: "El archivo que intentas agregar ya está registrado.",
+  descriptionSuccess: "El archivo se ha guardado exitosamente.",
   appearance: "success",
   appearanceError: "danger",
 };
