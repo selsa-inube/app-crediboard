@@ -64,7 +64,6 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
       });
     }
   };
-
   return (
     <BaseModal
       title={dataTrace.title}

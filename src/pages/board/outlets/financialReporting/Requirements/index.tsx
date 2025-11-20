@@ -369,10 +369,57 @@ export const Requirements = (props: IRequirementsProps) => {
   const { disabledButton: canAddRequirements } = useValidateUseCase({
     useCase: getUseCaseValue("canAddRequirements"),
   });
-  
-  let hasEntriesRequirements = []
-  hasEntriesRequirements = dataRequirements.filter(item => item.entriesRequirements.length >=1)
 
+  let hasEntriesRequirements = [];
+  hasEntriesRequirements = dataRequirements.filter(
+    (item) => item.entriesRequirements.length >= 1
+  );
+  const refreshRequirementsData = async () => {
+    try {
+      if (!creditRequestCode) return;
+
+      const data = await getAllPackagesOfRequirementsById(
+        businessUnitPublicCode,
+        businessManagerCode,
+        creditRequestCode
+      );
+      setRawRequirements(data);
+
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error("No hay requisitos disponibles.");
+      }
+
+      const mapped: MappedRequirements = {
+        credit_request_id: data[0].uniqueReferenceNumber,
+        SYSTEM_VALIDATION: {},
+        DOCUMENT: {},
+        HUMAN_VALIDATION: {},
+      };
+
+      data.forEach((item) => {
+        item.requirementsByPackage.forEach((req) => {
+          const type = req.typeOfRequirementToEvaluate;
+          const key = req.descriptionUse;
+          const value = req.requirementStatus;
+
+          if (
+            type &&
+            key &&
+            Object.prototype.hasOwnProperty.call(mapped, type)
+          ) {
+            (mapped as MappedRequirements)[type as RequirementType][key] =
+              value;
+          }
+        });
+      });
+
+      const processedEntries = maperEntries(mapped);
+      const processedRequirements = maperDataRequirements(processedEntries);
+      setDataRequirements(processedRequirements);
+    } catch (error) {
+      console.error("Error refreshing requirements:", error);
+    }
+  };
   return (
     <>
       <Fieldset
@@ -495,12 +542,13 @@ export const Requirements = (props: IRequirementsProps) => {
             }
             onCloseModal={() => setShowAprovalsModal(false)}
             isMobile={isMobile}
-            onConfirm={(values) =>
+            onConfirm={async (values) => {
               setApprovalSystemValues((prev) => ({
                 ...prev,
                 [selectedEntryId]: values,
-              }))
-            }
+              }));
+              await refreshRequirementsData();
+            }}
             questionToBeAskedInModal={(() => {
               const entry = dataRequirements
                 .find((table) => table.id === "tableApprovalSystem")
@@ -549,12 +597,14 @@ export const Requirements = (props: IRequirementsProps) => {
             businessUnitPublicCode={businessUnitPublicCode}
             user={user}
             isMobile={isMobile}
-            onConfirm={(values) =>
+            onConfirm={async (values) => {
               setApprovalDocumentValues((prev) => ({
                 ...prev,
                 [selectedEntryId]: values,
-              }))
-            }
+              }));
+              // Refresca los datos después de confirmar
+              await refreshRequirementsData();
+            }}
             seenDocuments={seenDocuments}
             setSeenDocuments={setSeenDocuments}
             entryId={selectedEntryId}
@@ -575,12 +625,13 @@ export const Requirements = (props: IRequirementsProps) => {
             }
             onCloseModal={toggleAprovalsModal}
             isMobile={isMobile}
-            onConfirm={(values) =>
+            onConfirm={async (values) => {
               setApprovalHumanValues((prev) => ({
                 ...prev,
                 [selectedEntryId]: values,
-              }))
-            }
+              }));
+              await refreshRequirementsData();
+            }}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
             entryId={selectedEntryId}
