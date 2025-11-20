@@ -278,7 +278,6 @@ export function StaffModal(props: StaffModalProps) {
 
   const hasSingleCommercialManager = options.commercialManager.length === 1;
   const hasSingleAnalyst = options.analyst.length === 1;
-  console.log(options.commercialManager, "commercialManager");
   return (
     <>
       <Formik
