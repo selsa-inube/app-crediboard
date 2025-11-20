@@ -279,7 +279,7 @@ export const ListModal = (props: IListModalProps) => {
 
         handleFlag(
           optionFlags.title,
-          optionFlags. descriptionSuccess,
+          optionFlags.descriptionSuccess,
           optionFlags.appearance as FlagAppearance
         );
       }
