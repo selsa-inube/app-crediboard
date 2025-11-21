@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -80,8 +79,7 @@ export function StaffModal(props: StaffModalProps) {
     commercialManager: Yup.string(),
     analyst: Yup.string(),
   });
-  const { id } = useParams();
-  const navigate = useNavigate();
+
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -185,15 +183,15 @@ export function StaffModal(props: StaffModalProps) {
     return {
       creditRequestId: taskData?.creditRequestId || "",
       creditRequestCode: "",
-      executed_task: taskData?.taskToBeDone || "",
-      execution_date: new Date().toISOString(),
+      executedTask: taskData?.taskToBeDone || "",
+      executionDate: new Date().toISOString(),
       identificationNumber: user.identificationDocumentNumber || "",
+      identificationType: "C",
       role: role,
       justification: `Se realiza la asignación de un nuevo ${roleLabel}. Anterior: ${previousUserName || "N/A"}. Nuevo: ${user.staffName}`,
-      transactionOperation: "Insert",
     };
   };
-
+  console.log(taskData);
   const handleCreditRequests = async () => {
     const managerRequest = buildCreditRequest(
       "CredicarAccountManager",
@@ -248,9 +246,6 @@ export function StaffModal(props: StaffModalProps) {
     } finally {
       if (onCloseModal) onCloseModal();
       handleToggleModal();
-      setTimeout(() => {
-        navigate(`/extended-card/${id}`);
-      }, 6000);
     }
   };
 

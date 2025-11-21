@@ -5,3 +5,8 @@ export const StyledPrint = styled.div`
     display: none;
   }
 `;
+export const StyledTextareaNoResize = styled.div`
+  textarea {
+    resize: none;
+  }
+`;

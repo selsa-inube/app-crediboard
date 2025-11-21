@@ -4,8 +4,8 @@ const mapCreditRequestsEntity = (data: ICreditRequests): ICreditRequests => {
   const creditRequest: ICreditRequests = {
     creditRequestCode: String(data.creditRequestCode || ""),
     creditRequestId: String(data.creditRequestId || ""),
-    executed_task: String(data.executed_task || ""),
-    execution_date: String(data.execution_date || ""),
+    executedTask: String(data.executedTask|| ""),
+    executionDate: String(data.executionDate|| ""),
     identificationNumber: String(data.identificationNumber || ""),
     identificationType: String(data.identificationType || ""),
     justification: String(data.justification || ""),

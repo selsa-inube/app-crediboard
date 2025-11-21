@@ -208,7 +208,7 @@ function AppPage() {
             <Header
               logoURL={renderLogo(eventData.businessUnit.urlLogo)}
               user={{
-                username: eventData.user.userName,
+                username: eventData.user.userAccount,
                 breakpoint: "848px",
                 client: eventData.businessUnit.abbreviatedName,
               }}

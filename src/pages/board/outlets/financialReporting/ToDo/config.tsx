@@ -89,7 +89,7 @@ export const titlesModal = {
 };
 
 export const errorMessages = {
-    patchChangeUsersByCreditRequest: {
-        description: ""
-    }
-}
+  patchChangeUsersByCreditRequest: {
+    description: "",
+  },
+};

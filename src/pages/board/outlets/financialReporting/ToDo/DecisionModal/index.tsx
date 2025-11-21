@@ -73,8 +73,8 @@ export function DecisionModal(props: DecisionModalProps) {
     textarea: readOnly
       ? Yup.string()
       : Yup.string()
-        .max(maxLength, validationMessages.maxCharacters(maxLength))
-        .required(validationMessages.required),
+          .max(maxLength, validationMessages.maxCharacters(maxLength))
+          .required(validationMessages.required),
   });
 
   const handleNonCompliantDocuments = (formValues: FormValues): string[] => {
@@ -180,7 +180,12 @@ export function DecisionModal(props: DecisionModalProps) {
             <Form>
               <StyledContainerTextField $smallScreen={isMobile}>
                 <Stack direction="column">
-                  <Text type="label" size="large" appearance="dark" weight="bold">
+                  <Text
+                    type="label"
+                    size="large"
+                    appearance="dark"
+                    weight="bold"
+                  >
                     {txtOthersOptions.txtDecision}
                   </Text>
                   <Text
@@ -223,7 +228,9 @@ export function DecisionModal(props: DecisionModalProps) {
                     placeholder={inputPlaceholder}
                     maxLength={maxLength}
                     status={
-                      touched.textarea && errors.textarea ? "invalid" : "pending"
+                      touched.textarea && errors.textarea
+                        ? "invalid"
+                        : "pending"
                     }
                     message={
                       touched.textarea && errors.textarea ? errors.textarea : ""
@@ -241,17 +248,15 @@ export function DecisionModal(props: DecisionModalProps) {
           </BaseModal>
         )}
       </Formik>
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

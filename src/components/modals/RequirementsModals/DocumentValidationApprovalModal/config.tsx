@@ -16,6 +16,7 @@ export const approvalsConfig = {
   see: "Ver",
   seen: "Visto",
   titleError: "Lamentamos los inconvenientes",
+  titleErrorDocument: "No se pudo obtener el documento. Intenta de nuevo.",
   maxLength: 200,
 };
 
