@@ -11,10 +11,12 @@ import { dataMortgage } from "./config";
 interface IMortgage {
   isMobile: boolean;
   initialValues: IMortgages[];
+  onRetry: () => Promise<void>;
+  isLoadingMortgage: boolean;
 }
 
 export function Mortgage(props: IMortgage) {
-  const { isMobile, initialValues } = props;
+  const { isMobile, initialValues, onRetry, isLoadingMortgage } = props;
 
   const data = initialValues[0];
 
@@ -67,6 +69,7 @@ export function Mortgage(props: IMortgage) {
               title={dataMortgage.noBorrowersTitle}
               description={dataMortgage.noBorrowersDescription}
               buttonDescription={dataMortgage.retry}
+              onRetry={isLoadingMortgage ? undefined : onRetry}
             />
           </Stack>
         )}

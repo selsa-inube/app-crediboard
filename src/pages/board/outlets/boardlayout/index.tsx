@@ -1,21 +1,22 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { MdInfoOutline } from "react-icons/md";
-import { Stack, Icon, Text, useMediaQuery, useFlag } from "@inubekit/inubekit";
+import { Stack, Icon, Text, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
+
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { getCreditRequestPinned } from "@services/creditRequest/query/isPinned";
 import { getCreditRequestInProgress } from "@services/creditRequest/query/getCreditRequestInProgress";
 import { patchChangeAnchorToCreditRequest } from "@services/creditRequest/command/anchorCreditRequest";
 import { AppContext } from "@context/AppContext";
-import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ruleConfig } from "@utils/configRules/configRules";
 import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { ErrorPage } from "@components/layout/ErrorPage";
 
-import { dataInformationModal } from "./config/board";
+import { dataInformationModal, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
 import { selectCheckOptions } from "./config/select";
 import { IBoardData } from "./types";
@@ -45,6 +46,9 @@ function BoardLayout() {
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
+
+  const [hasServerError, setHasServerError] = useState(false);
+
   const isMobile = useMediaQuery("(max-width: 1439px)");
 
   const missionName = eventData.user.staff.missionName;
@@ -65,15 +69,14 @@ function BoardLayout() {
 
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-
-  const errorData = mockErrorBoard[0];
-
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [filterValues, setFilterValues] = useState<IFilterFormValues>({
     assignment: "",
     status: "",
   });
+
+  const boardColumns = getBoardColumns(activeOptions, filters.boardOrientation);
 
   const fetchBoardData = async (
     businessUnitPublicCode: string,
@@ -94,11 +97,19 @@ function BoardLayout() {
           ),
           page === 1
             ? getCreditRequestPinned(
-              businessUnitPublicCode,
-              businessManagerCode
-            )
+                businessUnitPublicCode,
+                businessManagerCode
+              )
             : Promise.resolve([]),
         ]);
+      if (
+        boardRequestsResult.status === "rejected" &&
+        (page === 1 ? requestsPinnedResult.status === "rejected" : true)
+      ) {
+        console.error("Error crítico: servicios principales fallaron");
+        setHasServerError(true);
+        return;
+      }
 
       if (boardRequestsResult.status === "fulfilled") {
         setBoardData((prevState) => ({
@@ -107,6 +118,13 @@ function BoardLayout() {
             ? [...prevState.boardRequests, ...boardRequestsResult.value]
             : boardRequestsResult.value,
         }));
+      } else if (boardRequestsResult.status === "rejected") {
+        console.error(
+          "Error al obtener solicitudes:",
+          boardRequestsResult.reason
+        );
+        setHasServerError(true);
+        return;
       }
 
       if (requestsPinnedResult.status === "fulfilled" && page === 1) {
@@ -115,16 +133,20 @@ function BoardLayout() {
           requestsPinned: requestsPinnedResult.value,
         }));
       } else if (requestsPinnedResult.status === "rejected" && page === 1) {
-        handleFlag(errorData.Summary[0], errorData.Summary[1]);
+        console.error(
+          "Error al obtener anclados:",
+          requestsPinnedResult.reason
+        );
+        setErrorLoadingPins(true);
       }
     } catch (error) {
       console.error("Error fetching board data:", error);
-      setErrorLoadingPins(true);
+      setHasServerError(true);
     }
   };
 
   useEffect(() => {
-    if (activeOptions.length > 0 || filters.searchRequestValue.length >= 3)
+    if (activeOptions.length > 0 || filters.searchRequestValue.length >= 1)
       return;
 
     fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
@@ -158,7 +180,9 @@ function BoardLayout() {
       true
     );
   };
+
   const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
+
   const handleApplyFilters = async (values: IFilterFormValues) => {
     setFilterValues(values);
     setFilters((prev) => ({
@@ -185,6 +209,24 @@ function BoardLayout() {
     setActiveOptions(activeFilteredValues);
     setCurrentPage(1);
 
+    const hasCompletedFilter = activeFilteredValues.some(
+      (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+    );
+
+    if (hasCompletedFilter) {
+      setFilters((prev) => ({
+        ...prev,
+        boardOrientation: "horizontal",
+      }));
+
+      const updatedEventData = { ...eventData };
+      updatedEventData.user.preferences = {
+        ...updatedEventData.user.preferences,
+        boardOrientation: "horizontal",
+      };
+      setEventData(updatedEventData);
+    }
+
     await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
       filter: `${queryFilterString}`,
     });
@@ -192,6 +234,19 @@ function BoardLayout() {
     setIsFilterModalOpen(false);
     setShouldCollapseAll(true);
     setTimeout(() => setShouldCollapseAll(false), 100);
+
+    if (hasCompletedFilter) {
+      setTimeout(() => {
+        const tramitadaSection = document.getElementById("TRAMITADA");
+        if (tramitadaSection) {
+          tramitadaSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
+          });
+        }
+      }, 100);
+    }
   };
 
   const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
@@ -208,6 +263,46 @@ function BoardLayout() {
       };
 
       setEventData(updatedEventData);
+
+      if (newFilters.boardOrientation === "vertical") {
+        const hasCompletedFilter = activeOptions.some(
+          (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+        );
+
+        if (hasCompletedFilter) {
+          const updatedActiveOptions = activeOptions.filter(
+            (option) => option.value !== "completedLessThan30DaysAgo=Y"
+          );
+
+          setActiveOptions(updatedActiveOptions);
+          setCurrentPage(1);
+          setFilterValues((prev) => {
+            const newValues = { ...prev };
+            if (newValues.assignment) {
+              const assignmentIds = newValues.assignment
+                .split(",")
+                .filter((id) => id.trim() !== "");
+              const updatedAssignmentIds = assignmentIds.filter((id) => {
+                const option = selectCheckOptions.find((opt) => opt.id === id);
+                return option?.value !== "completedLessThan30DaysAgo";
+              });
+              newValues.assignment = updatedAssignmentIds.join(",");
+            }
+            return newValues;
+          });
+          if (updatedActiveOptions.length === 0) {
+            fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
+          } else {
+            const updatedFilterString = updatedActiveOptions
+              .map((filter) => filter.value)
+              .join("&")
+              .trim();
+            fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
+              filter: updatedFilterString,
+            });
+          }
+        }
+      }
     }
 
     if (newFilters.showPinnedOnly !== undefined) {
@@ -221,20 +316,6 @@ function BoardLayout() {
       setEventData(updatedEventData);
     }
   };
-
-  const { addFlag } = useFlag();
-
-  const handleFlag = useCallback(
-    (title: string, description: string) => {
-      addFlag({
-        title: title,
-        description: description,
-        appearance: "danger",
-        duration: 5000,
-      });
-    },
-    [addFlag]
-  );
 
   const fetchValidationRulesData = useCallback(async () => {
     const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
@@ -254,8 +335,8 @@ function BoardLayout() {
 
           const extractedValues = Array.isArray(values)
             ? values
-              .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-              .filter((val): val is string => val !== "")
+                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+                .filter((val): val is string => val !== "")
             : [];
 
           setValueRule((prev) => {
@@ -318,6 +399,10 @@ function BoardLayout() {
   }, []);
 
   const handleClearFilters = async (keepSearchValue = false) => {
+    const hasCompletedFilter = activeOptions.some(
+      (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+    );
+
     setFilterValues({ assignment: "", status: "" });
     setActiveOptions([]);
     setCurrentPage(1);
@@ -327,7 +412,17 @@ function BoardLayout() {
       searchRequestValue: keepSearchValue ? prev.searchRequestValue : "",
       showPinnedOnly: false,
       selectOptions: selectCheckOptions,
+      boardOrientation: hasCompletedFilter ? "vertical" : prev.boardOrientation,
     }));
+
+    if (hasCompletedFilter) {
+      const updatedEventData = { ...eventData };
+      updatedEventData.user.preferences = {
+        ...updatedEventData.user.preferences,
+        boardOrientation: "vertical",
+      };
+      setEventData(updatedEventData);
+    }
 
     if (keepSearchValue && filters.searchRequestValue.trim().length >= 3) {
       await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
@@ -345,6 +440,25 @@ function BoardLayout() {
 
     setActiveOptions(updatedActiveOptions);
     setCurrentPage(1);
+
+    const removedFilter = activeOptions.find(
+      (option) => option.id === filterIdToRemove
+    );
+    const isRemovingCompletedFilter =
+      removedFilter?.value === "completedLessThan30DaysAgo=Y";
+    if (isRemovingCompletedFilter) {
+      setFilters((prev) => ({
+        ...prev,
+        boardOrientation: "vertical",
+      }));
+
+      const updatedEventData = { ...eventData };
+      updatedEventData.user.preferences = {
+        ...updatedEventData.user.preferences,
+        boardOrientation: "vertical",
+      };
+      setEventData(updatedEventData);
+    }
 
     setFilterValues((prev) => {
       const newValues = { ...prev };
@@ -396,7 +510,6 @@ function BoardLayout() {
     handleFiltersChange({ searchRequestValue: value });
     const trimmedValue = value.trim();
     setCurrentPage(1);
-
     if (trimmedValue.length >= 1) {
       if (activeOptions.length > 0) {
         const currentFilters = activeOptions
@@ -468,6 +581,23 @@ function BoardLayout() {
       pinnedIds.includes(request.creditRequestId as string)
     );
   }
+
+  const handleRetryFromError = () => {
+    setHasServerError(false);
+    setCurrentPage(1);
+    fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
+  };
+
+  if (hasServerError) {
+    return (
+      <ErrorPage
+        errorCode={400}
+        nameButton="Reintentar"
+        onClick={handleRetryFromError}
+      />
+    );
+  }
+
   return (
     <>
       <BoardLayoutUI
@@ -499,10 +629,11 @@ function BoardLayout() {
         handleRemoveFilter={handleRemoveFilter}
         isMenuOpen={isMenuOpen}
         selectOptions={[]}
-        handleSelectCheckChange={() => { }}
+        handleSelectCheckChange={() => {}}
         closeFilterModal={closeFilterModal}
         filterValues={filterValues}
         shouldCollapseAll={shouldCollapseAll}
+        boardColumns={boardColumns}
       />
       {isOpenModal && (
         <BaseModal
@@ -520,17 +651,15 @@ function BoardLayout() {
           </Stack>
         </BaseModal>
       )}
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessages.changeAnchorToCreditRequest.description}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessages.changeAnchorToCreditRequest.description}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

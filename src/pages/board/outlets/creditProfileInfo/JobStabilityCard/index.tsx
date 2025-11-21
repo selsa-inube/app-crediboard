@@ -14,67 +14,63 @@ import { ICreditRequest } from "@services/creditRequest/query/types";
 import { jobStabilityConfig } from "./config";
 
 interface JobStabilityCardProps {
-  companySeniority: number;
-  stabilityIndex: number;
-  estimatedCompensation: number;
   isMobile?: boolean;
-  dataCreditProfile: boolean;
-  setCreditProfile: (stade: boolean) => void;
   requests: ICreditRequest;
   businessUnitPublicCode: string;
   businessManagerCode: string;
 }
 
 export function JobStabilityCard(props: JobStabilityCardProps) {
-  const {
-    estimatedCompensation,
-    isMobile,
-    dataCreditProfile,
-    setCreditProfile,
-    requests,
-    businessUnitPublicCode,
-    businessManagerCode,
-  } = props;
-
-  const handleRetry = () => {
-    setCreditProfile(false);
-  };
+  const { isMobile, requests, businessUnitPublicCode, businessManagerCode } =
+    props;
 
   const [laborStabilityByCustomerId, setLaborStabilityByCustomerId] = useState<
     ILaborStabilityByCustomerId[]
   >([]);
 
-  useEffect(() => {
-    const fetchLaborStabilityByCustomerId = async () => {
-      try {
-        const data = await getLaborStabilityByCustomerId(
-          businessUnitPublicCode,
-          businessManagerCode,
-          requests.clientIdentificationNumber
-        );
-        setLaborStabilityByCustomerId(data);
-      } catch (error) {
-        if (typeof error === "object" && error !== null) {
-          throw {
-            ...(error as object),
-            message: (error as Error).message,
-          };
-        }
-        throw new Error(jobStabilityConfig.errorMessages.fetchError);
+  const fetchLaborStabilityByCustomerId = async () => {
+    if (!requests.clientIdentificationNumber) return;
+
+    try {
+      const data = await getLaborStabilityByCustomerId(
+        businessUnitPublicCode,
+        businessManagerCode,
+        requests.clientIdentificationNumber
+      );
+      setLaborStabilityByCustomerId(data);
+    } catch (error) {
+      if (typeof error === "object" && error !== null) {
+        throw {
+          ...(error as object),
+          message: (error as Error).message,
+        };
       }
-    };
+      throw new Error(jobStabilityConfig.errorMessages.fetchError);
+    }
+  };
 
+  const handleRetry = () => {
     fetchLaborStabilityByCustomerId();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
+  useEffect(
+    () => {
+      fetchLaborStabilityByCustomerId();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      businessUnitPublicCode,
+      businessManagerCode,
+      requests.clientIdentificationNumber,
+    ]
+  );
   return (
     <CardInfoContainer
       title={jobStabilityConfig.title}
       icon={<MdOutlineBusinessCenter />}
       isMobile={isMobile}
     >
-      {dataCreditProfile ? (
+      {laborStabilityByCustomerId.length === 0 ? (
         <ItemNotFound
           image={userNotFound}
           title={jobStabilityConfig.errorMessages.dataNotFound}
@@ -137,14 +133,12 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {estimatedCompensation === 0
-                  ? "$ 0"
-                  : currencyFormat(
-                      Number(
-                        laborStabilityByCustomerId[0]
-                          ?.estimatedContractTerminationPayment
-                      ) || 0
-                    )}
+                {currencyFormat(
+                  Number(
+                    laborStabilityByCustomerId[0]
+                      ?.estimatedContractTerminationPayment
+                  ) || 0
+                )}
               </Text>
             </Stack>
           </Stack>

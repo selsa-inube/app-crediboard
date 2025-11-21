@@ -10,23 +10,19 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { getUnconveredPortfolio } from "@services/creditProfiles/GetUnconveredPortfolio";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { IUncoveredPortfolio } from "@services/creditProfiles/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 
 import { dataOpenWallet } from "./config";
 
 interface OpenWalletProps {
-  overdraftFactor: number;
-  valueDiscovered: number;
-  reciprocity: number;
+  overdraftFactor?: number;
   isMobile?: boolean;
-  dataUncoveredWallet: boolean;
-  setUncoveredWallet: (stade: boolean) => void;
   businessUnitPublicCode: string;
   businessManagerCode: string;
-  customerIdentificationNumber: string;
+  requests: ICreditRequest;
   maxRetries?: number;
   retryDelay?: number;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setRetryCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export function OpenWallet(props: OpenWalletProps) {
@@ -34,11 +30,10 @@ export function OpenWallet(props: OpenWalletProps) {
     isMobile,
     businessUnitPublicCode,
     businessManagerCode,
-    customerIdentificationNumber,
+    requests,
     maxRetries = 2,
     retryDelay = 2000,
     setLoading,
-    setRetryCount,
   } = props;
 
   const [data, setData] = useState<IUncoveredPortfolio | null>(null);
@@ -59,14 +54,13 @@ export function OpenWallet(props: OpenWalletProps) {
       const response = await getUnconveredPortfolio(
         businessUnitPublicCode,
         businessManagerCode,
-        customerIdentificationNumber
+        requests.clientIdentificationNumber
       );
 
       if (requestId !== currentRequestId + 1) return;
 
       setData(response);
       setShowErrorModal(false);
-      setRetryCount(0);
       setIsInitialLoad(false);
     } catch (error) {
       if (requestId !== currentRequestId + 1) return;
@@ -89,16 +83,16 @@ export function OpenWallet(props: OpenWalletProps) {
 
   const handleRetry = () => {
     setData(null);
-    setRetryCount(0);
     fetchPaymentCapacity(0);
   };
 
   useEffect(() => {
+    if (!requests.clientIdentificationNumber) return;
     fetchPaymentCapacity(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
-    customerIdentificationNumber,
+    requests.clientIdentificationNumber,
     businessManagerCode,
   ]);
 
@@ -131,7 +125,7 @@ export function OpenWallet(props: OpenWalletProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {data.reciprocityRatio}
+                {Math.round(data.reciprocityRatio)}
               </Text>
               <Text size={isMobile ? "small" : "medium"}>
                 {dataOpenWallet.labels.overdraftFactorSuffix}
@@ -151,7 +145,7 @@ export function OpenWallet(props: OpenWalletProps) {
               type="headline"
               size={isMobile ? "small" : "medium"}
             >
-              {currencyFormat(data.permanentDeposits)}
+              {currencyFormat(Math.round(data.permanentDeposits))}
             </Text>
           </Stack>
 
@@ -168,7 +162,7 @@ export function OpenWallet(props: OpenWalletProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {data.exposureToIncomeRatio}
+                {Math.round(data.reciprocityRatio)}
               </Text>
               <Text size={isMobile ? "small" : "medium"}>
                 {dataOpenWallet.labels.reciprocitySuffix}

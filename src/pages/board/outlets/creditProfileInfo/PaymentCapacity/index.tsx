@@ -10,24 +10,18 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { getPaymentCapacityById } from "@services/creditProfiles/GetPaymentCapacityById";
 import { IPaymentCapacityById } from "@services/creditProfiles/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 
 import { dataPaymentCapacity } from "./config";
 
 interface PaymentCapacityProps {
-  availableValue: number;
-  availablePercentage: number;
-  percentageUsed: number;
   isMobile?: boolean;
-  dataPaymentcapacity: boolean;
-  setPaymentcapacity: (stade: boolean) => void;
   businessUnitPublicCode: string;
   businessManagerCode: string;
-  customerIdentificationNumber: string;
+  requests: ICreditRequest;
   maxRetries?: number;
   retryDelay?: number;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setRetryCount: React.Dispatch<React.SetStateAction<number>>;
-  retryCount: number;
   loading: boolean;
 }
 
@@ -36,11 +30,10 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
     isMobile,
     businessUnitPublicCode,
     businessManagerCode,
-    customerIdentificationNumber,
+    requests,
     maxRetries = 2,
     retryDelay = 2000,
     setLoading,
-    setRetryCount,
   } = props;
 
   const [data, setData] = useState<IPaymentCapacityById | null>(null);
@@ -55,6 +48,8 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
     currentRetryCount = 0,
     requestId = currentRequestId + 1
   ) => {
+    if (!requests.clientIdentificationNumber) return;
+
     setCurrentRequestId(requestId);
 
     try {
@@ -63,14 +58,13 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
       const response = await getPaymentCapacityById(
         businessUnitPublicCode,
         businessManagerCode,
-        customerIdentificationNumber
+        requests.clientIdentificationNumber
       );
 
       if (requestId !== currentRequestId + 1) return;
 
       setData(response);
       setShowErrorModal(false);
-      setRetryCount(0);
       setIsInitialLoad(false);
     } catch (error) {
       if (requestId !== currentRequestId + 1) return;
@@ -93,18 +87,20 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
 
   const handleRetry = () => {
     setData(null);
-    setRetryCount(0);
     fetchPaymentCapacity(0);
   };
 
-  useEffect(() => {
-    fetchPaymentCapacity(0);
+  useEffect(
+    () => {
+      fetchPaymentCapacity(0);
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    businessUnitPublicCode,
-    customerIdentificationNumber,
-    businessManagerCode,
-  ]);
+    [
+      businessUnitPublicCode,
+      requests.clientIdentificationNumber,
+      businessManagerCode,
+    ]
+  );
 
   const availablePercentageDecimal = data?.availablePaymentPercentageRate ?? 0;
   const availablePercentage = availablePercentageDecimal * 100;
@@ -139,7 +135,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {currencyFormat(data.availableMonthlyPayment)}
+                {currencyFormat(Math.round(data.availableMonthlyPayment))}
               </Text>
             </Stack>
           </Stack>
@@ -159,11 +155,11 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
                   type="headline"
                   size={isMobile ? "small" : "medium"}
                 >
-                  {availablePercentage}%
+                  {availablePercentage.toFixed(4)}%
                 </Text>
                 <Text size={isMobile ? "small" : "medium"}>
                   {dataPaymentCapacity.incomeLabel}{" "}
-                  {currencyFormat(data.totalMonthlyIncome)}
+                  {currencyFormat(Math.round(data.totalMonthlyIncome))}
                 </Text>
               </Stack>
             </Stack>
@@ -183,7 +179,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
                 type="headline"
                 size={isMobile ? "small" : "medium"}
               >
-                {calculatedPercentageUsed} %
+                {calculatedPercentageUsed.toFixed(4)} %
               </Text>
             </Stack>
           </Stack>

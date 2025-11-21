@@ -10,45 +10,43 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { getCreditRepayamentBehavior } from "@services/creditProfiles/getCreditRepayamentBehavior";
 import { ICreditRepayamentBehavior } from "@services/creditProfiles/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 
 interface CreditBehaviorProps {
-  setBehaviorError: (stade: boolean) => void;
-  dataBehaviorError: boolean;
-  businessUnitPublicCode: string,
-  customerIdentificationNumber: string,
+  businessUnitPublicCode: string;
+  requests: ICreditRequest;
   isMobile?: boolean;
 }
 
 export function CreditBehavior(props: CreditBehaviorProps) {
-  const {
-    isMobile,
-    dataBehaviorError,
-    setBehaviorError,
-    businessUnitPublicCode,
-    customerIdentificationNumber
-  } = props;
+  const { isMobile, businessUnitPublicCode, requests } = props;
 
   const [dataBehavior, setDataBehavior] = useState<ICreditRepayamentBehavior>();
 
+  const fetchCreditRepayamentBehavior = async () => {
+    if (!requests.clientIdentificationNumber) return;
+
+    const response = await getCreditRepayamentBehavior(
+      businessUnitPublicCode,
+      requests.clientIdentificationNumber
+    );
+
+    if (response === null) {
+      setDataBehavior(undefined);
+      return;
+    }
+
+    setDataBehavior(response);
+  };
+
   const handleRetry = () => {
-    setBehaviorError(false);
+    fetchCreditRepayamentBehavior();
   };
 
   useEffect(() => {
-    (async () => {
-      const response = await getCreditRepayamentBehavior(
-        businessUnitPublicCode,
-        customerIdentificationNumber
-      );
-
-      if (response === null) {
-        setBehaviorError(true);
-        return;
-      }
-
-      setDataBehavior(response);
-    })();
-  }, [businessUnitPublicCode, customerIdentificationNumber, setBehaviorError]);
+    fetchCreditRepayamentBehavior();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, requests.clientIdentificationNumber]);
 
   const dateObject = new Date(dataBehavior?.bureauCreditRiskScoreDate || "");
 
@@ -58,7 +56,7 @@ export function CreditBehavior(props: CreditBehaviorProps) {
       icon={<MdTrendingUp />}
       isMobile={isMobile}
     >
-      {dataBehaviorError ? (
+      {dataBehavior === undefined ? (
         <ItemNotFound
           image={userNotFound}
           title="Datos no encontrados"

@@ -284,7 +284,7 @@ function AppPage() {
                         true
                       )}
                       referenceCode={novelty.creditRequestCode}
-                      description={emptyNoveltiesConfig.novelties.description}
+                      description={novelty.traceValue}
                       actionText={emptyNoveltiesConfig.novelties.actionText}
                       onActionClick={() =>
                         handleNoveltyActionClick(novelty.creditRequestCode)

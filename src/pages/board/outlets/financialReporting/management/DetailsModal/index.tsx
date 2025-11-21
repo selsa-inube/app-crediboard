@@ -24,6 +24,11 @@ export function DetailsModal(props: DetailsModalProps) {
     throw new Error(validationMessages.errorNodo);
   }
 
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
+  }
+
   return (
     <BaseModal
       title={txtLabels.title}
