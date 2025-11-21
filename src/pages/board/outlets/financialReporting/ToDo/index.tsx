@@ -1,15 +1,7 @@
 import { useState, useEffect, ChangeEvent, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { MdOutlineInfo } from "react-icons/md";
-import {
-  Stack,
-  Icon,
-  Text,
-  SkeletonLine,
-  Select,
-  Button,
-  Input,
-} from "@inubekit/inubekit";
+import { Stack, Icon, Text, Select, Button, Input } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
 import { Divider } from "@components/layout/Divider";
@@ -374,7 +366,7 @@ function ToDo(props: ToDoProps) {
               )}
 
               {loading ? (
-                <SkeletonLine width="100%" animated />
+                <></>
               ) : (
                 <Text
                   size={isMobile ? "medium" : "large"}
