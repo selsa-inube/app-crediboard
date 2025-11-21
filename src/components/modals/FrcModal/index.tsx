@@ -31,6 +31,14 @@ export interface ScoreModalProps {
   loading?: boolean;
 }
 
+type InfoModalType =
+  | "intercept"
+  | "seniority"
+  | "centralRisk"
+  | "employmentStability"
+  | "maritalStatus"
+  | "economicActivity";
+
 export const ScoreModal = (props: ScoreModalProps) => {
   const {
     handleClose,
@@ -42,6 +50,8 @@ export const ScoreModal = (props: ScoreModalProps) => {
 
   const isMobile = useMediaQuery("(max-width: 700px)");
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [currentInfoType, setCurrentInfoType] =
+    useState<InfoModalType>("intercept");
   const [isExpanded, setIsExpanded] = useState(false);
 
   const [error, setError] = useState(false);
@@ -76,6 +86,15 @@ export const ScoreModal = (props: ScoreModalProps) => {
 
     fetchData();
   }, [businessUnitPublicCode, businessManagerCode, clientIdentificationNumber]);
+
+  const handleInfoClick = (type: InfoModalType) => {
+    setCurrentInfoType(type);
+    setShowInfoModal(true);
+  };
+
+  const getInfoText = () => {
+    return frcConfig.infoTexts[currentInfoType];
+  };
 
   return (
     <BaseModal
@@ -156,7 +175,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("intercept")}
                           cursorHover
                         />
                       </Stack>
@@ -179,7 +198,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("seniority")}
                           cursorHover
                         />
                       </Stack>
@@ -202,7 +221,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("centralRisk")}
                           cursorHover
                         />
                       </Stack>
@@ -225,7 +244,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("employmentStability")}
                           cursorHover
                         />
                       </Stack>
@@ -248,7 +267,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("maritalStatus")}
                           cursorHover
                         />
                       </Stack>
@@ -271,7 +290,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("economicActivity")}
                           cursorHover
                         />
                       </Stack>
@@ -383,13 +402,13 @@ export const ScoreModal = (props: ScoreModalProps) => {
           </Fieldset>
           {showInfoModal && (
             <BaseModal
-              title="Información"
-              nextButton="Entendido"
+              title={frcConfig.infoModal.title}
+              nextButton={frcConfig.infoModal.button}
               handleClose={() => setShowInfoModal(false)}
               handleNext={() => setShowInfoModal(false)}
               width={isMobile ? "290px" : "500px"}
             >
-              <Text>{frcConfig.loremIpsum}</Text>
+              <Text>{getInfoText()}</Text>
             </BaseModal>
           )}
         </Stack>

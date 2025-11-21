@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Stack, Tabs, useFlag } from "@inubekit/inubekit";
+import { Stack, Tabs } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { BaseModal } from "@components/modals/baseModal";
@@ -11,13 +11,14 @@ import { IProspect } from "@services/prospect/types";
 import { getTotalFinancialObligations } from "@utils/formatData/currency";
 import { currencyFormat } from "@utils/formatData/currency";
 import { getPropertyValue } from "@utils/mappingData/mappings";
+import { ItemNotFound } from "@components/layout/ItemNotFound";
 
 import { Mortgage } from "./Mortgage";
 import { Pledge } from "./Pledge";
 import { Bail } from "./bail";
 import { dataGuarantee, dataTabs } from "./config";
 import { ScrollableContainer } from "./styles";
-import { ItemNotFound } from "@components/layout/ItemNotFound";
+import { ErrorModal } from "../ErrorModal";
 
 export interface IOfferedGuaranteeModalProps {
   handleClose: () => void;
@@ -40,6 +41,8 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
 
   const [currentTab, setCurrentTab] = useState(dataTabs[0].id);
   const [dataProperty, setDataProperty] = useState<IGuarantees[]>();
+  const [isLoadingMortgage, setIsLoadingMortgage] = useState(false);
+  const [isLoadingPledge, setIsLoadingPledge] = useState(false);
 
   const onChange = (tabId: string) => {
     setCurrentTab(tabId);
@@ -47,32 +50,59 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
 
   const dataResponse = prospectData;
 
-  const { addFlag } = useFlag();
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
-  const handleFlag = (error: unknown) => {
-    addFlag({
-      title: "Error al obtener los datos de la garantia",
-      description: `${error}`,
-      appearance: "danger",
-      duration: 5000,
-    });
+  const fetchGuarantees = async () => {
+    try {
+      const result = await getGuaranteesById(
+        businessUnitPublicCode,
+        businessManagerCode,
+        requestId
+      );
+      setDataProperty(result);
+    } catch (error) {
+      setShowErrorModal(true);
+      setMessageError(dataGuarantee.errorCoDebtor);
+    }
+  };
+
+  const handleRetryMortgage = async () => {
+    setIsLoadingMortgage(true);
+    try {
+      const result = await getGuaranteesById(
+        businessUnitPublicCode,
+        businessManagerCode,
+        requestId
+      );
+      setDataProperty(result);
+    } catch (error) {
+      setShowErrorModal(true);
+      setMessageError(dataGuarantee.errorMortgage);
+    } finally {
+      setIsLoadingMortgage(false);
+    }
+  };
+
+  const handleRetryPledge = async () => {
+    setIsLoadingPledge(true);
+    try {
+      const result = await getGuaranteesById(
+        businessUnitPublicCode,
+        businessManagerCode,
+        requestId
+      );
+      setDataProperty(result);
+    } catch (error) {
+      setShowErrorModal(true);
+      setMessageError(dataGuarantee.errorPledge);
+    } finally {
+      setIsLoadingPledge(false);
+    }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await getGuaranteesById(
-          businessUnitPublicCode,
-          businessManagerCode,
-          requestId
-        );
-        setDataProperty(result);
-      } catch (error) {
-        handleFlag(error);
-      }
-    };
-
-    fetchData();
+    fetchGuarantees();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, requestId]);
 
@@ -170,12 +200,32 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
           </ScrollableContainer>
         )}
         {currentTab === "mortgage" && (
-          <Mortgage isMobile={isMobile} initialValues={mortgageData} />
+          <Mortgage
+            isMobile={isMobile}
+            initialValues={mortgageData}
+            onRetry={handleRetryMortgage}
+            isLoadingMortgage={isLoadingMortgage}
+          />
         )}
         {currentTab === "pledge" && (
-          <Pledge isMobile={isMobile} initialValues={pledgeData} />
+          <Pledge
+            isMobile={isMobile}
+            initialValues={pledgeData}
+            onRetry={handleRetryPledge}
+            isLoadingPledge={isLoadingPledge}
+          />
         )}
         {currentTab === "bail" && <Bail data={dataResponse?.bondValue ?? 0} />}
+
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
+            message={messageError}
+          />
+        )}
       </Stack>
     </BaseModal>
   );

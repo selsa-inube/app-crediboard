@@ -11,7 +11,6 @@ interface GuaranteesProps {
   guaranteesOffered: string;
   guaranteesCurrent: string;
   isMobile?: boolean;
-  dataWereObtained: boolean;
 }
 
 export function Guarantees(props: GuaranteesProps) {
@@ -20,7 +19,6 @@ export function Guarantees(props: GuaranteesProps) {
     guaranteesOffered,
     guaranteesCurrent,
     isMobile,
-    dataWereObtained,
   } = props;
 
 
@@ -30,7 +28,7 @@ export function Guarantees(props: GuaranteesProps) {
       icon={<PiSealCheckBold />}
       isMobile={isMobile}
     >
-      {dataWereObtained ? (
+      {!guaranteesRequired ? (
         <ItemNotFound
           image={userNotFound}
           title="Datos no encontrados"
