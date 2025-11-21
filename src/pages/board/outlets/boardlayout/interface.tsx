@@ -15,19 +15,15 @@ import {
   Textfield,
   Toggle,
   Button,
-  useFlag,
 } from "@inubekit/inubekit";
 
 import { SectionOrientation } from "@components/layout/BoardSection/types";
 import { BoardSection } from "@components/layout/BoardSection";
-
 import { IOptionItemCheckedProps } from "@components/inputs/SelectCheck/OptionItem";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { SelectedFilters } from "@components/cards/SelectedFilters";
 import { FilterRequestModal } from "@components/modals/FilterRequestModal";
-
 import { AppContext } from "@context/AppContext";
-import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { totalsKeyBySection } from "@components/layout/BoardSection/config";
 import { BaseModal } from "@components/modals/baseModal";
 import { getCreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage";
@@ -48,9 +44,9 @@ import {
 import { selectCheckOptions } from "./config/select";
 import { IFilterFormValues } from ".";
 import {
-  boardColumns,
   boardLayoutData,
   dataInformationSearchModal,
+  TBoardColumn,
 } from "./config/board";
 
 interface BoardLayoutProps {
@@ -63,6 +59,7 @@ interface BoardLayoutProps {
   pinnedRequests: ICreditRequestPinned[];
   errorLoadingPins: boolean;
   activeOptions: Filter[];
+  boardColumns: TBoardColumn[];
   closeFilterModal: () => void;
   handleSelectCheckChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handlePinRequest: (
@@ -100,6 +97,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     errorLoadingPins,
     activeOptions,
     filterValues,
+    boardColumns,
     closeFilterModal,
     handleLoadMoreData,
     handlePinRequest,
@@ -112,14 +110,12 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   } = props;
 
   const [hasBeenFocused, setHasBeenFocused] = useState(false);
-
   const [isTextSearchModalOpen, setIsTextSearchModalOpen] = useState(false);
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
   const [lastFilterCount, setLastFilterCount] = useState(0);
   const [hasShownModalForCurrentFilters, setHasShownModalForCurrentFilters] =
     useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const { addFlag } = useFlag();
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -259,13 +255,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         );
         if (result) setTotalsData(normalizedTotalData(result));
       } catch (error) {
-        addFlag({
-          title: textFlagsUsers.titleError,
-          description: JSON.stringify(error),
-          appearance: "danger",
-          duration: 5000,
-        });
-
         console.error("Error fetching totals:", error);
       }
     };
@@ -274,7 +263,12 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode]);
 
-  const counterTotalsData = (value: string) => {
+  const counterTotalsData = (value: string, columnId: string) => {
+    if (columnId === "TRAMITADA") {
+      return BoardRequests.filter((request) => request.stage === "TRAMITADA")
+        .length;
+    }
+
     if (totalsData) {
       return totalsData.find((item) => item.name === value)?.counter;
     }
@@ -284,15 +278,34 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     handleClearFilters();
     setIsTextSearchModalOpen(false);
     setHasBeenFocused(false);
+    const input = document.getElementById(
+      "SearchCardsDesktop"
+    ) as HTMLInputElement | null;
+    input?.focus();
   };
+
+  const [hasAnsweredModal, setHasAnsweredModal] = useState(false);
 
   const handleTextSearchModalNext = () => {
     setIsTextSearchModalOpen(false);
+    setHasAnsweredModal(true);
+
+    const input = document.getElementById(
+      "SearchCardsDesktop"
+    ) as HTMLInputElement | null;
+    input?.focus();
   };
 
   const handleTextSearchModalClose = () => {
     setIsTextSearchModalOpen(false);
     setHasBeenFocused(false);
+  };
+
+  const handleTextfieldBlur = () => {
+    if (hasAnsweredModal) {
+      setHasBeenFocused(false);
+      setHasShownModalForCurrentFilters(false);
+    }
   };
 
   return (
@@ -330,6 +343,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                       disabled={isTextSearchModalOpen}
                       fullwidth
                       onFocus={handleTextfieldFocus}
+                      focused={false}
                     />
                     {!isExpanded && (
                       <>
@@ -400,6 +414,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   disabled={isTextSearchModalOpen}
                   fullwidth
                   onFocus={handleTextfieldFocus}
+                  onBlur={handleTextfieldBlur}
                 />
               </StyledRequestsContainerVoiceSearch>
             )}
@@ -478,7 +493,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             </Stack>
           </Stack>
         </StyledInputsContainer>
-
         <StyledBoardContainer
           $orientation={boardOrientation}
           $isMobile={isMobile}
@@ -495,8 +509,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             return (
               <BoardSection
                 key={column.id}
+                sectionId={column.id}
                 sectionTitle={column.value}
-                sectionCounter={counterTotalsData(column.value) || 0}
+                sectionCounter={counterTotalsData(column.value, column.id) || 0}
                 sectionBackground={column.sectionBackground}
                 orientation={boardOrientation}
                 sectionInformation={BoardRequests.filter(
@@ -510,6 +525,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 dragIcon={dragIcon}
                 onOrientationChange={onOrientationChange}
                 shouldCollapseAll={shouldCollapseAll}
+                hasActiveFilters={activeOptions.length > 0}
+                showPinnedOnly={showPinnedOnly}
               />
             );
           })}

@@ -343,7 +343,10 @@ export const Requirements = (props: IRequirementsProps) => {
   >({});
 
   useEffect(() => {
-    if (rawRequirements.length > 0) {
+    if (
+      rawRequirements.length > 0 &&
+      rawRequirements[0]?.requirementsByPackage
+    ) {
       const map: Record<string, string> = {};
       const typeCounters = { sistema: 0, documento: 0, humano: 0 };
 
@@ -369,9 +372,11 @@ export const Requirements = (props: IRequirementsProps) => {
   const { disabledButton: canAddRequirements } = useValidateUseCase({
     useCase: getUseCaseValue("canAddRequirements"),
   });
-  
-  let hasEntriesRequirements = []
-  hasEntriesRequirements = dataRequirements.filter(item => item.entriesRequirements.length >=1)
+
+  let hasEntriesRequirements = [];
+  hasEntriesRequirements = dataRequirements.filter(
+    (item) => item.entriesRequirements.length >= 1
+  );
 
   return (
     <>

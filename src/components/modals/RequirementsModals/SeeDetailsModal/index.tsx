@@ -37,6 +37,10 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
   if (!node) {
     throw new Error(validationMessages.errorNodo);
   }
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
+  }
 
   return createPortal(
     <Blanket>

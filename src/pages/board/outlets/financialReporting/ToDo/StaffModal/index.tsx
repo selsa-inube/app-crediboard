@@ -167,7 +167,6 @@ export function StaffModal(props: StaffModalProps) {
     }
   }, [analystList]);
 
-
   const buildCreditRequest = (
     role: string,
     user: ICommercialManagerAndAnalyst | null,
@@ -242,7 +241,9 @@ export function StaffModal(props: StaffModalProps) {
         duration: 5000,
       });
     } catch (error) {
-      setErrorMessage(errorMessages.patchChangeUsersByCreditRequest.description);
+      setErrorMessage(
+        errorMessages.patchChangeUsersByCreditRequest.description
+      );
       setErrorModal(true);
     } finally {
       if (onCloseModal) onCloseModal();
@@ -277,7 +278,6 @@ export function StaffModal(props: StaffModalProps) {
 
   const hasSingleCommercialManager = options.commercialManager.length === 1;
   const hasSingleAnalyst = options.analyst.length === 1;
-
   return (
     <>
       <Formik
@@ -363,17 +363,15 @@ export function StaffModal(props: StaffModalProps) {
           </Form>
         )}
       </Formik>
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

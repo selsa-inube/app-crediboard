@@ -4,6 +4,7 @@ import { MdClear } from "react-icons/md";
 import { Text, Stack, Icon, useMediaQuery, Blanket } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
+
 import { StyledContainerClose, StyledModal } from "./styles";
 
 export interface IDocumentViewerProps {
@@ -19,6 +20,10 @@ export const DocumentViewer = (props: IDocumentViewerProps) => {
 
   if (!node) {
     throw new Error(validationMessages.errorNodo);
+  }
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
   }
   const isMobile = useMediaQuery("(max-width: 700px)");
 

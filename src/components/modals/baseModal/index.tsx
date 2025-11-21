@@ -67,6 +67,10 @@ export function BaseModal(props: IBaseModalProps) {
   if (!node) {
     throw new Error(validationMessages.errorNodo);
   }
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
+  }
 
   return createPortal(
     <Blanket>
