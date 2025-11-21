@@ -22,7 +22,11 @@ import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 
-import { StyledBoardSection, StyledCollapseIcon } from "./styles";
+import {
+  StyledBoardSection,
+  StyledCollapseIcon,
+  StyledFilterIcon,
+} from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
 import { configOption, infoModal, messagesError } from "./config";
 
@@ -257,19 +261,21 @@ function BoardSection(props: BoardSectionProps) {
           )}
 
           {!isTablet && (
-            <Icon
-              icon={
-                currentOrientation === "vertical" ? (
-                  <MdOutlineFilterAlt />
-                ) : (
-                  <MdOutlineFilterAltOff />
-                )
-              }
-              appearance={disabledCollapse ? "gray" : "primary"}
-              size="24px"
-              onClick={handleToggleOrientation}
-              cursorHover
-            />
+            <StyledFilterIcon $disabled={disabledCollapse}>
+              <Icon
+                icon={
+                  currentOrientation === "vertical" ? (
+                    <MdOutlineFilterAlt />
+                  ) : (
+                    <MdOutlineFilterAltOff />
+                  )
+                }
+                appearance={disabledCollapse ? "gray" : "primary"}
+                size="24px"
+                onClick={handleToggleOrientation}
+                cursorHover={!disabledCollapse}
+              />
+            </StyledFilterIcon>
           )}
 
           <Text
