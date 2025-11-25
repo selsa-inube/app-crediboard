@@ -28,8 +28,8 @@ export interface INotificationOnApprovalsResponse {
 export interface ICreditRequests {
   creditRequestId: string;
   creditRequestCode?: string;
-  executed_task?: string;
-  execution_date?: string;
+  executedTask?: string;
+  executionDate?: string;
   identificationNumber?: string;
   identificationType?: string;
   justification?: string;

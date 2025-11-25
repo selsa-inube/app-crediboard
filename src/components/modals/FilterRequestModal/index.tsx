@@ -95,6 +95,11 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
     );
   }
 
+  if (portalNode) {
+    portalNode.style.position = "relative";
+    portalNode.style.zIndex = "3";
+  }
+
   return createPortal(
     <Blanket>
       <StyledModal $smallScreen={isMobile}>

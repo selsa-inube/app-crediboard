@@ -73,7 +73,11 @@ export function BaseModal(props: IBaseModalProps) {
   if (!node) {
     throw new Error(validationMessages.errorNodo);
   }
-  console.log("BASE MODAL WIDTH ", width);
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
+  }
+
   return createPortal(
     <Blanket>
       <StyledContainer

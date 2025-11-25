@@ -1,5 +1,6 @@
 import { SectionBackground } from "@components/layout/BoardSection/types";
 import { IOptionItemCheckedProps } from "@components/inputs/SelectCheck/OptionItem";
+import { Filter } from "@components/cards/SelectedFilters/interface";
 
 interface SelectConfigProps {
   label: string;
@@ -46,6 +47,27 @@ const boardColumns: TBoardColumn[] = [
     sectionBackground: "gray",
   },
 ];
+const getBoardColumns = (
+  activeFilters: Filter[],
+  boardOrientation: string = "vertical"
+): TBoardColumn[] => {
+  const hasCompletedFilter = activeFilters.some(
+    (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+  );
+
+  if (hasCompletedFilter && boardOrientation === "horizontal") {
+    return [
+      ...boardColumns,
+      {
+        id: "TRAMITADA",
+        value: "Tramitadas",
+        sectionBackground: "light",
+      },
+    ];
+  }
+
+  return boardColumns;
+};
 
 const selectConfig = (
   selectOptions: IOptionItemCheckedProps[],
@@ -76,8 +98,10 @@ const dataInformationSearchModal = {
   descriptionModal:
     "Para la búsqueda que está a punto de hacer, ¿Desea mantener los filtros aplicados?",
 };
+
 export {
   boardColumns,
+  getBoardColumns,
   dataInformationModal,
   selectConfig,
   dataInformationSearchModal,

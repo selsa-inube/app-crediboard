@@ -44,8 +44,8 @@ import { emptyNoveltiesConfig } from "./config/errorNovelties";
 
 const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
   return (
-    <StyledContentImg to="/" >
-      <StyledLogo src={imgUrl}  onTheFooter={onTheFooter} />
+    <StyledContentImg to="/">
+      <StyledLogo src={imgUrl} onTheFooter={onTheFooter} />
     </StyledContentImg>
   );
 };
@@ -208,7 +208,7 @@ function AppPage() {
             <Header
               logoURL={renderLogo(eventData.businessUnit.urlLogo)}
               user={{
-                username: eventData.user.userName,
+                username: eventData.user.userAccount,
                 breakpoint: "848px",
                 client: eventData.businessUnit.abbreviatedName,
               }}
@@ -287,7 +287,7 @@ function AppPage() {
                         true
                       )}
                       referenceCode={novelty.creditRequestCode}
-                      description={emptyNoveltiesConfig.novelties.description}
+                      description={novelty.traceValue}
                       actionText={emptyNoveltiesConfig.novelties.actionText}
                       onActionClick={() =>
                         handleNoveltyActionClick(novelty.creditRequestCode)

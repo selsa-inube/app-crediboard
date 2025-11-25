@@ -11,7 +11,6 @@ import {
   Text,
   Textarea,
   Textfield,
-  useFlag,
 } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
@@ -24,7 +23,7 @@ import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocum
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
-import { dataFlags } from "@config/components/flags/flag.config";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
 import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
@@ -72,11 +71,11 @@ export function DocumentValidationApprovalModal(
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
   >([]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-
-  const { addFlag } = useFlag();
 
   const getOptionLabel = (options: typeof optionsAnswer, value: string) => {
     const option = options?.find(
@@ -159,21 +158,9 @@ export function DocumentValidationApprovalModal(
         if (onCloseModal) {
           onCloseModal();
         }
-      } catch (error: unknown) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-        addFlag({
-          title: approvalsConfig.titleError,
-          description,
-          appearance: "danger",
-          duration: dataFlags.duration,
-        });
+      } catch (error) {
+        setShowErrorModal(true);
+        setMessageError(approvalsConfig.titleError);
       }
     },
   });
@@ -200,20 +187,8 @@ export function DocumentValidationApprovalModal(
         );
         setDocuments(response);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-        addFlag({
-          title: approvalsConfig.titleError,
-          description,
-          appearance: "danger",
-          duration: 5000,
-        });
+        setShowErrorModal(true);
+        setMessageError(approvalsConfig.titleErrorDocument);
       }
     };
 
@@ -235,19 +210,8 @@ export function DocumentValidationApprovalModal(
       setOpen(true);
       setSeenDocuments((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-      addFlag({
-        title: approvalsConfig.titleError,
-        description,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setShowErrorModal(true);
+      setMessageError(approvalsConfig.titleErrorDocument);
     }
   };
 
@@ -378,6 +342,16 @@ export function DocumentValidationApprovalModal(
             selectedFile={selectedFile}
             handleClose={() => setOpen(false)}
             title={fileName || ""}
+          />
+        )}
+
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
+            message={messageError}
           />
         )}
       </Stack>

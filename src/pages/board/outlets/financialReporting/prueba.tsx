@@ -23,6 +23,10 @@ export const DocumentViewer = (props: IDocumentViewerProps) => {
   if (!node) {
     throw new Error(validationMessages.errorNodo);
   }
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
+  }
   const isMobile = useMediaQuery("(max-width: 700px)");
 
   return createPortal(

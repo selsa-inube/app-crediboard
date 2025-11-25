@@ -8,6 +8,6 @@ export const approvalsConfig = {
     "Proporciona detalles acerca de la evaluación del requisito",
   Cancel: "Cancelar",
   confirm: "Confirmar",
-  titleError: "Lamentamos los inconvenientes",
+  titleError: "El servicio ha fallado al procesar la solicitud",
   maxLength: 200,
 };

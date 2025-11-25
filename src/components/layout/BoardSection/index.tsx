@@ -3,22 +3,16 @@ import {
   MdOutlineChevronRight,
   MdOutlineFilterAlt,
   MdOutlineFilterAltOff,
+  MdInfoOutline,
 } from "react-icons/md";
-import {
-  Stack,
-  Icon,
-  Text,
-  useFlag,
-  useMediaQueries,
-  Button,
-} from "@inubekit/inubekit";
+import { Stack, Icon, Text, useMediaQueries, Button } from "@inubekit/inubekit";
 
 import { SummaryCard } from "@components/cards/SummaryCard";
+import { BaseModal } from "@components/modals/baseModal";
 import {
   ICreditRequestPinned,
   ICreditRequest,
 } from "@services/creditRequest/query/types";
-import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
 import { ErrorModal } from "@components/modals/ErrorModal";
@@ -28,9 +22,13 @@ import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 
-import { StyledBoardSection, StyledCollapseIcon } from "./styles";
+import {
+  StyledBoardSection,
+  StyledCollapseIcon,
+  StyledFilterIcon,
+} from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
-import { configOption, messagesError } from "./config";
+import { configOption, infoModal, messagesError } from "./config";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -41,6 +39,7 @@ interface BoardSectionProps {
   errorLoadingPins: boolean;
   searchRequestValue: string;
   sectionCounter?: number;
+  sectionId?: string;
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
@@ -50,6 +49,8 @@ interface BoardSectionProps {
   dragIcon?: React.ReactElement;
   onOrientationChange: (orientation: SectionOrientation) => void;
   shouldCollapseAll: boolean;
+  hasActiveFilters?: boolean;
+  showPinnedOnly?: boolean;
 }
 
 function BoardSection(props: BoardSectionProps) {
@@ -62,10 +63,13 @@ function BoardSection(props: BoardSectionProps) {
     pinnedRequests,
     errorLoadingPins,
     searchRequestValue,
+    sectionId,
     handlePinRequest,
     handleLoadMoreData,
     onOrientationChange,
     shouldCollapseAll,
+    hasActiveFilters,
+    showPinnedOnly = false,
   } = props;
   const disabledCollapse = sectionInformation.length === 0;
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
@@ -76,18 +80,13 @@ function BoardSection(props: BoardSectionProps) {
   const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const flagMessage = useRef(false);
-
+  const sectionRef = useRef<HTMLDivElement>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
-
   const businessManagerCode = eventData.businessManager.abbreviatedName;
-
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
-
-  const { addFlag } = useFlag();
-
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -96,36 +95,49 @@ function BoardSection(props: BoardSectionProps) {
       setCollapse(true);
     }
   }, [shouldCollapseAll, disabledCollapse]);
+
   const handleCollapse = () => {
     if (!disabledCollapse) {
       setCollapse((prev) => !prev);
     }
   };
 
-  const handleFlag = (title: string, description: string) => {
-    addFlag({
-      title,
-      description,
-      appearance: "danger",
-      duration: 5000,
-    });
-  };
-
   const getNoDataMessage = () => {
     if (sectionInformation.length === 0) {
-      return searchRequestValue
-        ? `${configOption.noMatches} "${searchRequestValue}"`
-        : configOption.textNodata;
+      if (showPinnedOnly) {
+        return configOption.noPinnedRequests;
+      }
+      if (searchRequestValue && searchRequestValue.trim().length >= 1) {
+        return configOption.noKeywordResults;
+      }
+      if (hasActiveFilters) {
+        return configOption.noFilterResults;
+      }
+      return configOption.textNodata;
     }
     return "";
   };
   const handleToggleOrientation = () => {
+    if (disabledCollapse) {
+      setIsInfoModalOpen(true);
+      return;
+    }
     const newOrientation =
       currentOrientation === "vertical" ? "horizontal" : "vertical";
     if (newOrientation === "horizontal") {
       setCollapse(true);
+      setTimeout(() => {
+        if (sectionRef.current) {
+          sectionRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
+          });
+        }
+      }, 100);
+    } else {
+      setCollapse(false);
     }
-
     setCurrentOrientation(newOrientation);
     onOrientationChange(newOrientation);
   };
@@ -174,8 +186,8 @@ function BoardSection(props: BoardSectionProps) {
 
           const extractedValues = Array.isArray(values)
             ? values
-              .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-              .filter((val): val is string => val !== "")
+                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+                .filter((val): val is string => val !== "")
             : [];
 
           setValueRule((prev) => {
@@ -196,13 +208,10 @@ function BoardSection(props: BoardSectionProps) {
         (request) => request.unreadNovelties === undefined
       );
       if (!flagMessage.current && hasUnread) {
-        const errorData = mockErrorBoard[0];
-        handleFlag(errorData.messages[0], errorData.Summary[1]);
         flagMessage.current = true;
       }
     }, 1000);
     return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectionInformation]);
 
   useEffect(() => {
@@ -216,6 +225,8 @@ function BoardSection(props: BoardSectionProps) {
   
   return (
     <StyledBoardSection
+      ref={sectionRef}
+      id={sectionId}
       $sectionBackground={sectionBackground}
       $orientation={orientation}
       $isTablet={isTablet}
@@ -250,19 +261,21 @@ function BoardSection(props: BoardSectionProps) {
           )}
 
           {!isTablet && (
-            <Icon
-              icon={
-                currentOrientation === "vertical" ? (
-                  <MdOutlineFilterAlt />
-                ) : (
-                  <MdOutlineFilterAltOff />
-                )
-              }
-              appearance="primary"
-              size="24px"
-              onClick={handleToggleOrientation}
-              cursorHover
-            />
+            <StyledFilterIcon $disabled={disabledCollapse}>
+              <Icon
+                icon={
+                  currentOrientation === "vertical" ? (
+                    <MdOutlineFilterAlt />
+                  ) : (
+                    <MdOutlineFilterAltOff />
+                  )
+                }
+                appearance={disabledCollapse ? "gray" : "primary"}
+                size="24px"
+                onClick={handleToggleOrientation}
+                cursorHover={!disabledCollapse}
+              />
+            </StyledFilterIcon>
           )}
 
           <Text
@@ -326,14 +339,19 @@ function BoardSection(props: BoardSectionProps) {
               />
             ))
           ) : (
-            <Stack gap="24px" alignItems="center" height="533px" width="100%">
+            <Stack
+              gap="24px"
+              alignItems="center"
+              height={orientation === "vertical" ? "533px" : "200px"}
+              width="100%"
+            >
               <Text type="title" size="small" appearance="gray">
                 {getNoDataMessage()}
               </Text>
             </Stack>
           )}
 
-          {orientation === "horizontal" && (
+          {orientation === "horizontal" && sectionInformation.length > 0 && (
             <Stack justifyContent="center" width="100%">
               <Button
                 variant="outlined"
@@ -346,17 +364,31 @@ function BoardSection(props: BoardSectionProps) {
           )}
         </Stack>
       )}
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
+      {isInfoModalOpen && (
+        <BaseModal
+          title={infoModal.title}
+          nextButton={infoModal.button}
+          handleNext={() => setIsInfoModalOpen(false)}
+          handleClose={() => setIsInfoModalOpen(false)}
+          width={isMobile ? "290px" : "403px"}
+        >
+          <Stack direction="column" alignItems="center" gap="16px">
+            <Icon icon={<MdInfoOutline />} size="68px" appearance="primary" />
+            <Text type="body" size="medium" appearance="gray">
+              {infoModal.message}
+            </Text>
+          </Stack>
+        </BaseModal>
+      )}
     </StyledBoardSection>
   );
 }

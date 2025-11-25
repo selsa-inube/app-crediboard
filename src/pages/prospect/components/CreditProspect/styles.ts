@@ -16,3 +16,8 @@ export const StyledPrintCardProspect = styled.div`
       align-items: start !important;
   }
 `
+export const StyledTextareaNoResize = styled.div`
+  textarea {
+    resize: none;
+  }
+`;

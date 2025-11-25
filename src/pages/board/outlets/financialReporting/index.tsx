@@ -110,6 +110,8 @@ export const FinancialReporting = () => {
     showShareModal: false,
   });
 
+  const [updateManagement, setUpdateManagement] = useState(0);
+
   const { creditRequestCode } = useParams();
   const { user } = useIAuth();
 
@@ -253,6 +255,13 @@ export const FinancialReporting = () => {
     }
   };
 
+  const handleAttachmentsClose = async (filesSaved: boolean = false) => {
+    setShowAttachments(false);
+    if (filesSaved) {
+      setUpdateManagement((prev) => prev + 1);
+    }
+  };
+
   const handleActions = configHandleactions({
     buttonReject: () => setShowRejectModal(true),
     buttonCancel: () => setShowCancelModal(true),
@@ -301,7 +310,7 @@ export const FinancialReporting = () => {
         user?.id || "",
         businessUnitPublicCode,
         businessManagerCode,
-        "RECHAZAR_SOLICITUD", // o "RECHAZO_HUMANO"
+        "RECHAZAR_SOLICITUD",
         removalJustification
       );
 
@@ -321,6 +330,7 @@ export const FinancialReporting = () => {
     setAttachDocuments(true);
     setShowMenu(false);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!data?.creditRequestId || !businessUnitPublicCode || !user?.id)
@@ -338,7 +348,7 @@ export const FinancialReporting = () => {
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //eslint-disable-next-line
   }, [data?.creditRequestId, businessUnitPublicCode, user?.id]);
 
   const fetchErrors = async () => {
@@ -371,7 +381,7 @@ export const FinancialReporting = () => {
     if (data?.creditRequestId) {
       fetchErrors();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //eslint-disable-next-line
   }, [data]);
 
   const handleDeleteCreditRequest = async () => {
@@ -407,6 +417,7 @@ export const FinancialReporting = () => {
         }, 1000);
       });
   };
+
   const handleToggleModal = () => {
     setShowModal(!showModal);
   };
@@ -506,7 +517,12 @@ export const FinancialReporting = () => {
                   </Stack>
                   <Stack direction="column">
                     <BlockPdfSection className="pdf-block">
-                      <Management id={creditRequestCode!} isMobile={isMobile} />
+                      {/* MODIFICADO: Pasar updateManagement como prop */}
+                      <Management
+                        id={creditRequestCode!}
+                        isMobile={isMobile}
+                        updateData={updateManagement}
+                      />
                     </BlockPdfSection>
                   </Stack>
                   <Stack
@@ -540,7 +556,7 @@ export const FinancialReporting = () => {
               {showAttachments && (
                 <ListModal
                   title="Adjuntar"
-                  handleClose={() => setShowAttachments(false)}
+                  handleClose={handleAttachmentsClose}
                   optionButtons={optionButtons}
                   buttonLabel="Guardar"
                   id={data.creditRequestId!}
@@ -618,8 +634,9 @@ export const FinancialReporting = () => {
         <ErrorModal
           message={errorMessage}
           handleClose={() => {
-            setErrorModal(false)
-          }} />
+            setErrorModal(false);
+          }}
+        />
       )}
       {pdfState.isGenerating && (
         <Blanket>

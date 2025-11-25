@@ -9,23 +9,20 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { ICreditRiskScoreResponse } from "@services/creditProfiles/types";
 import { getCreditRiskScoreById } from "@services/creditProfiles/GetCreditRiskScoreById";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 
 import { dataRiskScoring } from "./config";
 
 interface RiskScoringProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
-  customerIdentificationNumber: string;
+  requests: ICreditRequest;
   isMobile: boolean;
 }
 
 export function RiskScoring(props: RiskScoringProps) {
-  const {
-    businessUnitPublicCode,
-    businessManagerCode,
-    customerIdentificationNumber,
-    isMobile,
-  } = props;
+  const { businessUnitPublicCode, businessManagerCode, requests, isMobile } =
+    props;
 
   const [data, setData] = useState<ICreditRiskScoreResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -48,44 +45,47 @@ export function RiskScoring(props: RiskScoringProps) {
     }
   };
 
-  const handleRetry = () => {
+  const handleRetry = async () => {
     setData(null);
-    (async () => {
-      try {
-        setLoading(true);
-        const response = await getCreditRiskScoreById(
-          businessUnitPublicCode,
-          businessManagerCode,
-          customerIdentificationNumber
-        );
-        setData(response);
-      } catch {
-        setShowErrorModal(true);
-        setMessageError(dataRiskScoring.modalError);
-      }
-    })();
+    setLoading(true);
+    try {
+      const response = await getCreditRiskScoreById(
+        businessUnitPublicCode,
+        businessManagerCode,
+        requests.clientIdentificationNumber
+      );
+      setData(response);
+    } catch {
+      setShowErrorModal(true);
+      setMessageError(dataRiskScoring.modalError);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
+    if (!requests.clientIdentificationNumber) return;
     const fetchData = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
         const response = await getCreditRiskScoreById(
           businessUnitPublicCode,
           businessManagerCode,
-          customerIdentificationNumber
+          requests.clientIdentificationNumber
         );
         setData(response);
       } catch {
         setShowErrorModal(true);
         setMessageError(dataRiskScoring.modalError);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [
     businessUnitPublicCode,
-    customerIdentificationNumber,
+    requests.clientIdentificationNumber,
     businessManagerCode,
   ]);
 

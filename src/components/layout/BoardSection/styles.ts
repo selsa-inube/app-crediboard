@@ -12,6 +12,11 @@ interface IStyledCollapseIcon {
   $disabledCollapse: boolean;
 }
 
+export const StyledFilterIcon = styled.div<{ $disabled: boolean }>`
+  display: inline-flex;
+  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
+  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
+`;
 export const StyledBoardSection = styled.div<IStyledBoardSection>`
   display: flex;
   flex-direction: column;
