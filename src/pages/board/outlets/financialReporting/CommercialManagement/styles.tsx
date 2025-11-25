@@ -102,8 +102,9 @@ export const StyledPrint = styled.div`
 export const StylePrintCardSummary = styled.div`
   @media print {
     zoom: .9;
-    page-break-inside: avoid;
   }
+
+  page-break-inside: avoid;
 `;
 
 export const StyledPrintCardProspect = styled.div`

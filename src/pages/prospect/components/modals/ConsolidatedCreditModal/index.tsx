@@ -456,6 +456,8 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
                     autoRows="auto"
                     templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
                     gap="16px"
+                    width="100%"
+                    margin="0 20px 0 0"
                   >
                     {sortedObligationPayment.map((creditData) => (
                       <CardConsolidatedCredit
