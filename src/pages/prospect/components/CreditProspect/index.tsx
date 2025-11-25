@@ -319,7 +319,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     <Stack direction="column" gap="24px">
       {!isMobile && (
         <StyledPrint>
-          <Stack gap="2px" justifyContent="end" alignItems="center">
+          <Stack gap="10px" justifyContent="end" alignItems="center">
             <Button
               type="button"
               appearance="primary"

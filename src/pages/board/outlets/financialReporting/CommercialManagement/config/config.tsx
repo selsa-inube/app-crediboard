@@ -401,14 +401,6 @@ export const menuOptions = (
     visible: true,
   },
   {
-    title: "Pagos extras",
-    onClick: () => {
-      handleOpenModal("extraPayments");
-    },
-    icon: <MdOutlinePayments />,
-    visible: !visibleExtraPayments,
-  },
-  {
     title: "Observaciones de preaprobación",
     onClick: () => {
       console.log("Observaciones de preaprobación######");
@@ -416,6 +408,14 @@ export const menuOptions = (
     },
     icon: <MdOutlineMessage />,
     visible: true,
+  },
+  {
+    title: "Pagos extras",
+    onClick: () => {
+      handleOpenModal("extraPayments");
+    },
+    icon: <MdOutlinePayments />,
+    visible: !visibleExtraPayments,
   },
 ];
 

@@ -262,7 +262,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         handleNext={handleClose}
         handleClose={handleClose}
         width={!isMobile ? "1050px" : "320px"}
-        $height="calc(100vh - 64px)"
+        height={isMobile ? "auto" : "630px"}
       >
         <ScrollableContainer
         $smallScreen={isMobile}
