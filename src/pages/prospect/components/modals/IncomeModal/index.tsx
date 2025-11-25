@@ -36,7 +36,6 @@ export function IncomeModal(props: IncomeModalProps) {
   const [formData, setFormData] = useState<IIncomeSources | undefined>(
     initialValues
   );
-  const [isShowingEdit, setIsShowingEdit] = useState<boolean>(false);
 
   const handleDataChange = (newData: IIncomeSources) => {
     setFormData(newData);
@@ -57,7 +56,7 @@ export function IncomeModal(props: IncomeModalProps) {
       duration: 5000,
     });
   };
-  console.log("(isMobile && isShowingEdit): ", (isMobile && isShowingEdit));
+
   return (
     <BaseModal
       title={dataIncomeModal.title}
@@ -81,7 +80,6 @@ export function IncomeModal(props: IncomeModalProps) {
           businessManagerCode={businessManagerCode}
           creditRequestCode={creditRequestCode}
           borrowerOptions={borrowerOptions}
-          setIsShowingEdit={setIsShowingEdit}
         />
       </ScrollableContainer>
     </BaseModal>

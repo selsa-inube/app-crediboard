@@ -66,6 +66,7 @@ import {
   StyledContainerIcon,
   StyledVerticalDivider,
   StyledPrint,
+  StyledContainerDiverProspect
 } from "./styles";
 
 interface ComercialManagementProps {
@@ -785,10 +786,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   )}
                 </>
               )}
-              <div
-                style={{ breakAfter: "avoid" }}>
+              <StyledContainerDiverProspect>
                 {collapse && <Stack>{isMobile && <Divider />}</Stack>}
-              </div>
+              </StyledContainerDiverProspect>
               {collapse && (
                 <CreditProspect
                   key={refreshKey}

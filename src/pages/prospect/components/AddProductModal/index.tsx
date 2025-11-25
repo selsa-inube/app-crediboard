@@ -60,7 +60,6 @@ function AddProductModal(props: IAddProductModalProps) {
   });
 
   useEffect(() => {
-
       (async () => {
         try{
         setLoading(true);
@@ -97,8 +96,7 @@ function AddProductModal(props: IAddProductModalProps) {
         setLoading(false);
       }
       })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode]);
+  },[businessUnitPublicCode, moneyDestination, identificationDocumentNumber, businessManagerCode]);
 
   useEffect(() => {
     if (currentStep !== stepsAddProduct.paymentConfiguration.id) return;
@@ -152,9 +150,9 @@ function AddProductModal(props: IAddProductModalProps) {
         setIsCurrentFormValid(isValid);
       } else if (currentStep === stepsAddProduct.paymentConfiguration.id) {
         const isValid =
-          !!formData.paymentConfiguration.paymentMethod && // eslint-disable-line no-implicit-coercion
-          !!formData.paymentConfiguration.paymentCycle && // eslint-disable-line no-implicit-coercion
-          !!formData.paymentConfiguration.firstPaymentDate; // eslint-disable-line no-implicit-coercion
+          Boolean(formData.paymentConfiguration.paymentMethod) &&
+          Boolean(formData.paymentConfiguration.paymentCycle) &&
+          Boolean(formData.paymentConfiguration.firstPaymentDate);
         setIsCurrentFormValid(isValid);
       }
     };

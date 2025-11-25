@@ -7,10 +7,10 @@ import {
   RateType,
 } from "@services/enum/prospectProduct";
 import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
-import { ICustomerData } from "./types";
 import { IProspect } from "@services/prospect/types"; 
 
 import { IPaymentConfiguration } from "./steps/config";
+import { ICustomerData } from "./types";
 
 const creditLineOptions = [
   {

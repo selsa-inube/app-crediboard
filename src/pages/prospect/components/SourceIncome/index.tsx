@@ -239,7 +239,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
             )}
             {isMobile && (
               <CardGray
-                label="Deudor"
+                label={incomeCardData.borrower}
                 placeHolder={borrowerIncome?.borrower}
                 data={borrowerOptions[0].label}
                 apparencePlaceHolder="gray"

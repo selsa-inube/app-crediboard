@@ -403,7 +403,6 @@ export const menuOptions = (
   {
     title: "Observaciones de preaprobación",
     onClick: () => {
-      console.log("Observaciones de preaprobación######");
       handleOpenModal("observationsModal");
     },
     icon: <MdOutlineMessage />,

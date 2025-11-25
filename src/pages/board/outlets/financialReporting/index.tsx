@@ -227,6 +227,7 @@ export const FinancialReporting = () => {
           showShareModal: true,
         });
       }
+      setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
       setErrorMessage(errorMessages.share.description);
@@ -249,6 +250,7 @@ export const FinancialReporting = () => {
       });
 
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
+      setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
       setErrorMessage(errorMessages.share.description);

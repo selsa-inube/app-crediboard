@@ -107,14 +107,18 @@ export const StylePrintCardSummary = styled.div`
   page-break-inside: avoid;
 `;
 
+export const StyledContainerDiverProspect = styled.div`
+  break-after: avoid;
+`;
+
 export const StyledPrintCardProspect = styled.div`
   @media print {
     zoom: 1;
-    height: auto !important;       
-    max-height: none !important;   
-    overflow: visible !important;  
-    display: block !important; 
-    margin: 0px !important;
+    height: auto;       
+    max-height: none;   
+    overflow: visible;  
+    display: block; 
+    margin: 0px;
   }
 
 `

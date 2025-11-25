@@ -827,7 +827,7 @@ function EditProductModal(props: EditProductModalProps) {
                   onChange={(name, value) =>
                     handleAmortizationTypeChange(formik, name, value)
                   }
-                  /* disabled={isLoadingAmortizationTypes} */
+                  disabled={isLoadingAmortizationTypes}
                   value={formik.values.amortizationType}
                   fullwidth
                 />
