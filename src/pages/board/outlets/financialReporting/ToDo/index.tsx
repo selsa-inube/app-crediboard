@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, useContext, useRef } from "react";
+import { useState, useEffect, ChangeEvent, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { MdOutlineInfo } from "react-icons/md";
 import { Stack, Icon, Text, Select, Button, Input } from "@inubekit/inubekit";
@@ -58,7 +58,6 @@ function ToDo(props: ToDoProps) {
   const [taskDecisions, setTaskDecisions] = useState<ITaskDecisionOption[]>([]);
   const [selectedDecision, setSelectedDecision] =
     useState<ITaskDecisionOption | null>(null);
-  const [loading, setLoading] = useState(true);
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
@@ -71,25 +70,36 @@ function ToDo(props: ToDoProps) {
   const [decisionValue, setDecisionValue] = useState({
     decision: "",
   });
-  const [maxCharacters, setMaxCharacters] = useState(30);
+
+  const [maxCharacters, setMaxCharacters] = useState(() => {
+    const width = window.innerWidth;
+    if (width <= 880) return 30;
+    if (width <= 1200) return 10;
+    return 30;
+  });
 
   useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
+    let timeoutId: NodeJS.Timeout;
 
-      if (width <= 880) {
-        setMaxCharacters(30);
-      } else if (width <= 1200) {
-        setMaxCharacters(10);
-      } else {
-        setMaxCharacters(30);
-      }
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        const width = window.innerWidth;
+        if (width <= 880) {
+          setMaxCharacters(30);
+        } else if (width <= 1200) {
+          setMaxCharacters(10);
+        } else {
+          setMaxCharacters(30);
+        }
+      }, 150);
     };
 
-    handleResize();
-
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -130,7 +140,7 @@ function ToDo(props: ToDoProps) {
   useEffect(() => {
     const fetchToDoData = async () => {
       if (!requests?.creditRequestId) return;
-      setLoading(true);
+
       try {
         const data = await getToDoByCreditRequestId(
           businessUnitPublicCode,
@@ -146,8 +156,6 @@ function ToDo(props: ToDoProps) {
           id: "Management",
           message: (error as Error).message.toString(),
         });
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -157,6 +165,47 @@ function ToDo(props: ToDoProps) {
     requests?.creditRequestId,
     businessManagerCode,
     setIdProspect,
+  ]);
+
+  useEffect(() => {
+    const fetchDecisions = async () => {
+      if (!requests?.creditRequestId || taskDecisions.length > 0 || !taskData)
+        return;
+
+      try {
+        const decision = await getSearchDecisionById(
+          businessUnitPublicCode,
+          businessManagerCode,
+          requests.creditRequestId
+        );
+
+        const formattedDecisions = Array.isArray(decision)
+          ? decision.map((decisions: DecisionItem, index: number) => ({
+              id: `decision-${index}`,
+              label: decisions.I18n ? decisions.I18n[lang] : decisions.value,
+              value: decisions.value,
+              code: decisions.decision,
+              originalLabel: decisions.decision,
+            }))
+          : [];
+        setTaskDecisions(formattedDecisions);
+      } catch (error) {
+        console.error(error);
+        errorObserver.notify({
+          id: "Management",
+          message: (error as Error).message.toString(),
+        });
+      }
+    };
+
+    fetchDecisions();
+  }, [
+    requests?.creditRequestId,
+    taskData,
+    businessUnitPublicCode,
+    businessManagerCode,
+    lang,
+    taskDecisions.length,
   ]);
 
   useEffect(() => {
@@ -188,7 +237,6 @@ function ToDo(props: ToDoProps) {
   }, [taskData]);
 
   const handleRetry = async () => {
-    setLoading(true);
     if (requests?.creditRequestId) {
       try {
         const data = await getToDoByCreditRequestId(
@@ -203,8 +251,6 @@ function ToDo(props: ToDoProps) {
           id: "Management",
           message: (error as Error).message.toString(),
         });
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -217,8 +263,8 @@ function ToDo(props: ToDoProps) {
       setTempStaff((prev) => ({ ...prev, [key]: value }));
     };
 
-  const onChangeDecision = (name: string, newValue: string) => {
-    setDecisionValue({ ...decisionValue, [name]: newValue });
+  const onChangeDecision = (_: string, newValue: string) => {
+    setDecisionValue({ decision: newValue });
 
     const selected = taskDecisions.find(
       (decision) => decision.value === newValue
@@ -237,42 +283,6 @@ function ToDo(props: ToDoProps) {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-  };
-  const isFetching = useRef(false);
-
-  const handleSelectOpen = async () => {
-    if (isFetching.current) return;
-    isFetching.current = true;
-    setLoading(true);
-    if (requests?.creditRequestId) {
-      try {
-        const decision = await getSearchDecisionById(
-          businessUnitPublicCode,
-          businessManagerCode,
-          requests.creditRequestId
-        );
-
-        const formattedDecisions = Array.isArray(decision)
-          ? decision.map((decisions: DecisionItem, index: number) => ({
-              id: `decision-${index}`,
-              label: decisions.I18n ? decisions.I18n[lang] : decisions.value,
-              value: decisions.value,
-              code: decisions.decision,
-              originalLabel: decisions.decision,
-            }))
-          : [];
-        setTaskDecisions(formattedDecisions);
-      } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
-      } finally {
-        setLoading(false);
-        isFetching.current = false;
-      }
-    }
   };
 
   const validationId = () => {
@@ -300,19 +310,25 @@ function ToDo(props: ToDoProps) {
       selectedDecision?.originalLabel || selectedDecision?.label || "",
   };
 
-  const taskRole = taskPrs.find((t) => t.Code === taskData?.taskToBeDone)?.Role;
+  const taskRole = useMemo(
+    () => taskPrs.find((t) => t.Code === taskData?.taskToBeDone)?.Role,
+    [taskData?.taskToBeDone]
+  );
 
-  const getTaskLabel = (code: string): string => {
-    const task = taskPrs.find((t) => t.Code === code);
-    return task ? `${task.Value}` : code;
-  };
+  const taskLabel = useMemo(() => {
+    if (!taskData?.taskToBeDone) return errorMessagge;
+    const task = taskPrs.find((t) => t.Code === taskData.taskToBeDone);
+    return task ? `${task.Value}` : taskData.taskToBeDone;
+  }, [taskData?.taskToBeDone]);
 
   const handleInfo = () => {
     setIsModalInfo(true);
   };
+
   const { disabledButton: reassignCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("reassignCreditApplication"),
   });
+
   useEffect(() => {
     setHasPermitSend(
       staff.some(
@@ -365,18 +381,12 @@ function ToDo(props: ToDoProps) {
                 </Text>
               )}
 
-              {loading ? (
-                <></>
-              ) : (
-                <Text
-                  size={isMobile ? "medium" : "large"}
-                  appearance={taskData?.taskToBeDone ? "dark" : "gray"}
-                >
-                  {taskData?.taskToBeDone
-                    ? getTaskLabel(taskData.taskToBeDone)
-                    : errorMessagge}
-                </Text>
-              )}
+              <Text
+                size={isMobile ? "medium" : "large"}
+                appearance={taskData?.taskToBeDone ? "dark" : "gray"}
+              >
+                {taskLabel}
+              </Text>
             </Stack>
             <Stack
               direction={isMobile ? "column" : "row"}
@@ -387,6 +397,7 @@ function ToDo(props: ToDoProps) {
               <Stack width={isMobile ? "100%" : "340px"}>
                 {hasSingleDecision ? (
                   <Input
+                    key="decision-input-single"
                     id="toDo"
                     name="decision"
                     label="Decisión"
@@ -397,6 +408,7 @@ function ToDo(props: ToDoProps) {
                   />
                 ) : (
                   <Select
+                    key="decision-select-multiple"
                     id="toDo"
                     name="decision"
                     label="Decisión"
@@ -405,7 +417,6 @@ function ToDo(props: ToDoProps) {
                     size="compact"
                     options={taskDecisions || []}
                     onChange={onChangeDecision}
-                    onClick={handleSelectOpen}
                     fullwidth={isMobile}
                   />
                 )}
