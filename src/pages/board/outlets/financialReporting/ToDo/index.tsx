@@ -1,7 +1,15 @@
 import { useState, useEffect, ChangeEvent, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { MdOutlineInfo } from "react-icons/md";
-import { Stack, Icon, Text, Select, Button, Input } from "@inubekit/inubekit";
+import {
+  Stack,
+  Icon,
+  Text,
+  Select,
+  Button,
+  Input,
+  useMediaQuery,
+} from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
 import { Divider } from "@components/layout/Divider";
@@ -62,45 +70,25 @@ function ToDo(props: ToDoProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
   const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
+
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
     analyst: "",
   });
   const [tempStaff, setTempStaff] = useState(assignedStaff);
+
   const [decisionValue, setDecisionValue] = useState({
     decision: "",
   });
 
-  const [maxCharacters, setMaxCharacters] = useState(() => {
-    const width = window.innerWidth;
-    if (width <= 880) return 30;
-    if (width <= 1200) return 10;
+  const isSmall = useMediaQuery("(max-width: 880px)");
+  const isMedium = useMediaQuery("(max-width: 1200px)");
+
+  const maxCharacters = (() => {
+    if (isSmall) return 30;
+    if (isMedium) return 10;
     return 30;
-  });
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        const width = window.innerWidth;
-        if (width <= 880) {
-          setMaxCharacters(30);
-        } else if (width <= 1200) {
-          setMaxCharacters(10);
-        } else {
-          setMaxCharacters(30);
-        }
-      }, 150);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  })();
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
@@ -317,8 +305,12 @@ function ToDo(props: ToDoProps) {
 
   const taskLabel = useMemo(() => {
     if (!taskData?.taskToBeDone) return errorMessagge;
-    const task = taskPrs.find((t) => t.Code === taskData.taskToBeDone);
-    return task ? `${task.Value}` : taskData.taskToBeDone;
+
+    const matchedTask = taskPrs.find(
+      (taskItem) => taskItem.Code === taskData.taskToBeDone
+    );
+
+    return matchedTask ? `${matchedTask.Value}` : taskData.taskToBeDone;
   }, [taskData?.taskToBeDone]);
 
   const handleInfo = () => {
