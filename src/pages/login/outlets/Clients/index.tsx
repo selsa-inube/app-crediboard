@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { flushSync } from "react-dom";
 
 import { AppContext } from "@context/AppContext";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
@@ -24,6 +25,7 @@ function BusinessUnits(props: IBusinessUnitsProps) {
     useState<IBusinessUnitsPortalStaff | null>(null);
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { setBusinessUnitSigla } = useContext(AppContext);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,12 +45,22 @@ function BusinessUnits(props: IBusinessUnitsProps) {
     setSelectedBusinessUnit(selectOption || null);
   };
 
-  const handleSubmit = () => {
+const handleSubmit = () => {
     if (selectedBusinessUnit) {
       const selectJSON = JSON.stringify(selectedBusinessUnit);
-      setBusinessUnitSigla(selectJSON);
+
+      flushSync(() => {
+        setBusinessUnitSigla(selectJSON);
+      });
+
+      const returnTo = searchParams.get("returnTo");
+
+      if (returnTo) {
+        navigate(decodeURIComponent(returnTo));
+      } else {
+        navigate("/"); 
+      }
     }
-    navigate("/login/loading-app");
   };
 
   function filterBusinessUnits(

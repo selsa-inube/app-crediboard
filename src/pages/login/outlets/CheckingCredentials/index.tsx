@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCallback, useContext, useEffect } from "react";
 
 import { AppContext } from "@context/AppContext";
@@ -12,6 +12,7 @@ function CheckingCredentials({
   businessUnits: IBusinessUnitsPortalStaff[];
 }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { eventData, setBusinessUnitSigla } = useContext(AppContext);
 
   const checkCredentials = useCallback(async () => {
@@ -25,16 +26,31 @@ function CheckingCredentials({
       } else if (businessUnits.length === 1) {
         const selectedBusinessUnit = businessUnits[0];
         const selectJSON = JSON.stringify(selectedBusinessUnit);
+
         setBusinessUnitSigla(selectJSON);
 
-        navigate("/login/loading-app");
+        const returnTo = searchParams.get("returnTo");
+        
+        if (returnTo) {
+           navigate(decodeURIComponent(returnTo));
+        } else {
+           navigate("/login/loading-app");
+        }
+
       } else {
-        navigate(`/login/${eventData.user.userAccount}/clients`);
+        const returnTo = searchParams.get("returnTo");
+        let targetPath = `/login/${eventData.user.userAccount}/clients`;
+        
+        if (returnTo) {
+            targetPath += `?returnTo=${encodeURIComponent(returnTo)}`;
+        }
+        
+        navigate(targetPath);
       }
     } catch (error) {
       navigate("/login/error/not-available");
     }
-  }, [eventData, navigate, businessUnits, setBusinessUnitSigla]);
+  }, [eventData, navigate, businessUnits, setBusinessUnitSigla, searchParams]);
 
   useEffect(() => {
     const timer = setTimeout(checkCredentials, 2000);
