@@ -113,6 +113,7 @@ function EditProductModal(props: EditProductModalProps) {
   const [termInMonthsModified, setTermInMonthsModified] =
     useState<boolean>(false);
   const [loanAmountError, setLoanAmountError] = useState<string>("");
+  const [isUsingServices, setIsUsingServices] = useState<boolean>(false);
   const [paymentMethodsList, setPaymentMethodsList] = useState<
     IPaymentMethod[]
   >([]);
@@ -126,7 +127,28 @@ function EditProductModal(props: EditProductModalProps) {
   const [loanTermError, setLoanTermError] = useState<string>("");
   const [amortizationTypesList, setAmortizationTypesList] = useState<
     SelectOption[]
-  >([]);
+  >( [
+  {
+    id: "1",
+    value: "cuota_integral_fija",
+    label: "Cuota integral fija"
+  },
+  {
+    id: "2",
+    value: "abonos_fijos_capital",
+    label: "Abonos fijos a capital"
+  },
+  {
+    id: "3",
+    value: "Pagos valor de incremento",
+    label: "Pagos valor de incremento"
+  },
+  {
+    id: "4",
+    value: "Pagos con porcentaje de incremento",
+    label: "Pagos con porcentaje de incremento"
+  }
+]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
   const [interestRateError, setInterestRateError] = useState<string>("");
@@ -213,10 +235,12 @@ function EditProductModal(props: EditProductModalProps) {
         setAmortizationTypesList(amortizationTypeOptions);
       } finally {
         setIsLoadingAmortizationTypes(false);
+        isLoadingAmortizationTypes;
       }
     };
 
     loadAmortizationTypes();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
 
   useEffect(() => {
@@ -525,6 +549,7 @@ function EditProductModal(props: EditProductModalProps) {
         creditRequestCode: creditRequestCode,
       };
 
+      setIsUsingServices(true);
       const updatedProspect = await updateCreditProduct(
         businessUnitPublicCode,
         businessManagerCode,
@@ -541,8 +566,10 @@ function EditProductModal(props: EditProductModalProps) {
 
       onProspectUpdate(normalizedProspect as IProspect);
 
+      setIsUsingServices(false);
       onCloseModal();
     } catch (error) {
+      setIsUsingServices(false);
       setErrorMessage(errorMessages.updateCreditProduct.description);
       setErrorModal(true);
     }
@@ -685,8 +712,13 @@ function EditProductModal(props: EditProductModalProps) {
             iconAfterNext={iconAfter}
             finalDivider={true}
             width={isMobile ? "290px" : "500px"}
+            $height="calc(100vh - 64px)"
+            isSendingData={isUsingServices}
           >
-            <ScrollableContainer $smallScreen={isMobile}>
+            <ScrollableContainer 
+            $smallScreen={!isMobile}
+            $width="auto"
+            >
               <Stack
                 direction="column"
                 gap="24px"

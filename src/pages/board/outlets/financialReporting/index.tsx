@@ -4,7 +4,6 @@ import {
   Stack,
   useFlag,
   useMediaQuery,
-  Blanket,
   Text,
   Spinner,
 } from "@inubekit/inubekit";
@@ -41,7 +40,10 @@ import {
 } from "@services/prospect/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ShareModal } from "@components/modals/ShareModal";
+import { BaseModal } from "@components/modals/baseModal";
+import { shareModalConfig } from "@components/modals/ShareModal/config";
 
+import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";
 import {
@@ -225,6 +227,7 @@ export const FinancialReporting = () => {
           showShareModal: true,
         });
       }
+      setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
       setErrorMessage(errorMessages.share.description);
@@ -247,6 +250,7 @@ export const FinancialReporting = () => {
       });
 
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
+      setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
       setErrorMessage(errorMessages.share.description);
@@ -424,6 +428,8 @@ export const FinancialReporting = () => {
   const handleSharePdfModal = () => {
     setPdfState({ isGenerating: false, blob: null, showShareModal: false });
   };
+
+
 
   return (
     <div ref={dataCommercialManagementRef}>
@@ -616,14 +622,16 @@ export const FinancialReporting = () => {
             />
           )}
           {showMenu && isMobile && (
-            <MobileMenu
-              onClose={() => setShowMenu(false)}
-              onReject={hanleOnReject}
-              onCancel={handleOnCancel}
-              onAttach={handleOnAttach}
-              onViewAttachments={handleOnViewAttachments}
-              onGuarantee={() => setShowGuarantee(true)}
-            />
+            <StyledPrint>
+              <MobileMenu
+                onClose={() => setShowMenu(false)}
+                onReject={hanleOnReject}
+                onCancel={handleOnCancel}
+                onAttach={handleOnAttach}
+                onViewAttachments={handleOnViewAttachments}
+                onGuarantee={() => setShowGuarantee(true)}
+              />
+            </StyledPrint>
           )}
         </Stack>
       </StyledMarginPrint>
@@ -636,14 +644,18 @@ export const FinancialReporting = () => {
         />
       )}
       {pdfState.isGenerating && (
-        <Blanket>
+        <BaseModal
+          title={shareModalConfig.title}
+          nextButton={shareModalConfig.buttonText}
+          width={isMobile ? "300px" : "450px"}
+        >
           <StyledContainerSpinner>
-            <Spinner size="large" />
-            <Text size="large" weight="bold">
+            <Spinner size="large" appearance="primary" />
+            <Text size="large" weight="bold" appearance="dark">
               {errorMessages.share.spinner}
             </Text>
           </StyledContainerSpinner>
-        </Blanket>
+        </BaseModal>
       )}
       {pdfState.showShareModal && pdfState.blob && (
         <ShareModal

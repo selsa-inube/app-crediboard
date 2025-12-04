@@ -93,7 +93,7 @@ export const ExtraordinaryPaymentModal = (
       nextButton={TextLabels.close}
       handleNext={handleClose}
       handleClose={handleClose}
-      width={!isMobile ? "850px" : "290px"}
+      width={!isMobile ? "850px" : "360px"}
       finalDivider={true}
     >
       <Stack gap="24px" direction="column">

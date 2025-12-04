@@ -356,13 +356,18 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
         nextButton={ModalConfig.keep}
         disabledNext={!hasRealChanges}
         handleNext={handleSaveChanges}
-        width={isMobile ? "300px" : "640px"}
+        width={isMobile ? "370px" : "690px"}
         height={isMobile ? "auto" : "688px"}
         handleBack={handleClose}
         finalDivider={true}
         backButton={ModalConfig.close}
+        $height="calc(100vh - 64px)"
       >
-        <Stack direction="column" gap="24px">
+        <Stack
+          direction="column"
+          gap="24px"
+          margin="0 8px 0 0"
+        >
           <Stack
             direction={isMobile ? "column" : "row"}
             alignItems="center"
@@ -382,7 +387,14 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
                 {ModalConfig.collectedValue}
               </Text>
             </Stack>
-            <Stack direction="row" gap="8px" justifyContent="center" alignContent="center" alignItems="center">
+            <Stack
+              direction="row"
+              gap="8px"
+              justifyContent="center"
+              alignContent="center"
+              alignItems="center"
+              width={isMobile ? "100%" : "auto"}
+            >
               <Button
                 onClick={() => setEditOpen(false)}
                 variant="outlined"
@@ -409,8 +421,9 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
             <Stack
               direction="column"
               gap="16px"
-              height={isMobile ? "auto" : "420px"}
+              height={`calc(100vh - ${isMobile ? "460px" : "400px"})`}
               padding="0px 0px 0px 2px"
+              margin="0 8px 0 0"
             >
               {editOpen ? (
                 <>
@@ -444,6 +457,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
                     templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
                     gap="16px"
                     width="100%"
+                    margin="0 20px 0 0"
                   >
                     {sortedObligationPayment.map((creditData) => (
                       <CardConsolidatedCredit
@@ -496,6 +510,15 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
                         isMobile={isMobile}
                         initialType={initialValuesMap[creditData.id]?.type}
                         handleRemoveCredit={handleRemoveCredit}
+                        tags={creditData.tags}
+                        description={
+                          creditData.options.find(
+                            (option) =>
+                              option.description ===
+                              paymentOptionValues.INMEDIATE,
+                          )?.description ?? ""
+                        }
+                        allowCustomValue={creditData.allowCustomValue}
                       />
                     ))}
                   </Grid>

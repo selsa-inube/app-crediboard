@@ -167,7 +167,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
             disabledNext={!formik.dirty || !formik.isValid}
             iconAfterNext={iconAfter}
             iconBeforeNext={iconBefore}
-            width={isMobile ? "300px" : "600px"}
+            width={isMobile ? "300px" : "650px"}
             finalDivider={true}
           >
             <ScrollableContainer $smallScreen={isMobile}>

@@ -401,20 +401,20 @@ export const menuOptions = (
     visible: true,
   },
   {
-    title: "Pagos extras",
-    onClick: () => {
-      handleOpenModal("extraPayments");
-    },
-    icon: <MdOutlinePayments />,
-    visible: !visibleExtraPayments,
-  },
-  {
     title: "Observaciones de preaprobación",
     onClick: () => {
       handleOpenModal("observationsModal");
     },
     icon: <MdOutlineMessage />,
     visible: true,
+  },
+  {
+    title: "Pagos extras",
+    onClick: () => {
+      handleOpenModal("extraPayments");
+    },
+    icon: <MdOutlinePayments />,
+    visible: !visibleExtraPayments,
   },
 ];
 
@@ -431,4 +431,8 @@ export const tittleOptions = {
   titleError: "¡Uy, algo ha salido mal!",
   descriptionError: "No se han podido guardar los cambios.",
   deductibleExpensesErrorTitle: "Error al cargar gastos descontables",
+  descriptionDelete: "¿Realmente desea eliminar este producto?",
+  successDeleteDescription: "El producto fue eliminado correctamente",
+  successDeleteTitle: "Producto eliminado",
+  errorDeleteProduct: "No se pudo eliminar el producto",
 };

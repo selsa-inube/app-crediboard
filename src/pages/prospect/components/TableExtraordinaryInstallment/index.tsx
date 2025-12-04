@@ -13,8 +13,6 @@ import {
   Tr,
 } from "@inubekit/inubekit";
 
-import { ActionMobile } from "@components/feedback/ActionMobile";
-
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { IProspect } from "@services/prospect/types";
 import { DeleteModal } from "@components/modals/DeleteModal";
@@ -289,18 +287,12 @@ export const TableExtraordinaryInstallment = (
                 visbleActions.length > 0 &&
                 visbleActions.map((action) => (
                   <Td key={action.key} type="custom">
-                    {isMobile ? (
-                      <ActionMobile
-                        handleDelete={() => setIsOpenModalDelete(true)}
-                      />
-                    ) : (
-                      <Detail
-                        handleDelete={() => {
-                          setSelectedDebtor(row);
-                          setIsOpenModalDelete(true);
-                        }}
-                      />
-                    )}
+                    <Detail
+                      handleDelete={() => {
+                        setSelectedDebtor(row);
+                        setIsOpenModalDelete(true);
+                      }}
+                    />
                   </Td>
                 ))}
             </Tr>
