@@ -18,9 +18,9 @@ import { IProspect, IBorrower } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
-import { updateProspect } from "@services/prospect/updateProspect";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { restoreFinancialObligationsByBorrowerId } from "@services/prospect/restoreFinancialObligationsByBorrowerId";
 import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles"
 import { CardGray } from "@components/cards/CardGray";
 
@@ -229,14 +229,12 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     }
 
     try {
-      const restoredData = JSON.parse(
-        JSON.stringify(initialProspectSnapshot.current)
-      );
-
-      await updateProspect(
+      await restoreFinancialObligationsByBorrowerId(
         businessUnitPublicCode,
         businessManagerCode,
-        restoredData[0]
+        selectedBorrower.value,
+        creditRequestCode,
+        restoreData.justification
       );
 
       setTableRefreshKey((prev) => prev + 1);
