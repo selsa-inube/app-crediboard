@@ -66,6 +66,7 @@ import {
   StyledContainerIcon,
   StyledVerticalDivider,
   StyledPrint,
+  StyledContainerDiverProspect
 } from "./styles";
 
 interface ComercialManagementProps {
@@ -475,12 +476,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     return item.id === data.stage;
   }) as TBoardColumn[];
 
-  if(normalizedStageTitle[0]) {
+  if (normalizedStageTitle[0]) {
     normalizedStageTitle = normalizedStageTitle[0].value;
   } else {
     normalizedStageTitle = "";
   }
-  
+
   return (
     <>
       <Fieldset
@@ -630,6 +631,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   </StyledCollapseIcon>
                 </Stack>
               </Stack>
+
               {isMobile && (
                 <>
                   <StyledPrint>
@@ -683,6 +685,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               {collapse && (
                 <>
                   {isMobile && (
+                    <StyledPrint>
                     <Stack padding="10px 0px" width="100%">
                       <Button
                         type="button"
@@ -698,15 +701,18 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           />
                         }
                         disabled={availableEditCreditRequest}
+                        onClick={() => handleOpenModal("editProductModal")}
                       >
                         {tittleOptions.titleAddProduct}
                       </Button>
                     </Stack>
+                    </StyledPrint>
                   )}
                 </>
               )}
               {collapse && (
                 <>
+                <StyledPrint>
                   {isMobile && (
                     <Stack padding="0px 0px 10px">
                       {prospectProducts?.some(
@@ -733,11 +739,13 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                         )}
                     </Stack>
                   )}
+                  </StyledPrint>
                 </>
               )}
               {collapse && (
                 <>
                   {isMobile && (
+                    <StyledPrint>
                     <Stack justifyContent="end">
                       <StyledContainerIcon>
                         <Icon
@@ -766,7 +774,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           <MenuProspect
                             options={menuOptions(
                               handleOpenModal,
-                              !prospectProducts?.some(
+                              prospectProducts?.some(
                                 (product) => product.extraordinaryInstallments
                               )
                             )}
@@ -774,17 +782,20 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                         )}
                       </StyledContainerIcon>
                     </Stack>
+                    </StyledPrint>
                   )}
                 </>
               )}
-              {collapse && <Stack>{isMobile && <Divider />}</Stack>}
+              <StyledContainerDiverProspect>
+                {collapse && <Stack>{isMobile && <Divider />}</Stack>}
+              </StyledContainerDiverProspect>
               {collapse && (
                 <CreditProspect
                   key={refreshKey}
                   borrowersProspect={borrowersProspect}
                   borrowerOptions={borrowerOptions}
                   selectedIndex={selectedIndex}
-                  dataProspect={dataProspect}
+                  dataProspect={dataProspect[0]}
                   selectedBorrower={selectedBorrower}
                   incomeData={incomeData}
                   isMobile={isMobile}
@@ -803,6 +814,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   setDataProspect={setDataProspect}
                   creditRequestCode={creditRequestCode}
                   availableEditCreditRequest={availableEditCreditRequest}
+                  openModal={openModal}
+                  setOpenModal={setOpenModal}
+                  currentModal={currentModal}
+                  handleOpenModal={handleOpenModal}
+                  handleCloseModal={handleCloseModal}
                   onProspectUpdate={(prospect) => {
                     setLocalProspectData(prospect);
                     setRefreshKey((prev) => prev + 1);
@@ -826,7 +842,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 borrowersProspect={borrowersProspect}
                 borrowerOptions={borrowerOptions}
                 selectedIndex={selectedIndex}
-                dataProspect={dataProspect}
+                dataProspect={dataProspect[0]}
                 selectedBorrower={selectedBorrower}
                 isMobile={isMobile}
                 handleCloseModal={handleCloseModal}

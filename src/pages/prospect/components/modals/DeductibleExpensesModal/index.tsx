@@ -45,7 +45,9 @@ export function DeductibleExpensesModal(props: DeductibleExpensesModalProps) {
       >
         {initialValues.length > 0 ? (
           <>
-            <Fieldset>
+            <Fieldset
+              borderColor="none"
+            >
               <StyledContainer>
                 <Stack
                   direction="column"

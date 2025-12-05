@@ -15,6 +15,7 @@ export interface ICardProductSelectionProps {
   onSelect?: () => void;
   typeCheck?: string;
   isMobile?: boolean;
+  viewOnly?: boolean;
 }
 
 export function CardProductSelection(props: ICardProductSelectionProps) {
@@ -28,18 +29,21 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
     isSelected,
     typeCheck,
     isMobile,
+    viewOnly = false,
   } = props;
 
   return (
     <Stack width={isMobile ? "250px" : "455px"} direction="column">
       <Stack gap="4px">
-        <input
-          type={typeCheck ? typeCheck : "checkbox"}
-          disabled={disabled}
-          checked={isSelected}
-          onChange={onSelect}
-          name="productSelection"
-        />
+        {!viewOnly && (
+          <input
+            type={typeCheck ? typeCheck : "checkbox"}
+            disabled={disabled}
+            checked={isSelected}
+            onChange={onSelect}
+            name="productSelection"
+          />
+        )}
         <Text
           type="title"
           size="medium"
@@ -51,7 +55,7 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
       <Fieldset
         isClickable={!disabled}
         selectedState={isSelected}
-        onSelectionChange={onSelect}
+        onSelectionChange={viewOnly ? undefined : onSelect}
       >
         <Stack direction="column" gap="16px" padding="4px 16px">
           <Stack justifyContent="space-between">

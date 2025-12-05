@@ -306,7 +306,7 @@ export const fieldPlaceholders = {
 
 export const errorMessages = {
   updateCreditProduct: {
-    description: "Error no se pudo actualizar el producto de credito."
+    description: "No se pudo actualizar el producto de crédito."
   }
 }
 

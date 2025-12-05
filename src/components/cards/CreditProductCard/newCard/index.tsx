@@ -7,7 +7,7 @@ import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
 
 import { dataNewCard } from "./config";
-import { StyledCreditProductCard } from "../styles";
+import { StyledCreditProductCard, StyledPrint } from "../styles";
 
 interface INewCreditProductCardProps {
   onClick: () => void;
@@ -26,6 +26,7 @@ export function NewCreditProductCard(props: INewCreditProductCardProps) {
   };
   const isMobile = useMediaQuery("(max-width:880px)");
   return (
+    <StyledPrint>
     <Stack gap="6px">
       <StyledCreditProductCard
         onClick={editCreditApplication ? handleInfo : onClick}
@@ -49,5 +50,6 @@ export function NewCreditProductCard(props: INewCreditProductCardProps) {
         />
       )}
     </Stack>
+    </StyledPrint>
   );
 }

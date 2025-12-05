@@ -222,7 +222,7 @@ function BoardSection(props: BoardSectionProps) {
     const task = taskPrs.find((t) => t.Code === code);
     return task ? `${task.Value}` : code;
   };
-
+  
   return (
     <StyledBoardSection
       ref={sectionRef}

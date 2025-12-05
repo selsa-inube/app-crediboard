@@ -72,6 +72,8 @@ export const StyledCardsCredit = styled.div<IStyledCardsCredit>`
     & > div {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
+      margin: 0;
+      align-items: start;
     }
   }
 `;
@@ -96,3 +98,27 @@ export const StyledPrint = styled.div`
     display: none;
   }
 `;
+
+export const StylePrintCardSummary = styled.div`
+  @media print {
+    zoom: .9;
+  }
+
+  page-break-inside: avoid;
+`;
+
+export const StyledContainerDiverProspect = styled.div`
+  break-after: avoid;
+`;
+
+export const StyledPrintCardProspect = styled.div`
+  @media print {
+    zoom: 1;
+    height: auto;       
+    max-height: none;   
+    overflow: visible;  
+    display: block; 
+    margin: 0px;
+  }
+
+`

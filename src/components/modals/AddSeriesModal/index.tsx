@@ -285,7 +285,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         handleBack={handleClose}
         handleNext={handleNextClick}
         handleClose={handleClose}
-        width={isMobile ? "280px" : "425px"}
+        width={isMobile ? "360px" : "425px"}
         height={isMobile ? "auto" : "639px"}
         finalDivider
         disabledNext={
