@@ -4,6 +4,7 @@ import { flushSync } from "react-dom";
 
 import { AppContext } from "@context/AppContext";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
+import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface"; 
 
 import { IBusinessUnitstate } from "./types";
 import { BusinessUnitsUI } from "./interface";
@@ -79,6 +80,10 @@ const handleSubmit = () => {
         businessUnitSigla.includes(searchTerm)
       );
     });
+  }
+
+  if (!businessUnits || businessUnits.length === 0) {
+    return <LoadingAppUI />;
   }
 
   return (

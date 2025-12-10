@@ -40,15 +40,22 @@ function FirstPage() {
 
   initializeDataDB(businessUnitSigla);
 
+  if (businessUnitSigla.length > 0) {
+    if (location.pathname.startsWith("/login")) {
+      const params = new URLSearchParams(location.search);
+      const returnTo = params.get("returnTo");
+      const target = returnTo ? decodeURIComponent(returnTo) : "/";
+      return <Navigate to={target} replace />;
+    }
+
+    return <BoardRoutes />;
+  }
+
   const isLoginPath = location.pathname === "/" || location.pathname.startsWith("/login");
 
   if (!isLoginPath) {
     const currentPath = encodeURIComponent(location.pathname + location.search);
-    const userId = eventData?.user?.userAccount;
-
-    if (!userId) {
-        return <Navigate to="/" replace />;
-    }
+    const userId = eventData?.user?.userAccount || "user";
 
     return <Navigate to={`/login/${userId}/clients?returnTo=${currentPath}`} replace />;
   }
