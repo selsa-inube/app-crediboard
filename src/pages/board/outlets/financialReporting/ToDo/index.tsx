@@ -322,13 +322,16 @@ function ToDo(props: ToDoProps) {
   });
 
   useEffect(() => {
-    setHasPermitSend(
-      staff.some(
-        (s) =>
-          s.role === taskRole && s.userId === eventData?.user?.staff?.staffId
-      )
+    const hasStaffPermission = staff.some(
+      (s) => s.role === taskRole && s.userId === eventData?.user?.staff?.staffId
     );
-  }, [staff, eventData, taskData, taskRole]);
+
+    const isVerificationWithAccount =
+      requests?.stage === "VERIFICACION_APROBACION" &&
+      Boolean(eventData?.user?.userAccount);
+
+    setHasPermitSend(hasStaffPermission || isVerificationWithAccount);
+  }, [staff, eventData, taskData, taskRole, requests]);
 
   const hasSingleDecision = taskDecisions.length === 1;
 
@@ -338,16 +341,22 @@ function ToDo(props: ToDoProps) {
       setSelectedDecision(taskDecisions[0]);
     }
   }, [hasSingleDecision, taskDecisions, decisionValue.decision]);
+  const getToDoDescriptionTitle = (): string => {
+    if (requests?.stage === "VERIFICACION_APROBACION") {
+      return eventData?.user?.userAccount || "";
+    }
+    if (taskRole === "CredicarAccountManager") {
+      return assignedStaff.commercialManager;
+    } else {
+      return assignedStaff.analyst;
+    }
+  };
 
   return (
     <>
       <Fieldset
         title={errorMessages.toDo.titleCard}
-        descriptionTitle={
-          taskRole === "CredicarAccountManager"
-            ? assignedStaff.commercialManager
-            : assignedStaff.analyst
-        }
+        descriptionTitle={getToDoDescriptionTitle()}
         heightFieldset="241px"
         hasOverflow
         aspectRatio={isMobile ? "auto" : "1"}
