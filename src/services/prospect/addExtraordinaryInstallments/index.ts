@@ -8,10 +8,9 @@ import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
 
-export const updateExtraordinaryInstallments = async (
+export const addExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string,
-  businessManagerCode: string
 ): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -23,10 +22,9 @@ export const updateExtraordinaryInstallments = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "SaveExtraordinaryInstallments",
+          "X-Action": "AddExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
-          "Content-type": "application/json; charset=UTF-8",
-          "X-Process-Manager": businessManagerCode,
+          "Content-type": "application/json; charset=UTF-8"
         },
         body: JSON.stringify(
           mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)

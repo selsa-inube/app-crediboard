@@ -84,7 +84,6 @@ export const TableExtraordinaryInstallment = (
     handleClose,
     setSentData,
     businessUnitPublicCode,
-    businessManagerCode,
     creditRequestCode,
     availableEditCreditRequest
   } = props;
@@ -197,7 +196,6 @@ export const TableExtraordinaryInstallment = (
     try {
       await removeExtraordinaryInstallment(
         businessUnitPublicCode || "",
-        businessManagerCode || "",
         extraordinaryInstallments
       );
 
