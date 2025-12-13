@@ -126,6 +126,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   );
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [error, setError] = useState(false);
 
   const [form, setForm] = useState({
     borrower: "",
@@ -686,59 +687,59 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 <>
                   {isMobile && (
                     <StyledPrint>
-                    <Stack padding="10px 0px" width="100%">
-                      <Button
-                        type="button"
-                        appearance="primary"
-                        spacing="compact"
-                        fullwidth
-                        iconBefore={
-                          <Icon
-                            icon={<MdOutlineAdd />}
-                            appearance="light"
-                            size="18px"
-                            spacing="narrow"
-                          />
-                        }
-                        disabled={availableEditCreditRequest}
-                        onClick={() => handleOpenModal("editProductModal")}
-                      >
-                        {tittleOptions.titleAddProduct}
-                      </Button>
-                    </Stack>
+                      <Stack padding="10px 0px" width="100%">
+                        <Button
+                          type="button"
+                          appearance="primary"
+                          spacing="compact"
+                          fullwidth
+                          iconBefore={
+                            <Icon
+                              icon={<MdOutlineAdd />}
+                              appearance="light"
+                              size="18px"
+                              spacing="narrow"
+                            />
+                          }
+                          disabled={availableEditCreditRequest}
+                          onClick={() => handleOpenModal("editProductModal")}
+                        >
+                          {tittleOptions.titleAddProduct}
+                        </Button>
+                      </Stack>
                     </StyledPrint>
                   )}
                 </>
               )}
               {collapse && (
                 <>
-                <StyledPrint>
-                  {isMobile && (
-                    <Stack padding="0px 0px 10px">
-                      {prospectProducts?.some(
-                        (product) => product.extraordinaryInstallments
-                      ) && (
-                          <Button
-                            type="button"
-                            appearance="primary"
-                            spacing="compact"
-                            variant="outlined"
-                            fullwidth
-                            iconBefore={
-                              <Icon
-                                icon={<MdOutlinePayments />}
-                                appearance="primary"
-                                size="18px"
-                                spacing="narrow"
-                              />
-                            }
-                            onClick={() => handleOpenModal("extraPayments")}
-                          >
-                            {tittleOptions.titleExtraPayments}
-                          </Button>
-                        )}
-                    </Stack>
-                  )}
+                  <StyledPrint>
+                    {isMobile && (
+                      <Stack padding="0px 0px 10px">
+                        {prospectProducts?.some(
+                          (product) => product.extraordinaryInstallments
+                        ) && (
+                            <Button
+                              type="button"
+                              appearance="primary"
+                              spacing="compact"
+                              variant="outlined"
+                              fullwidth
+                              iconBefore={
+                                <Icon
+                                  icon={<MdOutlinePayments />}
+                                  appearance="primary"
+                                  size="18px"
+                                  spacing="narrow"
+                                />
+                              }
+                              onClick={() => handleOpenModal("extraPayments")}
+                            >
+                              {tittleOptions.titleExtraPayments}
+                            </Button>
+                          )}
+                      </Stack>
+                    )}
                   </StyledPrint>
                 </>
               )}
@@ -746,42 +747,42 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 <>
                   {isMobile && (
                     <StyledPrint>
-                    <Stack justifyContent="end">
-                      <StyledContainerIcon>
-                        <Icon
-                          icon={<MdOutlinePictureAsPdf />}
-                          appearance="primary"
-                          size="24px"
-                          disabled={isPrint}
-                          cursorHover
-                          onClick={print}
-                        />
-                        <Icon
-                          icon={<MdOutlineShare />}
-                          appearance="primary"
-                          size="24px"
-                          cursorHover
-                          onClick={async () => await generateAndSharePdf()}
-                        />
-                        <Icon
-                          icon={<MdOutlineMoreVert />}
-                          appearance="primary"
-                          size="24px"
-                          cursorHover
-                          onClick={() => setShowMenu(!showMenu)}
-                        />
-                        {showMenu && (
-                          <MenuProspect
-                            options={menuOptions(
-                              handleOpenModal,
-                              prospectProducts?.some(
-                                (product) => product.extraordinaryInstallments
-                              )
-                            )}
+                      <Stack justifyContent="end">
+                        <StyledContainerIcon>
+                          <Icon
+                            icon={<MdOutlinePictureAsPdf />}
+                            appearance="primary"
+                            size="24px"
+                            disabled={isPrint}
+                            cursorHover
+                            onClick={print}
                           />
-                        )}
-                      </StyledContainerIcon>
-                    </Stack>
+                          <Icon
+                            icon={<MdOutlineShare />}
+                            appearance="primary"
+                            size="24px"
+                            cursorHover
+                            onClick={async () => await generateAndSharePdf()}
+                          />
+                          <Icon
+                            icon={<MdOutlineMoreVert />}
+                            appearance="primary"
+                            size="24px"
+                            cursorHover
+                            onClick={() => setShowMenu(!showMenu)}
+                          />
+                          {showMenu && (
+                            <MenuProspect
+                              options={menuOptions(
+                                handleOpenModal,
+                                prospectProducts?.some(
+                                  (product) => product.extraordinaryInstallments
+                                )
+                              )}
+                            />
+                          )}
+                        </StyledContainerIcon>
+                      </Stack>
                     </StyledPrint>
                   )}
                 </>
@@ -829,12 +830,18 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
             {currentModal === "creditLimit" && (
               <CreditLimitModal
                 isMobile={isMobile}
-                handleClose={handleCloseModal}
-                setRequestValue={() => { }}
+                handleClose={() => setOpenModal(null)}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
-                dataMaximumCreditLimitService={dataMaximumCreditLimitService}
-                moneyDestination={prospectData.moneyDestinationAbbreviatedName}
+                dataMaximumCreditLimitService={{
+                  ...dataMaximumCreditLimitService,
+                  lineOfCreditAbbreviatedName: "creditLineTxt",
+                }}
+                setError={setError}
+                setLoading={setLoading}
+                error={error}
+                loading={loading}
+                incomeData={incomeData}
               />
             )}
             {currentModal === "IncomeModal" && (

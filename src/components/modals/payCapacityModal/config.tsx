@@ -14,6 +14,7 @@ export const paymentCapacityData = {
   subsistenceReserve: "(-) Reserva mínima de subsistencia",
   newPromises: "(=) Neto disponible para nuevos compromisos",
   lineOfCredit: "(*) Plazo máx. en *Nombre línea de crédito*",
+  getLineOfCredit: (nombreLinea: string) => `(x) Plazo máx. en ${nombreLinea}`,
   maxValue: (
     <>
       Monto máximo calculado para una cuota de <strong>2.000.000</strong> y
@@ -26,4 +27,17 @@ export const paymentCapacityData = {
   maxAmountExtraordinary:
     "Monto máximo sumando cuotas ordinarias y extraordinarias.",
   maxTotal: "Monto máximo total",
+  noExtraordinary: "No hay cuotas extraordinarias disponibles",
+  errorDate: "Error al cargar datos",
+  errorNoData:
+    "No se pudo obtener la información de capacidad de pago. Por favor, intenta nuevamente.",
 };
+
+
+export const getMaxValueText = (maxAmount: number, maxTerm: number) => (
+  <>
+    Monto máximo calculado para una cuota de{" "}
+    <strong>{maxAmount.toLocaleString("es-CO")}</strong> y plazo de{" "}
+    <strong>{maxTerm}</strong> meses.
+  </>
+);

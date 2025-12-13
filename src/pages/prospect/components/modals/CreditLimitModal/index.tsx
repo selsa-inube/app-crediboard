@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { MdErrorOutline } from "react-icons/md";
 import { Icon, Stack, Text } from "@inubekit/inubekit";
 
@@ -9,7 +9,9 @@ import { IMaximumCreditLimitByMoneyDestination } from "@services/creditLimit/typ
 import { CreditLimitCard } from "@pages/simulateCredit/CreditLimitCard";
 import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimitCard/types";
 import { get } from "@mocks/utils/dataMock.service";
+import { ISourcesOfIncomeState } from "@components/modals/payCapacityModal/types";
 
+import { IIncomeSources } from "../../CreditProspect/types";
 import { dataCreditLimitModal } from "./config";
 
 export interface ICreditLimitModalProps {
@@ -23,6 +25,7 @@ export interface ICreditLimitModalProps {
     React.SetStateAction<IPaymentChannel[] | undefined>
   >;
   requestValue?: IPaymentChannel[];
+  incomeData: Record<string, IIncomeSources>;
 }
 
 export function CreditLimitModal(props: ICreditLimitModalProps) {
@@ -34,8 +37,9 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
     moneyDestination,
     handleClose,
     setRequestValue,
+    incomeData
   } = props;
-
+  console.log("******************** ", incomeData);
   useEffect(() => {
     get("mockRequest_value")
       .then((data) => {
@@ -80,6 +84,22 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
     dataMaximumCreditLimitService,
   ]);
 
+  const incomeDataExtracted = useMemo(() => {
+    if (!incomeData || typeof incomeData !== 'object') {
+      return null;
+    }
+
+    const keys = Object.keys(incomeData);
+    if (keys.length === 0) {
+      return null;
+    }
+
+    const firstKey = keys[0];
+    const extracted = incomeData[firstKey];
+
+    return extracted;
+  }, [incomeData]);
+
   return (
     <BaseModal
       title={dataCreditLimitModal.warningTitle}
@@ -120,6 +140,9 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
                 dataMaximumCreditLimitService={dataMaximumCreditLimitService}
+                error={error}
+                setError={setError}
+                incomeData={incomeDataExtracted as ISourcesOfIncomeState}
               />
             ))}
           </Stack>

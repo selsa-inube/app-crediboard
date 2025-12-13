@@ -77,6 +77,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
         );
 
         if (data) {
+          console.log("setDataMaximumCreditLimitReciprocity: ", data);
           setDataMaximumCreditLimitReciprocity(data);
         }
       } catch (err) {
@@ -95,7 +96,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
   const getInfoText = () => {
     return frcConfig.infoTexts[currentInfoType];
   };
-
+  console.log("ataMaximumCreditLimitReciprocity.totalPortfolioObligation: ");
   return (
     <BaseModal
       title={frcConfig.title}
@@ -388,7 +389,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                 >
                   $
                   {currencyFormat(
-                    dataMaximumCreditLimitReciprocity.totalPortfolioObligation,
+                    dataMaximumCreditLimitReciprocity.totalPortfolioObligation | 0,
                     false
                   )}
                 </Text>

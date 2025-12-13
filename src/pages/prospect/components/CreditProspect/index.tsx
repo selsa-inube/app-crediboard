@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import {
   MdOutlineAdd,
   MdOutlineInfo,
@@ -45,6 +45,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { ISourcesOfIncomeState } from "@components/modals/payCapacityModal/types";
 
 import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect, errorMessage } from "./config";
@@ -120,7 +121,8 @@ export function CreditProspect(props: ICreditProspectProps) {
     handleOpenModal,
     handleCloseModal
   } = props;
-
+  console.log("incomeData: ", incomeData);
+  console.log("o--- ", incomeData[Object.keys(incomeData)[0]].PeriodicSalary);
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showShareModal, setShowShareModal] = useState(false);
 
@@ -211,9 +213,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           prevProspects.map((prospect) =>
             prospect.prospectId === prospectData.prospectId
               ? {
-                  ...prospect,
-                  clientManagerObservation: editedApprovalObservations,
-                }
+                ...prospect,
+                clientManagerObservation: editedApprovalObservations,
+              }
               : prospect
           )
         );
@@ -352,24 +354,24 @@ export function CreditProspect(props: ICreditProspectProps) {
                 Array.isArray(product.extraordinaryInstallments) &&
                 product.extraordinaryInstallments.length > 0
             ) && (
-              <Button
-                type="button"
-                appearance="primary"
-                spacing="compact"
-                variant="outlined"
-                iconBefore={
-                  <Icon
-                    icon={<MdOutlinePayments />}
-                    appearance="primary"
-                    size="18px"
-                    spacing="narrow"
-                  />
-                }
-                onClick={() => handleOpenModal("extraPayments")}
-              >
-                {dataCreditProspect.extraPayment}
-              </Button>
-            )}
+                <Button
+                  type="button"
+                  appearance="primary"
+                  spacing="compact"
+                  variant="outlined"
+                  iconBefore={
+                    <Icon
+                      icon={<MdOutlinePayments />}
+                      appearance="primary"
+                      size="18px"
+                      spacing="narrow"
+                    />
+                  }
+                  onClick={() => handleOpenModal("extraPayments")}
+                >
+                  {dataCreditProspect.extraPayment}
+                </Button>
+              )}
             <StyledVerticalDivider />
             <StyledContainerIcon>
               {showPrint && (
@@ -429,28 +431,29 @@ export function CreditProspect(props: ICreditProspectProps) {
         <CreditLimitModal
           handleClose={handleCloseModal}
           isMobile={isMobile}
-          setRequestValue={setRequestValue || (() => {})}
+          setRequestValue={setRequestValue || (() => { })}
           requestValue={requestValue}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
           dataMaximumCreditLimitService={dataMaximumCreditLimitService}
           moneyDestination={prospectData?.moneyDestinationAbbreviatedName || ""}
+          incomeData={incomeData}
         />
       )}
       {openModal === "paymentCapacity" && (
-        <PaymentCapacity
+       /*  <PaymentCapacity
           title="Cupo máx. capacidad de pago"
           handleClose={() => {
             if (setOpenModal)
               setOpenModal(null)
           }}
-          reportedIncomeSources={2000000}
+          reportedIncomeSources={incomeDataExtracted.}
           reportedFinancialObligations={6789000}
           subsistenceReserve={2000000}
           availableForNewCommitments={5000000}
           maxVacationTerm={12}
           maxAmount={1000000}
-        />
+        /> */<></>
       )}
       {openModal === "reciprocityModal" && (
         <ReciprocityModal
