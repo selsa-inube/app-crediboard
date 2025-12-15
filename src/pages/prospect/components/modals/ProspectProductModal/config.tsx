@@ -2,7 +2,6 @@ import {
   Schedule,
   CreditLine,
   PaymentMethod,
-  AmortizationType,
   RateType,
 } from "@services/enum/icorebanking-vi-crediboard/schedule";
 
@@ -32,32 +31,34 @@ export const modalTexts = {
   },
   messages: {
     errors: {
-      loanAmountRange: (amount: number, from: number, to: number) => 
+      loanAmountRange: (amount: number, from: number, to: number) =>
         `El monto ingresado es $${amount.toLocaleString()}. Debe estar entre $${from.toLocaleString()} y $${to.toLocaleString()}`,
       loanAmountMax: (amount: number, maxAmount: number) =>
         `El monto ingresado es $${amount.toLocaleString()}. El máximo permitido es $${maxAmount.toLocaleString()}`,
       loanAmountValidation: "No se pudo validar el monto del crédito",
       loanAmountGeneric: "Error al validar el monto del crédito",
-      
+
       loanTermRange: (term: number, from: number, to: number) =>
         `El plazo ingresado es ${term} meses. Debe estar entre ${from} y ${to} meses`,
       loanTermValidation: "No se pudo validar el plazo",
       loanTermGeneric: "Error al validar el plazo",
-      
+
       interestRateRange: (rate: number, min: number, max: number) =>
         `La tasa ingresada es ${rate}% mensual. Debe estar entre ${min.toFixed(2)}% y ${max.toFixed(2)}% mensual`,
       interestRateValidation: "Error al validar la tasa de interés",
-      
+
       loadPaymentOptions: "Error al cargar las opciones de pago",
       validateLoanAmount: "Error al validar el monto del crédito",
       validateLoanTermBusiness: "El plazo no cumple con las reglas de negocio",
       validateLoanTermRange: "El plazo debe estar dentro del rango permitido",
       validateLoanTermOther: "Error al validar el plazo",
-      validateInterestRateBusiness: "La tasa no cumple con las reglas de negocio",
-      validateInterestRateRange: "La tasa debe estar dentro del rango permitido",
+      validateInterestRateBusiness:
+        "La tasa no cumple con las reglas de negocio",
+      validateInterestRateRange:
+        "La tasa debe estar dentro del rango permitido",
       validateInterestRateOther: "Error al validar la tasa de interés",
-    }
-  }
+    },
+  },
 };
 
 const creditLineOptions = [
@@ -169,44 +170,6 @@ const termInMonthsOptions = [
   { id: "48Months", label: "48", value: "48" },
 ];
 
-const amortizationTypeOptions = [
-  {
-    id: AmortizationType.FixedPayments,
-    label: "Abonos Fijos",
-    value: AmortizationType.FixedPayments,
-  },
-  {
-    id: AmortizationType.GradualPayments,
-    label: "Pagos Graduales",
-    value: AmortizationType.GradualPayments,
-  },
-  {
-    id: AmortizationType.BulletPayment,
-    label: "Pago Único (Bullet)",
-    value: AmortizationType.BulletPayment,
-  },
-  {
-    id: AmortizationType.BalloonPayment,
-    label: "Pago Global (Balloon)",
-    value: AmortizationType.BalloonPayment,
-  },
-  {
-    id: AmortizationType.FixedPrincipal,
-    label: "Capital Fijo",
-    value: AmortizationType.FixedPrincipal,
-  },
-  {
-    id: AmortizationType.InterestOnly,
-    label: "Solo Intereses",
-    value: AmortizationType.InterestOnly,
-  },
-  {
-    id: AmortizationType.FixedIntegralPayments,
-    label: "Abonos Fijos Integrales",
-    value: AmortizationType.FixedIntegralPayments,
-  },
-];
-
 const rateTypeOptions = [
   { id: RateType.Fixed, label: "Fija", value: RateType.Fixed },
   { id: RateType.Variable, label: "Variable", value: RateType.Variable },
@@ -216,15 +179,15 @@ const rateTypeOptions = [
 ];
 
 export const paymentCycleMap: Record<string, string> = {
-  "Weekly": "Cada 10 días",
-  "Biweekly": "Bisemanal",
-  "Semimonthly": "Quincenal",
-  "Monthly": "Mensual",
+  Weekly: "Cada 10 días",
+  Biweekly: "Bisemanal",
+  Semimonthly: "Quincenal",
+  Monthly: "Mensual",
 };
 
 export const interestRateTypeMap: Record<string, string> = {
-  "VariableInterestRate": "Tasa variable",
-  "FixedInterestRate": "Tasa fija",
+  VariableInterestRate: "Tasa variable",
+  FixedInterestRate: "Tasa fija",
 };
 
 export const VALIDATED_NUMBER_REGEX = /[^0-9]/g;
@@ -240,10 +203,10 @@ export const messagesErrorValidations = {
 };
 
 export const repaymentStructureMap: Record<string, string> = {
-  "FixedInstallment": "Cuota integral fija",
-  "ConstantAmortization": "Abonos fijos a capital",
-  "GeometricGradientRepayment": "Gradiente geométrico",
-  "ArithmeticGradientRepayment": "Gradiente aritmético",
+  FixedInstallment: "Cuota integral fija",
+  ConstantAmortization: "Abonos fijos a capital",
+  GeometricGradientRepayment: "Gradiente geométrico",
+  ArithmeticGradientRepayment: "Gradiente aritmético",
 };
 
 export const defaultPaymentOptions = [
@@ -306,9 +269,9 @@ export const fieldPlaceholders = {
 
 export const errorMessages = {
   updateCreditProduct: {
-    description: "No se pudo actualizar el producto de crédito."
-  }
-}
+    description: "No se pudo actualizar el producto de crédito.",
+  },
+};
 
 export {
   creditLineOptions,
@@ -316,6 +279,5 @@ export {
   paymentCycleOptions,
   firstPaymentCycleOptions,
   termInMonthsOptions,
-  amortizationTypeOptions,
   rateTypeOptions,
 };

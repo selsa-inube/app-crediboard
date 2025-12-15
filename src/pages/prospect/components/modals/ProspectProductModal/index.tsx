@@ -34,7 +34,6 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 import { ScrollableContainer } from "./styles";
 import {
   termInMonthsOptions,
-  amortizationTypeOptions,
   rateTypeOptions,
   paymentCycleMap,
   interestRateTypeMap,
@@ -44,9 +43,11 @@ import {
   validationMessages,
   REPAYMENT_STRUCTURES_WITH_INCREMENT,
   fieldLabels,
-  fieldPlaceholders, 
-  errorMessages
+  fieldPlaceholders,
+  errorMessages,
 } from "./config";
+import { useEnums } from "@hooks/useEnums";
+import { repaymentstructure } from "@services/enum/icorebanking-vi-crediboard/erepaymentstructure";
 
 interface EditProductModalProps {
   onCloseModal: () => void;
@@ -99,7 +100,7 @@ function EditProductModal(props: EditProductModalProps) {
     creditProductCode,
   } = props;
 
-
+  const { lang } = useEnums();
   const [showIncrementField, setShowIncrementField] = useState<boolean>(false);
   const [incrementType, setIncrementType] = useState<
     "value" | "percentage" | null
@@ -127,28 +128,28 @@ function EditProductModal(props: EditProductModalProps) {
   const [loanTermError, setLoanTermError] = useState<string>("");
   const [amortizationTypesList, setAmortizationTypesList] = useState<
     SelectOption[]
-  >( [
-  {
-    id: "1",
-    value: "cuota_integral_fija",
-    label: "Cuota integral fija"
-  },
-  {
-    id: "2",
-    value: "abonos_fijos_capital",
-    label: "Abonos fijos a capital"
-  },
-  {
-    id: "3",
-    value: "Pagos valor de incremento",
-    label: "Pagos valor de incremento"
-  },
-  {
-    id: "4",
-    value: "Pagos con porcentaje de incremento",
-    label: "Pagos con porcentaje de incremento"
-  }
-]);
+  >([
+    {
+      id: "1",
+      value: "cuota_integral_fija",
+      label: "Cuota integral fija",
+    },
+    {
+      id: "2",
+      value: "abonos_fijos_capital",
+      label: "Abonos fijos a capital",
+    },
+    {
+      id: "3",
+      value: "Pagos valor de incremento",
+      label: "Pagos valor de incremento",
+    },
+    {
+      id: "4",
+      value: "Pagos con porcentaje de incremento",
+      label: "Pagos con porcentaje de incremento",
+    },
+  ]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
   const [interestRateError, setInterestRateError] = useState<string>("");
@@ -220,28 +221,43 @@ function EditProductModal(props: EditProductModalProps) {
         if (decisions && Array.isArray(decisions) && decisions.length > 0) {
           const options = decisions
             .filter((decision) => typeof decision.value === "string")
-            .map((decision, index) => ({
-              id: decision.decisionId || `${index}`,
-              value: decision.value as string,
-              label:
-                repaymentStructureMap[decision.value as string] ||
-                (decision.value as string),
-            }));
+            .map((decision, index) => {
+              const structure = repaymentstructure.find(
+                (rest) => rest.value === (decision.value as string)
+              );
+
+              return {
+                id: decision.decisionId || `${index}`,
+                value: decision.value as string,
+                label:
+                  structure?.i18n?.[lang] ||
+                  repaymentStructureMap[decision.value as string] ||
+                  (decision.value as string),
+              };
+            });
           setAmortizationTypesList(options);
         } else {
-          setAmortizationTypesList(amortizationTypeOptions);
+          const defaultOptions = repaymentstructure.map((structure, index) => ({
+            id: structure.code || `${index}`,
+            value: structure.value,
+            label: structure.i18n?.[lang] || structure.description,
+          }));
+          setAmortizationTypesList(defaultOptions);
         }
       } catch (error) {
-        setAmortizationTypesList(amortizationTypeOptions);
+        const defaultOptions = repaymentstructure.map((structure, index) => ({
+          id: structure.code || `${index}`,
+          value: structure.value,
+          label: structure.i18n?.[lang] || structure.description,
+        }));
+        setAmortizationTypesList(defaultOptions);
       } finally {
         setIsLoadingAmortizationTypes(false);
-        isLoadingAmortizationTypes;
       }
     };
 
     loadAmortizationTypes();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
+  }, [businessUnitPublicCode, businessManagerCode, moneyDestination, lang]);
 
   useEffect(() => {
     const loadRateTypes = async () => {
@@ -578,7 +594,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleAmortizationTypeChange = (
     formik: FormikProps<FormikValues>,
     name: string,
-    value: string,
+    value: string
   ) => {
     formik.setFieldValue(name, value);
 
@@ -604,7 +620,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const validateIncrementValue = async (
     value: string,
-    formik: FormikProps<FormikValues>,
+    formik: FormikProps<FormikValues>
   ): Promise<void> => {
     if (!incrementType || !value) {
       setIncrementError("");
@@ -633,17 +649,23 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await validateIncrement(
         businessUnitPublicCode,
         businessManagerCode,
-        payload,
+        payload
       );
 
       if (!response.isValid) {
         if (incrementType === "value") {
           setIncrementError(
-            validationMessages.incrementValueRange(response.minValue, response.maxValue),
+            validationMessages.incrementValueRange(
+              response.minValue,
+              response.maxValue
+            )
           );
         } else {
           setIncrementError(
-            validationMessages.incrementPercentageRange(response.minValue, response.maxValue)
+            validationMessages.incrementPercentageRange(
+              response.minValue,
+              response.maxValue
+            )
           );
         }
       } else {
@@ -655,7 +677,6 @@ function EditProductModal(props: EditProductModalProps) {
       setIsValidatingIncrement(false);
     }
   };
-
 
   const validationSchema = Yup.object({
     creditLine: Yup.string(),
@@ -715,10 +736,7 @@ function EditProductModal(props: EditProductModalProps) {
             $height="calc(100vh - 64px)"
             isSendingData={isUsingServices}
           >
-            <ScrollableContainer 
-            $smallScreen={!isMobile}
-            $width="auto"
-            >
+            <ScrollableContainer $smallScreen={!isMobile} $width="auto">
               <Stack
                 direction="column"
                 gap="24px"
@@ -731,7 +749,12 @@ function EditProductModal(props: EditProductModalProps) {
                   name="creditAmount"
                   id="creditAmount"
                   placeholder={modalTexts.placeholders.creditAmount}
-                  value={validateCurrencyField("creditAmount", formik, false, "")}
+                  value={validateCurrencyField(
+                    "creditAmount",
+                    formik,
+                    false,
+                    ""
+                  )}
                   status={loanAmountError ? "invalid" : undefined}
                   message={loanAmountError}
                   iconBefore={
@@ -841,13 +864,17 @@ function EditProductModal(props: EditProductModalProps) {
                     name="incrementValue"
                     id="incrementValue"
                     placeholder={
-                      incrementType === "value" ? fieldPlaceholders.incrementValue : fieldPlaceholders.incrementPercentage
+                      incrementType === "value"
+                        ? fieldPlaceholders.incrementValue
+                        : fieldPlaceholders.incrementPercentage
                     }
                     value={incrementValue}
                     status={incrementValuesStatus}
                     message={
                       incrementError ||
-                      (isValidatingIncrement ? validationMessages.incrementValidating : "")
+                      (isValidatingIncrement
+                        ? validationMessages.incrementValidating
+                        : "")
                     }
                     iconBefore={
                       incrementType === "value" ? (
@@ -878,7 +905,9 @@ function EditProductModal(props: EditProductModalProps) {
 
                       return () => clearTimeout(timeoutId);
                     }}
-                    onBlur={() => validateIncrementValue(incrementValue, formik)}
+                    onBlur={() =>
+                      validateIncrementValue(incrementValue, formik)
+                    }
                     fullwidth
                   />
                 )}
@@ -927,17 +956,15 @@ function EditProductModal(props: EditProductModalProps) {
           </BaseModal>
         )}
       </Formik>
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }
