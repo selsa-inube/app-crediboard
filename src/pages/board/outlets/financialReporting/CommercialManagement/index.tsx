@@ -790,7 +790,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <StyledContainerDiverProspect>
                 {collapse && <Stack>{isMobile && <Divider />}</Stack>}
               </StyledContainerDiverProspect>
-              {collapse && (
+               {collapse && (
                 <CreditProspect
                   key={refreshKey}
                   borrowersProspect={borrowersProspect}
@@ -825,12 +825,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     setRefreshKey((prev) => prev + 1);
                   }}
                 />
-              )}
+              )} 
             </Stack>
             {currentModal === "creditLimit" && (
               <CreditLimitModal
                 isMobile={isMobile}
-                handleClose={() => setOpenModal(null)}
+                handleClose={handleCloseModal}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
                 dataMaximumCreditLimitService={{
@@ -842,6 +842,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 error={error}
                 loading={loading}
                 incomeData={incomeData}
+                moneyDestination={data.moneyDestinationAbreviatedName}
+                setRequestValue={setRequestValue}
               />
             )}
             {currentModal === "IncomeModal" && (

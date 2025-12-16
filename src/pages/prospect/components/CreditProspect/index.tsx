@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   MdOutlineAdd,
   MdOutlineInfo,
@@ -17,7 +17,6 @@ import {
 import { FormikValues } from "formik";
 
 import { MenuProspect } from "@components/navigation/MenuProspect";
-import { PaymentCapacity } from "@components/modals/PaymentCapacityModal";
 import { ReciprocityModal } from "@components/modals/ReciprocityModal";
 import { ScoreModal } from "@components/modals/FrcModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
@@ -45,13 +44,11 @@ import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { ErrorModal } from "@components/modals/ErrorModal";
-import { ISourcesOfIncomeState } from "@components/modals/payCapacityModal/types";
 
 import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect, errorMessage } from "./config";
 import { StyledPrint, StyledPrintCardProspect } from "./styles";
 import { IIncomeSources } from "./types";
-import { CreditLimitModal } from "../modals/CreditLimitModal";
 import { IncomeModal } from "../modals/IncomeModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
 import InfoModal from "../modals/InfoModal";
@@ -121,9 +118,6 @@ export function CreditProspect(props: ICreditProspectProps) {
     handleOpenModal,
     handleCloseModal
   } = props;
-  console.log("incomeData: ", incomeData);
-  console.log("o--- ", incomeData[Object.keys(incomeData)[0]].PeriodicSalary);
-  const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showShareModal, setShowShareModal] = useState(false);
 
   const [showEditApprovalModal, setShowEditApprovalModal] = useState(false);
@@ -427,34 +421,6 @@ export function CreditProspect(props: ICreditProspectProps) {
           />
         </Stack>
       </StyledPrintCardProspect>
-      {currentModal === "creditLimit" && (
-        <CreditLimitModal
-          handleClose={handleCloseModal}
-          isMobile={isMobile}
-          setRequestValue={setRequestValue || (() => { })}
-          requestValue={requestValue}
-          businessUnitPublicCode={businessUnitPublicCode}
-          businessManagerCode={businessManagerCode}
-          dataMaximumCreditLimitService={dataMaximumCreditLimitService}
-          moneyDestination={prospectData?.moneyDestinationAbbreviatedName || ""}
-          incomeData={incomeData}
-        />
-      )}
-      {openModal === "paymentCapacity" && (
-       /*  <PaymentCapacity
-          title="Cupo máx. capacidad de pago"
-          handleClose={() => {
-            if (setOpenModal)
-              setOpenModal(null)
-          }}
-          reportedIncomeSources={incomeDataExtracted.}
-          reportedFinancialObligations={6789000}
-          subsistenceReserve={2000000}
-          availableForNewCommitments={5000000}
-          maxVacationTerm={12}
-          maxAmount={1000000}
-        /> */<></>
-      )}
       {openModal === "reciprocityModal" && (
         <ReciprocityModal
           handleClose={() => {

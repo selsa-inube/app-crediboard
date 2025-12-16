@@ -33,7 +33,6 @@ export function CreditLimitCard(props: CreditLimitProps) {
     dataMaximumCreditLimitService,
     creditLine,
     creditLineTxt,
-    paymentCapacityData,
     isMobile,
     error,
     setError,

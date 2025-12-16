@@ -19,14 +19,15 @@ import { Fieldset } from "@components/data/Fieldset";
 import { currencyFormat } from "@utils/formatData/currency";
 import { getMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit } from "@services/creditLimit/getMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit";
 import { IMaximumCreditLimit } from "@services/creditLimit/getMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit/types";
-
 import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimitCard/types";
+import { formatPrimaryDate } from "@utils/formatData/date";
+
 import { BaseModal } from "../baseModal";
-import { 
-  dataTabs, 
-  headers, 
-  paymentCapacityData, 
-  getMaxValueText 
+import {
+  dataTabs,
+  headers,
+  paymentCapacityData,
+  getMaxValueText
 } from "./config";
 import { StyledTable } from "./styles";
 import { ISourcesOfIncomeState } from "./types";
@@ -57,7 +58,6 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
     businessUnitPublicCode,
     businessManagerCode,
   } = props;
-  console.log("incomeData..ññññ.", incomeData);
   const [currentTab, setCurrentTab] = useState("ordinary");
   const [maximumCreditLimitData, setMaximumCreditLimitData] =
     useState<IMaximumCreditLimit | null>(null);
@@ -82,14 +82,10 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
     const fetchMaximumCreditLimit = async () => {
       setLoading(true);
       setError(false);
-      console.log(
-        "dataMaximumCreditLimitService: ",
-        dataMaximumCreditLimitService,
-      );
+
       try {
         const submitData: IMaximumCreditLimit = {
-          customerCode:
-            dataMaximumCreditLimitService.identificationDocumentNumber,
+          customerCode: dataMaximumCreditLimitService.identificationDocumentNumber,
           dividends: incomeData.Dividends || 0,
           financialIncome: incomeData.FinancialIncome || 0,
           leases: incomeData.Leases || 0,
@@ -113,15 +109,21 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
           setMaximumCreditLimitData(data);
         }
       } catch (err) {
-        console.log("---------error----------- ", err);
-        /* setError(true); */
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
 
     fetchMaximumCreditLimit();
-  }, [businessUnitPublicCode, businessManagerCode]);
+  }, [
+    businessUnitPublicCode,
+    businessManagerCode,
+    incomeData,
+    dataMaximumCreditLimitService,
+    setError,
+    setLoading
+  ]);
 
   const totalExtraordinary =
     (maximumCreditLimitData?.maximumCreditLimitValue || 0) +
@@ -143,8 +145,8 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
       variantNext="outlined"
       handleClose={handleClose}
       handleNext={handleClose}
-      width={isMobile ? "290px" : "500px"}
-      height="692px"
+      width={isMobile ? "305px" : "500px"}
+      height={isMobile ? "580px" : "692px"}
     >
       {error ? (
         <Fieldset>
@@ -164,21 +166,28 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
           </Stack>
         </Fieldset>
       ) : (
-        <Stack direction="column" height="530px">
+        <Stack
+          direction="column"
+          height={isMobile ? "355px" : "530px"}
+          width={isMobile ? "260px" : "auto"}
+        >
           <Fieldset>
             <Stack
               direction="column"
               gap="16px"
-              padding="0px 8px"
-              height="350px"
+              padding={isMobile ? "0 3px" : "0 8px"}
+              height={isMobile ? "170px" : "350px"}
             >
-              <Tabs
-                selectedTab={currentTab}
-                tabs={tabsToRender}
-                onChange={onChange}
-              />
+              <Stack width="100%" padding="0">
+                <Tabs
+                  selectedTab={currentTab}
+                  tabs={tabsToRender}
+                  onChange={onChange}
+                  scroll={isMobile}
+                />
+              </Stack>
               {currentTab === "ordinary" && (
-                <Stack direction="column" gap="16px">
+                <Stack direction="column" gap="16px" >
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" weight="bold">
                       {paymentCapacityData.incomeSources}
@@ -191,7 +200,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                         <Text type="body" size="small">
                           {currencyFormat(
                             maximumCreditLimitData?.maximumCreditLimitValue ||
-                              0,
+                            0,
                             false,
                           )}
                         </Text>
@@ -210,7 +219,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                         <Text type="body" size="small">
                           {currencyFormat(
                             maximumCreditLimitData?.basicLivingExpenseReserve ||
-                              0,
+                            0,
                             false,
                           )}
                         </Text>
@@ -240,7 +249,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                     <Text type="body" size="medium" appearance="gray">
                       {paymentCapacityData.getLineOfCredit(
                         maximumCreditLimitData?.lineOfCreditAbbreviatedName ||
-                          "",
+                        "",
                       )}
                     </Text>
                     <Stack alignItems="center" gap="4px">
@@ -248,7 +257,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                         <SkeletonLine width="70px" animated={true} />
                       ) : (
                         <Text type="body" size="small">
-                          {maximumCreditLimitData?.maxTerm}
+                          {maximumCreditLimitData?.maxTerm + paymentCapacityData.months}
                         </Text>
                       )}
                     </Stack>
@@ -260,9 +269,9 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                       maximumCreditLimitData?.maxTerm || 0,
                     )}
                   </Text>
-                  <Stack direction="column" alignItems="center">
+                  <Stack direction="column" alignItems="center" margin="0 0 8px 0">
                     {loading ? (
-                      <SkeletonLine width="150px" animated={true} />
+                      <SkeletonLine width="250px" height="50px" animated={true} />
                     ) : (
                       <>
                         <Text
@@ -273,7 +282,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                         >
                           {currencyFormat(
                             maximumCreditLimitData?.maximumCreditLimitValue ||
-                              0,
+                            0,
                             true,
                           )}
                         </Text>
@@ -287,7 +296,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
               )}
               {currentTab === "extraordinary" &&
                 maximumCreditLimitData?.extraordinaryInstallments !==
-                  undefined && (
+                undefined && (
                   <StyledTable>
                     <Table tableLayout="auto">
                       <Thead>
@@ -300,43 +309,46 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {loading ? (
+                        {loading && (
                           <Tr>
                             <Td colSpan={headers.length} align="center">
                               <SkeletonLine width="100%" animated={true} />
                             </Td>
                           </Tr>
-                        ) : maximumCreditLimitData?.extraordinaryInstallments &&
-                          maximumCreditLimitData.extraordinaryInstallments
-                            .length > 0 ? (
-                          maximumCreditLimitData.extraordinaryInstallments.map(
-                            (row, rowIndex) => (
-                              <Tr key={rowIndex} zebra={rowIndex % 2 !== 0}>
-                                <Td align="center">
-                                  {row.paymentChannelAbbreviatedName}
-                                </Td>
-                                <Td align="center">
-                                  {currencyFormat(
-                                    Number(row.installmentAmount) || 0,
-                                    true,
-                                  )}
-                                </Td>
-                                <Td align="center">{row.installmentDate}</Td>
-                              </Tr>
-                            ),
-                          )
-                        ) : (
-                          <Tr>
-                            <Td colSpan={headers.length} align="center">
-                              <Text type="body" size="small" appearance="gray">
-                                {paymentCapacityData.noExtraordinary}
-                              </Text>
-                            </Td>
-                          </Tr>
                         )}
+                        {
+                          !loading &&
+                            maximumCreditLimitData?.extraordinaryInstallments &&
+                            maximumCreditLimitData.extraordinaryInstallments
+                              .length > 0 ? (
+                            maximumCreditLimitData.extraordinaryInstallments.map(
+                              (row, rowIndex) => (
+                                <Tr key={rowIndex} zebra={rowIndex % 2 !== 0}>
+                                  <Td align="center">
+                                    {row.paymentChannelAbbreviatedName}
+                                  </Td>
+                                  <Td align="center">
+                                    {currencyFormat(
+                                      Number(row.installmentAmount) || 0,
+                                      true,
+                                    )}
+                                  </Td>
+                                  <Td align="center">{formatPrimaryDate(new Date(row.installmentDate))}</Td>
+                                </Tr>
+                              ),
+                            )
+                          ) : (
+                            <Tr>
+                              <Td colSpan={headers.length} align="center">
+                                <Text type="body" size="small" appearance="gray">
+                                  {paymentCapacityData.noExtraordinary}
+                                </Text>
+                              </Td>
+                            </Tr>
+                          )}
                       </Tbody>
                     </Table>
-                    <Stack direction="column" gap="8px" margin="8px 0 0 0">
+                    <Stack direction="column" gap="8px" margin="8px 0 0 0" justifyContent="center" alignContent="center" alignItems="center" >
                       <Text type="body" size="small">
                         {paymentCapacityData.maxValueAmount}
                       </Text>
@@ -387,7 +399,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
               </Stack>
               <Stack direction="column" alignItems="center" gap="4px">
                 {loading ? (
-                  <SkeletonLine width="150px" animated={true} />
+                  <SkeletonLine width="250px" height="50px" animated={true} />
                 ) : (
                   <>
                     <Text

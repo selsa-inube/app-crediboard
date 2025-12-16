@@ -31,6 +31,7 @@ export const paymentCapacityData = {
   errorDate: "Error al cargar datos",
   errorNoData:
     "No se pudo obtener la información de capacidad de pago. Por favor, intenta nuevamente.",
+  months: " meses"
 };
 
 

@@ -19,6 +19,7 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { Fieldset } from "@components/data/Fieldset";
 import { getCreditLimitByCreditRiskAnalysis } from "@services/creditLimit/getCreditLimitByCreditRiskAnalysis";
 import { IMaximumCreditLimitAnalysis } from "@services/creditLimit/types";
+import { ScrollableContainer } from "@pages/prospect/components/AddProductModal/styles";
 
 import { frcConfig } from "./FrcConfig";
 import { StyledExpanded } from "./styles";
@@ -77,7 +78,6 @@ export const ScoreModal = (props: ScoreModalProps) => {
         );
 
         if (data) {
-          console.log("setDataMaximumCreditLimitReciprocity: ", data);
           setDataMaximumCreditLimitReciprocity(data);
         }
       } catch (err) {
@@ -96,7 +96,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
   const getInfoText = () => {
     return frcConfig.infoTexts[currentInfoType];
   };
-  console.log("ataMaximumCreditLimitReciprocity.totalPortfolioObligation: ");
+
   return (
     <BaseModal
       title={frcConfig.title}
@@ -117,7 +117,8 @@ export const ScoreModal = (props: ScoreModalProps) => {
           </Text>
         </Stack>
       ) : (
-        <Stack direction="column" gap="16px">
+        <ScrollableContainer $smallScreen={isMobile} $height={isMobile ? "440px" : "auto"}>
+        <Stack direction="column" gap="16px" padding="0 10px 0 0">
           <Stack direction="column" gap="12px">
             <Stack alignItems="center" justifyContent="space-between">
               <Stack gap="8px">
@@ -132,21 +133,21 @@ export const ScoreModal = (props: ScoreModalProps) => {
                 </Text>
               </Stack>
               <Stack alignItems="center">
-                <Text
-                  type="body"
-                  weight="bold"
-                  size="medium"
-                  appearance="primary"
-                >
-                  {dataMaximumCreditLimitReciprocity.creditRiskScore}
-                </Text>
                 {loading ? (
                   <SkeletonLine width="70px" animated={true} />
                 ) : (
-                  <Text type="body" size="medium">
-                    {frcConfig.totalScoreMax}
+                  <Text
+                    type="body"
+                    weight="bold"
+                    size="medium"
+                    appearance="primary"
+                  >
+                    {dataMaximumCreditLimitReciprocity.creditRiskScore || 0}
                   </Text>
                 )}
+                <Text type="body" size="medium">
+                  {frcConfig.totalScoreMax}
+                </Text>
                 <StyledExpanded $expanded={isExpanded}>
                   <Icon
                     icon={<MdExpandMore />}
@@ -372,14 +373,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
           <Fieldset>
             <Stack alignItems="center" direction="column" gap="8px">
               {loading ? (
-                <Text
-                  appearance="primary"
-                  weight="bold"
-                  type="headline"
-                  size="large"
-                >
-                  {frcConfig.loading}
-                </Text>
+                <SkeletonLine height="50px" width="250px" animated />
               ) : (
                 <Text
                   appearance="primary"
@@ -413,6 +407,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
             </BaseModal>
           )}
         </Stack>
+        </ScrollableContainer>
       )}
     </BaseModal>
   );
