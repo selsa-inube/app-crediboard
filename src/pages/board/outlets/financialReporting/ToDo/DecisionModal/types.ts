@@ -13,6 +13,7 @@ interface IMakeDecisionsPayload {
   humanDecision: string;
   justification: string;
   nonCompliantDocuments?: string[];
+  registerIndividualConcept?: boolean;
 }
 
 export type { IMakeDecisionsCreditRequestWithXAction, IMakeDecisionsPayload };

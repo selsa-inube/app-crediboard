@@ -117,6 +117,10 @@ export function DecisionModal(props: DecisionModalProps) {
           handleNonCompliantDocuments(formValues);
       }
 
+      if (data.xAction === "RegisterIndividualConceptOfApproval") {
+        makeDecisionsPayload["registerIndividualConcept"] = true;
+      }
+
       const response = await makeDecisions(
         data.businessUnit,
         businessManagerCode,
@@ -144,7 +148,6 @@ export function DecisionModal(props: DecisionModalProps) {
       onCloseModal?.();
     }
   };
-
   const initialValues: FormValues = {
     textarea: "",
     selectedOptions: "",
