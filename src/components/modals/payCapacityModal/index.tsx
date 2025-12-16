@@ -78,6 +78,9 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
     setCurrentTab(tabId);
   };
 
+  const memoizedDataMaximumCreditLimitService = useMemo(() => dataMaximumCreditLimitService, [dataMaximumCreditLimitService]);
+  const memoizedIncomeData = useMemo(() => incomeData, [incomeData]);
+
   useEffect(() => {
     const fetchMaximumCreditLimit = async () => {
       setLoading(true);
@@ -85,18 +88,18 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
 
       try {
         const submitData: IMaximumCreditLimit = {
-          customerCode: dataMaximumCreditLimitService.identificationDocumentNumber,
-          dividends: incomeData.Dividends || 0,
-          financialIncome: incomeData.FinancialIncome || 0,
-          leases: incomeData.Leases || 0,
+          customerCode: memoizedDataMaximumCreditLimitService.identificationDocumentNumber,
+          dividends: memoizedIncomeData.Dividends || 0,
+          financialIncome: memoizedIncomeData.FinancialIncome || 0,
+          leases: memoizedIncomeData.Leases || 0,
           lineOfCreditAbbreviatedName:
-            dataMaximumCreditLimitService.lineOfCreditAbbreviatedName || "",
-          moneyDestination: dataMaximumCreditLimitService.moneyDestination,
-          otherNonSalaryEmoluments: incomeData.OtherNonSalaryEmoluments || 0,
-          pensionAllowances: incomeData.PensionAllowances || 0,
-          periodicSalary: incomeData.PeriodicSalary || 0,
-          personalBusinessUtilities: incomeData.PersonalBusinessUtilities || 0,
-          professionalFees: incomeData.ProfessionalFees || 0,
+            memoizedDataMaximumCreditLimitService.lineOfCreditAbbreviatedName || "",
+          moneyDestination: memoizedDataMaximumCreditLimitService.moneyDestination,
+          otherNonSalaryEmoluments: memoizedIncomeData.OtherNonSalaryEmoluments || 0,
+          pensionAllowances: memoizedIncomeData.PensionAllowances || 0,
+          periodicSalary: memoizedIncomeData.PeriodicSalary || 0,
+          personalBusinessUtilities: memoizedIncomeData.PersonalBusinessUtilities || 0,
+          professionalFees: memoizedIncomeData.ProfessionalFees || 0,
         };
 
         const data = await getMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit(
@@ -119,10 +122,10 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
   }, [
     businessUnitPublicCode,
     businessManagerCode,
-    incomeData,
-    dataMaximumCreditLimitService,
-    setError,
-    setLoading
+    memoizedDataMaximumCreditLimitService,
+    memoizedIncomeData,
+    setLoading,
+    setError
   ]);
 
   const totalExtraordinary =
