@@ -127,10 +127,10 @@ export function DisbursementModal(
               autoRows="auto"
             >
               {Array.from({ length: 7 }).map((_, index) => (
-                <Stack key={index} width="100%" gap="10px">
-                  <SkeletonLine width="100%" height="40px" animated />
-                  <SkeletonLine width="100%" height="40px" animated />
-                </Stack>
+                <>
+                  <SkeletonLine key={`skeleton-one${index}`} width="280px" height="40px" animated />
+                  <SkeletonLine key={`skeleton-two${index}`} width="280px" height="40px" animated />
+</>
               ))}
             </Grid>
           </Stack>
