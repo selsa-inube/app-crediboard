@@ -16,7 +16,7 @@ import {
 } from "../types";
 import {
   mapModesToFormikInitialValues,
-  DATA_TO_TAB_ID_MAP
+  DataToTabIdMap
 } from "./utils";
 import { DisbursementModal } from "..";
 
@@ -55,7 +55,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     prospectSummaryData,
     creditRequestCode,
   } = props;
-  console.log('initialDisbursementData: ', initialDisbursementData);
+
   const [modesOfDisbursement, setModesOfDisbursement] = useState<string[]>([]);
   const [initialValues, setInitialValues] = useState<IDisbursementGeneral>(mapModesToFormikInitialValues(initialDisbursementData));
   const [viewMode, setViewMode] = useState<'view' | 'edit'>('view');
@@ -181,7 +181,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
 
     if (sortedModes.length > 0) {
       const firstModeKey = sortedModes[0];
-      const mappedTabId = DATA_TO_TAB_ID_MAP[firstModeKey];
+      const mappedTabId = DataToTabIdMap[firstModeKey];
 
       if (mappedTabId) {
         setCurrentTab(mappedTabId);

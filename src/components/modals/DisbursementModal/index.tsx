@@ -82,7 +82,7 @@ export function DisbursementModal(
     handleDisbursement?.();
   };
 
-   return (
+  return (
     <BaseModal
       title={dataDisbursement.title}
       finalDivider={true}
@@ -130,7 +130,7 @@ export function DisbursementModal(
                 <>
                   <SkeletonLine key={`skeleton-one${index}`} width="280px" height="40px" animated />
                   <SkeletonLine key={`skeleton-two${index}`} width="280px" height="40px" animated />
-</>
+                </>
               ))}
             </Grid>
           </Stack>
@@ -179,5 +179,5 @@ export function DisbursementModal(
         )}
       </Fieldset>
     </BaseModal>
-  );  
+  );
 }

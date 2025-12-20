@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { FormikValues } from "formik";
+
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { IProspect } from "@services/prospect/types";
@@ -145,7 +146,7 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
             const fields = ["documentType", "name", "lastName", "sex", "birthdate", "phone", "mail", "city"];
 
             if (formik.values[optionNameForm]?.name) {
-                fields.forEach(f => formik.setFieldValue(`${optionNameForm}.${f}`, ""));
+                fields.forEach(formikValue => formik.setFieldValue(`${optionNameForm}.${formikValue}`, ""));
                 setIsAutoCompleted(false);
             }
         }

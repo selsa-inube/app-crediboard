@@ -1,6 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { Stack, Text, Divider, useFlag, Toggle, Checkbox, Textarea, Select, Textfield, inube, SkeletonLine } from "@inubekit/inubekit";
+import { 
+  Stack, 
+  Text, 
+  Divider, 
+  Toggle, 
+  Checkbox, 
+  Textarea, 
+  Select, 
+  Textfield, 
+  inube, 
+  SkeletonLine 
+} from "@inubekit/inubekit";
 import { FormikValues } from "formik";
 
 import { currencyFormat, handleChangeWithCurrency, validateCurrencyField } from "@utils/formatData/currency";
@@ -55,7 +66,6 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
 
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
   const [accountOptions, setAccountOptions] = useState<{ id: string; label: string; value: string }[]>([]);
-  const { addFlag } = useFlag();
   const lastValidState = useRef<boolean | null>(null);
 
   useEffect(() => {
@@ -105,19 +115,13 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
         });
         setAccountOptions(Array.from(uniqueMap.values()));
       } catch (error) {
-        addFlag({
-          title: `${disbursemenOptionAccount.errorFlagInternal}`,
-          description: `Error: ${error}`,
-          appearance: "danger",
-          duration: 5000,
-        });
         setAccountOptions([]);
       } finally {
         setIsLoadingAccounts(false);
       }
     }
     fetchAccounts();
-  }, [currentIdentification, businessUnitPublicCode, businessManagerCode, addFlag]);
+  }, [currentIdentification, businessUnitPublicCode, businessManagerCode]);
 
   const previousIdentificationRef = useRef<string>();
   useEffect(() => {
@@ -155,7 +159,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
             placeholder={disbursementGeneral.place}
             size="compact"
             value={validateCurrencyField("amount", formik, false, optionNameForm)}
-            onChange={(e) => handleChangeWithCurrency(formik, e, optionNameForm)}
+            onChange={(event) => handleChangeWithCurrency(formik, event, optionNameForm)}
             onBlur={() => {
               formik.setFieldTouched(`${optionNameForm}.amount`, true);
               formik.handleBlur(`amount`);

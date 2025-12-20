@@ -49,7 +49,7 @@ export const mapModesToFormikInitialValues = (
   } as IDisbursementGeneral;
 };
 
-export const DATA_TO_TAB_ID_MAP: Record<string, string> = {
+export const DataToTabIdMap: Record<string, string> = {
   Internal_account: "Internal",
   External_account: "External",
   Certified_check: "CheckEntity",
