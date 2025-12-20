@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Stack, Tabs } from "@inubekit/inubekit";
+import { Stack, Tabs, SkeletonLine, Grid } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { BaseModal } from "@components/modals/baseModal";
@@ -16,8 +16,10 @@ import { dataTabsDisbursement } from "./types";
 
 export interface IDisbursementModalProps {
   handleClose: () => void;
+  handleOpenEdit: () => void;
   isMobile: boolean;
-  loading?: boolean;
+  currentTab: string;
+  setCurrentTab: React.Dispatch<React.SetStateAction<string>>;
   data: {
     internal: dataTabsDisbursement;
     external: dataTabsDisbursement;
@@ -26,12 +28,23 @@ export interface IDisbursementModalProps {
     cash: dataTabsDisbursement;
   };
   handleDisbursement?: () => void;
+  loading?: boolean;
 }
 
 export function DisbursementModal(
   props: IDisbursementModalProps
 ): JSX.Element | null {
-  const { handleClose, isMobile, data, handleDisbursement } = props;
+  const {
+    handleClose,
+    isMobile,
+    data,
+    handleDisbursement,
+    handleOpenEdit,
+    setCurrentTab,
+    currentTab,
+    loading: loading = false,
+  } = props;
+
   const [error] = useState(false);
   const availableTabs = dataTabs.filter((tab) => {
     const hasValidData = (tabData: dataTabsDisbursement) =>
@@ -53,10 +66,6 @@ export function DisbursementModal(
     }
   });
 
-  const [currentTab, setCurrentTab] = useState(() =>
-    availableTabs.length > 0 ? availableTabs[0].id : ""
-  );
-
   useEffect(() => {
     if (
       availableTabs.length > 0 &&
@@ -64,7 +73,7 @@ export function DisbursementModal(
     ) {
       setCurrentTab(availableTabs[0].id);
     }
-  }, [availableTabs, currentTab]);
+  }, [availableTabs, currentTab, setCurrentTab]);
 
   const onChange = (tabId: string) => {
     setCurrentTab(tabId);
@@ -72,25 +81,64 @@ export function DisbursementModal(
   const handleRetry = () => {
     handleDisbursement?.();
   };
-  return (
+
+   return (
     <BaseModal
       title={dataDisbursement.title}
       finalDivider={true}
       handleClose={handleClose}
       handleNext={handleClose}
       nextButton={dataDisbursement.close}
-      width={isMobile ? "300px" : "652px"}
+      backButton="Editar"
+      handleBack={handleOpenEdit}
+      width={isMobile ? "340px" : "682px"}
+      height={isMobile ? "auto" : "700px"}
+      marginBottom="32px"
+      marginTop="32px"
     >
       <Stack>
-        <Tabs
-          scroll={isMobile}
-          selectedTab={currentTab}
-          tabs={availableTabs}
-          onChange={onChange}
-        />
+        {!loading && availableTabs.length > 0 ? (
+          <Tabs
+            scroll={isMobile}
+            selectedTab={currentTab}
+            tabs={availableTabs}
+            onChange={onChange}
+          />
+        ) : (
+          <></>
+        )}
       </Stack>
-      <Fieldset heightFieldset="469px" alignContent="center">
-        {error || availableTabs.length === 0 ? (
+
+      <Fieldset
+        heightFieldset={isMobile ? "auto" : "490px"}
+        alignContent={loading || error ? "center" : "start"}
+      >
+        {loading ? (
+          <Stack
+            direction="column"
+            gap="16px"
+            width={isMobile ? "100%" : "582px"}
+            height="auto"
+            padding="16px 10px"
+          >
+            <Grid
+              templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
+              gap="16px 20px"
+              autoRows="auto"
+            >
+              {Array.from({ length: 7 }).map((_, index) => (
+                <Stack key={index} width="100%" gap="10px">
+                  <SkeletonLine width="100%" height="40px" animated />
+                  <SkeletonLine width="100%" height="40px" animated />
+                </Stack>
+              ))}
+            </Grid>
+          </Stack>
+        ) : (
+          <></>
+        )}
+
+        {!loading && error ? (
           <ItemNotFound
             image={userNotFound}
             title={dataDisbursement.noDataTitle}
@@ -99,6 +147,10 @@ export function DisbursementModal(
             onRetry={handleRetry}
           />
         ) : (
+          <></>
+        )}
+
+        {!loading && !error ? (
           <>
             {currentTab === "Internal" && (
               <DisbursementInternal isMobile={isMobile} data={data.internal} />
@@ -122,8 +174,10 @@ export function DisbursementModal(
               <DisbursementCash isMobile={isMobile} data={data.cash} />
             )}
           </>
+        ) : (
+          <></>
         )}
       </Fieldset>
     </BaseModal>
-  );
+  );  
 }

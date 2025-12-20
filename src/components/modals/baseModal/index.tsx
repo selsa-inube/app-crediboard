@@ -40,6 +40,8 @@ export interface IBaseModalProps {
   $height?: string;
   isSendingData?: boolean
   internalWidth?: string
+  marginTop?: string;
+  marginBottom?: string;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -66,7 +68,9 @@ export function BaseModal(props: IBaseModalProps) {
     portalId = "portal",
     $height,
     isSendingData,
-    internalWidth
+    internalWidth,
+    marginBottom,
+    marginTop
   } = props;
 
   const node = document.getElementById(portalId ?? "portal");
@@ -83,6 +87,9 @@ export function BaseModal(props: IBaseModalProps) {
       <StyledContainer
         $height={$height}
         $width={width}
+        $margin={
+            `${marginTop || 0} 0 ${marginBottom || 0} 0`
+          }
       >
         <Stack
           direction="column"
