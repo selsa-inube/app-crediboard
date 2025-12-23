@@ -104,7 +104,7 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
       finalDivider={true}
     >
       {error ? (
-        <Stack direction="column" alignItems="center">
+        <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
             {dataCreditLimitModal.error.title}

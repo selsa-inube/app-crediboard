@@ -37,8 +37,8 @@ export const paymentCapacityData = {
 
 export const getMaxValueText = (maxAmount: number, maxTerm: number) => (
   <>
-    Monto máximo calculado para una cuota de{" "}
-    <strong>{maxAmount.toLocaleString("es-CO")}</strong> y plazo de{" "}
+    Monto máximo calculado para una cuota de
+    <strong>{maxAmount.toLocaleString("es-CO")}</strong> y plazo de
     <strong>{maxTerm}</strong> meses.
   </>
 );
