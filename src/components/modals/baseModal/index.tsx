@@ -17,7 +17,7 @@ import { dataBaseModal } from "./config";
 import { Appearance, Variant } from "./types";
 
 export interface IBaseModalProps {
-  title: string;
+  title: string | React.ReactNode;
   children: JSX.Element | JSX.Element[];
   handleNext?: () => void;
   handleBack?: () => void;
@@ -38,8 +38,8 @@ export interface IBaseModalProps {
   finalDivider?: boolean;
   portalId?: string;
   $height?: string;
-  isSendingData?: boolean
-  internalWidth?: string
+  isSendingData?: boolean;
+  internalWidth?: string;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -66,7 +66,7 @@ export function BaseModal(props: IBaseModalProps) {
     portalId = "portal",
     $height,
     isSendingData,
-    internalWidth
+    internalWidth,
   } = props;
 
   const node = document.getElementById(portalId ?? "portal");
@@ -80,10 +80,7 @@ export function BaseModal(props: IBaseModalProps) {
 
   return createPortal(
     <Blanket>
-      <StyledContainer
-        $height={$height}
-        $width={width}
-      >
+      <StyledContainer $height={$height} $width={width}>
         <Stack
           direction="column"
           padding="24px"

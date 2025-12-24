@@ -23,13 +23,13 @@ import {
 } from "@services/creditRequest/query/types";
 import { getToDoByCreditRequestId } from "@services/creditRequest/query/getToDoByCreditRequestId";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
-import { truncateTextToMaxLength } from "@utils/formatData/text";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { AppContext } from "@context/AppContext";
 import { useEnums } from "@hooks/useEnums";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { BaseModal } from "@components/modals/baseModal";
+import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -479,17 +479,13 @@ function ToDo(props: ToDoProps) {
                       </Text>
                     </StyledTextField>
                     <StyledTextField>
-                      <Text
+                      <TruncatedText
+                        text={assignedStaff.commercialManager}
+                        maxLength={maxCharacters}
                         type="title"
                         size="medium"
                         appearance="dark"
-                        textAlign="start"
-                      >
-                        {truncateTextToMaxLength(
-                          assignedStaff.commercialManager,
-                          maxCharacters
-                        )}
-                      </Text>
+                      />
                     </StyledTextField>
                   </Stack>
                   <StyledHorizontalDivider $isMobile={isMobile} />
@@ -508,17 +504,13 @@ function ToDo(props: ToDoProps) {
                       </Text>
                     </StyledTextField>
                     <StyledTextField>
-                      <Text
+                      <TruncatedText
+                        text={assignedStaff.analyst}
+                        maxLength={maxCharacters}
                         type="title"
                         size="medium"
                         appearance="dark"
-                        textAlign="start"
-                      >
-                        {truncateTextToMaxLength(
-                          assignedStaff.analyst,
-                          maxCharacters
-                        )}
-                      </Text>
+                      />
                     </StyledTextField>
                   </Stack>
                   <StyledHorizontalDivider $isMobile={isMobile} />
