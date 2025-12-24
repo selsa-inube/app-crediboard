@@ -135,7 +135,6 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
 
   const handleOpenDetail = (row: IExtraordinaryInstallments | null) => {
     setSelectedDetail(row);
-    console.log("Detalle de la cuota extraordinaria:", row);
   };
 
   const handleCloseDetail = () => {
