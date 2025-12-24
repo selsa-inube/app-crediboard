@@ -150,7 +150,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
       handleClose={handleClose}
       handleNext={handleClose}
       width={isMobile ? "335px" : "500px"}
-      height={isMobile ? "auto" : "692px"}
+      height={isMobile ? "734px" : "692px"}
     >
       {error ? (
         <Fieldset>
@@ -172,7 +172,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
       ) : (
         <Stack
           direction="column"
-          height={isMobile ? "auto" : "530px"}
+          height={isMobile ? "576px" : "530px"}
           width={isMobile ? "285px" : "auto"}
         >
           <Fieldset>
@@ -180,7 +180,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
               direction="column"
               gap="16px"
               padding={isMobile ? "0 3px" : "0 8px"}
-              height={isMobile ? "auto" : "350px"}
+              height={isMobile ? "408px" : "350px"}
             >
               <Stack width="100%" padding="0">
                 <Tabs
