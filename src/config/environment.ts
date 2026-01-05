@@ -3,7 +3,7 @@ const secretKeyPortalId = import.meta.env.VITE_SECRET_KEY_PORTAL_ID as string;
 const environment = {
   CLIENT_ID: import.meta.env.VITE_AUTH0_CLIENT_ID,
   CLIENT_SECRET: import.meta.env.VITE_AUTH0_CLIENT_SECRET,
-  REDIRECT_URI: window.location.href,
+  REDIRECT_URI: window.location.origin,
   AUTH0_DOMAIN: import.meta.env.VITE_AUTH0_DOMAIN,
   TEMP_BUSINESS_UNIT: "public",
   VITE_LOGOUT_REDIRECT_URI: import.meta.env.VITE_LOGOUT_REDIRECT_URI,
