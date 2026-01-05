@@ -444,3 +444,7 @@ export const initialDisbursementState = {
   checkManagement: null,
   cash: null,
 };
+
+export const infoErrorProspect = {
+  description: "No se pudo obtener los datos del prospecto relacionado",
+};

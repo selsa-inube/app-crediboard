@@ -9,6 +9,7 @@ import {
   MdOutlineShare,
   MdOutlineVideocam,
   MdOutlinePayments,
+  MdOutlineInfo
 } from "react-icons/md";
 
 import {
@@ -61,7 +62,7 @@ import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { TBoardColumn } from "../../boardlayout/config/board";
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
-import { incomeOptions, menuOptions, tittleOptions, initialDisbursementState } from "./config/config";
+import { incomeOptions, menuOptions, tittleOptions, initialDisbursementState, infoErrorProspect } from "./config/config";
 import {
   StyledCollapseIcon,
   StyledFieldset,
@@ -85,6 +86,7 @@ interface ComercialManagementProps {
   >;
   generateAndSharePdf: () => void;
   creditRequestCode: string;
+  errorGetProspects: boolean;
   isPrint?: boolean;
   hideContactIcons?: boolean;
   requestValue?: IPaymentChannel[];
@@ -103,6 +105,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     sentData,
     setSentData,
     setRequestValue,
+    errorGetProspects
   } = props;
 
   const [showMenu, setShowMenu] = useState(false);
@@ -140,7 +143,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     monthlyFees: 0,
     total: undefined,
   });
- 
+
   const navigation = useNavigate();
   const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width: 720px)");
@@ -158,6 +161,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   useEffect(() => {
+    console.log("prospectData: ", prospectData);
     setLocalProspectData(prospectData);
     if (prospectData !== undefined) {
       setLoading(false);
@@ -411,7 +415,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               ) || "",
             Leases: parseFloat(
               getPropertyValue(selectedBorrower.borrowerProperties, "Leases") ||
-                "0"
+              "0"
             ),
             Dividends: parseFloat(
               getPropertyValue(
@@ -612,7 +616,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           </Button>
                           <Stack gap="2px" alignItems="center">
                             {
-                              loading ? (
+                              loading && !errorGetProspects ? (
                                 <SkeletonLine width="210px" height="31px" animated />
                               ) : (
                                 <Button
@@ -623,9 +627,21 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                                     handleDisbursement();
                                     handleOpenModal("disbursementModal");
                                   }}
+                                  disabled={errorGetProspects}
                                 >
                                   {tittleOptions.titleDisbursement}
                                 </Button>
+                              )
+                            }
+                            {
+                              errorGetProspects && (
+                                <Icon
+                                  icon={<MdOutlineInfo />}
+                                  appearance="primary"
+                                  size="16px"
+                                  cursorHover
+                                  onClick={() => setInfoModal(true)}
+                                />
                               )
                             }
                           </Stack>
@@ -961,7 +977,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       {titlesModal.subTitle}
                     </Text>
                     <Text weight="normal" size="medium" appearance="gray">
-                      {titlesModal.description}
+                      {
+                        errorGetProspects
+                          ? infoErrorProspect.description
+                          : titlesModal.description
+                      }
                     </Text>
                   </Stack>
                 </BaseModal>
