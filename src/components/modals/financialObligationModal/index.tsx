@@ -14,7 +14,6 @@ import {
 
 import { BaseModal } from "@components/modals/baseModal";
 import { ITableFinancialObligationsProps } from "@pages/prospect/components/TableObligationsFinancial";
-import { truncateTextToMaxLength } from "@utils/formatData/text";
 import {
   handleChangeWithCurrency,
   validateCurrencyField,
@@ -27,6 +26,7 @@ import {
   meansPaymentOptions,
   dataInputs,
 } from "./config";
+import { TruncatedText } from "../TruncatedTextModal";
 
 interface FinancialObligationModalProps {
   onCloseModal: () => void;
@@ -159,7 +159,14 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
 
         return (
           <BaseModal
-            title={truncateTextToMaxLength(title, 25)}
+            title={
+              <TruncatedText
+                text={title}
+                maxLength={25}
+                size="small"
+                type="headline"
+              />
+            }
             nextButton={confirmButtonText}
             backButton={dataInputs.cancel}
             handleNext={formik.submitForm}

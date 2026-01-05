@@ -17,7 +17,7 @@ import { dataBaseModal } from "./config";
 import { Appearance, Variant } from "./types";
 
 export interface IBaseModalProps {
-  title: string;
+  title: string | React.ReactNode;
   children: JSX.Element | JSX.Element[];
   handleNext?: () => void;
   handleBack?: () => void;

@@ -11,7 +11,6 @@ import {
 import { useState, useEffect } from "react";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { truncateTextToMaxLength } from "@utils/formatData/text";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { getPaymentMethods } from "@services/creditLimit/getPaymentMethods";
 import { IBusinessUnitRules } from "@services/businessUnitRules/types";
@@ -30,6 +29,7 @@ import { updateCreditProduct } from "@services/prospect/updateCreditProduct";
 import { validateIncrement } from "@services/prospect/validateIncrement";
 import { IValidateIncrementRequest } from "@services/prospect/validateIncrement/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -44,8 +44,8 @@ import {
   validationMessages,
   REPAYMENT_STRUCTURES_WITH_INCREMENT,
   fieldLabels,
-  fieldPlaceholders, 
-  errorMessages
+  fieldPlaceholders,
+  errorMessages,
 } from "./config";
 
 interface EditProductModalProps {
@@ -99,7 +99,6 @@ function EditProductModal(props: EditProductModalProps) {
     creditProductCode,
   } = props;
 
-
   const [showIncrementField, setShowIncrementField] = useState<boolean>(false);
   const [incrementType, setIncrementType] = useState<
     "value" | "percentage" | null
@@ -148,7 +147,7 @@ function EditProductModal(props: EditProductModalProps) {
     value: "Pagos con porcentaje de incremento",
     label: "Pagos con porcentaje de incremento"
   }
-]);
+  ]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
   const [interestRateError, setInterestRateError] = useState<string>("");
@@ -240,7 +239,7 @@ function EditProductModal(props: EditProductModalProps) {
     };
 
     loadAmortizationTypes();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
 
   useEffect(() => {
@@ -578,7 +577,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleAmortizationTypeChange = (
     formik: FormikProps<FormikValues>,
     name: string,
-    value: string,
+    value: string
   ) => {
     formik.setFieldValue(name, value);
 
@@ -604,7 +603,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const validateIncrementValue = async (
     value: string,
-    formik: FormikProps<FormikValues>,
+    formik: FormikProps<FormikValues>
   ): Promise<void> => {
     if (!incrementType || !value) {
       setIncrementError("");
@@ -633,17 +632,23 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await validateIncrement(
         businessUnitPublicCode,
         businessManagerCode,
-        payload,
+        payload
       );
 
       if (!response.isValid) {
         if (incrementType === "value") {
           setIncrementError(
-            validationMessages.incrementValueRange(response.minValue, response.maxValue),
+            validationMessages.incrementValueRange(
+              response.minValue,
+              response.maxValue
+            )
           );
         } else {
           setIncrementError(
-            validationMessages.incrementPercentageRange(response.minValue, response.maxValue)
+            validationMessages.incrementPercentageRange(
+              response.minValue,
+              response.maxValue
+            )
           );
         }
       } else {
@@ -655,7 +660,6 @@ function EditProductModal(props: EditProductModalProps) {
       setIsValidatingIncrement(false);
     }
   };
-
 
   const validationSchema = Yup.object({
     creditLine: Yup.string(),
@@ -693,7 +697,14 @@ function EditProductModal(props: EditProductModalProps) {
       >
         {(formik) => (
           <BaseModal
-            title={truncateTextToMaxLength(title, 25)}
+            title={
+              <TruncatedText
+                text={title}
+                maxLength={25}
+                size="small"
+                type="headline"
+              />
+            }
             backButton={modalTexts.buttons.cancel}
             nextButton={confirmButtonText}
             handleNext={formik.submitForm}
@@ -715,10 +726,7 @@ function EditProductModal(props: EditProductModalProps) {
             $height="calc(100vh - 64px)"
             isSendingData={isUsingServices}
           >
-            <ScrollableContainer 
-            $smallScreen={!isMobile}
-            $width="auto"
-            >
+            <ScrollableContainer $smallScreen={!isMobile} $width="auto">
               <Stack
                 direction="column"
                 gap="24px"
@@ -731,7 +739,12 @@ function EditProductModal(props: EditProductModalProps) {
                   name="creditAmount"
                   id="creditAmount"
                   placeholder={modalTexts.placeholders.creditAmount}
-                  value={validateCurrencyField("creditAmount", formik, false, "")}
+                  value={validateCurrencyField(
+                    "creditAmount",
+                    formik,
+                    false,
+                    ""
+                  )}
                   status={loanAmountError ? "invalid" : undefined}
                   message={loanAmountError}
                   iconBefore={
@@ -841,13 +854,17 @@ function EditProductModal(props: EditProductModalProps) {
                     name="incrementValue"
                     id="incrementValue"
                     placeholder={
-                      incrementType === "value" ? fieldPlaceholders.incrementValue : fieldPlaceholders.incrementPercentage
+                      incrementType === "value"
+                        ? fieldPlaceholders.incrementValue
+                        : fieldPlaceholders.incrementPercentage
                     }
                     value={incrementValue}
                     status={incrementValuesStatus}
                     message={
                       incrementError ||
-                      (isValidatingIncrement ? validationMessages.incrementValidating : "")
+                      (isValidatingIncrement
+                        ? validationMessages.incrementValidating
+                        : "")
                     }
                     iconBefore={
                       incrementType === "value" ? (
@@ -878,7 +895,9 @@ function EditProductModal(props: EditProductModalProps) {
 
                       return () => clearTimeout(timeoutId);
                     }}
-                    onBlur={() => validateIncrementValue(incrementValue, formik)}
+                    onBlur={() =>
+                      validateIncrementValue(incrementValue, formik)
+                    }
                     fullwidth
                   />
                 )}
@@ -927,17 +946,15 @@ function EditProductModal(props: EditProductModalProps) {
           </BaseModal>
         )}
       </Formik>
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

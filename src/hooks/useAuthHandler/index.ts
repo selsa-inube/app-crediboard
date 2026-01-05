@@ -21,12 +21,14 @@ const useAuthHandler = (
   }
 
   useEffect(() => {
+    const isLogoutRoute = window.location.pathname === "/logout";
     if (
       !hasAuthError &&
       authConfig &&
       portalCode &&
       !isAuthenticated &&
-      !isLoading
+      !isLoading &&
+      !isLogoutRoute
     ) {
       loginWithRedirect();
     }

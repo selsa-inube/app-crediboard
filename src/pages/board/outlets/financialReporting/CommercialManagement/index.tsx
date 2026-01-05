@@ -29,7 +29,6 @@ import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
-  truncateTextToMaxLength,
   capitalizeFirstLetter,
   capitalizeFirstLetterEachWord,
 } from "@utils/formatData/text";
@@ -57,6 +56,7 @@ import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
 import { boardColumns } from "@config/pages/board/board";
 import { IProspectSummaryById } from "@services/prospect/types";
+import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { TBoardColumn } from "../../boardlayout/config/board";
 import { titlesModal } from "../ToDo/config";
@@ -68,7 +68,7 @@ import {
   StyledContainerIcon,
   StyledVerticalDivider,
   StyledPrint,
-  StyledContainerDiverProspect
+  StyledContainerDiverProspect,
 } from "./styles";
 
 interface ComercialManagementProps {
@@ -411,7 +411,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               ) || "",
             Leases: parseFloat(
               getPropertyValue(selectedBorrower.borrowerProperties, "Leases") ||
-              "0"
+                "0"
             ),
             Dividends: parseFloat(
               getPropertyValue(
@@ -555,24 +555,26 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   </Stack>
                   {isMobile && (
                     <Stack margin="4px 0px">
-                      <Text type="title" size={!isMobile ? "large" : "medium"}>
-                        {data.clientName &&
-                          capitalizeFirstLetterEachWord(
-                            truncateTextToMaxLength(data.clientName)
-                          )}
-                      </Text>
+                      <TruncatedText
+                        text={data.clientName}
+                        maxLength={50}
+                        type="title"
+                        size={!isMobile ? "large" : "medium"}
+                        transformFn={capitalizeFirstLetterEachWord}
+                      />
                     </Stack>
                   )}
                   <Stack gap={!isMobile ? "4px" : "4px"}>
                     <Text type="title" size="small" appearance="gray">
                       {tittleOptions.titleDestination}
                     </Text>
-                    <Text type="title" size="small">
-                      {data.clientName &&
-                        capitalizeFirstLetter(
-                          truncateTextToMaxLength(data.moneyDestinationAbreviatedName, 60)
-                        )}
-                    </Text>
+                    <TruncatedText
+                      text={data.moneyDestinationAbreviatedName}
+                      maxLength={60}
+                      type="title"
+                      size="small"
+                      transformFn={capitalizeFirstLetter}
+                    />
                   </Stack>
                   <Stack gap="4px">
                     <Text type="title" size="small" appearance="gray">
@@ -588,12 +590,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
                 {!isMobile && (
                   <Stack gap="36px">
-                    <Text type="title">
-                      {data.clientName &&
-                        capitalizeFirstLetterEachWord(
-                          truncateTextToMaxLength(data.clientName)
-                        )}
-                    </Text>
+                    <TruncatedText
+                      text={data.clientName}
+                      maxLength={60}
+                      type="title"
+                      transformFn={capitalizeFirstLetterEachWord}
+                    />
                   </Stack>
                 )}
                 <Stack gap="2px">
