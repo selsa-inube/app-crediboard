@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { useEffect, useContext, useState, useRef, useCallback } from "react";
+import { useEffect, useContext, useMemo, useRef, useCallback } from "react";
 import { Stack, Tabs } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
@@ -55,8 +55,6 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
     prospectData
   } = props;
 
-  const [validTabs, setValidTabs] = useState<Tab[]>([]);
-
   const formik = useFormik({
     initialValues,
     validateOnMount: true,
@@ -79,7 +77,8 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
       formik.setValues(initialValues);
       initialDataLoadedRef.current = true;
     }
-  }, [initialValues, formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues]);
 
   useEffect(() => {
     handleOnChange(formik.values);
@@ -114,40 +113,37 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
       : true;
 
     const isAmountCorrect = totalAmount === initialValues.amount;
-
     const isValid = isAmountCorrect && isInternalValid && isExternalValid;
 
     onFormValid(isValid);
   }, [formik.values, getTotalAmount, initialValues.amount, onFormValid]);
 
-  const calculateValidTabs = useCallback(() => {
+  const validTabs = useMemo(() => {
     if (modesOfDisbursement.length === 0) return [];
     const allTabsConfig = Object.values(disbursemenTabs);
-    const orderedTabs = modesOfDisbursement
+    return modesOfDisbursement
       .map((modeId) => allTabsConfig.find((tab) => tab.id === modeId))
       .filter((tab): tab is Tab => tab !== undefined);
-    return orderedTabs;
   }, [modesOfDisbursement]);
 
   useEffect(() => {
-    const orderedTabs = calculateValidTabs();
-    setValidTabs(orderedTabs);
-
-    if (orderedTabs.length === 1 && !initialTabAmountSet.current) {
-      const tabId = orderedTabs[0].id;
+    if (validTabs.length === 1 && !initialTabAmountSet.current) {
+      const tabId = validTabs[0].id;
       const key = tabId as keyof Omit<IDisbursementGeneral, "amount">;
+
       if (Number(formik.values[key]?.amount) === 0) {
         formik.setFieldValue(`${tabId}.amount`, initialValues.amount);
         initialTabAmountSet.current = true;
       }
     }
 
-    if (orderedTabs.length > 0 && !userHasChangedTab.current) {
-      if (!orderedTabs.some((tab) => tab.id === isSelected)) {
-        handleTabChange(mapDataIdToTabId(isSelected) || orderedTabs[0].id);
+    if (validTabs.length > 0 && !userHasChangedTab.current) {
+      if (!validTabs.some((tab) => tab.id === isSelected)) {
+        handleTabChange(mapDataIdToTabId(isSelected) || validTabs[0].id);
       }
     }
-  }, [calculateValidTabs, initialValues.amount, isSelected, formik, handleTabChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [validTabs, initialValues.amount, isSelected, handleTabChange, formik.setFieldValue, formik.values]);
 
   const handleManualTabChange = (tabId: string) => {
     userHasChangedTab.current = true;
@@ -155,6 +151,7 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
   };
 
   const isAmountReadOnly = validTabs.length === 1;
+
   return (
     <BaseModal
       title={modalTitles.title}

@@ -79,19 +79,24 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     setViewMode('edit');
   }, []);
 
+  const validation = initialValues;
+
   useEffect(() => {
     const getAmountDisbursement = async () => {
       try {
         setInternalLoading(false);
+
         const data = await getSearchProspectSummaryById(businessUnitPublicCode, businessManagerCode, creditRequestCode);
         setInitialValues({ ...initialValues, amount: data.netAmountToDisburse });
       } finally {
+        validation;
         setInternalLoading(false);
       }
     }
 
     getAmountDisbursement();
-  }, [prospectData, businessUnitPublicCode, businessManagerCode, creditRequestCode, initialValues]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prospectData, businessUnitPublicCode, businessManagerCode, creditRequestCode]);
 
   useEffect(() => {
     const fetchDisbursementData = async () => {

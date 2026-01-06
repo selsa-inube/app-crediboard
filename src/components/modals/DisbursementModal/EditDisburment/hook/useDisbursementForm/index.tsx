@@ -192,6 +192,7 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
         };
 
         fetchCustomer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         identificationRef,
         businessUnitPublicCode,
@@ -201,7 +202,6 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
         optionNameForm,
         prospectData,
         currentIdentification,
-        formik
     ]);
 
     return {
