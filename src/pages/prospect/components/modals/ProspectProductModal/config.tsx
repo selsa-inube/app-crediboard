@@ -310,6 +310,151 @@ export const errorMessages = {
   }
 }
 
+export const fieldLabelsEnum = {
+  creditAmount: {
+    code: "FieldLabels_creditAmount",
+    description: "Label for credit amount",
+    i18n: {
+      en: "Credit amount",
+      es: "Monto del crédito",
+    },
+  },
+  termInMonths: {
+    code: "FieldLabels_termInMonths",
+    description: "Label for term in months",
+    i18n: {
+      en: "Term in months",
+      es: "Plazo en meses",
+    },
+  },
+  amortizationType: {
+    code: "FieldLabels_amortizationType",
+    description: "Label for amortization type",
+    i18n: {
+      en: "Amortization type",
+      es: "Tipo de amortización",
+    },
+  },
+  incrementValue: {
+    code: "FieldLabels_incrementValue",
+    description: "Label for increment value",
+    i18n: {
+      en: "Increment value",
+      es: "Valor de incremento",
+    },
+  },
+  incrementPercentage: {
+    code: "FieldLabels_incrementPercentage",
+    description: "Label for increment percentage",
+    i18n: {
+      en: "Increment percentage",
+      es: "Porcentaje de incremento",
+    },
+  },
+  interestRate: {
+    code: "FieldLabels_interestRate",
+    description: "Label for interest rate",
+    i18n: {
+      en: "Interest rate",
+      es: "Tasa de interés",
+    },
+  },
+  rateType: {
+    code: "FieldLabels_rateType",
+    description: "Label for rate type",
+    i18n: {
+      en: "Rate type",
+      es: "Tipo de tasa",
+    },
+  },
+  paymentMethod: {
+    code: "FieldLabels_paymentMethod",
+    description: "Label for payment method",
+    i18n: {
+      en: "Payment method",
+      es: "Método de pago",
+    },
+  },
+  paymentCycle: {
+    code: "FieldLabels_paymentCycle",
+    description: "Label for payment cycle",
+    i18n: {
+      en: "Payment cycle",
+      es: "Ciclo de pago",
+    },
+  },
+  firstPaymentCycle: {
+    code: "FieldLabels_firstPaymentCycle",
+    description: "Label for first payment cycle",
+    i18n: {
+      en: "First payment cycle",
+      es: "Primer ciclo de pago",
+    },
+  },
+  creditLine: {
+    code: "FieldLabels_creditLine",
+    description: "Label for credit line",
+    i18n: {
+      en: "Credit line",
+      es: "Línea de crédito",
+    },
+  },
+  ordinaryPayment: {
+    code: "FieldLabels_ordinaryPayment",
+    description: "Label for ordinary monthly payment",
+    i18n: {
+      en: "Ordinary monthly payment",
+      es: "Cuota ordinaria mensual",
+    },
+  },
+};
+
+export const fieldPlaceholdersEnum = {
+  incrementValue: {
+    code: "FieldPlaceholders_incrementValue",
+    description: "Placeholder for increment value",
+    i18n: {
+      en: "Ex: 50000",
+      es: "Ej: 50000",
+    },
+  },
+  incrementPercentage: {
+    code: "FieldPlaceholders_incrementPercentage",
+    description: "Placeholder for increment percentage",
+    i18n: {
+      en: "Ex: 5",
+      es: "Ej: 5",
+    },
+  },
+  creditAmount: {
+    code: "FieldPlaceholders_creditAmount",
+    description: "Placeholder for credit amount",
+    i18n: {
+      en: "Enter the amount",
+      es: "Ingrese el monto",
+    },
+  },
+  interestRate: {
+    code: "FieldPlaceholders_interestRate",
+    description: "Placeholder for interest rate",
+    i18n: {
+      en: "Enter the rate",
+      es: "Ingrese la tasa",
+    },
+  },
+};
+
+export const errorMessagesEnum = {
+  updateCreditProduct: {
+    code: "ErrorMessages_updateCreditProduct",
+    description: "Error when failing to update credit product",
+    i18n: {
+      en: "Could not update credit product.",
+      es: "No se pudo actualizar el producto de crédito.",
+    },
+  },
+};
+
 export {
   creditLineOptions,
   paymentMethodOptions,

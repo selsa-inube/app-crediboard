@@ -56,3 +56,54 @@ export const errorMessages = {
     description: "No se pudieron restaurar las obligaciones financieras.",
   }
 }
+
+export const dataFinancialObligationEnum = {
+  title: {
+    code: "FinancialObligation_title",
+    description: "Financial obligations title",
+    i18n: {
+      en: "Financial obligations",
+      es: "Obligaciones financieras",
+    },
+  },
+  close: {
+    code: "FinancialObligation_close",
+    description: "Close",
+    i18n: {
+      en: "Close",
+      es: "Cerrar",
+    },
+  },
+  addObligations: {
+    code: "FinancialObligation_addObligations",
+    description: "Add financial obligations",
+    i18n: {
+      en: "Add obligations",
+      es: "Agregar obligaciones",
+    },
+  },
+  noData: {
+    code: "FinancialObligation_noData",
+    description: "No financial obligations found",
+    i18n: {
+      en: "No financial obligations were found.",
+      es: "¡Ups! No se encontraron obligaciones financieras vigentes.",
+    },
+  },
+  totalFee: {
+    code: "FinancialObligation_totalFee",
+    description: "Total fee",
+    i18n: {
+      en: "Total fee",
+      es: "Cuota Total",
+    },
+  },
+  totalBalance: {
+    code: "FinancialObligation_totalBalance",
+    description: "Total balance",
+    i18n: {
+      en: "Total balance",
+      es: "Saldo Total",
+    },
+  },
+};

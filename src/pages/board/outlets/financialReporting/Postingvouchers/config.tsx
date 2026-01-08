@@ -20,6 +20,28 @@ export const titlesPostingvouchers = [
   },
 ];
 
+export const titlesPostingvouchersEnum = {
+  obligationCode: {
+    code: "TitlesPostingvouchers_obligationCode",
+    description: "Title for obligation code column",
+    i18n: {
+      en: "Obligation No.",
+      es: "No. de Obligación",
+    },
+    priority: 1,
+  },
+  documentCode: {
+    code: "TitlesPostingvouchers_documentCode",
+    description: "Title for document code column",
+    i18n: {
+      en: "Document No.",
+      es: "No. de Documento",
+    },
+    priority: 2,
+  },
+};
+
+
 export const actionsPostingvouchers = [
   {
     id: "ver imagen",

@@ -307,6 +307,105 @@ export const errorMessages = {
 
 export const noAvailablePaymentMethods = "No hay medios de pago disponibles";
 
+export const stepsAddProductEnum = {
+  creditLineSelection: {
+    code: "StepsAddProduct_creditLineSelection",
+    description: "Step to select the credit line",
+    i18n: {
+      en: "Credit line",
+      es: "Línea de crédito",
+    },
+  },
+  paymentConfiguration: {
+    code: "StepsAddProduct_paymentConfiguration",
+    description: "Step to configure payment method",
+    i18n: {
+      en: "Payment method",
+      es: "Medio de pago",
+    },
+  },
+  termSelection: {
+    code: "StepsAddProduct_termSelection",
+    description: "Step for client restrictions",
+    i18n: {
+      en: "Application restrictions",
+      es: "Restricciones de la solicitud",
+    },
+  },
+  amountCapture: {
+    code: "StepsAddProduct_amountCapture",
+    description: "Step to register requested amount",
+    i18n: {
+      en: "Request amount",
+      es: "Valor de la solicitud",
+    },
+  },
+  verification: {
+    code: "StepsAddProduct_verification",
+    description: "Step for verification",
+    i18n: {
+      en: "Verification",
+      es: "Verificación",
+    },
+  },
+};
+
+export const titleButtonTextAssistedEnum = {
+  goBackText: {
+    code: "TitleButtonTextAssisted_goBackText",
+    description: "Text for back button",
+    i18n: {
+      en: "Back",
+      es: "Atrás",
+    },
+  },
+  goNextText: {
+    code: "TitleButtonTextAssisted_goNextText",
+    description: "Text for next button",
+    i18n: {
+      en: "Next",
+      es: "Siguiente",
+    },
+  },
+  submitText: {
+    code: "TitleButtonTextAssisted_submitText",
+    description: "Text for submit button",
+    i18n: {
+      en: "Add product",
+      es: "Agregar producto",
+    },
+  },
+};
+
+export const errorMessagesEnum = {
+  getPaymentMethods: {
+    code: "ErrorMessages_getPaymentMethods",
+    description: "Error when fetching payment methods",
+    i18n: {
+      en: "Error fetching payment methods",
+      es: "Error al obtener los medios de pago",
+    },
+  },
+  linesOfCredit: {
+    code: "ErrorMessages_linesOfCredit",
+    description: "Error when fetching lines of credit",
+    i18n: {
+      en: "Error fetching lines of credit",
+      es: "Error al obtener las líneas de crédito",
+    },
+  },
+};
+
+export const noAvailablePaymentMethodsEnum = {
+  code: "NoAvailablePaymentMethods",
+  description: "Message when no payment methods are available",
+  i18n: {
+    en: "No payment methods available",
+    es: "No hay medios de pago disponibles",
+  },
+};
+
+
 export interface IFirstPaymentDate {
   id: string;
   value: string;

@@ -33,6 +33,46 @@ export const titlesFinanacialReporting = [
   },
 ];
 
+export const titlesFinancialReportingEnum = {
+  noDeObligacion: {
+    code: "TitlesFinancialReporting_noDeObligacion",
+    description: "Title for obligation number column",
+    i18n: {
+      en: "Obligation No.",
+      es: "No. de Obligación",
+    },
+    priority: 1,
+  },
+  noDeDocumento: {
+    code: "TitlesFinancialReporting_noDeDocumento",
+    description: "Title for document number column",
+    i18n: {
+      en: "Document No.",
+      es: "No. de Documento",
+    },
+    priority: 2,
+  },
+  tipo: {
+    code: "TitlesFinancialReporting_tipo",
+    description: "Title for type column",
+    i18n: {
+      en: "Type",
+      es: "Tipo",
+    },
+    priority: 3,
+  },
+  tag: {
+    code: "TitlesFinancialReporting_tag",
+    description: "Title for status column",
+    i18n: {
+      en: "Status",
+      es: "Estado",
+    },
+    priority: 4,
+  },
+};
+
+
 export const actionsFinanacialReporting = [
   {
     id: "Reenviar",

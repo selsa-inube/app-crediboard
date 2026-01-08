@@ -228,3 +228,198 @@ export const labelsAndValuesShare = {
 export const editCreditApplicationLabels = {
   placeholderExample: "Ej.: Escribe tu mensaje",
 };
+
+export const optionFlagsEnum = {
+  title: {
+    code: "OptionFlags_title",
+    description: "Title for file attachment modal",
+    i18n: {
+      en: "Attach file",
+      es: "Adjuntar archivo",
+    },
+  },
+  description: {
+    code: "OptionFlags_description",
+    description: "Message when file already exists",
+    i18n: {
+      en: "The file you are trying to add is already registered.",
+      es: "El archivo que intentas agregar ya está registrado.",
+    },
+  },
+  descriptionSuccess: {
+    code: "OptionFlags_descriptionSuccess",
+    description: "Message when file is saved successfully",
+    i18n: {
+      en: "The file has been saved successfully.",
+      es: "El archivo se ha guardado exitosamente.",
+    },
+  },
+  appearance: {
+    code: "OptionFlags_appearance",
+    description: "Appearance type for success",
+    i18n: {
+      en: "success",
+      es: "success",
+    },
+  },
+  appearanceError: {
+    code: "OptionFlags_appearanceError",
+    description: "Appearance type for error",
+    i18n: {
+      en: "danger",
+      es: "danger",
+    },
+  },
+};
+
+export const errorMessagesEnum = {
+  comercialManagement: {
+    titleCard: {
+      code: "ErrorMessages_comercialManagement_titleCard",
+      description: "Title for commercial management card",
+      i18n: {
+        en: "Status",
+        es: "Estado",
+      },
+    },
+    descriptionCard: {
+      code: "ErrorMessages_comercialManagement_descriptionCard",
+      description: "Description for commercial management card",
+      i18n: {
+        en: "Commercial Management",
+        es: "Gestión Comercial",
+      },
+    },
+    title: {
+      code: "ErrorMessages_comercialManagement_title",
+      description: "Title for error message",
+      i18n: {
+        en: "Credit request not found",
+        es: "No se encontró la solicitud de crédito",
+      },
+    },
+    description: {
+      code: "ErrorMessages_comercialManagement_description",
+      description: "Description for error message",
+      i18n: {
+        en: "No data related to the selected credit request.",
+        es: "No hay datos relacionados a la solicitud de crédito seleccionada.",
+      },
+    },
+    button: {
+      code: "ErrorMessages_comercialManagement_button",
+      description: "Label for retry button",
+      i18n: {
+        en: "Search again",
+        es: "Volver a buscar",
+      },
+    },
+  },
+  toDo: {
+    titleCard: {
+      code: "ErrorMessages_toDo_titleCard",
+      description: "Title for to-do card",
+      i18n: {
+        en: "To do",
+        es: "Por hacer",
+      },
+    },
+    title: {
+      code: "ErrorMessages_toDo_title",
+      description: "Title for to-do error message",
+      i18n: {
+        en: "No tasks found",
+        es: "No se encontraron tareas",
+      },
+    },
+    description: {
+      code: "ErrorMessages_toDo_description",
+      description: "Description for to-do error message",
+      i18n: {
+        en: "No tasks are available to display at this time.",
+        es: "No hay tareas disponibles para mostrar en este momento.",
+      },
+    },
+    button: {
+      code: "ErrorMessages_toDo_button",
+      description: "Label for retry button",
+      i18n: {
+        en: "Try again",
+        es: "Volver a intentar",
+      },
+    },
+  },
+  approval: {
+    titleCard: {
+      code: "ErrorMessages_approval_titleCard",
+      description: "Title for approvals card",
+      i18n: {
+        en: "Approvals",
+        es: "Aprobaciones",
+      },
+    },
+    title: {
+      code: "ErrorMessages_approval_title",
+      description: "Title for approval error",
+      i18n: {
+        en: "No approvals found",
+        es: "No se encontraron aprobaciones",
+      },
+    },
+    description: {
+      code: "ErrorMessages_approval_description",
+      description: "Description for approval error",
+      i18n: {
+        en: "No data related to the credit approval was found.",
+        es: "No se encontraron datos relacionados con la aprobación del crédito.",
+      },
+    },
+    button: {
+      code: "ErrorMessages_approval_button",
+      description: "Label for retry button",
+      i18n: {
+        en: "Try again",
+        es: "Volver a intentar",
+      },
+    },
+  },
+  // ... Continue for Requirements, Management, PromissoryNotes, Postingvouchers, share, getData, lateRejectionOfACreditRequest, registerNewsToACreditRequest, searchAllUnreadErrorsById
+};
+
+export const labelsAndValuesShareEnum = {
+  titleOnPdf: {
+    code: "LabelsAndValuesShare_titleOnPdf",
+    description: "Title to display on PDF",
+    i18n: {
+      en: "Commercial Management",
+      es: "Gestión Comercial",
+    },
+  },
+  fileName: {
+    code: "LabelsAndValuesShare_fileName",
+    description: "Default file name for PDF",
+    i18n: {
+      en: "commercial_report.pdf",
+      es: "reporte_comercial.pdf",
+    },
+  },
+  text: {
+    code: "LabelsAndValuesShare_text",
+    description: "Text description for sharing",
+    i18n: {
+      en: "Commercial Report to share",
+      es: "Reporte Comercial para compartir",
+    },
+  },
+};
+
+export const editCreditApplicationLabelsEnum = {
+  placeholderExample: {
+    code: "EditCreditApplication_placeholderExample",
+    description: "Placeholder text example",
+    i18n: {
+      en: "Ex.: Write your message",
+      es: "Ej.: Escribe tu mensaje",
+    },
+  },
+};
