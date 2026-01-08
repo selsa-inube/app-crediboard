@@ -12,8 +12,8 @@ interface IStyledLogo {
 }
 
 export const StyledAppPage = styled.div`
-  display: inherit;
-  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
 `;
 
 export const StyledCardsContainer = styled.div`
@@ -32,13 +32,14 @@ export const StyledUserImage = styled.img`
 `;
 
 export const StyledContainer = styled.div`
-  display: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow: hidden;
 `;
 
 export const StyledMain = styled.main`
-  display: flex;
-  flex-direction: column;
+  flex: 1;
   overflow-y: auto;
 `;
 
