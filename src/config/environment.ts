@@ -1,12 +1,7 @@
 const secretKeyPortalId = import.meta.env.VITE_SECRET_KEY_PORTAL_ID as string;
 
 const environment = {
-  CLIENT_ID: import.meta.env.VITE_AUTH0_CLIENT_ID,
-  CLIENT_SECRET: import.meta.env.VITE_AUTH0_CLIENT_SECRET,
   REDIRECT_URI: window.location.origin,
-  AUTH0_DOMAIN: import.meta.env.VITE_AUTH0_DOMAIN,
-  TEMP_BUSINESS_UNIT: "public",
-  VITE_LOGOUT_REDIRECT_URI: import.meta.env.VITE_LOGOUT_REDIRECT_URI,
   VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE: import.meta.env
     .VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE,
   VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE: import.meta.env
@@ -23,7 +18,11 @@ const environment = {
     .VITE_ENV_STAFF_PORTAL_CATALOG_CODE,
   ORIGINATOR_ID: import.meta.env.VITE_ORIGINATOR_ID as string,
   IAUTH_URL: import.meta.env.VITE_IAUTH_URL as string,
-  IAUTH_SERVICE_URL: import.meta.env.VITE_IAUTH_SERVICE_URL as string
+  IAUTH_SERVICE_URL: import.meta.env.VITE_IAUTH_SERVICE_URL as string,
+  CODE_VERIFIER: import.meta.env.VITE_CODE_VERIFIER as string,
+  CODE_CHALLENGE: import.meta.env.VITE_CODE_CHALLENGE as string,
+  STATE: import.meta.env.VITE_STATE as string,
+  ORIGINATOR_CODE: import.meta.env.VITE_ORIGINATOR_CODE as string,
 };
 
 const maxRetriesServices = 5;

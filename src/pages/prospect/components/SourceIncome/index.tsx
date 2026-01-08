@@ -112,16 +112,6 @@ export function SourceIncome(props: ISourceIncomeProps) {
 
     const body = {
       borrowerIdentificationNumber: data.identificationNumber,
-      income: {
-        dividends: data.Dividends || 0,
-        financialIncome: data.FinancialIncome || 0,
-        leases: data.Leases || 0,
-        otherNonSalaryEmoluments: data.OtherNonSalaryEmoluments || 0,
-        pensionAllowances: data.PensionAllowances || 0,
-        periodicSalary: data.PeriodicSalary || 0,
-        personalBusinessUtilities: data.PersonalBusinessUtilities || 0,
-        professionalFees: data.ProfessionalFees || 0,
-      },
       justification: "restore income",
       creditRequestCode: creditRequestCode || "",
     };

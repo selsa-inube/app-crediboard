@@ -78,7 +78,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     creditRequestCode,
   } = props;
 
-  const { businessUnitSigla, eventData } = useContext(AppContext);
+  const { businessUnitSigla } = useContext(AppContext);
 
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -87,8 +87,6 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
-
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
 
   const formik = useFormik({
     initialValues: {
@@ -222,7 +220,6 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     try {
       await updateExtraordinaryInstallment(
         businessUnitPublicCode,
-        businessManagerCode,
         extraordinaryInstallments
       );
 

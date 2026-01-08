@@ -18,8 +18,9 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { getGlobalCreditLimitByLineOfCredit } from "@services/creditLimit/getGlobalCreditLimitByLineOfCredit";
 import { IMaximumCreditLimitByLineOfCredit } from "@services/creditLimit/types";
 
-import { creditLimitTexts, renderSkeletons } from "./creditLimitConfig";
+import { creditLimitTexts } from "./creditLimitConfig";
 import { StyledList } from "./styles";
+import { Skeletons } from "./skeletons";
 
 export interface ICreditLimitProps {
   title: string;
@@ -105,7 +106,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
       limits.paymentCapacity,
       limits.riskAnalysis,
       limits.personalized,
-    ].filter((val): val is number => val !== undefined);
+    ].filter((value): value is number => value !== undefined);
 
     if (validValues.length === 0) return 0;
     return Math.min(...validValues);
@@ -132,12 +133,18 @@ export const CreditLimit = (props: ICreditLimitProps) => {
           </Text>
         </Stack>
       ) : (
-        <Stack direction="column" gap="24px" height={isMobile? "400px": "330px"}>
+        <Stack direction="column" gap="24px" height={isMobile ? "400px" : "330px"}>
           {isLoading ? (
-            renderSkeletons()
+            <StyledList>
+              <Stack direction="column" gap="12px" height="160px">
+                {Array.from({ length: 5 }).map((__, index) => (
+                  <Skeletons index={index}  />
+                ))}
+              </Stack>
+            </StyledList>
           ) : (
             <StyledList>
-              <Stack direction="column" gap="12px" height={isMobile? "250px" : "170px"}>
+              <Stack direction="column" gap="12px" height={isMobile ? "250px" : "170px"}>
                 {limits.maxCreditLimit !== undefined && (
                   <li>
                     <Stack justifyContent="space-between">

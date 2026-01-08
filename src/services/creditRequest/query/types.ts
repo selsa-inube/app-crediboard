@@ -280,3 +280,10 @@ export interface IDecisionsToDo {
   label: string;
   value: string;
 }
+
+export interface IGuaranteesSummary {
+  activeGuarantees: string[];
+  offeredGuarantees: string[];
+  requiredGuarantees: string[];
+}
+

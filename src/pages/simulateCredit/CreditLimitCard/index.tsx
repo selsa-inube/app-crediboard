@@ -7,7 +7,7 @@ import { CreditLimit } from "@components/modals/CreditLimit";
 import { ReciprocityModal } from "@components/modals/ReciprocityModal";
 import { ScoreModal } from "@components/modals/FrcModal";
 import { MaxLimitModal } from "@components/modals/MaxLimitModal";
-import { PayCapacityModal } from "@components/modals/payCapacityModal";
+import { PaymentCapacityModal } from "@components/modals/payCapacityModal";
 import { ISourcesOfIncomeState } from "@components/modals/payCapacityModal/types";
 
 import { StyledContainer } from "./styles";
@@ -132,7 +132,7 @@ export function CreditLimitCard(props: CreditLimitProps) {
       )}
 
       {openModal === "paymentCapacity" && (
-        <PayCapacityModal
+        <PaymentCapacityModal
           isMobile={isMobile}
           handleClose={() => setOpenModal(null)}
           businessUnitPublicCode={businessUnitPublicCode}

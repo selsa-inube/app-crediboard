@@ -28,8 +28,8 @@ export const paymentCapacityData = {
   maxAmountExtraordinary:
     "Monto máximo sumando cuotas ordinarias y extraordinarias.",
   maxTotal: "Monto máximo total",
-  noExtraordinary: "No hay cuotas extraordinarias disponibles",
-  errorDate: "Error al cargar datos",
+  noExtraordinaryInstallmentsAvailable: "No hay cuotas extraordinarias disponibles",
+  errorLoadingData: "Error al cargar datos",
   errorNoData:
     "No se pudo obtener la información de capacidad de pago. Por favor, intenta nuevamente.",
   months: " meses"

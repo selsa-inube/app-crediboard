@@ -48,7 +48,7 @@ interface IPaymentCapacityModalProps {
   incomeData: ISourcesOfIncomeState;
 }
 
-export function PayCapacityModal(props: IPaymentCapacityModalProps) {
+export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
   const {
     isMobile,
     dataMaximumCreditLimitService,
@@ -161,7 +161,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
           >
             <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
             <Text size="large" weight="bold" appearance="danger">
-              {paymentCapacityData.errorDate}
+              {paymentCapacityData.errorLoadingData}
             </Text>
             <Text size="small" appearance="dark" textAlign="center">
               {paymentCapacityData.errorNoData}
@@ -360,7 +360,7 @@ export function PayCapacityModal(props: IPaymentCapacityModalProps) {
                           <Tr>
                             <Td colSpan={isMobile ? 2 : 3} align="center">
                               <Text type="body" size="small" appearance="gray">
-                                {paymentCapacityData.noExtraordinary}
+                                {paymentCapacityData.noExtraordinaryInstallmentsAvailable}
                               </Text>
                             </Td>
                           </Tr>
