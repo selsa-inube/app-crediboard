@@ -17,7 +17,7 @@ interface TruncatedTextProps {
 }
 
 export const TruncatedText = ({
-  text,
+  text = "",
   maxLength = 50,
   appearance,
   type,

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState, useRef } from "react";
 import { MdInfoOutline } from "react-icons/md";
 import { Stack, Icon, Text, useMediaQuery } from "@inubekit/inubekit";
 
@@ -46,8 +46,13 @@ function BoardLayout() {
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
-
   const [hasServerError, setHasServerError] = useState(false);
+  const useDebounceSearch = Boolean(
+    eventData?.user?.identificationDocumentNumber
+  );
+  const searchAbortControllerRef = useRef<AbortController | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSearchValueRef = useRef<string>("");
 
   const isMobile = useMediaQuery("(max-width: 1439px)");
 
@@ -85,6 +90,10 @@ function BoardLayout() {
     searchParam?: { filter?: string; text?: string },
     append: boolean = false
   ) => {
+    if (!userAccount) {
+      return;
+    }
+
     try {
       const [boardRequestsResult, requestsPinnedResult] =
         await Promise.allSettled([
@@ -102,6 +111,7 @@ function BoardLayout() {
               )
             : Promise.resolve([]),
         ]);
+
       if (
         boardRequestsResult.status === "rejected" &&
         (page === 1 ? requestsPinnedResult.status === "rejected" : true)
@@ -148,13 +158,14 @@ function BoardLayout() {
   useEffect(() => {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 1)
       return;
-
+    if (!userAccount) {
+      return;
+    }
     fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
     setCurrentPage(1);
-
     fetchValidationRulesData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, userAccount]);
 
   const handleLoadMoreData = () => {
     const nextPage = currentPage + 1;
@@ -191,6 +202,11 @@ function BoardLayout() {
       showPinnedOnly: false,
       selectOptions: selectCheckOptions,
     }));
+
+    if (useDebounceSearch) {
+      lastSearchValueRef.current = "";
+    }
+
     const assignmentIds = values.assignment.split(",");
     const activeFilteredValues: Filter[] = selectCheckOptions
       .filter((option) => assignmentIds.includes(option.id))
@@ -407,6 +423,10 @@ function BoardLayout() {
     setActiveOptions([]);
     setCurrentPage(1);
 
+    if (useDebounceSearch && !keepSearchValue) {
+      lastSearchValueRef.current = "";
+    }
+
     setFilters((prev) => ({
       ...prev,
       searchRequestValue: keepSearchValue ? prev.searchRequestValue : "",
@@ -509,26 +529,141 @@ function BoardLayout() {
     const value = e.target.value;
     handleFiltersChange({ searchRequestValue: value });
     const trimmedValue = value.trim();
-    setCurrentPage(1);
-    if (trimmedValue.length >= 1) {
+
+    if (useDebounceSearch) {
+      if (searchAbortControllerRef.current) {
+        searchAbortControllerRef.current.abort();
+        searchAbortControllerRef.current = null;
+      }
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = null;
+      }
+    }
+
+    if (trimmedValue.length === 0) {
+      if (useDebounceSearch) {
+        lastSearchValueRef.current = "";
+      }
+      setCurrentPage(1);
+
       if (activeOptions.length > 0) {
         const currentFilters = activeOptions
           .map((filter) => filter.value)
           .join("&");
-        const searchResults = await getCreditRequestInProgress(
-          businessUnitPublicCode,
-          businessManagerCode,
-          1,
-          userAccount,
-          { text: trimmedValue }
-        );
-        const filteredResults = await getCreditRequestInProgress(
-          businessUnitPublicCode,
-          businessManagerCode,
-          1,
-          userAccount,
-          { filter: currentFilters }
-        );
+        await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
+          filter: currentFilters,
+        });
+      } else {
+        await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
+      }
+      return;
+    }
+
+    if (useDebounceSearch) {
+      searchTimeoutRef.current = setTimeout(async () => {
+        if (lastSearchValueRef.current === trimmedValue) {
+          return;
+        }
+
+        lastSearchValueRef.current = trimmedValue;
+        setCurrentPage(1);
+
+        const abortController = new AbortController();
+        searchAbortControllerRef.current = abortController;
+
+        try {
+          if (activeOptions.length > 0) {
+            const currentFilters = activeOptions
+              .map((filter) => filter.value)
+              .join("&");
+
+            const [searchResults, filteredResults] = await Promise.all([
+              getCreditRequestInProgress(
+                businessUnitPublicCode,
+                businessManagerCode,
+                1,
+                userAccount,
+                { text: trimmedValue }
+              ),
+              getCreditRequestInProgress(
+                businessUnitPublicCode,
+                businessManagerCode,
+                1,
+                userAccount,
+                { filter: currentFilters }
+              ),
+            ]);
+
+            if (abortController.signal.aborted) {
+              return;
+            }
+
+            const intersection = searchResults.filter((searchItem) =>
+              filteredResults.some(
+                (filterItem) =>
+                  filterItem.creditRequestId === searchItem.creditRequestId
+              )
+            );
+
+            setBoardData((prev) => ({
+              ...prev,
+              boardRequests: intersection,
+            }));
+          } else {
+            const results = await getCreditRequestInProgress(
+              businessUnitPublicCode,
+              businessManagerCode,
+              1,
+              userAccount,
+              { text: trimmedValue }
+            );
+
+            if (abortController.signal.aborted) {
+              return;
+            }
+
+            setBoardData((prev) => ({
+              ...prev,
+              boardRequests: results,
+            }));
+          }
+        } catch (error) {
+          if (error instanceof Error && error.name === "AbortError") {
+            return;
+          }
+          console.error("Error en búsqueda:", error);
+        } finally {
+          if (searchAbortControllerRef.current === abortController) {
+            searchAbortControllerRef.current = null;
+          }
+        }
+      }, 300);
+    } else {
+      setCurrentPage(1);
+
+      if (activeOptions.length > 0) {
+        const currentFilters = activeOptions
+          .map((filter) => filter.value)
+          .join("&");
+
+        const [searchResults, filteredResults] = await Promise.all([
+          getCreditRequestInProgress(
+            businessUnitPublicCode,
+            businessManagerCode,
+            1,
+            userAccount,
+            { text: trimmedValue }
+          ),
+          getCreditRequestInProgress(
+            businessUnitPublicCode,
+            businessManagerCode,
+            1,
+            userAccount,
+            { filter: currentFilters }
+          ),
+        ]);
+
         const intersection = searchResults.filter((searchItem) =>
           filteredResults.some(
             (filterItem) =>
@@ -541,24 +676,25 @@ function BoardLayout() {
           boardRequests: intersection,
         }));
       } else {
-        fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
+        await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
           text: trimmedValue,
         });
       }
-    } else {
-      if (activeOptions.length > 0) {
-        const currentFilters = activeOptions
-          .map((filter) => filter.value)
-          .join("&");
-
-        await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1, {
-          filter: currentFilters,
-        });
-      } else {
-        await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
-      }
     }
   };
+
+  useEffect(() => {
+    if (!useDebounceSearch) return;
+
+    return () => {
+      if (searchAbortControllerRef.current) {
+        searchAbortControllerRef.current.abort();
+      }
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [useDebounceSearch]);
 
   const closeFilterModal = useCallback(() => setIsFilterModalOpen(false), []);
 

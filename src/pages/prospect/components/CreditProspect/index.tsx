@@ -17,7 +17,6 @@ import {
 import { FormikValues } from "formik";
 
 import { MenuProspect } from "@components/navigation/MenuProspect";
-import { PaymentCapacity } from "@components/modals/PaymentCapacityModal";
 import { ReciprocityModal } from "@components/modals/ReciprocityModal";
 import { ScoreModal } from "@components/modals/FrcModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
@@ -50,7 +49,6 @@ import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect, errorMessage } from "./config";
 import { StyledPrint, StyledPrintCardProspect } from "./styles";
 import { IIncomeSources } from "./types";
-import { CreditLimitModal } from "../modals/CreditLimitModal";
 import { IncomeModal } from "../modals/IncomeModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
 import InfoModal from "../modals/InfoModal";
@@ -120,8 +118,6 @@ export function CreditProspect(props: ICreditProspectProps) {
     handleOpenModal,
     handleCloseModal
   } = props;
-
-  const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showShareModal, setShowShareModal] = useState(false);
 
   const [showEditApprovalModal, setShowEditApprovalModal] = useState(false);
@@ -211,9 +207,9 @@ export function CreditProspect(props: ICreditProspectProps) {
           prevProspects.map((prospect) =>
             prospect.prospectId === prospectData.prospectId
               ? {
-                  ...prospect,
-                  clientManagerObservation: editedApprovalObservations,
-                }
+                ...prospect,
+                clientManagerObservation: editedApprovalObservations,
+              }
               : prospect
           )
         );
@@ -352,24 +348,24 @@ export function CreditProspect(props: ICreditProspectProps) {
                 Array.isArray(product.extraordinaryInstallments) &&
                 product.extraordinaryInstallments.length > 0
             ) && (
-              <Button
-                type="button"
-                appearance="primary"
-                spacing="compact"
-                variant="outlined"
-                iconBefore={
-                  <Icon
-                    icon={<MdOutlinePayments />}
-                    appearance="primary"
-                    size="18px"
-                    spacing="narrow"
-                  />
-                }
-                onClick={() => handleOpenModal("extraPayments")}
-              >
-                {dataCreditProspect.extraPayment}
-              </Button>
-            )}
+                <Button
+                  type="button"
+                  appearance="primary"
+                  spacing="compact"
+                  variant="outlined"
+                  iconBefore={
+                    <Icon
+                      icon={<MdOutlinePayments />}
+                      appearance="primary"
+                      size="18px"
+                      spacing="narrow"
+                    />
+                  }
+                  onClick={() => handleOpenModal("extraPayments")}
+                >
+                  {dataCreditProspect.extraPayment}
+                </Button>
+              )}
             <StyledVerticalDivider />
             <StyledContainerIcon>
               {showPrint && (
@@ -425,33 +421,6 @@ export function CreditProspect(props: ICreditProspectProps) {
           />
         </Stack>
       </StyledPrintCardProspect>
-      {currentModal === "creditLimit" && (
-        <CreditLimitModal
-          handleClose={handleCloseModal}
-          isMobile={isMobile}
-          setRequestValue={setRequestValue || (() => {})}
-          requestValue={requestValue}
-          businessUnitPublicCode={businessUnitPublicCode}
-          businessManagerCode={businessManagerCode}
-          dataMaximumCreditLimitService={dataMaximumCreditLimitService}
-          moneyDestination={prospectData?.moneyDestinationAbbreviatedName || ""}
-        />
-      )}
-      {openModal === "paymentCapacity" && (
-        <PaymentCapacity
-          title="Cupo máx. capacidad de pago"
-          handleClose={() => {
-            if (setOpenModal)
-              setOpenModal(null)
-          }}
-          reportedIncomeSources={2000000}
-          reportedFinancialObligations={6789000}
-          subsistenceReserve={2000000}
-          availableForNewCommitments={5000000}
-          maxVacationTerm={12}
-          maxAmount={1000000}
-        />
-      )}
       {openModal === "reciprocityModal" && (
         <ReciprocityModal
           handleClose={() => {

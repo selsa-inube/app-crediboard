@@ -217,6 +217,9 @@ export const errorMessages = {
   searchAllUnreadErrorsById: {
     description: "Error no se pudo traer los errores no leídos.",
   },
+  searchProspect: {
+    description: "No se pudo obtener los datos del prospecto relacionado."
+  }
 };
 
 export const labelsAndValuesShare = {
