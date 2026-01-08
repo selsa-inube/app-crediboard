@@ -2,6 +2,7 @@ import { IProperty } from "@pages/prospect/components/TableObligationsFinancial/
 import { FormikValues } from "formik";
 
 const currencyFormat = (price: number, withCurrencySymbol = true): string => {
+
   if (price === 0) {
     if (withCurrencySymbol) return "$ 0";
     return "0";

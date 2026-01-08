@@ -130,6 +130,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   );
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [error, setError] = useState(false);
 
   const [form, setForm] = useState({
     borrower: "",
@@ -844,7 +845,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <StyledContainerDiverProspect>
                 {collapse && <Stack>{isMobile && <Divider />}</Stack>}
               </StyledContainerDiverProspect>
-              {collapse && (
+               {collapse && (
                 <CreditProspect
                   key={refreshKey}
                   borrowersProspect={borrowersProspect}
@@ -879,17 +880,25 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     setRefreshKey((prev) => prev + 1);
                   }}
                 />
-              )}
+              )} 
             </Stack>
             {currentModal === "creditLimit" && (
               <CreditLimitModal
                 isMobile={isMobile}
                 handleClose={handleCloseModal}
-                setRequestValue={() => { }}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
-                dataMaximumCreditLimitService={dataMaximumCreditLimitService}
-                moneyDestination={prospectData.moneyDestinationAbbreviatedName}
+                dataMaximumCreditLimitService={{
+                  ...dataMaximumCreditLimitService,
+                  lineOfCreditAbbreviatedName: "creditLineTxt",
+                }}
+                setError={setError}
+                setLoading={setLoading}
+                error={error}
+                loading={loading}
+                incomeData={incomeData}
+                moneyDestination={data.moneyDestinationAbreviatedName}
+                setRequestValue={setRequestValue}
               />
             )}
             {currentModal === "IncomeModal" && (
