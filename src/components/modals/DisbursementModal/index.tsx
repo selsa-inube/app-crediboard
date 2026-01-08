@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { Stack, Tabs, SkeletonLine, Grid } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
@@ -127,10 +127,10 @@ export function DisbursementModal(
               autoRows="auto"
             >
               {Array.from({ length: 7 }).map((_, index) => (
-                <>
-                  <SkeletonLine key={`skeleton-one${index}`} width="280px" height="40px" animated />
-                  <SkeletonLine key={`skeleton-two${index}`} width="280px" height="40px" animated />
-                </>
+                <Fragment key={`skeleton-${index}-disbursement`}>
+                  <SkeletonLine key={`skeleton-one${index}-disbursement`} width="280px" height="40px" animated />
+                  <SkeletonLine key={`skeleton-two${index}-disbursement`} width="280px" height="40px" animated />
+                </Fragment>
               ))}
             </Grid>
           </Stack>
