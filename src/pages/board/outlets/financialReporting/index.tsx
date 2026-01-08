@@ -95,10 +95,9 @@ export const FinancialReporting = () => {
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
-
   const [showGuarantee, setShowGuarantee] = useState(false);
-
   const [document, setDocument] = useState<IListdataProps["data"]>([]);
+  const [errorGetProspects, setErrorGetProspects] = useState(false);
 
   const [dataProspect, setDataProspect] = useState<IProspect>();
   const [uploadedFiles, setUploadedFiles] = useState<
@@ -193,9 +192,11 @@ export const FinancialReporting = () => {
           businessManagerCode,
           creditRequestCode
         );
-
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
+        setErrorMessage(errorMessages.searchProspect.description);
+        setErrorModal(true);
+        setErrorGetProspects(true);
         console.error("Error al obtener los prospectos:", error);
       }
     };
@@ -476,6 +477,7 @@ export const FinancialReporting = () => {
                         setSentData={setSentData}
                         setRequestValue={setRequestValue}
                         requestValue={requestValue}
+                        errorGetProspects={errorGetProspects}
                       />
                     </BlockPdfSection>
                   </Stack>

@@ -38,8 +38,10 @@ export interface IBaseModalProps {
   finalDivider?: boolean;
   portalId?: string;
   $height?: string;
-  isSendingData?: boolean;
-  internalWidth?: string;
+  isSendingData?: boolean
+  internalWidth?: string
+  marginTop?: string;
+  marginBottom?: string;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -67,6 +69,8 @@ export function BaseModal(props: IBaseModalProps) {
     $height,
     isSendingData,
     internalWidth,
+    marginBottom,
+    marginTop
   } = props;
 
   const node = document.getElementById(portalId ?? "portal");
@@ -80,7 +84,13 @@ export function BaseModal(props: IBaseModalProps) {
 
   return createPortal(
     <Blanket>
-      <StyledContainer $height={$height} $width={width}>
+      <StyledContainer
+        $height={$height}
+        $width={width}
+        $margin={
+            `${marginTop || 0} 0 ${marginBottom || 0} 0`
+          }
+      >
         <Stack
           direction="column"
           padding="24px"

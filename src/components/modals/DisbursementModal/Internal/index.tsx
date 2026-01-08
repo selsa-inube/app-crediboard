@@ -2,7 +2,9 @@ import { Stack, Grid } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
 import { CardGray } from "@components/cards/CardGray";
+import { formatPrimaryDate } from "@utils/formatData/date";
 
+import { formatObservation, formatYesNo, formatBiologicalSex, capitalizeFirstLetter } from "../EditDisburment/utils";
 import { disbursementGeneral, disbursemenOptionAccount } from "../config";
 import { dataTabsDisbursement } from "../types";
 
@@ -18,7 +20,7 @@ export function DisbursementInternal(props: IDisbursement) {
       direction="column"
       gap="16px"
       width={isMobile ? "265px" : "582px"}
-      height={isMobile ? "294px" : "auto"}
+      height="auto"
     >
       <Grid
         templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
@@ -32,7 +34,7 @@ export function DisbursementInternal(props: IDisbursement) {
         />
         <CardGray
           label={disbursementGeneral.labelToggle}
-          placeHolder={data.isInTheNameOfBorrower}
+          placeHolder={formatYesNo(data.isInTheNameOfBorrower)}
         />
         <CardGray
           label={disbursemenOptionAccount.labelName}
@@ -44,7 +46,7 @@ export function DisbursementInternal(props: IDisbursement) {
         />
         <CardGray
           label={disbursemenOptionAccount.labelSex}
-          placeHolder={data.payeeBiologicalSex}
+          placeHolder={formatBiologicalSex(data.payeeBiologicalSex)}
         />
         <CardGray
           label={disbursemenOptionAccount.labelDocumentType}
@@ -56,7 +58,7 @@ export function DisbursementInternal(props: IDisbursement) {
         />
         <CardGray
           label={disbursemenOptionAccount.labelBirthdate}
-          placeHolder={data.payeeBirthday}
+          placeHolder={formatPrimaryDate(new Date(data.payeeBirthday))}
         />
         <CardGray
           label={disbursemenOptionAccount.labelphone}
@@ -68,7 +70,7 @@ export function DisbursementInternal(props: IDisbursement) {
         />
         <CardGray
           label={disbursemenOptionAccount.labelCity}
-          placeHolder={data.payeeCityOfResidence}
+          placeHolder={capitalizeFirstLetter(data.payeeCityOfResidence)}
         />
         <CardGray
           label={disbursemenOptionAccount.labelAccount}
@@ -77,7 +79,7 @@ export function DisbursementInternal(props: IDisbursement) {
       </Grid>
       <CardGray
         label={disbursemenOptionAccount.observation}
-        placeHolder={data.observation}
+        placeHolder={formatObservation(data.observation)}
       />
     </Stack>
   );
