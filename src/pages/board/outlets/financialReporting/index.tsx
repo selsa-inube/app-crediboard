@@ -4,7 +4,6 @@ import {
   Stack,
   useFlag,
   useMediaQuery,
-  Blanket,
   Text,
   Spinner,
 } from "@inubekit/inubekit";
@@ -41,7 +40,10 @@ import {
 } from "@services/prospect/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ShareModal } from "@components/modals/ShareModal";
+import { BaseModal } from "@components/modals/baseModal";
+import { shareModalConfig } from "@components/modals/ShareModal/config";
 
+import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
 import { ToDo } from "./ToDo";
 import {
@@ -93,12 +95,9 @@ export const FinancialReporting = () => {
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
-
   const [showGuarantee, setShowGuarantee] = useState(false);
-
   const [document, setDocument] = useState<IListdataProps["data"]>([]);
+  const [errorGetProspects, setErrorGetProspects] = useState(false);
 
   const [dataProspect, setDataProspect] = useState<IProspect>();
   const [uploadedFiles, setUploadedFiles] = useState<
@@ -110,6 +109,8 @@ export const FinancialReporting = () => {
     blob: null as Blob | null,
     showShareModal: false,
   });
+
+  const [updateManagement, setUpdateManagement] = useState(0);
 
   const { creditRequestCode } = useParams();
   const { user } = useIAuth();
@@ -126,6 +127,9 @@ export const FinancialReporting = () => {
   const [showModal, setShowModal] = useState(false);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
@@ -188,9 +192,11 @@ export const FinancialReporting = () => {
           businessManagerCode,
           creditRequestCode
         );
-
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
+        setErrorMessage(errorMessages.searchProspect.description);
+        setErrorModal(true);
+        setErrorGetProspects(true);
         console.error("Error al obtener los prospectos:", error);
       }
     };
@@ -211,7 +217,7 @@ export const FinancialReporting = () => {
       const pdfBlob = await generatePDF(
         dataCommercialManagementRef,
         labelsAndValuesShare.titleOnPdf,
-        setShowErrorModal,
+        setErrorModal,
         true
       );
 
@@ -222,10 +228,11 @@ export const FinancialReporting = () => {
           showShareModal: true,
         });
       }
+      setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-      setMessageError(errorMessages.share.description);
-      setShowErrorModal(true);
+      setErrorMessage(errorMessages.share.description);
+      setErrorModal(true);
     }
   };
 
@@ -244,10 +251,18 @@ export const FinancialReporting = () => {
       });
 
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
+      setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-      setMessageError(errorMessages.share.description);
-      setShowErrorModal(true);
+      setErrorMessage(errorMessages.share.description);
+      setErrorModal(true);
+    }
+  };
+
+  const handleAttachmentsClose = async (filesSaved: boolean = false) => {
+    setShowAttachments(false);
+    if (filesSaved) {
+      setUpdateManagement((prev) => prev + 1);
     }
   };
 
@@ -299,7 +314,7 @@ export const FinancialReporting = () => {
         user?.id || "",
         businessUnitPublicCode,
         businessManagerCode,
-        "RECHAZAR_SOLICITUD", // o "RECHAZO_HUMANO"
+        "RECHAZAR_SOLICITUD",
         removalJustification
       );
 
@@ -310,13 +325,8 @@ export const FinancialReporting = () => {
         duration: 5000,
       });
     } catch (error) {
-      console.error(error);
-      addFlag({
-        title: textFlagsReject.titleError,
-        description: textFlagsReject.descriptionError,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setErrorMessage(errorMessages.lateRejectionOfACreditRequest.description);
+      setErrorModal(true);
     }
   };
 
@@ -324,6 +334,7 @@ export const FinancialReporting = () => {
     setAttachDocuments(true);
     setShowMenu(false);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!data?.creditRequestId || !businessUnitPublicCode || !user?.id)
@@ -335,15 +346,13 @@ export const FinancialReporting = () => {
           businessManagerCode,
           user?.id ?? ""
         );
-      } catch (error) {
-        setMessageError(errorMessages.getData.description);
       } finally {
         handleToggleModal();
       }
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //eslint-disable-next-line
   }, [data?.creditRequestId, businessUnitPublicCode, user?.id]);
 
   const fetchErrors = async () => {
@@ -367,7 +376,8 @@ export const FinancialReporting = () => {
         setErrorsService(mappedErrors);
       }
     } catch (error) {
-      console.error("Error fetching unread errors", error);
+      setErrorModal(true);
+      setErrorMessage(errorMessages.searchAllUnreadErrorsById.description);
     }
   };
 
@@ -375,7 +385,7 @@ export const FinancialReporting = () => {
     if (data?.creditRequestId) {
       fetchErrors();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //eslint-disable-next-line
   }, [data]);
 
   const handleDeleteCreditRequest = async () => {
@@ -411,17 +421,16 @@ export const FinancialReporting = () => {
         }, 1000);
       });
   };
+
   const handleToggleModal = () => {
     setShowModal(!showModal);
-  };
-
-  const handleErrorModal = () => {
-    setShowErrorModal(false);
   };
 
   const handleSharePdfModal = () => {
     setPdfState({ isGenerating: false, blob: null, showShareModal: false });
   };
+
+
 
   return (
     <div ref={dataCommercialManagementRef}>
@@ -468,6 +477,7 @@ export const FinancialReporting = () => {
                         setSentData={setSentData}
                         setRequestValue={setRequestValue}
                         requestValue={requestValue}
+                        errorGetProspects={errorGetProspects}
                       />
                     </BlockPdfSection>
                   </Stack>
@@ -514,7 +524,12 @@ export const FinancialReporting = () => {
                   </Stack>
                   <Stack direction="column">
                     <BlockPdfSection className="pdf-block">
-                      <Management id={creditRequestCode!} isMobile={isMobile} />
+                      {/* MODIFICADO: Pasar updateManagement como prop */}
+                      <Management
+                        id={creditRequestCode!}
+                        isMobile={isMobile}
+                        updateData={updateManagement}
+                      />
                     </BlockPdfSection>
                   </Stack>
                   <Stack
@@ -548,7 +563,7 @@ export const FinancialReporting = () => {
               {showAttachments && (
                 <ListModal
                   title="Adjuntar"
-                  handleClose={() => setShowAttachments(false)}
+                  handleClose={handleAttachmentsClose}
                   optionButtons={optionButtons}
                   buttonLabel="Guardar"
                   id={data.creditRequestId!}
@@ -609,29 +624,40 @@ export const FinancialReporting = () => {
             />
           )}
           {showMenu && isMobile && (
-            <MobileMenu
-              onClose={() => setShowMenu(false)}
-              onReject={hanleOnReject}
-              onCancel={handleOnCancel}
-              onAttach={handleOnAttach}
-              onViewAttachments={handleOnViewAttachments}
-              onGuarantee={() => setShowGuarantee(true)}
-            />
+            <StyledPrint>
+              <MobileMenu
+                onClose={() => setShowMenu(false)}
+                onReject={hanleOnReject}
+                onCancel={handleOnCancel}
+                onAttach={handleOnAttach}
+                onViewAttachments={handleOnViewAttachments}
+                onGuarantee={() => setShowGuarantee(true)}
+              />
+            </StyledPrint>
           )}
         </Stack>
       </StyledMarginPrint>
-      {showErrorModal && (
-        <ErrorModal message={messageError} handleClose={handleErrorModal} />
+      {errorModal && (
+        <ErrorModal
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
       )}
       {pdfState.isGenerating && (
-        <Blanket>
+        <BaseModal
+          title={shareModalConfig.title}
+          nextButton={shareModalConfig.buttonText}
+          width={isMobile ? "300px" : "450px"}
+        >
           <StyledContainerSpinner>
-            <Spinner size="large" />
-            <Text size="large" weight="bold">
+            <Spinner size="large" appearance="primary" />
+            <Text size="large" weight="bold" appearance="dark">
               {errorMessages.share.spinner}
             </Text>
           </StyledContainerSpinner>
-        </Blanket>
+        </BaseModal>
       )}
       {pdfState.showShareModal && pdfState.blob && (
         <ShareModal

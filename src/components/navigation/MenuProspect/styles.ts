@@ -12,6 +12,7 @@ const StyledMenu = styled.div`
     0px 8px 12px 6px #091e4221;
   padding: 6px 0px;
   position: absolute;
+  z-index: 1;
   right: 1px;
   width: 227px;
   top: 30px;

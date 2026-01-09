@@ -81,6 +81,7 @@ export const StockTray = (props: IStockTrayProps) => {
         </Button>
       </StyledPrint>
       {isMobile && (
+        <StyledPrint>
         <Icon
           icon={<MdMenu />}
           appearance="dark"
@@ -88,6 +89,7 @@ export const StockTray = (props: IStockTrayProps) => {
           spacing="narrow"
           onClick={actionButtons?.menuIcon}
         />
+        </StyledPrint>
       )}
 
       {!isMobile && (

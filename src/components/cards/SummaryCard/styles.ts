@@ -17,6 +17,7 @@ export const StyledLink = styled(Link)`
 `;
 
 export const StyledSummaryCard = styled.div`
+  break-after: avoid;
   display: flex;
   flex-direction: column;
   overflow: hidden;

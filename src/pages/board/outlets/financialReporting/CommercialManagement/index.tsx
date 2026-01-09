@@ -9,6 +9,7 @@ import {
   MdOutlineShare,
   MdOutlineVideocam,
   MdOutlinePayments,
+  MdOutlineInfo
 } from "react-icons/md";
 
 import {
@@ -19,6 +20,7 @@ import {
   useMediaQuery,
   Button,
   useFlag,
+  SkeletonLine
 } from "@inubekit/inubekit";
 import {
   ICreditRequest,
@@ -28,12 +30,11 @@ import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
-  truncateTextToMaxLength,
   capitalizeFirstLetter,
   capitalizeFirstLetterEachWord,
 } from "@utils/formatData/text";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
-import { DisbursementModal } from "@components/modals/DisbursementModal";
+import { DisbursementFlowManager } from "@components/modals/DisbursementModal/EditDisburment";
 import { Fieldset } from "@components/data/Fieldset";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { formatPrimaryDate } from "@utils/formatData/date";
@@ -54,16 +55,21 @@ import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitM
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
+import { boardColumns } from "@config/pages/board/board";
+import { IProspectSummaryById } from "@services/prospect/types";
+import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
+import { TBoardColumn } from "../../boardlayout/config/board";
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
-import { incomeOptions, menuOptions, tittleOptions } from "./config/config";
+import { incomeOptions, menuOptions, tittleOptions, initialDisbursementState, infoErrorProspect } from "./config/config";
 import {
   StyledCollapseIcon,
   StyledFieldset,
   StyledContainerIcon,
   StyledVerticalDivider,
   StyledPrint,
+  StyledContainerDiverProspect,
 } from "./styles";
 
 interface ComercialManagementProps {
@@ -80,6 +86,7 @@ interface ComercialManagementProps {
   >;
   generateAndSharePdf: () => void;
   creditRequestCode: string;
+  errorGetProspects: boolean;
   isPrint?: boolean;
   hideContactIcons?: boolean;
   requestValue?: IPaymentChannel[];
@@ -98,22 +105,24 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     sentData,
     setSentData,
     setRequestValue,
+    errorGetProspects
   } = props;
+
   const [showMenu, setShowMenu] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     []
   );
-  const [localProspectData, setLocalProspectData] = useState<IProspect>(prospectData);
-  const [internal, setInternal] = useState<IModeOfDisbursement | null>(null);
-  const [external, setExternal] = useState<IModeOfDisbursement | null>(null);
-  const [checkEntity, setCheckEntity] = useState<IModeOfDisbursement | null>(
-    null
-  );
-  const [checkManagement, setCheckManagement] =
-    useState<IModeOfDisbursement | null>(null);
-  const [cash, setCash] = useState<IModeOfDisbursement | null>(null);
+  const [localProspectData, setLocalProspectData] =
+    useState<IProspect>(prospectData);
+  const [disbursementData, setDisbursementData] = useState<{
+    internal: IModeOfDisbursement | null;
+    external: IModeOfDisbursement | null;
+    checkEntity: IModeOfDisbursement | null;
+    checkManagement: IModeOfDisbursement | null;
+    cash: IModeOfDisbursement | null;
+  }>(initialDisbursementState);
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [dataProspect, setDataProspect] = useState<IProspect[]>([]);
   const [incomeData, setIncomeData] = useState<Record<string, IIncomeSources>>(
@@ -121,6 +130,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   );
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [error, setError] = useState(false);
 
   const [form, setForm] = useState({
     borrower: "",
@@ -152,8 +162,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   useEffect(() => {
-    console.log("prospectData   ",prospectData);
+    console.log("prospectData: ", prospectData);
     setLocalProspectData(prospectData);
+    if (prospectData !== undefined) {
+      setLoading(false);
+    }
   }, [prospectData]);
 
   const handleOpenModal = (modalName: string) => {
@@ -195,36 +208,35 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     if (requests?.creditRequestId) {
       setLoading(true);
       try {
-        const disbursement = await getModeOfDisbursement(
+        const response = await getModeOfDisbursement(
           businessUnitPublicCode,
           businessManagerCode,
           requests.creditRequestId
         );
 
-        const internalData =
-          disbursement.find(
-            (item) => item.modeOfDisbursementType === "Internal_account"
-          ) || null;
-        const externalData =
-          disbursement.find(
-            (item) => item.modeOfDisbursementType === "External_account"
-          ) || null;
-        const checkEntityData =
-          disbursement.find(
-            (item) => item.modeOfDisbursementType === "Certified_check"
-          ) || null;
-        const checkManagementData =
-          disbursement.find(
-            (item) => item.modeOfDisbursementType === "Business_check"
-          ) || null;
-        const cashData =
-          disbursement.find((item) => item.modeOfDisbursementType === "Cash") ||
-          null;
-        setInternal(internalData);
-        setExternal(externalData);
-        setCheckEntity(checkEntityData);
-        setCheckManagement(checkManagementData);
-        setCash(cashData);
+        const typeMapping: Record<string, keyof typeof initialDisbursementState> = {
+          "Internal_account": "internal",
+          "External_account": "external",
+          "Certified_check": "checkEntity",
+          "Business_check": "checkManagement",
+          "Cash": "cash"
+        };
+
+        const organizedData = response.reduce<{
+          internal: IModeOfDisbursement | null;
+          external: IModeOfDisbursement | null;
+          checkEntity: IModeOfDisbursement | null;
+          checkManagement: IModeOfDisbursement | null;
+          cash: IModeOfDisbursement | null;
+        }>((acc, item) => {
+          const key = typeMapping[item.modeOfDisbursementType];
+          if (key) {
+            acc[key] = item;
+          }
+          return acc;
+        }, { ...initialDisbursementState });
+
+        setDisbursementData(organizedData);
       } catch (error) {
         console.error(error);
         addFlag({
@@ -234,7 +246,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
           duration: 5000,
         });
       } finally {
-        setLoading(false);
+        if (prospectData !== undefined) {
+          setLoading(false);
+        }
       }
     }
   };
@@ -466,11 +480,49 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       )?.propertyValue || "",
   };
 
+  const availableEditCreditRequest = !(data.stage === "GESTION_COMERCIAL" || data.stage === "VERIFICACION_APROBACION");
+
+  let normalizedStageTitle: TBoardColumn[] | string = boardColumns.filter((item) => {
+    return item.id === data.stage;
+  }) as TBoardColumn[];
+
+  if (normalizedStageTitle[0]) {
+    normalizedStageTitle = normalizedStageTitle[0].value;
+  } else {
+    normalizedStageTitle = "";
+  }
+
+  let prospectSummaryData: IProspectSummaryById = {
+    id: "",
+    netAmountToDisburse: data.loanAmount,
+    requestedAmount: 0,
+    deductibleExpenses: 0,
+    totalRegularInstallments: 0,
+    totalConsolidatedAmount: 0,
+  };
+
+  if (prospectData) {
+    prospectSummaryData = {
+      id: prospectData.prospectId,
+      netAmountToDisburse: data.loanAmount,
+      requestedAmount: 0,
+      deductibleExpenses: 0,
+      totalRegularInstallments: 0,
+      totalConsolidatedAmount: 0,
+    };
+  }
+
+  const modesOfDisbursement = [
+    ...new Set(
+      prospectProducts?.flatMap((product) => product.modeOfDisbursement || []) || []
+    ),
+  ];
+
   return (
     <>
       <Fieldset
         title={errorMessages.comercialManagement.titleCard}
-        descriptionTitle={errorMessages.comercialManagement.descriptionCard}
+        descriptionTitle={normalizedStageTitle}
         hasError={!data ? true : false}
       >
         {!data ? (
@@ -508,24 +560,26 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   </Stack>
                   {isMobile && (
                     <Stack margin="4px 0px">
-                      <Text type="title" size={!isMobile ? "large" : "medium"}>
-                        {data.clientName &&
-                          capitalizeFirstLetterEachWord(
-                            truncateTextToMaxLength(data.clientName)
-                          )}
-                      </Text>
+                      <TruncatedText
+                        text={data.clientName}
+                        maxLength={50}
+                        type="title"
+                        size={!isMobile ? "large" : "medium"}
+                        transformFn={capitalizeFirstLetterEachWord}
+                      />
                     </Stack>
                   )}
                   <Stack gap={!isMobile ? "4px" : "4px"}>
                     <Text type="title" size="small" appearance="gray">
                       {tittleOptions.titleDestination}
                     </Text>
-                    <Text type="title" size="small">
-                      {data.clientName &&
-                        capitalizeFirstLetter(
-                          truncateTextToMaxLength(data.moneyDestinationId, 60)
-                        )}
-                    </Text>
+                    <TruncatedText
+                      text={data.moneyDestinationAbreviatedName}
+                      maxLength={60}
+                      type="title"
+                      size="small"
+                      transformFn={capitalizeFirstLetter}
+                    />
                   </Stack>
                   <Stack gap="4px">
                     <Text type="title" size="small" appearance="gray">
@@ -541,12 +595,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
                 {!isMobile && (
                   <Stack gap="36px">
-                    <Text type="title">
-                      {data.clientName &&
-                        capitalizeFirstLetterEachWord(
-                          truncateTextToMaxLength(data.clientName)
-                        )}
-                    </Text>
+                    <TruncatedText
+                      text={data.clientName}
+                      maxLength={60}
+                      type="title"
+                      transformFn={capitalizeFirstLetterEachWord}
+                    />
                   </Stack>
                 )}
                 <Stack gap="2px">
@@ -562,17 +616,35 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             {tittleOptions.titleProfile}
                           </Button>
                           <Stack gap="2px" alignItems="center">
-                            <Button
-                              type="button"
-                              spacing="compact"
-                              variant="outlined"
-                              onClick={() => {
-                                handleDisbursement();
-                                handleOpenModal("disbursementModal");
-                              }}
-                            >
-                              {tittleOptions.titleDisbursement}
-                            </Button>
+                            {
+                              loading && !errorGetProspects ? (
+                                <SkeletonLine width="210px" height="31px" animated />
+                              ) : (
+                                <Button
+                                  type="button"
+                                  spacing="compact"
+                                  variant="outlined"
+                                  onClick={() => {
+                                    handleDisbursement();
+                                    handleOpenModal("disbursementModal");
+                                  }}
+                                  disabled={errorGetProspects}
+                                >
+                                  {tittleOptions.titleDisbursement}
+                                </Button>
+                              )
+                            }
+                            {
+                              errorGetProspects && (
+                                <Icon
+                                  icon={<MdOutlineInfo />}
+                                  appearance="primary"
+                                  size="16px"
+                                  cursorHover
+                                  onClick={() => setInfoModal(true)}
+                                />
+                              )
+                            }
                           </Stack>
                         </Stack>
                       </StyledPrint>
@@ -615,6 +687,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   </StyledCollapseIcon>
                 </Stack>
               </Stack>
+
               {isMobile && (
                 <>
                   <StyledPrint>
@@ -668,107 +741,117 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               {collapse && (
                 <>
                   {isMobile && (
-                    <Stack padding="10px 0px" width="100%">
-                      <Button
-                        type="button"
-                        appearance="primary"
-                        spacing="compact"
-                        fullwidth
-                        iconBefore={
+                    <StyledPrint>
+                      <Stack padding="10px 0px" width="100%">
+                        <Button
+                          type="button"
+                          appearance="primary"
+                          spacing="compact"
+                          fullwidth
+                          iconBefore={
+                            <Icon
+                              icon={<MdOutlineAdd />}
+                              appearance="light"
+                              size="18px"
+                              spacing="narrow"
+                            />
+                          }
+                          disabled={availableEditCreditRequest}
+                          onClick={() => handleOpenModal("editProductModal")}
+                        >
+                          {tittleOptions.titleAddProduct}
+                        </Button>
+                      </Stack>
+                    </StyledPrint>
+                  )}
+                </>
+              )}
+              {collapse && (
+                <>
+                  <StyledPrint>
+                    {isMobile && (
+                      <Stack padding="0px 0px 10px">
+                        {prospectProducts?.some(
+                          (product) => product.extraordinaryInstallments
+                        ) && (
+                            <Button
+                              type="button"
+                              appearance="primary"
+                              spacing="compact"
+                              variant="outlined"
+                              fullwidth
+                              iconBefore={
+                                <Icon
+                                  icon={<MdOutlinePayments />}
+                                  appearance="primary"
+                                  size="18px"
+                                  spacing="narrow"
+                                />
+                              }
+                              onClick={() => handleOpenModal("extraPayments")}
+                            >
+                              {tittleOptions.titleExtraPayments}
+                            </Button>
+                          )}
+                      </Stack>
+                    )}
+                  </StyledPrint>
+                </>
+              )}
+              {collapse && (
+                <>
+                  {isMobile && (
+                    <StyledPrint>
+                      <Stack justifyContent="end">
+                        <StyledContainerIcon>
                           <Icon
-                            icon={<MdOutlineAdd />}
-                            appearance="light"
-                            size="18px"
-                            spacing="narrow"
-                          />
-                        }
-                      >
-                        {tittleOptions.titleAddProduct}
-                      </Button>
-                    </Stack>
-                  )}
-                </>
-              )}
-              {collapse && (
-                <>
-                  {isMobile && (
-                    <Stack padding="0px 0px 10px">
-                      {prospectProducts?.some(
-                        (product) => product.extraordinaryInstallments
-                      ) && (
-                          <Button
-                            type="button"
+                            icon={<MdOutlinePictureAsPdf />}
                             appearance="primary"
-                            spacing="compact"
-                            variant="outlined"
-                            fullwidth
-                            iconBefore={
-                              <Icon
-                                icon={<MdOutlinePayments />}
-                                appearance="primary"
-                                size="18px"
-                                spacing="narrow"
-                              />
-                            }
-                            onClick={() => handleOpenModal("extraPayments")}
-                          >
-                            {tittleOptions.titleExtraPayments}
-                          </Button>
-                        )}
-                    </Stack>
-                  )}
-                </>
-              )}
-              {collapse && (
-                <>
-                  {isMobile && (
-                    <Stack justifyContent="end">
-                      <StyledContainerIcon>
-                        <Icon
-                          icon={<MdOutlinePictureAsPdf />}
-                          appearance="primary"
-                          size="24px"
-                          disabled={isPrint}
-                          cursorHover
-                          onClick={print}
-                        />
-                        <Icon
-                          icon={<MdOutlineShare />}
-                          appearance="primary"
-                          size="24px"
-                          cursorHover
-                          onClick={async () => await generateAndSharePdf()}
-                        />
-                        <Icon
-                          icon={<MdOutlineMoreVert />}
-                          appearance="primary"
-                          size="24px"
-                          cursorHover
-                          onClick={() => setShowMenu(!showMenu)}
-                        />
-                        {showMenu && (
-                          <MenuProspect
-                            options={menuOptions(
-                              handleOpenModal,
-                              !prospectProducts?.some(
-                                (product) => product.extraordinaryInstallments
-                              )
-                            )}
+                            size="24px"
+                            disabled={isPrint}
+                            cursorHover
+                            onClick={print}
                           />
-                        )}
-                      </StyledContainerIcon>
-                    </Stack>
+                          <Icon
+                            icon={<MdOutlineShare />}
+                            appearance="primary"
+                            size="24px"
+                            cursorHover
+                            onClick={async () => await generateAndSharePdf()}
+                          />
+                          <Icon
+                            icon={<MdOutlineMoreVert />}
+                            appearance="primary"
+                            size="24px"
+                            cursorHover
+                            onClick={() => setShowMenu(!showMenu)}
+                          />
+                          {showMenu && (
+                            <MenuProspect
+                              options={menuOptions(
+                                handleOpenModal,
+                                prospectProducts?.some(
+                                  (product) => product.extraordinaryInstallments
+                                )
+                              )}
+                            />
+                          )}
+                        </StyledContainerIcon>
+                      </Stack>
+                    </StyledPrint>
                   )}
                 </>
               )}
-              {collapse && <Stack>{isMobile && <Divider />}</Stack>}
-              {collapse && (
+              <StyledContainerDiverProspect>
+                {collapse && <Stack>{isMobile && <Divider />}</Stack>}
+              </StyledContainerDiverProspect>
+               {collapse && (
                 <CreditProspect
                   key={refreshKey}
                   borrowersProspect={borrowersProspect}
                   borrowerOptions={borrowerOptions}
                   selectedIndex={selectedIndex}
-                  dataProspect={dataProspect}
+                  dataProspect={dataProspect[0]}
                   selectedBorrower={selectedBorrower}
                   incomeData={incomeData}
                   isMobile={isMobile}
@@ -786,21 +869,36 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   generateAndSharePdf={generateAndSharePdf}
                   setDataProspect={setDataProspect}
                   creditRequestCode={creditRequestCode}
+                  availableEditCreditRequest={availableEditCreditRequest}
+                  openModal={openModal}
+                  setOpenModal={setOpenModal}
+                  currentModal={currentModal}
+                  handleOpenModal={handleOpenModal}
+                  handleCloseModal={handleCloseModal}
                   onProspectUpdate={(prospect) => {
                     setLocalProspectData(prospect);
-                    setRefreshKey(prev => prev + 1);
+                    setRefreshKey((prev) => prev + 1);
                   }}
                 />
-              )}
+              )} 
             </Stack>
             {currentModal === "creditLimit" && (
               <CreditLimitModal
                 isMobile={isMobile}
                 handleClose={handleCloseModal}
-                setRequestValue={() => { }}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
-                dataMaximumCreditLimitService={dataMaximumCreditLimitService}
+                dataMaximumCreditLimitService={{
+                  ...dataMaximumCreditLimitService,
+                  lineOfCreditAbbreviatedName: "creditLineTxt",
+                }}
+                setError={setError}
+                setLoading={setLoading}
+                error={error}
+                loading={loading}
+                incomeData={incomeData}
+                moneyDestination={data.moneyDestinationAbreviatedName}
+                setRequestValue={setRequestValue}
               />
             )}
             {currentModal === "IncomeModal" && (
@@ -808,12 +906,13 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 borrowersProspect={borrowersProspect}
                 borrowerOptions={borrowerOptions}
                 selectedIndex={selectedIndex}
-                dataProspect={dataProspect}
+                dataProspect={dataProspect[0]}
                 selectedBorrower={selectedBorrower}
                 isMobile={isMobile}
                 handleCloseModal={handleCloseModal}
                 handleChange={handleChangeIncome}
                 setOpenModal={setOpenModal}
+                availableEditCreditRequest={availableEditCreditRequest}
               />
             )}
             {currentModal === "reportCreditsModal" && (
@@ -826,6 +925,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 creditRequestCode={creditRequestCode}
                 businessManagerCode={businessManagerCode}
+                availableEditCreditRequest={availableEditCreditRequest}
               />
             )}
             {currentModal === "extraPayments" && (
@@ -838,6 +938,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 creditRequestCode={creditRequestCode}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
+                availableEditCreditRequest={availableEditCreditRequest}
               />
             )}
             {openModal === "IncomeModalEdit" && (
@@ -850,21 +951,25 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 creditRequestCode={creditRequestCode}
                 businessManagerCode={businessManagerCode}
+                borrowerOptions={borrowerOptions}
               />
             )}
             {currentModal === "disbursementModal" && (
-              <DisbursementModal
-                isMobile={isMobile}
+              <DisbursementFlowManager
+                dataDefault={dataDefault}
                 handleClose={handleCloseModal}
-                loading={loading}
-                data={{
-                  internal: internal || dataDefault,
-                  external: external || dataDefault,
-                  CheckEntity: checkEntity || dataDefault,
-                  checkManagementData: checkManagement || dataDefault,
-                  cash: cash || dataDefault,
-                }}
-                handleDisbursement={handleDisbursement}
+                identificationNumber={
+                  selectedBorrower?.borrowerIdentificationNumber || ""
+                }
+                initialDisbursementData={disbursementData}
+                isMobile={isMobile}
+                parentLoading={loading}
+                prospectSummaryData={prospectSummaryData}
+                modesOfDisbursement={modesOfDisbursement}
+                prospectData={prospectData}
+                businessUnitPublicCode={businessUnitPublicCode}
+                businessManagerCode={businessManagerCode}
+                creditRequestCode={creditRequestCode}
               />
             )}
             {infoModal && (
@@ -881,7 +986,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       {titlesModal.subTitle}
                     </Text>
                     <Text weight="normal" size="medium" appearance="gray">
-                      {titlesModal.description}
+                      {
+                        errorGetProspects
+                          ? infoErrorProspect.description
+                          : titlesModal.description
+                      }
                     </Text>
                   </Stack>
                 </BaseModal>

@@ -1,6 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { MdCached, MdOutlineEdit } from "react-icons/md";
-import { Stack, Text, Grid, useMediaQuery, Button } from "@inubekit/inubekit";
+import {
+  Stack,
+  Text,
+  Grid,
+  useMediaQuery,
+  Button,
+  IOption,
+} from "@inubekit/inubekit";
 
 import { incomeCardData } from "@components/cards/IncomeCard/config";
 import { CardGray } from "@components/cards/CardGray";
@@ -29,6 +36,8 @@ interface ISourceIncomeProps {
   showEdit?: boolean;
   businessUnitPublicCode?: string;
   creditRequestCode?: string;
+  borrowerOptions: IOption[];
+  setIsShowingEdit?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function SourceIncome(props: ISourceIncomeProps) {
@@ -42,6 +51,8 @@ export function SourceIncome(props: ISourceIncomeProps) {
     data,
     businessUnitPublicCode,
     creditRequestCode,
+    borrowerOptions,
+    setIsShowingEdit
   } = props;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -53,23 +64,23 @@ export function SourceIncome(props: ISourceIncomeProps) {
 
   const dataValues = data
     ? {
-        borrower_id: data.identificationNumber,
-        borrower: `${data.name} ${data.surname}`,
-        capital: [
-          (data.Leases || 0).toString(),
-          (data.Dividends ?? 0).toString(),
-          (data.FinancialIncome ?? 0).toString(),
-        ],
-        employment: [
-          (data.PeriodicSalary ?? 0).toString(),
-          (data.OtherNonSalaryEmoluments ?? 0).toString(),
-          (data.PensionAllowances ?? 0).toString(),
-        ],
-        businesses: [
-          (data.ProfessionalFees ?? 0).toString(),
-          (data.PersonalBusinessUtilities ?? 0).toString(),
-        ],
-      }
+      borrower_id: data.identificationNumber,
+      borrower: `${data.name} ${data.surname}`,
+      capital: [
+        (data.Leases || 0).toString(),
+        (data.Dividends ?? 0).toString(),
+        (data.FinancialIncome ?? 0).toString(),
+      ],
+      employment: [
+        (data.PeriodicSalary ?? 0).toString(),
+        (data.OtherNonSalaryEmoluments ?? 0).toString(),
+        (data.PensionAllowances ?? 0).toString(),
+      ],
+      businesses: [
+        (data.ProfessionalFees ?? 0).toString(),
+        (data.PersonalBusinessUtilities ?? 0).toString(),
+      ],
+    }
     : null;
 
   const [borrowerIncome, setBorrowerIncome] = useState<IIncome | null>(
@@ -101,16 +112,6 @@ export function SourceIncome(props: ISourceIncomeProps) {
 
     const body = {
       borrowerIdentificationNumber: data.identificationNumber,
-      income: {
-        dividends: data.Dividends || 0,
-        financialIncome: data.FinancialIncome || 0,
-        leases: data.Leases || 0,
-        otherNonSalaryEmoluments: data.OtherNonSalaryEmoluments || 0,
-        pensionAllowances: data.PensionAllowances || 0,
-        periodicSalary: data.PeriodicSalary || 0,
-        personalBusinessUtilities: data.PersonalBusinessUtilities || 0,
-        professionalFees: data.ProfessionalFees || 0,
-      },
       justification: "restore income",
       creditRequestCode: creditRequestCode || "",
     };
@@ -222,12 +223,17 @@ export function SourceIncome(props: ISourceIncomeProps) {
                   {incomeCardData.borrower}
                 </Text>
                 <Text type="title" size="medium">
-                  {borrowerIncome?.borrower}
+                  {borrowerOptions[0].label}
                 </Text>
               </Stack>
             )}
             {isMobile && (
-              <CardGray label="Deudor" placeHolder={borrowerIncome?.borrower} />
+              <CardGray
+                label={incomeCardData.borrower}
+                placeHolder={borrowerIncome?.borrower}
+                data={borrowerOptions[0].label}
+                apparencePlaceHolder="gray"
+              />
             )}
             <Stack
               width={!isMobile ? "end" : "auto"}
@@ -263,8 +269,15 @@ export function SourceIncome(props: ISourceIncomeProps) {
               {showEdit && (
                 <Button
                   iconBefore={<MdOutlineEdit />}
-                  onClick={() =>
-                    openModal ? openModal(true) : setIsOpenEditModal(true)
+                  onClick={() => {
+                    openModal
+                      ? openModal(true)
+                      : setIsOpenEditModal(true)
+
+                    if (isMobile && setIsShowingEdit) {
+                      setIsShowingEdit(true);
+                    }
+                  }
                   }
                 >
                   {dataReport.edit}
@@ -319,8 +332,9 @@ export function SourceIncome(props: ISourceIncomeProps) {
         <IncomeModal
           handleClose={() => setIsOpenEditModal(false)}
           disabled={false}
-          onSubmit={() => {}}
+          onSubmit={() => { }}
           businessManagerCode={businessManagerCode}
+          borrowerOptions={borrowerOptions}
         />
       )}
       {showErrorModal && (

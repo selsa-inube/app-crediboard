@@ -87,3 +87,9 @@ export const titlesModal = {
     "No cuentas con los privilegios necesarios para ejecutar esta acción.",
   textButtonNext: "Entendido",
 };
+
+export const errorMessages = {
+  patchChangeUsersByCreditRequest: {
+    description: "",
+  },
+};

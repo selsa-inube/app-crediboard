@@ -11,10 +11,12 @@ import { dataPledge } from "./config";
 interface IPledge {
   isMobile: boolean;
   initialValues: IPledges[];
+  onRetry: () => Promise<void>;
+  isLoadingPledge: boolean;
 }
 
 export function Pledge(props: IPledge) {
-  const { isMobile, initialValues } = props;
+  const { isMobile, initialValues, onRetry, isLoadingPledge } = props;
 
   const data = initialValues[0];
 
@@ -63,6 +65,7 @@ export function Pledge(props: IPledge) {
               title={dataPledge.noBorrowersTitle}
               description={dataPledge.noBorrowersDescription}
               buttonDescription={dataPledge.retry}
+              onRetry={isLoadingPledge ? undefined : onRetry}
             />
           </Stack>
         )}

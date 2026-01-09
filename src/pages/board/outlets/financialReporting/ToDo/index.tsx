@@ -1,13 +1,14 @@
-import { useState, useEffect, ChangeEvent, useContext, useRef } from "react";
+import { useState, useEffect, ChangeEvent, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { MdOutlineInfo } from "react-icons/md";
 import {
   Stack,
   Icon,
   Text,
-  SkeletonLine,
   Select,
   Button,
+  Input,
+  useMediaQuery,
 } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
@@ -22,13 +23,13 @@ import {
 } from "@services/creditRequest/query/types";
 import { getToDoByCreditRequestId } from "@services/creditRequest/query/getToDoByCreditRequestId";
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
-import { truncateTextToMaxLength } from "@utils/formatData/text";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { AppContext } from "@context/AppContext";
 import { useEnums } from "@hooks/useEnums";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { BaseModal } from "@components/modals/baseModal";
+import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -65,39 +66,29 @@ function ToDo(props: ToDoProps) {
   const [taskDecisions, setTaskDecisions] = useState<ITaskDecisionOption[]>([]);
   const [selectedDecision, setSelectedDecision] =
     useState<ITaskDecisionOption | null>(null);
-  const [loading, setLoading] = useState(true);
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
   const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
+
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
     analyst: "",
   });
   const [tempStaff, setTempStaff] = useState(assignedStaff);
+
   const [decisionValue, setDecisionValue] = useState({
     decision: "",
   });
-  const [maxCharacters, setMaxCharacters] = useState(30);
 
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
+  const isSmall = useMediaQuery("(max-width: 880px)");
+  const isMedium = useMediaQuery("(max-width: 1200px)");
 
-      if (width <= 880) {
-        setMaxCharacters(30);
-      } else if (width <= 1200) {
-        setMaxCharacters(10);
-      } else {
-        setMaxCharacters(30);
-      }
-    };
-
-    handleResize();
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const maxCharacters = (() => {
+    if (isSmall) return 30;
+    if (isMedium) return 10;
+    return 30;
+  })();
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
@@ -137,7 +128,7 @@ function ToDo(props: ToDoProps) {
   useEffect(() => {
     const fetchToDoData = async () => {
       if (!requests?.creditRequestId) return;
-      setLoading(true);
+
       try {
         const data = await getToDoByCreditRequestId(
           businessUnitPublicCode,
@@ -153,8 +144,6 @@ function ToDo(props: ToDoProps) {
           id: "Management",
           message: (error as Error).message.toString(),
         });
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -167,91 +156,10 @@ function ToDo(props: ToDoProps) {
   ]);
 
   useEffect(() => {
-    if (taskData?.usersByCreditRequestResponse) {
-      const formattedStaff = taskData.usersByCreditRequestResponse.map(
-        (staffMember: IStaff) => ({
-          ...staffMember,
-          userName: capitalizeFirstLetterEachWord(staffMember.userName),
-        })
-      );
-      setStaff(formattedStaff);
+    const fetchDecisions = async () => {
+      if (!requests?.creditRequestId || taskDecisions.length > 0 || !taskData)
+        return;
 
-      const firstAccountManager = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAccountManag"
-      );
-
-      const firstAnalyst = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAnalyst"
-      );
-
-      const newStaffState = {
-        commercialManager: firstAccountManager?.userName || "",
-        analyst: firstAnalyst?.userName || "",
-      };
-
-      setAssignedStaff(newStaffState);
-      setTempStaff(newStaffState);
-    }
-  }, [taskData]);
-
-  const handleRetry = async () => {
-    setLoading(true);
-    if (requests?.creditRequestId) {
-      try {
-        const data = await getToDoByCreditRequestId(
-          businessUnitPublicCode,
-          businessManagerCode,
-          requests.creditRequestId
-        );
-        setTaskData(data);
-      } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  const handleToggleStaffModal = () => setShowStaffModal((prev) => !prev);
-
-  const handleSelectOfficial =
-    (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.innerText;
-      setTempStaff((prev) => ({ ...prev, [key]: value }));
-    };
-
-  const onChangeDecision = (name: string, newValue: string) => {
-    setDecisionValue({ ...decisionValue, [name]: newValue });
-
-    const selected = taskDecisions.find(
-      (decision) => decision.value === newValue
-    );
-    setSelectedDecision(selected || null);
-  };
-
-  const handleSubmit = () => {
-    setAssignedStaff(tempStaff);
-    handleToggleStaffModal();
-  };
-
-  const handleSend = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-  const isFetching = useRef(false);
-
-  const handleSelectOpen = async () => {
-    if (isFetching.current) return;
-    isFetching.current = true;
-    setLoading(true);
-    if (requests?.creditRequestId) {
       try {
         const decision = await getSearchDecisionById(
           businessUnitPublicCode,
@@ -275,11 +183,94 @@ function ToDo(props: ToDoProps) {
           id: "Management",
           message: (error as Error).message.toString(),
         });
-      } finally {
-        setLoading(false);
-        isFetching.current = false;
+      }
+    };
+
+    fetchDecisions();
+  }, [
+    requests?.creditRequestId,
+    taskData,
+    businessUnitPublicCode,
+    businessManagerCode,
+    lang,
+    taskDecisions.length,
+  ]);
+
+  useEffect(() => {
+    if (taskData?.usersByCreditRequestResponse) {
+      const formattedStaff = taskData.usersByCreditRequestResponse.map(
+        (staffMember: IStaff) => ({
+          ...staffMember,
+          userName: capitalizeFirstLetterEachWord(staffMember.userName),
+        })
+      );
+      setStaff(formattedStaff);
+
+      const firstAccountManager = formattedStaff.find(
+        (staffMember) => staffMember.role === "CredicarAccountManager"
+      );
+
+      const firstAnalyst = formattedStaff.find(
+        (staffMember) => staffMember.role === "CredicarAnalyst"
+      );
+
+      const newStaffState = {
+        commercialManager: firstAccountManager?.userName || "",
+        analyst: firstAnalyst?.userName || "",
+      };
+
+      setAssignedStaff(newStaffState);
+      setTempStaff(newStaffState);
+    }
+  }, [taskData]);
+
+  const handleRetry = async () => {
+    if (requests?.creditRequestId) {
+      try {
+        const data = await getToDoByCreditRequestId(
+          businessUnitPublicCode,
+          businessManagerCode,
+          requests.creditRequestId
+        );
+        setTaskData(data);
+      } catch (error) {
+        console.error(error);
+        errorObserver.notify({
+          id: "Management",
+          message: (error as Error).message.toString(),
+        });
       }
     }
+  };
+
+  const handleToggleStaffModal = () => setShowStaffModal((prev) => !prev);
+
+  const handleSelectOfficial =
+    (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.innerText;
+      setTempStaff((prev) => ({ ...prev, [key]: value }));
+    };
+
+  const onChangeDecision = (_: string, newValue: string) => {
+    setDecisionValue({ decision: newValue });
+
+    const selected = taskDecisions.find(
+      (decision) => decision.value === newValue
+    );
+    setSelectedDecision(selected || null);
+  };
+
+  const handleSubmit = () => {
+    setAssignedStaff(tempStaff);
+    handleToggleStaffModal();
+  };
+
+  const handleSend = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   const validationId = () => {
@@ -298,7 +289,7 @@ function ToDo(props: ToDoProps) {
       justification: "",
     },
     businessUnit: businessUnitPublicCode,
-    user: userAccount,
+    user: eventData.user.identificationDocumentNumber || "",
     xAction: getXAction(
       selectedDecision?.code || selectedDecision?.label.split(":")[0] || "",
       validationId()
@@ -307,28 +298,47 @@ function ToDo(props: ToDoProps) {
       selectedDecision?.originalLabel || selectedDecision?.label || "",
   };
 
-  const taskRole = taskPrs.find((t) => t.Code === taskData?.taskToBeDone)?.Role;
+  const taskRole = useMemo(
+    () => taskPrs.find((t) => t.Code === taskData?.taskToBeDone)?.Role,
+    [taskData?.taskToBeDone]
+  );
 
-  const getTaskLabel = (code: string): string => {
-    const task = taskPrs.find((t) => t.Code === code);
-    return task ? `${task.Value}` : code;
-  };
+  const taskLabel = useMemo(() => {
+    if (!taskData?.taskToBeDone) return errorMessagge;
+
+    const matchedTask = taskPrs.find(
+      (taskItem) => taskItem.Code === taskData.taskToBeDone
+    );
+
+    return matchedTask ? `${matchedTask.Value}` : taskData.taskToBeDone;
+  }, [taskData?.taskToBeDone]);
 
   const handleInfo = () => {
     setIsModalInfo(true);
   };
+
   const { disabledButton: reassignCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("reassignCreditApplication"),
   });
+
   useEffect(() => {
     setHasPermitSend(
       staff.some(
         (s) =>
-          s.role === taskRole?.substring(0, 20) &&
-          s.userId === eventData?.user?.staff?.staffId
+          s.role === taskRole && s.userId === eventData?.user?.staff?.staffId
       )
     );
   }, [staff, eventData, taskData, taskRole]);
+
+  const hasSingleDecision = taskDecisions.length === 1;
+
+  useEffect(() => {
+    if (hasSingleDecision && !decisionValue.decision && taskDecisions[0]) {
+      setDecisionValue({ decision: taskDecisions[0].value });
+      setSelectedDecision(taskDecisions[0]);
+    }
+  }, [hasSingleDecision, taskDecisions, decisionValue.decision]);
+
   return (
     <>
       <Fieldset
@@ -363,18 +373,12 @@ function ToDo(props: ToDoProps) {
                 </Text>
               )}
 
-              {loading ? (
-                <SkeletonLine width="100%" animated />
-              ) : (
-                <Text
-                  size={isMobile ? "medium" : "large"}
-                  appearance={taskData?.taskToBeDone ? "dark" : "gray"}
-                >
-                  {taskData?.taskToBeDone
-                    ? getTaskLabel(taskData.taskToBeDone)
-                    : errorMessagge}
-                </Text>
-              )}
+              <Text
+                size={isMobile ? "medium" : "large"}
+                appearance={taskData?.taskToBeDone ? "dark" : "gray"}
+              >
+                {taskLabel}
+              </Text>
             </Stack>
             <Stack
               direction={isMobile ? "column" : "row"}
@@ -383,18 +387,31 @@ function ToDo(props: ToDoProps) {
               alignItems="center"
             >
               <Stack width={isMobile ? "100%" : "340px"}>
-                <Select
-                  id="toDo"
-                  name="decision"
-                  label="Decisión"
-                  value={decisionValue.decision}
-                  placeholder="Selecciona una opción"
-                  size="compact"
-                  options={taskDecisions || []}
-                  onChange={onChangeDecision}
-                  onClick={handleSelectOpen}
-                  fullwidth={isMobile}
-                />
+                {hasSingleDecision ? (
+                  <Input
+                    key="decision-input-single"
+                    id="toDo"
+                    name="decision"
+                    label="Decisión"
+                    value={taskDecisions[0]?.label || ""}
+                    size="compact"
+                    disabled
+                    fullwidth={isMobile}
+                  />
+                ) : (
+                  <Select
+                    key="decision-select-multiple"
+                    id="toDo"
+                    name="decision"
+                    label="Decisión"
+                    value={decisionValue.decision}
+                    placeholder="Selecciona una opción"
+                    size="compact"
+                    options={taskDecisions || []}
+                    onChange={onChangeDecision}
+                    fullwidth={isMobile}
+                  />
+                )}
               </Stack>
               <Stack padding="16px 0px 0px 0px" width="100%">
                 <Stack gap="2px" alignItems="center">
@@ -462,17 +479,13 @@ function ToDo(props: ToDoProps) {
                       </Text>
                     </StyledTextField>
                     <StyledTextField>
-                      <Text
+                      <TruncatedText
+                        text={assignedStaff.commercialManager}
+                        maxLength={maxCharacters}
                         type="title"
                         size="medium"
                         appearance="dark"
-                        textAlign="start"
-                      >
-                        {truncateTextToMaxLength(
-                          assignedStaff.commercialManager,
-                          maxCharacters
-                        )}
-                      </Text>
+                      />
                     </StyledTextField>
                   </Stack>
                   <StyledHorizontalDivider $isMobile={isMobile} />
@@ -491,17 +504,13 @@ function ToDo(props: ToDoProps) {
                       </Text>
                     </StyledTextField>
                     <StyledTextField>
-                      <Text
+                      <TruncatedText
+                        text={assignedStaff.analyst}
+                        maxLength={maxCharacters}
                         type="title"
                         size="medium"
                         appearance="dark"
-                        textAlign="start"
-                      >
-                        {truncateTextToMaxLength(
-                          assignedStaff.analyst,
-                          maxCharacters
-                        )}
-                      </Text>
+                      />
                     </StyledTextField>
                   </Stack>
                   <StyledHorizontalDivider $isMobile={isMobile} />

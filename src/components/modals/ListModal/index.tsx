@@ -22,7 +22,6 @@ import { validationMessages } from "@validations/validationMessages";
 import { AppContext } from "@context/AppContext";
 import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
-import { truncateTextToMaxLength } from "@utils/formatData/text";
 import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
 import { optionFlags } from "@pages/board/outlets/financialReporting/config";
 
@@ -37,6 +36,7 @@ import {
 } from "./styles";
 import { listModalData } from "./config";
 import { IDocumentUpload } from "./types";
+import { TruncatedText } from "../TruncatedTextModal";
 
 export interface IOptionButtons {
   label: string;
@@ -68,7 +68,7 @@ export interface IListModalProps {
   isViewing?: boolean;
   uploadedFiles?: IDocumentUpload[];
   onlyDocumentReceived?: boolean;
-  handleClose: () => void;
+  handleClose: (filesSaved?: boolean) => void;
   handleSubmit?: () => void;
   onSubmit?: () => void;
   setUploadedFiles?: React.Dispatch<React.SetStateAction<IDocumentUpload[]>>;
@@ -97,6 +97,10 @@ export const ListModal = (props: IListModalProps) => {
   const node = document.getElementById(portalId ?? "portal");
   if (!node) {
     throw new Error(validationMessages.errorNodo);
+  }
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
   }
   const { addFlag } = useFlag();
   const MAX_FILE_SIZE = 2.5 * 1024 * 1024;
@@ -138,7 +142,7 @@ export const ListModal = (props: IListModalProps) => {
       >
         {data?.map((element) => (
           <StyledItem key={element.id}>
-            <Text>{truncateTextToMaxLength(element.name, maxLength)}</Text>
+            <TruncatedText text={element.name} maxLength={maxLength} />
             <Icon
               icon={icon}
               appearance="dark"
@@ -245,9 +249,11 @@ export const ListModal = (props: IListModalProps) => {
   const handleUpload = async () => {
     if (uploadMode === "local") {
       console.log("Archivos guardados en estado:", uploadedFiles);
-      handleClose();
+      handleClose(false);
       return;
     }
+
+    let filesSaved = false;
 
     try {
       if (uploadedFiles!.length) {
@@ -273,10 +279,11 @@ export const ListModal = (props: IListModalProps) => {
           setUploadedFiles([]);
         }
 
-        handleClose();
+        filesSaved = true;
+
         handleFlag(
           optionFlags.title,
-          optionFlags.description,
+          optionFlags.descriptionSuccess,
           optionFlags.appearance as FlagAppearance
         );
       }
@@ -286,6 +293,8 @@ export const ListModal = (props: IListModalProps) => {
         optionFlags.description,
         optionFlags.appearanceError as FlagAppearance
       );
+    } finally {
+      handleClose(filesSaved);
     }
   };
 
@@ -295,7 +304,7 @@ export const ListModal = (props: IListModalProps) => {
         id,
         eventData.user.identificationDocumentNumber || "",
         businessUnitPublicCode,
-        businessManagerCode,
+        businessManagerCode
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);
@@ -343,7 +352,7 @@ export const ListModal = (props: IListModalProps) => {
           <Text type="headline" size="small">
             {title}
           </Text>
-          <StyledContainerClose onClick={handleClose}>
+          <StyledContainerClose onClick={() => handleClose(false)}>
             <Stack alignItems="center" gap="8px">
               <Text>Cerrar</Text>
               <Icon
@@ -400,7 +409,7 @@ export const ListModal = (props: IListModalProps) => {
               </Button>
               <input
                 type="file"
-                accept=".pdf,image/jpeg,image/jpg,image/png/JPG"
+                accept="application/pdf,image/jpeg,image/jpg,image/png"
                 style={{ display: "none" }}
                 ref={fileInputRef}
                 multiple
@@ -485,7 +494,7 @@ export const ListModal = (props: IListModalProps) => {
           </>
         ) : (
           <Stack justifyContent="flex-end" margin="16px 0 0 0" gap="16px">
-            <Button onClick={handleClose}>{buttonLabel}</Button>
+            <Button onClick={() => handleClose(false)}>{buttonLabel}</Button>
           </Stack>
         )}
         {cancelButton && optionButtons && (
@@ -498,7 +507,9 @@ export const ListModal = (props: IListModalProps) => {
             >
               {cancelButton}
             </Button>
-            <Button onClick={onSubmit ?? handleClose}>{buttonLabel}</Button>
+            <Button onClick={onSubmit ?? (() => handleClose(false))}>
+              {buttonLabel}
+            </Button>
           </Stack>
         )}
         {selectedFile && open && (

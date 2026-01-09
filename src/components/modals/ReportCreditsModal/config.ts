@@ -48,4 +48,11 @@ export const configSelect = {
 
 export const restoreData = {
   justification: "Restore financial obligations",
+  label: "Restaurar",
 };
+
+export const errorMessages = {
+  updateProspect: {
+    description: "No se pudieron restaurar las obligaciones financieras.",
+  }
+}

@@ -146,12 +146,73 @@ export const Requirements = (props: IRequirementsProps) => {
           HUMAN_VALIDATION: {},
         };
 
+        const systemVals: Record<
+          string,
+          {
+            observations: string;
+            toggleChecked: boolean;
+            labelText: string;
+          }
+        > = {};
+
+        const documentVals: Record<
+          string,
+          {
+            answer: string;
+            observations: string;
+            selectedDocuments?: DocumentItem[];
+          }
+        > = {};
+
+        const humanVals: Record<
+          string,
+          {
+            answer: string;
+            observations: string;
+          }
+        > = {};
+
+        const typeCounters = {
+          SYSTEM_VALIDATION: 0,
+          DOCUMENT: 0,
+          HUMAN_VALIDATION: 0,
+        };
+
+        const getAnswerFromStatus = (status: string): string => {
+          if (!status) return "";
+          const passedStatuses = [
+            "PASSED_WITH_SYSTEM_VALIDATION",
+            "DOCUMENT_STORED_WITHOUT_VALIDATION",
+            "PASSED_WITH_HUMAN_VALIDATION",
+            "DOCUMENT_VALIDATED_BY_THE_USER",
+            "IGNORED_BY_THE_USER",
+            "PASSED_HUMAN_VALIDATION",
+            "DOCUMENT_STORED_AND_VALIDATED",
+            "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
+            "DOCUMENT_IGNORED_BY_THE_USER",
+          ];
+
+          const failedStatuses = [
+            "FAILED_SYSTEM_VALIDATION",
+            "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
+            "FAILED_DOCUMENT_VALIDATION",
+            "FAILED_HUMAN_VALIDATION",
+          ];
+
+          if (passedStatuses.includes(status)) {
+            return "Cumple"; 
+          } else if (failedStatuses.includes(status)) {
+            return "No Cumple"; 
+          }
+
+          return ""; 
+        };
+
         data.forEach((item) => {
           item.requirementsByPackage.forEach((req) => {
             const type = req.typeOfRequirementToEvaluate;
             const key = req.descriptionUse;
             const value = req.requirementStatus;
-
             if (
               type &&
               key &&
@@ -160,8 +221,51 @@ export const Requirements = (props: IRequirementsProps) => {
               (mapped as MappedRequirements)[type as RequirementType][key] =
                 value;
             }
+            if (type === "SYSTEM_VALIDATION") {
+              typeCounters.SYSTEM_VALIDATION += 1;
+              const entryId = `sistema-${typeCounters.SYSTEM_VALIDATION}`;
+              const answer = getAnswerFromStatus(req.requirementStatus || "");
+
+              systemVals[entryId] = {
+                observations:
+                  req.statusChangeJustification ||
+                  req.descriptionEvaluationRequirement ||
+                  "",
+                toggleChecked: answer === "Cumple",
+                labelText: answer, 
+              };
+            } else if (type === "DOCUMENT") {
+              typeCounters.DOCUMENT += 1;
+              const entryId = `documento-${typeCounters.DOCUMENT}`;
+              const answer = getAnswerFromStatus(req.requirementStatus || "");
+
+              documentVals[entryId] = {
+                answer: answer,
+                observations:
+                  req.statusChangeJustification ||
+                  req.descriptionEvaluationRequirement ||
+                  "",
+                selectedDocuments: [],
+              };
+            } else if (type === "HUMAN_VALIDATION") {
+              typeCounters.HUMAN_VALIDATION += 1;
+              const entryId = `humano-${typeCounters.HUMAN_VALIDATION}`;
+              const answer = getAnswerFromStatus(req.requirementStatus || "");
+
+              humanVals[entryId] = {
+                answer: answer, 
+                observations:
+                  req.statusChangeJustification ||
+                  req.descriptionEvaluationRequirement ||
+                  "",
+              };
+            }
           });
         });
+
+        setApprovalSystemValues(systemVals);
+        setApprovalDocumentValues(documentVals);
+        setApprovalHumanValues(humanVals);
 
         const processedEntries = maperEntries(mapped);
         const processedRequirements = maperDataRequirements(processedEntries);
@@ -196,7 +300,9 @@ export const Requirements = (props: IRequirementsProps) => {
 
     const label = isValidElement(entry?.tag) ? entry?.tag?.props?.label : "";
 
-    if (label === "Cumple") {
+    if (label === "Sin Evaluar") {
+      isDisabled = true;
+    } else if (label === "Cumple") {
       isDisabled = false;
     } else {
       if (tableId === "tableApprovalSystem") {
@@ -343,7 +449,10 @@ export const Requirements = (props: IRequirementsProps) => {
   >({});
 
   useEffect(() => {
-    if (rawRequirements.length > 0) {
+    if (
+      rawRequirements.length > 0 &&
+      rawRequirements[0]?.requirementsByPackage
+    ) {
       const map: Record<string, string> = {};
       const typeCounters = { sistema: 0, documento: 0, humano: 0 };
 
@@ -369,6 +478,59 @@ export const Requirements = (props: IRequirementsProps) => {
   const { disabledButton: canAddRequirements } = useValidateUseCase({
     useCase: getUseCaseValue("canAddRequirements"),
   });
+
+  let hasEntriesRequirements = [];
+  hasEntriesRequirements = dataRequirements.filter(
+    (item) => item.entriesRequirements.length >= 1
+  );
+  const refreshRequirementsData = async () => {
+    try {
+      if (!creditRequestCode) return;
+
+      const data = await getAllPackagesOfRequirementsById(
+        businessUnitPublicCode,
+        businessManagerCode,
+        creditRequestCode
+      );
+      setRawRequirements(data);
+
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error("No hay requisitos disponibles.");
+      }
+
+      const mapped: MappedRequirements = {
+        credit_request_id: data[0].uniqueReferenceNumber,
+        SYSTEM_VALIDATION: {},
+        DOCUMENT: {},
+        HUMAN_VALIDATION: {},
+      };
+
+      data.forEach((item) => {
+        item.requirementsByPackage.forEach((req) => {
+          const type = req.typeOfRequirementToEvaluate;
+          const key = req.descriptionUse;
+          const value = req.requirementStatus;
+
+          if (
+            type &&
+            key &&
+            Object.prototype.hasOwnProperty.call(mapped, type)
+          ) {
+            (mapped as MappedRequirements)[type as RequirementType][key] =
+              value;
+          }
+        });
+      });
+
+      const processedEntries = maperEntries(mapped);
+      const processedRequirements = maperDataRequirements(processedEntries);
+      setDataRequirements(processedRequirements);
+    } catch (error) {
+      console.error("Error refreshing requirements:", error);
+    }
+  };
+
+
   return (
     <>
       <Fieldset
@@ -383,7 +545,7 @@ export const Requirements = (props: IRequirementsProps) => {
         hasError={error ? true : false}
         hasOverflow={isMobile}
       >
-        {error ? (
+        {hasEntriesRequirements.length === 0 ? (
           <ItemNotFound
             image={userNotFound}
             title={errorMessages.Requirements.title}
@@ -482,21 +644,20 @@ export const Requirements = (props: IRequirementsProps) => {
         selectedTableId === "tableApprovalSystem" &&
         selectedEntryId && (
           <SystemValidationApprovalModal
-            initialValues={
-              approvalSystemValues[selectedEntryId] || {
-                observations: "",
-                toggleChecked: false,
-                labelText: "",
-              }
-            }
+            initialValues={{
+              observations: "",
+              toggleChecked: false,
+              labelText: "",
+            }}
             onCloseModal={() => setShowAprovalsModal(false)}
             isMobile={isMobile}
-            onConfirm={(values) =>
+            onConfirm={async (values) => {
               setApprovalSystemValues((prev) => ({
                 ...prev,
                 [selectedEntryId]: values,
-              }))
-            }
+              }));
+              await refreshRequirementsData();
+            }}
             questionToBeAskedInModal={(() => {
               const entry = dataRequirements
                 .find((table) => table.id === "tableApprovalSystem")
@@ -526,12 +687,10 @@ export const Requirements = (props: IRequirementsProps) => {
         selectedTableId === "tableDocumentValues" &&
         selectedEntryId && (
           <DocumentValidationApprovalModal
-            initialValues={
-              approvalDocumentValues[selectedEntryId] || {
-                answer: "",
-                observations: "",
-              }
-            }
+            initialValues={{
+              answer: "",
+              observations: "",
+            }}
             title={
               dataRequirements
                 .find((table) => table.id === "tableDocumentValues")
@@ -545,12 +704,13 @@ export const Requirements = (props: IRequirementsProps) => {
             businessUnitPublicCode={businessUnitPublicCode}
             user={user}
             isMobile={isMobile}
-            onConfirm={(values) =>
+            onConfirm={async (values) => {
               setApprovalDocumentValues((prev) => ({
                 ...prev,
                 [selectedEntryId]: values,
-              }))
-            }
+              }));
+              await refreshRequirementsData();
+            }}
             seenDocuments={seenDocuments}
             setSeenDocuments={setSeenDocuments}
             entryId={selectedEntryId}
@@ -563,20 +723,19 @@ export const Requirements = (props: IRequirementsProps) => {
         selectedTableId === "tableApprovalHuman" &&
         selectedEntryId && (
           <HumanValidationApprovalModal
-            initialValues={
-              approvalHumanValues[selectedEntryId] || {
-                answer: "",
-                observations: "",
-              }
-            }
+            initialValues={{
+              answer: "",
+              observations: "",
+            }}
             onCloseModal={toggleAprovalsModal}
             isMobile={isMobile}
-            onConfirm={(values) =>
+            onConfirm={async (values) => {
               setApprovalHumanValues((prev) => ({
                 ...prev,
                 [selectedEntryId]: values,
-              }))
-            }
+              }));
+              await refreshRequirementsData();
+            }}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
             entryId={selectedEntryId}

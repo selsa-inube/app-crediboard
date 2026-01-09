@@ -19,6 +19,7 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { Fieldset } from "@components/data/Fieldset";
 import { getCreditLimitByCreditRiskAnalysis } from "@services/creditLimit/getCreditLimitByCreditRiskAnalysis";
 import { IMaximumCreditLimitAnalysis } from "@services/creditLimit/types";
+import { ScrollableContainer } from "@pages/prospect/components/AddProductModal/styles";
 
 import { frcConfig } from "./FrcConfig";
 import { StyledExpanded } from "./styles";
@@ -31,6 +32,14 @@ export interface ScoreModalProps {
   loading?: boolean;
 }
 
+type InfoModalType =
+  | "intercept"
+  | "seniority"
+  | "centralRisk"
+  | "employmentStability"
+  | "maritalStatus"
+  | "economicActivity";
+
 export const ScoreModal = (props: ScoreModalProps) => {
   const {
     handleClose,
@@ -42,6 +51,8 @@ export const ScoreModal = (props: ScoreModalProps) => {
 
   const isMobile = useMediaQuery("(max-width: 700px)");
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [currentInfoType, setCurrentInfoType] =
+    useState<InfoModalType>("intercept");
   const [isExpanded, setIsExpanded] = useState(false);
 
   const [error, setError] = useState(false);
@@ -77,6 +88,15 @@ export const ScoreModal = (props: ScoreModalProps) => {
     fetchData();
   }, [businessUnitPublicCode, businessManagerCode, clientIdentificationNumber]);
 
+  const handleInfoClick = (type: InfoModalType) => {
+    setCurrentInfoType(type);
+    setShowInfoModal(true);
+  };
+
+  const getInfoText = () => {
+    return frcConfig.infoTexts[currentInfoType];
+  };
+
   return (
     <BaseModal
       title={frcConfig.title}
@@ -87,7 +107,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
       width={isMobile ? "290px" : "500px"}
     >
       {error ? (
-        <Stack direction="column" alignItems="center">
+        <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
             {frcConfig.error.title}
@@ -97,7 +117,8 @@ export const ScoreModal = (props: ScoreModalProps) => {
           </Text>
         </Stack>
       ) : (
-        <Stack direction="column" gap="16px">
+        <ScrollableContainer $smallScreen={isMobile} $height={isMobile ? "440px" : "auto"}>
+        <Stack direction="column" gap="16px" padding="0 10px 0 0">
           <Stack direction="column" gap="12px">
             <Stack alignItems="center" justifyContent="space-between">
               <Stack gap="8px">
@@ -112,21 +133,21 @@ export const ScoreModal = (props: ScoreModalProps) => {
                 </Text>
               </Stack>
               <Stack alignItems="center">
-                <Text
-                  type="body"
-                  weight="bold"
-                  size="medium"
-                  appearance="primary"
-                >
-                  {dataMaximumCreditLimitReciprocity.creditRiskScore}
-                </Text>
                 {loading ? (
                   <SkeletonLine width="70px" animated={true} />
                 ) : (
-                  <Text type="body" size="medium">
-                    {frcConfig.totalScoreMax}
+                  <Text
+                    type="body"
+                    weight="bold"
+                    size="medium"
+                    appearance="primary"
+                  >
+                    {dataMaximumCreditLimitReciprocity.creditRiskScore || 0}
                   </Text>
                 )}
+                <Text type="body" size="medium">
+                  {frcConfig.totalScoreMax}
+                </Text>
                 <StyledExpanded $expanded={isExpanded}>
                   <Icon
                     icon={<MdExpandMore />}
@@ -156,7 +177,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("intercept")}
                           cursorHover
                         />
                       </Stack>
@@ -179,7 +200,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("seniority")}
                           cursorHover
                         />
                       </Stack>
@@ -202,7 +223,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("centralRisk")}
                           cursorHover
                         />
                       </Stack>
@@ -225,7 +246,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("employmentStability")}
                           cursorHover
                         />
                       </Stack>
@@ -248,7 +269,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("maritalStatus")}
                           cursorHover
                         />
                       </Stack>
@@ -271,7 +292,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                           icon={<MdInfoOutline />}
                           appearance="primary"
                           size="14px"
-                          onClick={() => setShowInfoModal(true)}
+                          onClick={() => handleInfoClick("economicActivity")}
                           cursorHover
                         />
                       </Stack>
@@ -352,14 +373,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
           <Fieldset>
             <Stack alignItems="center" direction="column" gap="8px">
               {loading ? (
-                <Text
-                  appearance="primary"
-                  weight="bold"
-                  type="headline"
-                  size="large"
-                >
-                  {frcConfig.loading}
-                </Text>
+                <SkeletonLine height="50px" width="250px" animated />
               ) : (
                 <Text
                   appearance="primary"
@@ -369,7 +383,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
                 >
                   $
                   {currencyFormat(
-                    dataMaximumCreditLimitReciprocity.totalPortfolioObligation,
+                    dataMaximumCreditLimitReciprocity.totalPortfolioObligation | 0,
                     false
                   )}
                 </Text>
@@ -383,16 +397,17 @@ export const ScoreModal = (props: ScoreModalProps) => {
           </Fieldset>
           {showInfoModal && (
             <BaseModal
-              title="Información"
-              nextButton="Entendido"
+              title={frcConfig.infoModal.title}
+              nextButton={frcConfig.infoModal.button}
               handleClose={() => setShowInfoModal(false)}
               handleNext={() => setShowInfoModal(false)}
               width={isMobile ? "290px" : "500px"}
             >
-              <Text>{frcConfig.loremIpsum}</Text>
+              <Text>{getInfoText()}</Text>
             </BaseModal>
           )}
         </Stack>
+        </ScrollableContainer>
       )}
     </BaseModal>
   );

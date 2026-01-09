@@ -7,9 +7,13 @@ interface IStyledCollapseIcon {
   $isTablet: boolean;
 }
 
+interface IStyledLogo {
+  onTheFooter: boolean;
+}
+
 export const StyledAppPage = styled.div`
-  display: inherit;
-  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
 `;
 
 export const StyledCardsContainer = styled.div`
@@ -28,27 +32,33 @@ export const StyledUserImage = styled.img`
 `;
 
 export const StyledContainer = styled.div`
-  display: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow: hidden;
 `;
 
 export const StyledMain = styled.main`
-  display: flex;
-  flex-direction: column;
+  flex: 1;
   overflow-y: auto;
 `;
 
 export const StyledContentImg = styled(Link)`
-  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
-export const StyledLogo = styled.img`
-  max-width: 90px;
-  transform: translateY(-8px);
+export const StyledLogo = styled.img<IStyledLogo>`
+  max-width: 130px;
+  justify-self: center;
+  height: ${({ onTheFooter }) => (onTheFooter ? "50px" : "100%")};
+  object-fit: contain;
 `;
 
 export const StyledHeaderContainer = styled.div`
   position: relative;
+  z-index: 2;
 `;
 
 export const StyledContainerNav = styled.div`
@@ -63,6 +73,7 @@ export const StyledCollapseIcon = styled.div<IStyledCollapseIcon>`
   transform: ${({ $collapse }) =>
     $collapse ? "rotate(-90deg)" : "rotate(90deg)"};
   left: ${({ $isTablet }) => ($isTablet ? "200px" : "160px")};
+  z-index: 3;
 `;
 
 export const StyledMenuContainer = styled.div`
@@ -87,13 +98,13 @@ export const StyledMenuContainer = styled.div`
 export const StyledCollapse = styled.div`
   position: absolute;
   top: 48px;
-  z-index: 1;
+  z-index: 3;
 `;
 export const StyledFooter = styled.footer`
   margin-top: auto;
   display: flex;
   justify-content: center;
-  padding: 16px 24px;
+  padding: 6px 4px;
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N10 || inube.palette.neutral.N10};
 `;

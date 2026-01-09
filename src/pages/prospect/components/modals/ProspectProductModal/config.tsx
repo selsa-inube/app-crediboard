@@ -6,6 +6,60 @@ import {
   RateType,
 } from "@services/enum/icorebanking-vi-crediboard/schedule";
 
+export const modalTexts = {
+  titles: {
+    editProduct: "Editar producto",
+  },
+  buttons: {
+    cancel: "Cancelar",
+    confirm: "Confirmar",
+  },
+  placeholders: {
+    creditAmount: "Monto solicitado",
+    interestRate: "Ej: 0.9",
+    selectOption: "Selecciona una opción",
+    noPaymentOptions: "No hay opciones de pago disponibles",
+  },
+  labels: {
+    creditAmount: "Monto del crédito",
+    paymentMethod: "Medio de pago",
+    paymentCycle: "Ciclo de pagos",
+    firstPaymentCycle: "Primer ciclo de pago",
+    termInMonths: "Plazo en meses",
+    amortizationType: "Tipo de amortización",
+    interestRate: "Tasa de interés",
+    rateType: "Tipo de tasa",
+  },
+  messages: {
+    errors: {
+      loanAmountRange: (amount: number, from: number, to: number) => 
+        `El monto ingresado es $${amount.toLocaleString()}. Debe estar entre $${from.toLocaleString()} y $${to.toLocaleString()}`,
+      loanAmountMax: (amount: number, maxAmount: number) =>
+        `El monto ingresado es $${amount.toLocaleString()}. El máximo permitido es $${maxAmount.toLocaleString()}`,
+      loanAmountValidation: "No se pudo validar el monto del crédito",
+      loanAmountGeneric: "Error al validar el monto del crédito",
+      
+      loanTermRange: (term: number, from: number, to: number) =>
+        `El plazo ingresado es ${term} meses. Debe estar entre ${from} y ${to} meses`,
+      loanTermValidation: "No se pudo validar el plazo",
+      loanTermGeneric: "Error al validar el plazo",
+      
+      interestRateRange: (rate: number, min: number, max: number) =>
+        `La tasa ingresada es ${rate}% mensual. Debe estar entre ${min.toFixed(2)}% y ${max.toFixed(2)}% mensual`,
+      interestRateValidation: "Error al validar la tasa de interés",
+      
+      loadPaymentOptions: "Error al cargar las opciones de pago",
+      validateLoanAmount: "Error al validar el monto del crédito",
+      validateLoanTermBusiness: "El plazo no cumple con las reglas de negocio",
+      validateLoanTermRange: "El plazo debe estar dentro del rango permitido",
+      validateLoanTermOther: "Error al validar el plazo",
+      validateInterestRateBusiness: "La tasa no cumple con las reglas de negocio",
+      validateInterestRateRange: "La tasa debe estar dentro del rango permitido",
+      validateInterestRateOther: "Error al validar la tasa de interés",
+    }
+  }
+};
+
 const creditLineOptions = [
   {
     id: CreditLine.Vacation,
@@ -174,7 +228,6 @@ export const interestRateTypeMap: Record<string, string> = {
 };
 
 export const VALIDATED_NUMBER_REGEX = /[^0-9]/g;
-
 export const messagesErrorValidations = {
   loadPaymentOptions: "Error al cargar las opciones de pago",
   validateLoanAmount: "Error al validar el monto del crédito",
@@ -193,6 +246,69 @@ export const repaymentStructureMap: Record<string, string> = {
   "ArithmeticGradientRepayment": "Gradiente aritmético",
 };
 
+export const defaultPaymentOptions = [
+  {
+    id: "0",
+    value: modalTexts.placeholders.noPaymentOptions,
+    label: modalTexts.placeholders.noPaymentOptions,
+  },
+];
+export const REPAYMENT_STRUCTURES_WITH_INCREMENT = {
+  VALUE_INCREMENT: "Pagos valor de incremento",
+  PERCENTAGE_INCREMENT: "Pagos con porcentaje de incremento",
+};
+
+export const validationMessages = {
+  incrementRequired: "El valor de incremento es requerido",
+  incrementMustBePositive: "El valor debe ser mayor a 0",
+  incrementValidating: "Validando...",
+  incrementValueRange: (min: number, max: number) =>
+    `El valor debe estar entre $${min.toLocaleString()} y $${max.toLocaleString()}`,
+  incrementPercentageRange: (min: number, max: number) =>
+    `El porcentaje debe estar entre ${min}% y ${max}%`,
+  incrementValidationError: "Error al validar el incremento",
+  loanAmountOutOfRange: (amount: number, min: number, max: number) =>
+    `El monto ingresado es $${amount.toLocaleString()}. Debe estar entre $${min.toLocaleString()} y $${max.toLocaleString()}`,
+  loanAmountExceedsMax: (amount: number, max: number) =>
+    `El monto ingresado es $${amount.toLocaleString()}. El máximo permitido es $${max.toLocaleString()}`,
+  loanAmountValidationFailed: "No se pudo validar el monto del crédito",
+  loanAmountValidationError: "Error al validar el monto del crédito",
+  loanTermOutOfRange: (term: number, min: number, max: number) =>
+    `El plazo ingresado es ${term} meses. Debe estar entre ${min} y ${max} meses`,
+  loanTermValidationFailed: "No se pudo validar el plazo",
+  loanTermValidationError: "Error al validar el plazo",
+  interestRateOutOfRange: (rate: number, min: number, max: number) =>
+    `La tasa ingresada es ${rate}% mensual. Debe estar entre ${min.toFixed(2)}% y ${max.toFixed(2)}% mensual`,
+  interestRateValidationError: "Error al validar la tasa de interés",
+};
+
+export const fieldLabels = {
+  creditAmount: "Monto del crédito",
+  termInMonths: "Plazo en meses",
+  amortizationType: "Tipo de amortización",
+  incrementValue: "Valor de incremento",
+  incrementPercentage: "Porcentaje de incremento",
+  interestRate: "Tasa de interés",
+  rateType: "Tipo de tasa",
+  paymentMethod: "Método de pago",
+  paymentCycle: "Ciclo de pago",
+  firstPaymentCycle: "Primer ciclo de pago",
+  creditLine: "Línea de crédito",
+  ordinaryPayment: "Cuota ordinaria mensual",
+};
+
+export const fieldPlaceholders = {
+  incrementValue: "Ej: 50000",
+  incrementPercentage: "Ej: 5",
+  creditAmount: "Ingrese el monto",
+  interestRate: "Ingrese la tasa",
+};
+
+export const errorMessages = {
+  updateCreditProduct: {
+    description: "No se pudo actualizar el producto de crédito."
+  }
+}
 
 export {
   creditLineOptions,

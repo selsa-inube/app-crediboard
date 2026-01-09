@@ -1,8 +1,13 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Stack, useMediaQuery, Select, useFlag } from "@inubekit/inubekit";
+import {
+  Stack,
+  useMediaQuery,
+  Select,
+  useFlag,
+  Input,
+} from "@inubekit/inubekit";
 
 import { getCommercialManagerAndAnalyst } from "@services/staff/commercialManagerAndAnalyst";
 
@@ -12,9 +17,10 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IToDo } from "@services/creditRequest/query/types";
 import { ICommercialManagerAndAnalyst } from "@services/staff/types";
 import { ICreditRequests } from "@services/creditRequest/command/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { changeUsersByCreditRequest } from "./utils";
-import { txtFlags } from "../config";
+import { txtFlags, errorMessages } from "../config";
 
 export interface StaffModalProps {
   commercialManager: string;
@@ -38,6 +44,8 @@ export interface StaffModalProps {
 
 export function StaffModal(props: StaffModalProps) {
   const {
+    commercialManager,
+    analyst,
     portalId = "portal",
     onSubmit,
     onCloseModal,
@@ -57,20 +65,27 @@ export function StaffModal(props: StaffModalProps) {
     useState<ICommercialManagerAndAnalyst | null>(null);
   const [selectedAnalyst, setSelectedAnalyst] =
     useState<ICommercialManagerAndAnalyst | null>(null);
+  const [initialValues, setInitialValues] = useState({
+    commercialManager: "",
+    analyst: "",
+  });
   const isMobile = useMediaQuery("(max-width: 700px)");
+
   const [showModal, setShowModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const validationSchema = Yup.object().shape({
     commercialManager: Yup.string(),
     analyst: Yup.string(),
   });
-  const { id } = useParams();
-  const navigate = useNavigate();
+
   const { businessUnitSigla, eventData } = useContext(AppContext);
-  const { userAccount } =
-    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const { addFlag } = useFlag();
+
   const handleCommercialManagerChange = (
     name: string,
     value: string,
@@ -84,6 +99,7 @@ export function StaffModal(props: StaffModalProps) {
       setSelectedCommercialManager(selectedManager);
     }
   };
+
   const handleAnalystChange = (
     name: string,
     value: string,
@@ -101,14 +117,14 @@ export function StaffModal(props: StaffModalProps) {
       try {
         const [accountManagers, analysts] = await Promise.all([
           getCommercialManagerAndAnalyst(
-            businessManagerCode,
-            "Selsa",
-            businessUnitPublicCode
+            "CredicarAccountManager",
+            businessUnitPublicCode,
+            businessManagerCode
           ),
           getCommercialManagerAndAnalyst(
-            businessManagerCode,
-            "Selsa",
-            businessUnitPublicCode
+            "CredicarAnalyst",
+            businessUnitPublicCode,
+            businessManagerCode
           ),
         ]);
 
@@ -126,37 +142,67 @@ export function StaffModal(props: StaffModalProps) {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const { addFlag } = useFlag();
+
+  useEffect(() => {
+    if (accountManagerList.length === 1) {
+      const singleManager = accountManagerList[0];
+      setInitialValues((prev) => ({
+        ...prev,
+        commercialManager: singleManager.staffName,
+      }));
+      setSelectedCommercialManager(singleManager);
+    }
+  }, [accountManagerList]);
+
+  useEffect(() => {
+    if (analystList.length === 1) {
+      const singleAnalyst = analystList[0];
+      setInitialValues((prev) => ({
+        ...prev,
+        analyst: singleAnalyst.staffName,
+      }));
+      setSelectedAnalyst(singleAnalyst);
+    }
+  }, [analystList]);
 
   const buildCreditRequest = (
     role: string,
-    user: ICommercialManagerAndAnalyst | null
+    user: ICommercialManagerAndAnalyst | null,
+    previousUserName: string = ""
   ): ICreditRequests | null => {
     if (!user) return null;
 
+    let roleLabel = "usuario";
+
+    if (role.includes("Manager")) {
+      roleLabel = "gestor";
+    } else if (role.includes("Analyst")) {
+      roleLabel = "analista";
+    }
+
     return {
       creditRequestId: taskData?.creditRequestId || "",
-      executed_task: taskData?.taskToBeDone || "",
-      execution_date: new Date().toISOString().split("T")[0],
+      creditRequestCode: "",
+      executedTask: taskData?.taskToBeDone || "",
+      executionDate: new Date().toISOString(),
       identificationNumber: user.identificationDocumentNumber || "",
       identificationType: "C",
       role: role,
-      transactionOperation: "Insert",
-      userId: user.staffId || "",
-      userName: user.staffName || "",
-      justification: "Justificacion",
-      creditRequestCode: "",
+      justification: `Se realiza la asignación de un nuevo ${roleLabel}. Anterior: ${previousUserName || "N/A"}. Nuevo: ${user.staffName}`,
     };
   };
+  console.log(taskData);
   const handleCreditRequests = async () => {
     const managerRequest = buildCreditRequest(
-      "CredicarAccountManager".substring(0, 20),
-      selectedCommercialManager
+      "CredicarAccountManager",
+      selectedCommercialManager,
+      commercialManager
     );
 
     const analystRequest = buildCreditRequest(
       "CredicarAnalyst",
-      selectedAnalyst
+      selectedAnalyst,
+      analyst
     );
 
     try {
@@ -165,7 +211,7 @@ export function StaffModal(props: StaffModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           managerRequest,
-          userAccount
+          eventData.user.identificationDocumentNumber || ""
         );
         setAssignedStaff((prev) => ({
           ...prev,
@@ -178,7 +224,7 @@ export function StaffModal(props: StaffModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           analystRequest,
-          userAccount
+          eventData.user.identificationDocumentNumber || ""
         );
         setAssignedStaff((prev) => ({
           ...prev,
@@ -193,98 +239,134 @@ export function StaffModal(props: StaffModalProps) {
         duration: 5000,
       });
     } catch (error) {
-      addFlag({
-        title: textFlagsUsers.titleError,
-        description: textFlagsUsers.descriptionError,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setErrorMessage(
+        errorMessages.patchChangeUsersByCreditRequest.description
+      );
+      setErrorModal(true);
     } finally {
       if (onCloseModal) onCloseModal();
       handleToggleModal();
-      setTimeout(() => {
-        navigate(`/extended-card/${id}`);
-      }, 6000);
     }
   };
+
   const handleToggleModal = () => {
     if (handleRetry) {
       handleRetry();
     }
     setShowModal(!showModal);
   };
+
   const options = {
     commercialManager: accountManagerList.map((official) => ({
-      id: official.staffId,
+      id: official.identificationDocumentNumber,
       label: official.staffName,
       value: official.staffName,
       document: official.identificationDocumentNumber,
     })),
     analyst: analystList.map((official) => ({
-      id: official.staffId,
+      id: official.identificationDocumentNumber,
       label: official.staffName,
       value: official.staffName,
+      document: official.identificationDocumentNumber,
     })),
   };
+
+  const hasSingleCommercialManager = options.commercialManager.length === 1;
+  const hasSingleAnalyst = options.analyst.length === 1;
   return (
-    <Formik
-      initialValues={{ commercialManager: "", analyst: "" }}
-      validationSchema={validationSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        onSubmit?.(values);
-        setSubmitting(false);
-      }}
-    >
-      {({ setFieldValue, values }) => (
-        <Form>
-          <BaseModal
-            title={title}
-            handleNext={handleCreditRequests}
-            width={isMobile ? "280px" : "500px"}
-            handleBack={onCloseModal}
-            handleClose={onCloseModal}
-            portalId={portalId}
-            nextButton={buttonText}
-          >
-            <Stack direction="column" gap="24px">
-              <Select
-                name="commercialManager"
-                id="commercialManager"
-                label="Gestor Comercial"
-                placeholder={
-                  options.commercialManager.length > 0
-                    ? "Selecciona una opción"
-                    : "No hay gestores disponibles"
-                }
-                options={options.commercialManager}
-                onChange={(name, value) =>
-                  handleCommercialManagerChange(name, value, setFieldValue)
-                }
-                value={values.commercialManager}
-                fullwidth
-                disabled={options.commercialManager.length === 0}
-              />
-              <Select
-                name="analyst"
-                id="analyst"
-                label="Analista"
-                placeholder={
-                  options.analyst.length > 0
-                    ? "Selecciona una opción"
-                    : "No hay analistas disponibles"
-                }
-                options={options.analyst}
-                onChange={(name, value) =>
-                  handleAnalystChange(name, value, setFieldValue)
-                }
-                value={values.analyst}
-                fullwidth
-                disabled={options.analyst.length === 0}
-              />
-            </Stack>
-          </BaseModal>
-        </Form>
+    <>
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        validationSchema={validationSchema}
+        onSubmit={(values, { setSubmitting }) => {
+          onSubmit?.(values);
+          setSubmitting(false);
+        }}
+      >
+        {({ setFieldValue, values }) => (
+          <Form>
+            <BaseModal
+              title={title}
+              handleNext={handleCreditRequests}
+              width={isMobile ? "280px" : "500px"}
+              handleBack={onCloseModal}
+              handleClose={onCloseModal}
+              portalId={portalId}
+              nextButton={buttonText}
+            >
+              <Stack direction="column" gap="24px">
+                {hasSingleCommercialManager ? (
+                  <Input
+                    name="commercialManager"
+                    id="commercialManager"
+                    label="Gestor Comercial"
+                    value={options.commercialManager[0]?.label || ""}
+                    fullwidth
+                    disabled
+                  />
+                ) : (
+                  <Select
+                    name="commercialManager"
+                    id="commercialManager"
+                    label="Gestor Comercial"
+                    placeholder={
+                      options.commercialManager.length > 0
+                        ? "Selecciona una opción"
+                        : "No hay gestores disponibles"
+                    }
+                    options={options.commercialManager}
+                    onChange={(name, value) =>
+                      handleCommercialManagerChange(name, value, setFieldValue)
+                    }
+                    value={values.commercialManager}
+                    fullwidth
+                    disabled={options.commercialManager.length === 0}
+                  />
+                )}
+
+                {hasSingleAnalyst ? (
+                  <Input
+                    name="analyst"
+                    id="analyst"
+                    label="Analista"
+                    value={options.analyst[0]?.label || ""}
+                    fullwidth
+                    disabled
+                  />
+                ) : (
+                  <Select
+                    name="analyst"
+                    id="analyst"
+                    label="Analista"
+                    placeholder={
+                      options.analyst.length > 0
+                        ? "Selecciona una opción"
+                        : "No hay analistas disponibles"
+                    }
+                    options={options.analyst}
+                    onChange={(name, value) =>
+                      handleAnalystChange(name, value, setFieldValue)
+                    }
+                    value={values.analyst}
+                    fullwidth
+                    disabled={options.analyst.length === 0}
+                  />
+                )}
+              </Stack>
+            </BaseModal>
+          </Form>
+        )}
+      </Formik>
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
       )}
-    </Formik>
+    </>
   );
 }

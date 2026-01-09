@@ -9,10 +9,11 @@ export interface IDeleteModalProps {
   handleClose: () => void;
   handleDelete?: (id?: number, borrowerIdentificationNumber?: string) => void;
   iconBefore?: React.JSX.Element;
+  isSendingData?: boolean;
 }
 
 export function DeleteModal(props: IDeleteModalProps) {
-  const { handleClose, handleDelete = () => {}, TextDelete } = props;
+  const { handleClose, handleDelete = () => {}, TextDelete, isSendingData } = props;
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
@@ -25,6 +26,7 @@ export function DeleteModal(props: IDeleteModalProps) {
       handleClose={handleClose}
       initialDivider={false}
       width={isMobile ? "287px" : "402px"}
+      isSendingData={isSendingData}
     >
       <Text>{TextDelete}</Text>
     </BaseModal>

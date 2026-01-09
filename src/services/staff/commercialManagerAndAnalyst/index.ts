@@ -8,8 +8,8 @@ import { mapCommercialManagerAndAnalystEntities } from "./mappers";
 
 export const getCommercialManagerAndAnalyst = async (
   roles: string,
-  businessManagerCode: string,
-  businessUnitCode: string
+  businessUnitCode: string,
+  publicCodeBusinessManager: string
 ): Promise<ICommercialManagerAndAnalyst[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -19,8 +19,8 @@ export const getCommercialManagerAndAnalyst = async (
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const queryParams = new URLSearchParams({
         roles: roles,
-        businessUnitCode: businessUnitCode,
-        publicCodeBusinessManager: businessManagerCode,
+        businessUnitCode,
+        publicCodeBusinessManager,
       });
       const options: RequestInit = {
         method: "GET",

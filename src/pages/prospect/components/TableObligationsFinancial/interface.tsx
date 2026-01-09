@@ -24,6 +24,7 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { privilegeCrediboard } from "@config/privilege";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { usePagination } from "./utils";
 import { dataReport, ROWS_PER_PAGE } from "./config";
@@ -62,6 +63,9 @@ interface UIProps {
   gotEndPage: boolean;
   showDeleteModal: boolean;
   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  errorMessage?: string;
+  errorModal?: boolean;
 }
 
 export const TableFinancialObligationsUI = ({
@@ -82,6 +86,9 @@ export const TableFinancialObligationsUI = ({
   gotEndPage,
   showDeleteModal,
   setShowDeleteModal,
+  setErrorModal,
+  errorModal,
+  errorMessage,
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(
@@ -141,8 +148,8 @@ export const TableFinancialObligationsUI = ({
   const renderHeaders = () => {
     return visibleHeaders.map((header, index) =>
       loading ? (
-        <Td key={index} type="custom">
-          <SkeletonIcon />
+        <Td key={index} type="custom" width="100%">
+          <SkeletonIcon animated />
         </Td>
       ) : (
         <Th
@@ -160,8 +167,8 @@ export const TableFinancialObligationsUI = ({
   const renderLoadingRow = (key: number) => (
     <Tr key={key}>
       {visibleHeaders.map((_, index) => (
-        <Td key={index} type="custom">
-          <SkeletonLine />
+        <Td key={index} type="custom" width="100%">
+          <SkeletonLine animated width="100%" />
         </Td>
       ))}
     </Tr>
@@ -273,40 +280,10 @@ export const TableFinancialObligationsUI = ({
       return renderNoDataRow();
     }
 
-    const dataRows = renderDataRows();
-    const emptyRowsCount = ROWS_PER_PAGE - paginatedData.length;
-
-    if (emptyRowsCount > 0) {
-      const emptyRows = Array.from({ length: emptyRowsCount }).map(
-        (_, index) => {
-          const rowIndex = paginatedData.length + index;
-          const globalRowIndex = (currentPage - 1) * ROWS_PER_PAGE + rowIndex;
-
-          return renderEmptyRow(globalRowIndex);
-        }
-      );
-
-      return (
-        <>
-          {dataRows}
-          {emptyRows}
-        </>
-      );
-    }
-
-    return dataRows;
+    return renderDataRows();
   };
 
-  const renderEmptyRow = (rowIndex: number) => (
-    <Tr key={`empty-${rowIndex}`} border="left">
-      {visibleHeaders.map((_, colIndex) => (
-        <Td key={`empty-cell-${rowIndex}-${colIndex}`} appearance={"light"}>
-          &nbsp;
-        </Td>
-      ))}
-    </Tr>
-  );
-
+ 
   const handleDeleteModal = (itemToDelete: IDataInformationItem) => {
     setDataToDelete(itemToDelete);
     setShowDeleteModal(true);
@@ -315,7 +292,7 @@ export const TableFinancialObligationsUI = ({
   return (
     <>
       <Stack direction="column" width="100%" gap="16px">
-        <Table tableLayout="auto">
+        <Table tableLayout="fixed">
           <Thead>
             <Tr>{renderHeaders()}</Tr>
           </Thead>
@@ -409,6 +386,15 @@ export const TableFinancialObligationsUI = ({
           description={privilegeCrediboard.description}
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
+        />
+      )}
+      {errorModal && setErrorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
         />
       )}
     </>

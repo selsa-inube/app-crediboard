@@ -17,7 +17,7 @@ import { dataBaseModal } from "./config";
 import { Appearance, Variant } from "./types";
 
 export interface IBaseModalProps {
-  title: string;
+  title: string | React.ReactNode;
   children: JSX.Element | JSX.Element[];
   handleNext?: () => void;
   handleBack?: () => void;
@@ -37,6 +37,11 @@ export interface IBaseModalProps {
   initialDivider?: boolean;
   finalDivider?: boolean;
   portalId?: string;
+  $height?: string;
+  isSendingData?: boolean
+  internalWidth?: string
+  marginTop?: string;
+  marginBottom?: string;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -61,21 +66,36 @@ export function BaseModal(props: IBaseModalProps) {
     initialDivider = true,
     finalDivider = false,
     portalId = "portal",
+    $height,
+    isSendingData,
+    internalWidth,
+    marginBottom,
+    marginTop
   } = props;
 
   const node = document.getElementById(portalId ?? "portal");
   if (!node) {
     throw new Error(validationMessages.errorNodo);
   }
+  if (node) {
+    node.style.position = "relative";
+    node.style.zIndex = "3";
+  }
 
   return createPortal(
     <Blanket>
-      <StyledContainer>
+      <StyledContainer
+        $height={$height}
+        $width={width}
+        $margin={
+            `${marginTop || 0} 0 ${marginBottom || 0} 0`
+          }
+      >
         <Stack
           direction="column"
           padding="24px"
           gap="24px"
-          width={width}
+          width={internalWidth || "auto"}
           height={height}
         >
           <Stack justifyContent="space-between" alignItems="center">
@@ -120,6 +140,7 @@ export function BaseModal(props: IBaseModalProps) {
                 iconBefore={iconBeforeNext}
                 appearance={apparenceNext}
                 variant={variantNext}
+                loading={isSendingData}
               >
                 {nextButton}
               </Button>

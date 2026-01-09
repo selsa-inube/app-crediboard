@@ -12,6 +12,8 @@ export const StyledCreditProductCard = styled.div<IStyledProduct>`
   width: 217px;
   height: 414px;
   border-radius: 8px;
+  page-break-inside: avoid;
+  
   outline: 2px solid
     ${({ theme }) => theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};
   background-color: ${({ theme }) =>
@@ -19,7 +21,7 @@ export const StyledCreditProductCard = styled.div<IStyledProduct>`
   box-shadow: 0px 4px 8px 3px rgba(9, 30, 66, 0.13);
   cursor: ${({ $new }) => ($new ? "pointer" : "normal")};
   @media print {
-    height: 365px;
+    height: 335px;
   }
 `;
 export const StyledDivider = styled.hr`

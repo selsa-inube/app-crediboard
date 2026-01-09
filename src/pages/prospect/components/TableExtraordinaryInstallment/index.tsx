@@ -11,16 +11,13 @@ import {
   Th,
   Thead,
   Tr,
-  useFlag,
 } from "@inubekit/inubekit";
-
-import { ActionMobile } from "@components/feedback/ActionMobile";
 
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { IProspect } from "@services/prospect/types";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
-import { TextLabels } from "@components/modals/ExtraordinaryPaymentModal/config";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { Detail } from "./Detail";
 import {
@@ -28,6 +25,7 @@ import {
   rowsVisbleMobile,
   rowsActions,
   dataTableExtraordinaryInstallment,
+  messageError
 } from "./config";
 import { removeExtraordinaryInstallment } from "./utils";
 
@@ -40,9 +38,10 @@ export interface TableExtraordinaryInstallmentProps {
   refreshKey?: number;
   id?: string;
   setSentData?:
-    | React.Dispatch<React.SetStateAction<IExtraordinaryInstallments | null>>
-    | undefined;
+  | React.Dispatch<React.SetStateAction<IExtraordinaryInstallments | null>>
+  | undefined;
   creditRequestCode?: string | undefined;
+  availableEditCreditRequest?: boolean;
 }
 
 const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
@@ -85,8 +84,8 @@ export const TableExtraordinaryInstallment = (
     handleClose,
     setSentData,
     businessUnitPublicCode,
-    businessManagerCode,
     creditRequestCode,
+    availableEditCreditRequest
   } = props;
 
   const headers = headersTableExtraordinaryInstallment;
@@ -95,20 +94,24 @@ export const TableExtraordinaryInstallment = (
     TableExtraordinaryInstallmentProps[]
   >([]);
   const [selectedDebtor, setSelectedDebtor] =
-    useState<TableExtraordinaryInstallmentProps>({});
+    useState<TableExtraordinaryInstallmentProps>({} as TableExtraordinaryInstallmentProps);
 
   const [loading, setLoading] = useState(true);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const visbleHeaders = isMobile
     ? headers.filter((header) => rowsVisbleMobile.includes(header.key))
     : headers;
-  const visbleActions = isMobile
+
+  let visbleActions = isMobile
     ? rowsActions.filter((action) => rowsVisbleMobile.includes(action.key))
     : rowsActions;
+
+  visbleActions = availableEditCreditRequest ? visbleActions.filter((action) => action.key !== "actions") : visbleActions;
 
   const {
     totalRecords,
@@ -126,12 +129,12 @@ export const TableExtraordinaryInstallment = (
         (product) =>
           Array.isArray(product.extraordinaryInstallments)
             ? product.extraordinaryInstallments.map((installment) => ({
-                id: `${product.creditProductCode},${installment.installmentDate},${installment.paymentChannelAbbreviatedName}`,
-                datePayment: installment.installmentDate,
-                value: installment.installmentAmount,
-                paymentMethod: installment.paymentChannelAbbreviatedName,
-                creditProductCode: product.creditProductCode,
-              }))
+              id: `${product.creditProductCode},${installment.installmentDate},${installment.paymentChannelAbbreviatedName}`,
+              datePayment: installment.installmentDate,
+              value: installment.installmentAmount,
+              paymentMethod: installment.paymentChannelAbbreviatedName,
+              creditProductCode: product.creditProductCode,
+            }))
             : []
       );
       const installmentsByUniqueKey = extraordinaryInstallmentsFlat.reduce(
@@ -193,7 +196,6 @@ export const TableExtraordinaryInstallment = (
     try {
       await removeExtraordinaryInstallment(
         businessUnitPublicCode || "",
-        businessManagerCode || "",
         extraordinaryInstallments
       );
 
@@ -210,12 +212,8 @@ export const TableExtraordinaryInstallment = (
       const description =
         code + (err?.message || "") + (err?.data?.description || "");
 
-      addFlag({
-        title: TextLabels.titleError,
-        description,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setErrorMessage(`${messageError.removeExtraordinaryInstallments.description} ${description}`);
+      setErrorModal(true);
     }
   };
   return (
@@ -282,22 +280,17 @@ export const TableExtraordinaryInstallment = (
                   })()}
                 </Td>
               ))}
-              {visbleActions &&
+              {!availableEditCreditRequest &&
+                visbleActions &&
                 visbleActions.length > 0 &&
                 visbleActions.map((action) => (
                   <Td key={action.key} type="custom">
-                    {isMobile ? (
-                      <ActionMobile
-                        handleDelete={() => setIsOpenModalDelete(true)}
-                      />
-                    ) : (
-                      <Detail
-                        handleDelete={() => {
-                          setSelectedDebtor(row);
-                          setIsOpenModalDelete(true);
-                        }}
-                      />
-                    )}
+                    <Detail
+                      handleDelete={() => {
+                        setSelectedDebtor(row);
+                        setIsOpenModalDelete(true);
+                      }}
+                    />
                   </Td>
                 ))}
             </Tr>
@@ -351,6 +344,17 @@ export const TableExtraordinaryInstallment = (
           TextDelete={dataTableExtraordinaryInstallment.content}
         />
       )}
+      {
+        errorModal && (
+          <ErrorModal
+            isMobile={isMobile}
+            message={errorMessage}
+            handleClose={() => {
+              setErrorModal(false)
+            }}
+          />
+        )
+      }
     </Table>
   );
 };

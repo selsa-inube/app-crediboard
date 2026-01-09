@@ -26,6 +26,10 @@ const StyledInputsContainer = styled.div<IStyledInputsContainer>`
   padding-left: ${({ $isMobile }) => ($isMobile ? "16px" : "12px")};
   gap: 40px;
   box-shadow: ${({ $isMobile }) => !$isMobile && "0px 6px 3px -5px #00000040"};
+  background-color: #ffffff;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
 `;
 
 const getWidth = ($isMobile: boolean, $isExpanded: boolean) => {

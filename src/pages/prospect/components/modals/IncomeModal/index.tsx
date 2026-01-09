@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useFlag, useMediaQuery } from "@inubekit/inubekit";
+import { IOption, useFlag, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { SourceIncome } from "@pages/prospect/components/SourceIncome";
+import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles"
 
 import { dataIncomeModal } from "./config";
 
@@ -12,6 +13,7 @@ interface IncomeModalProps {
   disabled?: boolean;
   businessUnitPublicCode?: string;
   businessManagerCode: string;
+  borrowerOptions: IOption[];
   creditRequestCode?: string;
   handleClose: () => void;
   onSubmit: (data: IIncomeSources) => void;
@@ -25,6 +27,7 @@ export function IncomeModal(props: IncomeModalProps) {
     businessUnitPublicCode,
     creditRequestCode,
     businessManagerCode,
+    borrowerOptions,
     handleClose,
     openModal,
     onSubmit,
@@ -63,18 +66,22 @@ export function IncomeModal(props: IncomeModalProps) {
       handleBack={handleClose}
       width={isMobile ? "auto" : "1002px"}
       finalDivider={true}
+      $height={(isMobile) ? "calc(100vh - 64px)" : "auto"}
     >
-      <SourceIncome
-        ShowSupport={false}
-        disabled={disabled}
-        openModal={openModal}
-        data={initialValues}
-        showEdit={false}
-        onDataChange={handleDataChange}
-        businessUnitPublicCode={businessUnitPublicCode}
-        businessManagerCode={businessManagerCode}
-        creditRequestCode={creditRequestCode}
-      />
+      <ScrollableContainer $smallScreen={(isMobile)}>
+        <SourceIncome
+          ShowSupport={false}
+          disabled={disabled}
+          openModal={openModal}
+          data={initialValues}
+          showEdit={false}
+          onDataChange={handleDataChange}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          creditRequestCode={creditRequestCode}
+          borrowerOptions={borrowerOptions}
+        />
+      </ScrollableContainer>
     </BaseModal>
   );
 }

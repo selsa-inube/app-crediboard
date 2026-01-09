@@ -1,13 +1,15 @@
+import { useState } from "react";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Select, Stack, Text, Textarea, useFlag } from "@inubekit/inubekit";
+import { Select, Stack, Text, Textarea, Input } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
 import { BaseModal } from "@components/modals/baseModal";
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
-import { dataFlags } from "@config/components/flags/flag.config";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { IApprovalHuman } from "../types";
 import { approvalsConfig, optionsAnswer } from "./config";
@@ -16,7 +18,7 @@ interface IHumanValidationApprovalModalProps {
   isMobile: boolean;
   initialValues: IApprovalHuman;
   businessUnitPublicCode: string;
-  businessManagerCode: string,
+  businessManagerCode: string;
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
   rawRequirements: IPackagesOfRequirementsById[];
@@ -39,7 +41,8 @@ export function HumanValidationApprovalModal(
     onCloseModal,
   } = props;
 
-  const { addFlag } = useFlag();
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
@@ -106,24 +109,18 @@ export function HumanValidationApprovalModal(
         if (onCloseModal) {
           onCloseModal();
         }
-      } catch (error: unknown) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-        addFlag({
-          title: approvalsConfig.titleError,
-          description,
-          appearance: "danger",
-          duration: dataFlags.duration,
-        });
+      } catch (error) {
+        setShowErrorModal(true);
+        setMessageError(approvalsConfig.titleError);
       }
     },
   });
+
+  const hasSingleOption = optionsAnswer.length === 1;
+
+  if (hasSingleOption && !formik.values.answer) {
+    formik.setFieldValue("answer", optionsAnswer[0].value);
+  }
 
   return (
     <BaseModal
@@ -138,18 +135,30 @@ export function HumanValidationApprovalModal(
       <Stack direction="column" gap="24px">
         <Stack direction="column" gap="8px">
           <Text>{approvalsConfig.approval}</Text>
-          <Select
-            name="answer"
-            id="answer"
-            options={optionsAnswer}
-            label={approvalsConfig.answer}
-            placeholder={approvalsConfig.answerPlaceHoleder}
-            value={formik.values.answer}
-            onChange={(name, value) => formik.setFieldValue(name, value)}
-            onBlur={formik.handleBlur}
-            size="compact"
-            fullwidth
-          />
+          {hasSingleOption ? (
+            <Input
+              name="answer"
+              id="answer"
+              label={approvalsConfig.answer}
+              value={optionsAnswer[0].label}
+              disabled
+              size="compact"
+              fullwidth
+            />
+          ) : (
+            <Select
+              name="answer"
+              id="answer"
+              options={optionsAnswer}
+              label={approvalsConfig.answer}
+              placeholder={approvalsConfig.answerPlaceHoleder}
+              value={formik.values.answer}
+              onChange={(name, value) => formik.setFieldValue(name, value)}
+              onBlur={formik.handleBlur}
+              size="compact"
+              fullwidth
+            />
+          )}
         </Stack>
         <Textarea
           id="observations"
@@ -162,6 +171,15 @@ export function HumanValidationApprovalModal(
           onBlur={formik.handleBlur}
           fullwidth
         />
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
+            message={messageError}
+          />
+        )}
       </Stack>
     </BaseModal>
   );

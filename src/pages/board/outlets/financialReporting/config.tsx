@@ -142,7 +142,8 @@ export const configHandleactions = ({
 
 export const optionFlags = {
   title: "Adjuntar archivo",
-  description: "Los archivos adjuntos fueron cargados correctamente",
+  description: "El archivo que intentas agregar ya está registrado.",
+  descriptionSuccess: "El archivo se ha guardado exitosamente.",
   appearance: "success",
   appearanceError: "danger",
 };
@@ -206,6 +207,18 @@ export const errorMessages = {
     description:
       "Hubo un problema al cargar los datos. Por favor, inténtelo de nuevo más tarde.",
     button: "Volver a intentar",
+  },
+  lateRejectionOfACreditRequest: {
+    description: "Error no se pudo rechazar la solicitud de crédito.",
+  },
+  registerNewsToACreditRequest: {
+    description: "Error al enviar el mensaje. Intente nuevamente.",
+  },
+  searchAllUnreadErrorsById: {
+    description: "Error no se pudo traer los errores no leídos.",
+  },
+  searchProspect: {
+    description: "No se pudo obtener los datos del prospecto relacionado."
   }
 };
 
@@ -213,5 +226,8 @@ export const labelsAndValuesShare = {
   titleOnPdf: "Gestión Comercial",
   fileName: "reporte_comercial.pdf",
   text: "Reporte Comercial para compartir",
+};
 
-}
+export const editCreditApplicationLabels = {
+  placeholderExample: "Ej.: Escribe tu mensaje",
+};

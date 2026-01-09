@@ -42,10 +42,10 @@ import {
 } from "./styles";
 import { emptyNoveltiesConfig } from "./config/errorNovelties";
 
-const renderLogo = (imgUrl: string) => {
+const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
   return (
     <StyledContentImg to="/">
-      <StyledLogo src={imgUrl} />
+      <StyledLogo src={imgUrl} onTheFooter={onTheFooter} />
     </StyledContentImg>
   );
 };
@@ -202,13 +202,13 @@ function AppPage() {
 
   return (
     <StyledAppPage>
-      <Grid templateRows="auto 1fr" height="100vh" justifyContent="unset">
+      <Grid templateRows="auto auto 1fr" height="100vh" justifyContent="unset">
         <StyledPrint>
           <StyledHeaderContainer>
             <Header
               logoURL={renderLogo(eventData.businessUnit.urlLogo)}
               user={{
-                username: eventData.user.userName,
+                username: eventData.user.userAccount,
                 breakpoint: "848px",
                 client: eventData.businessUnit.abbreviatedName,
               }}
@@ -216,6 +216,7 @@ function AppPage() {
               unreadNotificationsAmount={getNotificationsCount()}
             />
           </StyledHeaderContainer>
+
           <StyledCollapseIcon
             $collapse={collapse}
             onClick={() => setCollapse(!collapse)}
@@ -230,15 +231,19 @@ function AppPage() {
             />
           </StyledCollapseIcon>
         </StyledPrint>
+
         {collapse && (
-          <StyledCollapse ref={businessUnitChangeRef}>
-            <BusinessUnitChange
-              businessUnits={businessUnitsToTheStaff}
-              selectedClient={selectedClient}
-              onLogoClick={handleLogoClick}
-            />
-          </StyledCollapse>
+          <StyledPrint>
+            <StyledCollapse ref={businessUnitChangeRef}>
+              <BusinessUnitChange
+                businessUnits={businessUnitsToTheStaff}
+                selectedClient={selectedClient}
+                onLogoClick={handleLogoClick}
+              />
+            </StyledCollapse>
+          </StyledPrint>
         )}
+
         <StyledContainer>
           {showUserMenu && (
             <StyledMenuContainer ref={userMenuRef}>
@@ -262,6 +267,7 @@ function AppPage() {
               />
             </StyledMenuContainer>
           )}
+
           {showLogoutModal && (
             <BaseModal
               title={"Novedades"}
@@ -273,18 +279,18 @@ function AppPage() {
               handleNext={() => setShowLogoutModal(false)}
             >
               <StyledCardsContainer>
-                {noveltiesData && noveltiesData.length > 0 ? (
+                {noveltiesData.length > 0 ? (
                   noveltiesData.map((novelty) => (
                     <CardNoveilties
                       key={novelty.creditRequestCode}
-                      userImage={""}
+                      userImage=""
                       userName={novelty.clientName}
                       dateTime={formatPrimaryDate(
                         new Date(novelty.executionDate),
                         true
                       )}
                       referenceCode={novelty.creditRequestCode}
-                      description={emptyNoveltiesConfig.novelties.description}
+                      description={novelty.traceValue}
                       actionText={emptyNoveltiesConfig.novelties.actionText}
                       onActionClick={() =>
                         handleNoveltyActionClick(novelty.creditRequestCode)
@@ -305,20 +311,10 @@ function AppPage() {
                       alt={emptyNoveltiesConfig.image.alt}
                     />
                     <Stack gap="4px" direction="column">
-                      <Text
-                        type="body"
-                        size="large"
-                        appearance="gray"
-                        textAlign="center"
-                      >
+                      <Text size="large" appearance="gray" textAlign="center">
                         {emptyNoveltiesConfig.messages.primary}
                       </Text>
-                      <Text
-                        type="body"
-                        size="large"
-                        appearance="dark"
-                        textAlign="center"
-                      >
+                      <Text size="large" appearance="dark" textAlign="center">
                         {emptyNoveltiesConfig.messages.secondary}
                       </Text>
                     </Stack>
@@ -331,8 +327,9 @@ function AppPage() {
           <StyledMain>
             <Outlet />
           </StyledMain>
+
           <StyledFooter>
-            {renderLogo(eventData.businessManager.urlBrand)}
+            {renderLogo(eventData.businessManager.urlBrand, true)}
           </StyledFooter>
         </StyledContainer>
       </Grid>

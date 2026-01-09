@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
   Textarea,
-  useFlag,
+  Textfield,
 } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
@@ -23,7 +23,7 @@ import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocum
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
-import { dataFlags } from "@config/components/flags/flag.config";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
 import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
@@ -71,11 +71,18 @@ export function DocumentValidationApprovalModal(
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
   >([]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
 
-  const { addFlag } = useFlag();
+  const getOptionLabel = (options: typeof optionsAnswer, value: string) => {
+    const option = options?.find(
+      (opt) => opt.id === value || opt.value === value
+    );
+    return option?.label || option?.value || value;
+  };
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
@@ -151,24 +158,23 @@ export function DocumentValidationApprovalModal(
         if (onCloseModal) {
           onCloseModal();
         }
-      } catch (error: unknown) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-        addFlag({
-          title: approvalsConfig.titleError,
-          description,
-          appearance: "danger",
-          duration: dataFlags.duration,
-        });
+      } catch (error) {
+        setShowErrorModal(true);
+        setMessageError(approvalsConfig.titleError);
       }
     },
   });
+
+  useEffect(() => {
+    if (optionsAnswer && optionsAnswer.length === 1) {
+      const singleOption = optionsAnswer[0];
+      const optionValue = singleOption.id || singleOption.value;
+      if (!formik.values.answer && optionValue) {
+        formik.setFieldValue("answer", optionValue);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -181,20 +187,8 @@ export function DocumentValidationApprovalModal(
         );
         setDocuments(response);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-        addFlag({
-          title: approvalsConfig.titleError,
-          description,
-          appearance: "danger",
-          duration: 5000,
-        });
+        setShowErrorModal(true);
+        setMessageError(approvalsConfig.titleErrorDocument);
       }
     };
 
@@ -216,19 +210,8 @@ export function DocumentValidationApprovalModal(
       setOpen(true);
       setSeenDocuments((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-      addFlag({
-        title: approvalsConfig.titleError,
-        description,
-        appearance: "danger",
-        duration: 5000,
-      });
+      setShowErrorModal(true);
+      setMessageError(approvalsConfig.titleErrorDocument);
     }
   };
 
@@ -306,18 +289,30 @@ export function DocumentValidationApprovalModal(
             {approvalsConfig.newDocument}
           </Button>
         </Fieldset>
-        <Select
-          name="answer"
-          id="answer"
-          options={optionsAnswer}
-          label={approvalsConfig.answer}
-          placeholder={approvalsConfig.answerPlaceHoleder}
-          value={formik.values.answer}
-          onChange={(name, value) => formik.setFieldValue(name, value)}
-          onBlur={formik.handleBlur}
-          size="compact"
-          fullwidth
-        />
+        {optionsAnswer && optionsAnswer.length === 1 ? (
+          <Textfield
+            name="answer"
+            id="answer"
+            label={approvalsConfig.answer}
+            value={getOptionLabel(optionsAnswer, formik.values.answer)}
+            disabled
+            size="compact"
+            fullwidth
+          />
+        ) : (
+          <Select
+            name="answer"
+            id="answer"
+            options={optionsAnswer}
+            label={approvalsConfig.answer}
+            placeholder={approvalsConfig.answerPlaceHoleder}
+            value={formik.values.answer}
+            onChange={(name, value) => formik.setFieldValue(name, value)}
+            onBlur={formik.handleBlur}
+            size="compact"
+            fullwidth
+          />
+        )}
         <Textarea
           id="observations"
           name="observations"
@@ -347,6 +342,16 @@ export function DocumentValidationApprovalModal(
             selectedFile={selectedFile}
             handleClose={() => setOpen(false)}
             title={fileName || ""}
+          />
+        )}
+
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
+            message={messageError}
           />
         )}
       </Stack>

@@ -43,6 +43,7 @@ export const dataReport = {
   content: "¿Realmente desea eliminar esta obligación?",
   cancel: "Cancelar",
   errorIncome: "Error al restablecer las fuentes de ingresos",
+  add: "Agregar",
 };
 export function convertObligationsToProperties(
   obligations: {
