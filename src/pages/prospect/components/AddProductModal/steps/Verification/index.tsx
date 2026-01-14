@@ -3,10 +3,11 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import { currencyFormat } from "@utils/formatData/currency";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { CardProductSelection } from "@components/cards/CardProductSelection";
+import { useEnum } from "@hooks/useEnum";
 
 import { IAttributes, IDataVerificationStep } from "./types";
 import { VerificationAddProductUI } from "./interface";
-import { verificationAddProductConfig } from "../config";
+import { getVerificationAddProductConfig } from "../config";
 import { IFormValues, TCreditLineTerms } from "../../config";
 
 export interface IVerificationAddProductProps {
@@ -25,6 +26,7 @@ function createAttribute(
 export const VerificationDebtorAddModal = (
   props: IVerificationAddProductProps,
 ) => {
+  const language = useEnum().lang;
   const { formData, creditLineTerms, setCurrentStep } = props;
   const isMobile = useMediaQuery("(max-width: 740px)");
 
@@ -32,15 +34,15 @@ export const VerificationDebtorAddModal = (
 
   const paymentConfigAttributes = [
     createAttribute(
-      verificationAddProductConfig.paymentConfiguration.fields.paymentMethod,
+      getVerificationAddProductConfig(language).paymentConfiguration.fields.paymentMethod,
       formData.paymentConfiguration.paymentMethod,
     ),
     createAttribute(
-      verificationAddProductConfig.paymentConfiguration.fields.paymentCycle,
+      getVerificationAddProductConfig(language).paymentConfiguration.fields.paymentCycle,
       formData.paymentConfiguration.paymentCycle,
     ),
     createAttribute(
-      verificationAddProductConfig.paymentConfiguration.fields
+      getVerificationAddProductConfig(language).paymentConfiguration.fields
         .firstPaymentDate,
       formData.paymentConfiguration.firstPaymentDate
         ? formatPrimaryDate(
@@ -54,7 +56,7 @@ export const VerificationDebtorAddModal = (
     ...(formData.quotaCapEnabled
       ? [
         createAttribute(
-          verificationAddProductConfig.termInfo.fields.quotaCap,
+          getVerificationAddProductConfig(language).termInfo.fields.quotaCap,
           currencyFormat(formData.quotaCapValue),
         ),
       ]
@@ -62,7 +64,7 @@ export const VerificationDebtorAddModal = (
     ...(formData.maximumTermEnabled
       ? [
         createAttribute(
-          verificationAddProductConfig.termInfo.fields.maximumTerm,
+          getVerificationAddProductConfig(language).termInfo.fields.maximumTerm,
           `${formData.maximumTermValue} meses`,
         ),
       ]
@@ -71,7 +73,7 @@ export const VerificationDebtorAddModal = (
 
   const amountAttributes = [
     createAttribute(
-      verificationAddProductConfig.amountInfo.fields.creditAmount,
+      getVerificationAddProductConfig(language).amountInfo.fields.creditAmount,
       currencyFormat(formData.creditAmount),
     ),
   ].filter((attr) => attr.value);
@@ -80,7 +82,7 @@ export const VerificationDebtorAddModal = (
     {
       sections: {
         creditLineInfo: {
-          title: verificationAddProductConfig.creditLineInfo.title,
+          title: getVerificationAddProductConfig(language).creditLineInfo.title,
           attributes: [],
           stepNumber: 1,
           customComponent: selectedCreditLineData ? ( 
@@ -97,17 +99,17 @@ export const VerificationDebtorAddModal = (
           ) : null,
         },
         paymentConfiguration: {
-          title: verificationAddProductConfig.paymentConfiguration.title,
+          title: getVerificationAddProductConfig(language).paymentConfiguration.title,
           attributes: paymentConfigAttributes,
           stepNumber: 2,
         },
         termInfo: {
-          title: verificationAddProductConfig.termInfo.title,
+          title: getVerificationAddProductConfig(language).termInfo.title,
           attributes: termAttributes,
           stepNumber: 3,
         },
         amountInfo: {
-          title: verificationAddProductConfig.amountInfo.title,
+          title: getVerificationAddProductConfig(language).amountInfo.title,
           attributes: amountAttributes,
           stepNumber: 4,
         },

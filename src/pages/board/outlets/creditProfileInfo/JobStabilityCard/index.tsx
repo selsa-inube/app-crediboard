@@ -10,8 +10,9 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { getLaborStabilityByCustomerId } from "@services/creditRequest/query/getLaborStabilityByCustomerId";
 import { ILaborStabilityByCustomerId } from "@services/creditRequest/query/getLaborStabilityByCustomerId/types";
 import { ICreditRequest } from "@services/creditRequest/query/types";
+import { useEnum } from "@hooks/useEnum";
 
-import { jobStabilityConfig } from "./config";
+import { jobStabilityConfigEnum } from "./config";
 
 interface JobStabilityCardProps {
   isMobile?: boolean;
@@ -23,6 +24,7 @@ interface JobStabilityCardProps {
 export function JobStabilityCard(props: JobStabilityCardProps) {
   const { isMobile, requests, businessUnitPublicCode, businessManagerCode } =
     props;
+  const language = useEnum().lang;
 
   const [laborStabilityByCustomerId, setLaborStabilityByCustomerId] = useState<
     ILaborStabilityByCustomerId[]
@@ -45,7 +47,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
           message: (error as Error).message,
         };
       }
-      throw new Error(jobStabilityConfig.errorMessages.fetchError);
+      throw new Error(jobStabilityConfigEnum.errorMessages.fetchError.i18n[language]);
     }
   };
 
@@ -66,16 +68,16 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
   );
   return (
     <CardInfoContainer
-      title={jobStabilityConfig.title}
+      title={jobStabilityConfigEnum.title.i18n[language]}
       icon={<MdOutlineBusinessCenter />}
       isMobile={isMobile}
     >
       {laborStabilityByCustomerId.length === 0 ? (
         <ItemNotFound
           image={userNotFound}
-          title={jobStabilityConfig.errorMessages.dataNotFound}
-          description={jobStabilityConfig.errorMessages.dataNotFoundDescription}
-          buttonDescription={jobStabilityConfig.errorMessages.retryButton}
+          title={jobStabilityConfigEnum.errorMessages.dataNotFound.i18n[language]}
+          description={jobStabilityConfigEnum.errorMessages.dataNotFoundDescription.i18n[language]}
+          buttonDescription={jobStabilityConfigEnum.errorMessages.retryButton.i18n[language]}
           route="#"
           onRetry={handleRetry}
         />
@@ -84,7 +86,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "110px" : "170px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {jobStabilityConfig.labels.companySeniority}
+                {jobStabilityConfigEnum.labels.companySeniority.i18n[language]}
               </Text>
             </Stack>
             <Stack>
@@ -94,7 +96,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
                 size={isMobile ? "small" : "medium"}
               >
                 {laborStabilityByCustomerId[0]?.laborSeniorityYears}{" "}
-                {jobStabilityConfig.labels.years}
+                {jobStabilityConfigEnum.labels.years.i18n[language]}
               </Text>
             </Stack>
           </Stack>
@@ -102,7 +104,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "110px" : "170px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {jobStabilityConfig.labels.stabilityIndex}
+                {jobStabilityConfigEnum.labels.stabilityIndex.i18n[language]}
               </Text>
             </Stack>
             <Stack>
@@ -124,7 +126,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "110px" : "170px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {jobStabilityConfig.labels.estimatedCompensation}
+                {jobStabilityConfigEnum.labels.estimatedCompensation.i18n[language]}
               </Text>
             </Stack>
             <Stack>

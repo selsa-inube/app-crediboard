@@ -1,55 +1,20 @@
 import { SectionBackground } from "@components/layout/BoardSection/types";
-import { IOptionItemCheckedProps } from "@components/inputs/SelectCheck/OptionItem";
 import { Filter } from "@components/cards/SelectedFilters/interface";
-
-interface SelectConfigProps {
-  label: string;
-  id: string;
-  name: string;
-  placeholder: string;
-  options: IOptionItemCheckedProps[];
-  onChangeCheck: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value: string;
-  onChange: () => void;
-  fullwidth: boolean;
-}
 
 export type TBoardColumn = {
   id: string;
-  value: string;
+  code: string;
+  description: string;
+  i18n: {
+    en: string;
+    es: string;
+  };
   sectionBackground: SectionBackground;
 };
 
-const boardColumns: TBoardColumn[] = [
+export const boardColumnsEnum: TBoardColumn[] = [
   {
     id: "GESTION_COMERCIAL",
-    value: "Gestión Comercial",
-    sectionBackground: "gray",
-  },
-  {
-    id: "VERIFICACION_APROBACION",
-    value: "Verificación y Aprobación",
-    sectionBackground: "light",
-  },
-  {
-    id: "FORMALIZACION_GARANTIAS",
-    value: "Formalización Garantías",
-    sectionBackground: "gray",
-  },
-  {
-    id: "TRAMITE_DESEMBOLSO",
-    value: "Trámite Desembolso",
-    sectionBackground: "light",
-  },
-  {
-    id: "CUMPLIMIENTO_REQUISITOS",
-    value: "Cumplimiento Requisitos",
-    sectionBackground: "gray",
-  },
-];
-
-export const boardColumnsEnum = {
-  GESTION_COMERCIAL: {
     code: "BoardColumns_GESTION_COMERCIAL",
     description: "Column for commercial management",
     i18n: {
@@ -58,7 +23,8 @@ export const boardColumnsEnum = {
     },
     sectionBackground: "gray",
   },
-  VERIFICACION_APROBACION: {
+  {
+    id: "VERIFICACION_APROBACION",
     code: "BoardColumns_VERIFICACION_APROBACION",
     description: "Column for verification and approval",
     i18n: {
@@ -67,7 +33,8 @@ export const boardColumnsEnum = {
     },
     sectionBackground: "light",
   },
-  FORMALIZACION_GARANTIAS: {
+  {
+    id: "FORMALIZACION_GARANTIAS",
     code: "BoardColumns_FORMALIZACION_GARANTIAS",
     description: "Column for formalization of guarantees",
     i18n: {
@@ -76,7 +43,8 @@ export const boardColumnsEnum = {
     },
     sectionBackground: "gray",
   },
-  TRAMITE_DESEMBOLSO: {
+  {
+    id: "TRAMITE_DESEMBOLSO",
     code: "BoardColumns_TRAMITE_DESEMBOLSO",
     description: "Column for disbursement process",
     i18n: {
@@ -85,7 +53,8 @@ export const boardColumnsEnum = {
     },
     sectionBackground: "light",
   },
-  CUMPLIMIENTO_REQUISITOS: {
+  {
+    id: "CUMPLIMIENTO_REQUISITOS",
     code: "BoardColumns_CUMPLIMIENTO_REQUISITOS",
     description: "Column for requirements compliance",
     i18n: {
@@ -94,9 +63,9 @@ export const boardColumnsEnum = {
     },
     sectionBackground: "gray",
   },
-};
+];
 
-const getBoardColumns = (
+export const getBoardColumns = (
   activeFilters: Filter[],
   boardOrientation: string = "vertical"
 ): TBoardColumn[] => {
@@ -106,38 +75,22 @@ const getBoardColumns = (
 
   if (hasCompletedFilter && boardOrientation === "horizontal") {
     return [
-      ...boardColumns,
+      ...boardColumnsEnum,
       {
         id: "TRAMITADA",
-        value: "Tramitadas",
+        code: "BoardColumns_TRAMITADA",
+        description: "Column for processed items",
+        i18n: {
+          en: "Processed",
+          es: "Tramitadas",
+        },
         sectionBackground: "light",
-      },
+
+      }
     ];
   }
 
-  return boardColumns;
-};
-
-const selectConfig = (
-  selectOptions: IOptionItemCheckedProps[],
-  handleSelectCheckChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-): SelectConfigProps => ({
-  label: "Filtrado por",
-  id: "FilterRequests",
-  name: "FilterRequests",
-  placeholder: "Selecciona una opción",
-  options: selectOptions,
-  onChangeCheck: handleSelectCheckChange,
-  value: "",
-  onChange: () => {},
-  fullwidth: true,
-});
-
-const dataInformationModal = {
-  tilte: "Información",
-  button: "Entendido",
-  description:
-    "No cuentas con los privilegios requeridos para quitar el ancla de esta tarjeta.",
+  return boardColumnsEnum;
 };
 
 export const dataInformationModalEnum = {
@@ -167,15 +120,6 @@ export const dataInformationModalEnum = {
   },
 };
 
-
-const dataInformationSearchModal = {
-  titleModal: "Filtros aplicados",
-  succesModal: "Sí, mantenerlos",
-  buttonModal: "No, retirarlos",
-  descriptionModal:
-    "Para la búsqueda que está a punto de hacer, ¿Desea mantener los filtros aplicados?",
-};
-
 export const dataInformationSearchModalEnum = {
   titleModal: {
     code: "DataInformationSearchModal_titleModal",
@@ -185,7 +129,7 @@ export const dataInformationSearchModalEnum = {
       es: "Filtros aplicados",
     },
   },
-  succesModal: {
+  successModal: {
     code: "DataInformationSearchModal_succesModal",
     description: "Confirmation button to keep filters",
     i18n: {
@@ -209,21 +153,6 @@ export const dataInformationSearchModalEnum = {
       es: "Para la búsqueda que está a punto de hacer, ¿Desea mantener los filtros aplicados?",
     },
   },
-};
-
-
-export {
-  boardColumns,
-  getBoardColumns,
-  dataInformationModal,
-  selectConfig,
-  dataInformationSearchModal,
-};
-
-export const boardLayoutData = {
-  errorLoadingPins: "Error: No se pudo cargar el estado de los anclados.",
-  remove: "Elimina",
-  filter: "Filtra",
 };
 
 export const boardLayoutDataEnum = {

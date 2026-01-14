@@ -1,8 +1,4 @@
-export const textConfig = {
-    requiredText: "(Requerido)",
-  };
-  
-export const textConfigEnum = {
+ export const textConfigEnum = {
   requiredText: {
     code: "TextConfig_required",
     description: "(Required)",

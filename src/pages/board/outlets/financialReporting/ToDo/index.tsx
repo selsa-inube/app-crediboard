@@ -25,7 +25,7 @@ import { getToDoByCreditRequestId } from "@services/creditRequest/query/getToDoB
 import { capitalizeFirstLetterEachWord } from "@utils/formatData/text";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { AppContext } from "@context/AppContext";
-import { useEnums } from "@hooks/useEnums";
+import { useEnum } from "@hooks/useEnum";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { BaseModal } from "@components/modals/baseModal";
@@ -33,16 +33,16 @@ import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { StaffModal } from "./StaffModal";
 import {
-  errorMessagge,
-  staffConfig,
-  txtLabels,
-  txtTaskQuery,
-  titlesModal,
+  errorMessaggeEnum,
+  staffConfigEnum,
+  txtLabelsEnum,
+  txtTaskQueryEnum,
+  titlesModalEnum,
 } from "./config";
 import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
 import { StyledHorizontalDivider, StyledTextField } from "../styles";
-import { errorMessages, errorObserver } from "../config";
+import { errorMessagesEnum, errorObserver } from "../config";
 import { DecisionModal } from "./DecisionModal";
 
 interface ToDoProps {
@@ -58,7 +58,7 @@ function ToDo(props: ToDoProps) {
   const { icon, button, isMobile, id, setIdProspect } = props;
 
   const { approverid } = useParams();
-  const { lang } = useEnums();
+  const language = useEnum().lang;
 
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
@@ -170,7 +170,7 @@ function ToDo(props: ToDoProps) {
         const formattedDecisions = Array.isArray(decision)
           ? decision.map((decisions: DecisionItem, index: number) => ({
               id: `decision-${index}`,
-              label: decisions.I18n ? decisions.I18n[lang] : decisions.value,
+              label: decisions.I18n ? decisions.I18n[language] : decisions.value,
               value: decisions.value,
               code: decisions.decision,
               originalLabel: decisions.decision,
@@ -192,7 +192,7 @@ function ToDo(props: ToDoProps) {
     taskData,
     businessUnitPublicCode,
     businessManagerCode,
-    lang,
+    language,
     taskDecisions.length,
   ]);
 
@@ -304,13 +304,14 @@ function ToDo(props: ToDoProps) {
   );
 
   const taskLabel = useMemo(() => {
-    if (!taskData?.taskToBeDone) return errorMessagge;
+    if (!taskData?.taskToBeDone) return errorMessaggeEnum.default.i18n[language];
 
     const matchedTask = taskPrs.find(
       (taskItem) => taskItem.Code === taskData.taskToBeDone
     );
 
     return matchedTask ? `${matchedTask.Value}` : taskData.taskToBeDone;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskData?.taskToBeDone]);
 
   const handleInfo = () => {
@@ -342,7 +343,7 @@ function ToDo(props: ToDoProps) {
   return (
     <>
       <Fieldset
-        title={errorMessages.toDo.titleCard}
+        title={errorMessagesEnum.toDo.titleCard.i18n[language]}
         descriptionTitle={
           taskRole === "CredicarAccountManager"
             ? assignedStaff.commercialManager
@@ -355,9 +356,9 @@ function ToDo(props: ToDoProps) {
         {!taskData ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessages.toDo.title}
-            description={errorMessages.toDo.description}
-            buttonDescription={errorMessages.toDo.button}
+            title={errorMessagesEnum.toDo.title.i18n[language]}
+            description={errorMessagesEnum.toDo.description.i18n[language]}
+            buttonDescription={errorMessagesEnum.toDo.button.i18n[language]}
             onRetry={handleRetry}
           />
         ) : (
@@ -424,7 +425,7 @@ function ToDo(props: ToDoProps) {
                     spacing="compact"
                     disabled={!hasPermitSend}
                   >
-                    {button?.label || txtLabels.buttonText}
+                    {button?.label || txtLabelsEnum.buttonText.i18n[language]}
                   </Button>
                   {!hasPermitSend && (
                     <Icon
@@ -448,11 +449,11 @@ function ToDo(props: ToDoProps) {
             >
               {isModalOpen && (
                 <DecisionModal
-                  title={txtLabels.title}
-                  buttonText={txtLabels.buttonText}
-                  secondaryButtonText={txtLabels.secondaryButtonText}
-                  inputLabel={txtLabels.inputLabel}
-                  inputPlaceholder={txtLabels.inputPlaceholder}
+                  title={txtLabelsEnum.title.i18n[language]}
+                  buttonText={txtLabelsEnum.buttonText.i18n[language]}
+                  secondaryButtonText={txtLabelsEnum.secondaryButtonText.i18n[language]}
+                  inputLabel={txtLabelsEnum.inputLabel.i18n[language]}
+                  inputPlaceholder={txtLabelsEnum.inputPlaceholder.i18n[language]}
                   businessManagerCode={businessManagerCode}
                   onSecondaryButtonClick={handleCloseModal}
                   onCloseModal={handleCloseModal}
@@ -475,7 +476,7 @@ function ToDo(props: ToDoProps) {
                         appearance="gray"
                         textAlign="start"
                       >
-                        {txtTaskQuery.txtCommercialManager}
+                        {txtTaskQueryEnum.txtCommercialManager.i18n[language]}
                       </Text>
                     </StyledTextField>
                     <StyledTextField>
@@ -500,7 +501,7 @@ function ToDo(props: ToDoProps) {
                         appearance="gray"
                         textAlign="start"
                       >
-                        {txtTaskQuery.txtAnalyst}
+                        {txtTaskQueryEnum.txtAnalyst.i18n[language]}
                       </Text>
                     </StyledTextField>
                     <StyledTextField>
@@ -545,16 +546,16 @@ function ToDo(props: ToDoProps) {
           onCloseModal={handleToggleStaffModal}
           taskData={taskData}
           setAssignedStaff={setAssignedStaff}
-          buttonText={staffConfig.confirm}
-          title={staffConfig.title}
+          buttonText={staffConfigEnum.confirm.i18n[language]}
+          title={staffConfigEnum.title.i18n[language]}
           handleRetry={handleRetry}
         />
       )}
       {isModalInfo && (
         <>
           <BaseModal
-            title={titlesModal.title}
-            nextButton={titlesModal.textButtonNext}
+            title={titlesModalEnum.title.i18n[language]}
+            nextButton={titlesModalEnum.textButtonNext.i18n[language]}
             handleNext={() => setIsModalInfo(false)}
             handleClose={() => setIsModalInfo(false)}
             width={isMobile ? "290px" : "400px"}
@@ -562,10 +563,10 @@ function ToDo(props: ToDoProps) {
             <Stack gap="16px" direction="column">
               <Stack direction="column" gap="8px">
                 <Text weight="bold" size="large">
-                  {titlesModal.subTitle}
+                  {titlesModalEnum.subTitle.i18n[language]}
                 </Text>
                 <Text weight="normal" size="medium" appearance="gray">
-                  {titlesModal.description}
+                  {titlesModalEnum.description.i18n[language]}
                 </Text>
               </Stack>
             </Stack>

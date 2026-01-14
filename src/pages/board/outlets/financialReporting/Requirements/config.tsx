@@ -14,16 +14,16 @@ import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
-import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 
 import { MappedRequirements } from "./types";
 
-export const dataButton = (
+export const getDataButton = (
+  language: "en" | "es",
   onClick: () => void,
   onClickSistemValidation: () => void
 ) => ({
-  title: "Agregar validación humana",
-  titleSistemValidation: "Agregar validación del sistema",
+  title: language === "en" ? "Add human validation" : "Agregar validación humana",
+  titleSistemValidation: language === "en" ? "Add system validation" : "Agregar validación del sistema",
   onClick,
   onClickSistemValidation,
 });
@@ -32,79 +32,23 @@ const receiveData = (data: IEntries) => {
   console.log(data, "function que recibe data");
 };
 
-export const titlesRequirements = [
-  [
-    {
-      id: "Validaciones del sistema",
-      titleName: "Validaciones del sistema",
-      priority: 1,
-    },
-    {
-      id: "tag",
-      titleName: "",
-      priority: 2,
-    },
-  ],
-  [
-    {
-      id: "Requisitos documentales",
-      titleName: "Requisitos documentales",
-      priority: 1,
-    },
-    {
-      id: "tag",
-      titleName: "",
-      priority: 2,
-    },
-  ],
-  [
-    {
-      id: "Validaciones humanas",
-      titleName: "Validaciones humanas",
-      priority: 1,
-    },
-    {
-      id: "tag",
-      titleName: "",
-      priority: 2,
-    },
-  ],
+export const getTitlesRequirements = (language: "en" | "es") => [
+  Object.values(titlesRequirementsEnum.validacionesDelSistema.columns).map(col => ({
+    id: col.code.includes("main") ? "Validaciones del sistema" : "tag",
+    titleName: col.i18n[language],
+    priority: col.priority
+  })),
+  Object.values(titlesRequirementsEnum.requisitosDocumentales.columns).map(col => ({
+    id: col.code.includes("main") ? "Requisitos documentales" : "tag",
+    titleName: col.i18n[language],
+    priority: col.priority
+  })),
+  Object.values(titlesRequirementsEnum.validacionesHumanas.columns).map(col => ({
+    id: col.code.includes("main") ? "Validaciones humanas" : "tag",
+    titleName: col.i18n[language],
+    priority: col.priority
+  })),
 ];
-export const textFlagsRequirements = {
-  titleSuccess: "Cambios guardados con éxito!",
-  descriptionSuccess: `Hemos creado el campo exitosamente.`,
-  titleError: "¡Uy, algo ha salido mal!",
-  descriptionError: "No se han podido guardar los cambios.",
-};
-
-export const dataAddRequirement = {
-  title: "Agregar requisito a esta solicitud",
-  titleJustification: "Descripción del requisito",
-  descriptionJustification:
-    "Lorem ipsum dolor sit amet consectetur adipiscing elit, primis turpis a donec dictum ad, urna eu sem malesuada mauris ac.",
-  close: "Cerrar",
-  cancel: "Cancelar",
-  add: "Agregar",
-  labelPaymentMethod: "Tipo de requisito",
-  labelName: "Nombre del requisito",
-  labelAmount: "Cantidad",
-  labelValue: "Valor",
-  labelTextarea: "Descripción",
-  labelJustification: "Justificacion",
-  labelFrequency: "Frecuencia de pago",
-  labelDate: "Primer pago",
-  placeHolderSelect: "Selecciona una opción",
-  placeHolderAmount: "Número de pagos",
-  placeHolderValue: "Valor a pagar",
-  placeHolderDate: "Seleccione un requisito",
-  placeHolderTextarea: "¿Qué hace necesario incluir este requisito?",
-  placeHolderJustification: "Justificación del requisito",
-};
-
-export const justificationDescriptions: Record<string, string> = {
-  edad: "Se valida la edad mínima para el requisito",
-  antiguedad: "Se valida la antigüedad mínima para el requisito",
-};
 
 export const titlesRequirementsEnum = {
   validacionesDelSistema: {
@@ -124,7 +68,7 @@ export const titlesRequirementsEnum = {
         code: "TitlesRequirements_validacionesDelSistema_tag",
         description: "Tag column for system validations",
         i18n: {
-          en: "Status",
+          en: "",
           es: "",
         },
         priority: 2,
@@ -148,7 +92,7 @@ export const titlesRequirementsEnum = {
         code: "TitlesRequirements_requisitosDocumentales_tag",
         description: "Tag column for documentary requirements",
         i18n: {
-          en: "Status",
+          en: "",
           es: "",
         },
         priority: 2,
@@ -172,7 +116,7 @@ export const titlesRequirementsEnum = {
         code: "TitlesRequirements_validacionesHumanas_tag",
         description: "Tag column for human validations",
         i18n: {
-          en: "Status",
+          en: "",
           es: "",
         },
         priority: 2,
@@ -533,87 +477,57 @@ const actionsMobile = [
   },
 ];
 
-const getRequirementCode = (codeKey: string) => {
-  return requirementStatus.find((item) => item.Code === codeKey)?.Code || "";
+export const requirementLabelsEnum = {
+  compliant: {
+    id: "compliant",
+    i18n: { en: "Compliant", es: "Cumple" },
+  },
+  notCompliant: {
+    id: "notCompliant",
+    i18n: { en: "Not Compliant", es: "No Cumple" },
+  },
+  notEvaluated: {
+    id: "notEvaluated",
+    i18n: { en: "Not Evaluated", es: "Sin Evaluar" },
+  },
+}
+
+const generateTag = (value: string, language: "en" | "es"): JSX.Element => {
+  const isPassed = [
+    "PASSED_WITH_SYSTEM_VALIDATION", "DOCUMENT_STORED_WITHOUT_VALIDATION",
+    "PASSED_WITH_HUMAN_VALIDATION", "DOCUMENT_VALIDATED_BY_THE_USER",
+    "IGNORED_BY_THE_USER", "PASSED_HUMAN_VALIDATION",
+    "DOCUMENT_STORED_AND_VALIDATED", "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
+    "DOCUMENT_IGNORED_BY_THE_USER",
+  ].includes(value);
+
+  const isFailed = [
+    "FAILED_SYSTEM_VALIDATION", "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
+    "FAILED_DOCUMENT_VALIDATION", "FAILED_HUMAN_VALIDATION",
+  ].includes(value);
+
+  if (isPassed) return <Tag label={requirementLabelsEnum.compliant.i18n[language]} appearance="success" />;
+  if (isFailed) return <Tag label={requirementLabelsEnum.notCompliant.i18n[language]} appearance="danger" />;
+  return <Tag label={requirementLabelsEnum.notEvaluated.i18n[language]} appearance="warning" />;
 };
 
-const generateTag = (value: string): JSX.Element => {
-  if (
-    value === getRequirementCode("PASSED_WITH_SYSTEM_VALIDATION") ||
-    value === getRequirementCode("DOCUMENT_STORED_WITHOUT_VALIDATION") ||
-    value === getRequirementCode("PASSED_WITH_HUMAN_VALIDATION") ||
-    value === getRequirementCode("DOCUMENT_VALIDATED_BY_THE_USER") ||
-    value === getRequirementCode("IGNORED_BY_THE_USER") ||
-    value === getRequirementCode("PASSED_HUMAN_VALIDATION") ||
-    value === getRequirementCode("DOCUMENT_STORED_AND_VALIDATED") ||
-    value === getRequirementCode("IGNORED_BY_THE_USER_HUMAN_VALIDATION") ||
-    value === getRequirementCode("DOCUMENT_IGNORED_BY_THE_USER")
-  ) {
-    return <Tag label="Cumple" appearance="success" />;
-  } else if (
-    value === getRequirementCode("FAILED_SYSTEM_VALIDATION") ||
-    value === getRequirementCode("IGNORED_BY_THE_USER_SYSTEM_VALIDATION") ||
-    value === getRequirementCode("FAILED_DOCUMENT_VALIDATION") ||
-    value === getRequirementCode("FAILED_HUMAN_VALIDATION")
-  ) {
-    return <Tag label="No Cumple" appearance="danger" />;
-  } else {
-    return <Tag label="Sin Evaluar" appearance="warning" />;
-  }
-};
-
-export const maperEntries = (data: MappedRequirements): IEntries[][] => {
-  const result: IEntries[][] = [];
-
-  const systemValidations: IEntries[] = Object.entries(
-    data.SYSTEM_VALIDATION
-  ).map(([key, value], index) => ({
-    id: `sistema-${index + 1}`,
-    "Validaciones del sistema": key,
-    tag: generateTag(value),
-  }));
-
-  const documentaryRequirements: IEntries[] = Object.entries(data.DOCUMENT).map(
-    ([key, value], index) => ({
+export const maperEntries = (data: MappedRequirements, language: "en" | "es"): IEntries[][] => {
+  return [
+    Object.entries(data.SYSTEM_VALIDATION).map(([key, value], index) => ({
+      id: `sistema-${index + 1}`,
+      "Validaciones del sistema": key,
+      tag: generateTag(value, language),
+    })),
+    Object.entries(data.DOCUMENT).map(([key, value], index) => ({
       id: `documento-${index + 1}`,
       "Requisitos documentales": key,
-      tag: generateTag(value),
-    })
-  );
-
-  const humanValidations: IEntries[] = Object.entries(
-    data.HUMAN_VALIDATION
-  ).map(([key, value], index) => ({
-    id: `humano-${index + 1}`,
-    "Validaciones humanas": key,
-    tag: generateTag(value),
-  }));
-
-  result.push(systemValidations, documentaryRequirements, humanValidations);
-
-  return result;
-};
-
-export const maperDataRequirements = (processedEntries: IEntries[][]) => {
-  return [
-    {
-      id: "tableApprovalSystem",
-      titlesRequirements: titlesRequirements[0],
-      entriesRequirements: processedEntries[0],
-      actionsMovile: actionsMobile,
-    },
-    {
-      id: "tableDocumentValues",
-      titlesRequirements: titlesRequirements[1],
-      entriesRequirements: processedEntries[1],
-      actionsMovile: actionsMobile,
-    },
-    {
-      id: "tableApprovalHuman",
-      titlesRequirements: titlesRequirements[2],
-      entriesRequirements: processedEntries[2],
-      actionsMovile: actionsMobile,
-    },
+      tag: generateTag(value, language),
+    })),
+    Object.entries(data.HUMAN_VALIDATION).map(([key, value], index) => ({
+      id: `humano-${index + 1}`,
+      "Validaciones humanas": key,
+      tag: generateTag(value, language),
+    })),
   ];
 };
 
@@ -650,5 +564,14 @@ export const getActionsMobileIcon = () => {
         );
       },
     },
+  ];
+};
+
+export const maperDataRequirements = (processedEntries: IEntries[][], language: "en" | "es") => {
+  const titles = getTitlesRequirements(language);
+  return [
+    { id: "tableApprovalSystem", titlesRequirements: titles[0], entriesRequirements: processedEntries[0], actionsMovile: actionsMobile },
+    { id: "tableDocumentValues", titlesRequirements: titles[1], entriesRequirements: processedEntries[1], actionsMovile: actionsMobile },
+    { id: "tableApprovalHuman", titlesRequirements: titles[2], entriesRequirements: processedEntries[2], actionsMovile: actionsMobile },
   ];
 };

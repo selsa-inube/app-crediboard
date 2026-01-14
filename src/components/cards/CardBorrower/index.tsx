@@ -8,7 +8,7 @@ import {
 } from "react-icons/md";
 
 import { StyledContainer } from "./styles";
-import { newBorrowedDAta } from "./config";
+import { newBorrowedDataEnum } from "./config";
 
 export interface ICardBorrowerProps {
   title: string;
@@ -17,6 +17,7 @@ export interface ICardBorrowerProps {
   email: string;
   income: string;
   obligations: string;
+  language: "en" | "es";
   handleView?: () => void;
   handleEdit?: () => void;
   handleDelete?: () => void;
@@ -37,8 +38,9 @@ export function CardBorrower(props: ICardBorrowerProps) {
     handleDelete = () => {},
     showIcons = true,
     isMobile = false,
+    language = "es",
   } = props;
-
+  
   return (
     <StyledContainer $showIcons={showIcons} $isMobile={isMobile}>
       <Stack direction="column" padding="10px 16px" gap="12px">
@@ -52,7 +54,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
         <Stack direction="column" gap="8px">
           <Stack direction="column" gap="4px">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDAta.names}
+              {newBorrowedDataEnum.names.i18n[language]}
             </Text>
             <Text type="body" size="large">
               {name}
@@ -60,7 +62,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
           </Stack>
           <Stack direction="column" gap="4px">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDAta.lastNames}
+              {newBorrowedDataEnum.lastNames.i18n[language]}
             </Text>
             <Text type="body" size="large">
               {lastName}
@@ -68,7 +70,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
           </Stack>
           <Stack direction="column" gap="4px">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDAta.email}
+              {newBorrowedDataEnum.email.i18n[language]}
             </Text>
             <Text type="body" size="large">
               {email}
@@ -76,7 +78,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
           </Stack>
           <Stack direction="column" gap="4px" justifyContent="center">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDAta.income}
+              {newBorrowedDataEnum.income.i18n[language]}
             </Text>
             <Stack alignItems="center">
               <Icon
@@ -91,7 +93,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
           </Stack>
           <Stack direction="column" gap="4px" justifyContent="center">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDAta.obligations}
+              {newBorrowedDataEnum.obligations.i18n[language]}
             </Text>
             <Stack alignItems="center">
               <Icon

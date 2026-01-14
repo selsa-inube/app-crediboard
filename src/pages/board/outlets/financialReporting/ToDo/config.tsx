@@ -5,89 +5,6 @@ export const infoIcon = {
   onClick: () => console.log("info"),
 };
 
-export const staffConfig = {
-  title: "Gestor Comercial y Analista",
-  confirm: "Aceptar",
-  meets: "Cumple el requisito",
-  doesNotComply: "No cumple el requisito",
-  observations: "Observaciones",
-  observationdetails:
-    "Proporcione detalles acerca de la evaluación del requisito",
-  closeBtn: "Cerrar",
-  Cancel: "Cancelar",
-
-  maxLength: 120,
-};
-
-export const errorMessagge =
-  "Ups, algo salió mal. No se puede cargar la información. Intente nuevamente más tarde.";
-
-export interface FlagMessage {
-  title: string;
-  description: string;
-  appearance: "success" | "danger";
-}
-
-export const flagMessages: Record<string, FlagMessage> = {
-  changeSuccess: {
-    title: "Cambio realizado",
-    description: "El cambio se realizó con éxito.",
-    appearance: "success",
-  },
-};
-
-export const buttonText = "Enviar";
-
-export const txtLabels = {
-  title: "Confirmar la decisión",
-  buttonText: "Enviar",
-  secondaryButtonText: "Cancelar",
-  inputLabel: "Justificación",
-  inputPlaceholder: "Describe el motivo de su decisión.",
-};
-
-export const txtFlags = {
-  titleSuccess: "¡Proceso exitoso!",
-  descriptionSuccess: `La tarea se ha ejecutado de manera correcta. Nueva tarea asignada.`,
-
-  titleWarning: "Error al registrar la decisión",
-  descriptionWarning: `Hubo un problema con el proceso. Código: `,
-
-  titleDanger: "Error inesperado",
-  descriptionDanger:
-    "Ocurrió un error al registrar la tarea. Intente nuevamente más tarde.",
-
-  duration: 5000,
-};
-
-export const txtOthersOptions = {
-  optionClose: "Cerrar",
-  txtDecision: "Decisión",
-  txtNoSelect: "No se seleccionó una decisión disponible.",
-};
-export const soporteInvalidOptions = [
-  {
-    id: "1",
-    label: "Firma de pagares",
-    value: "Payroll_discount_authorization",
-  },
-  { id: "2", label: "Firma de libranza", value: "Promissory_note" },
-  { id: "3", label: "Gestión de garantías.", value: "Warranties" },
-];
-
-export const txtTaskQuery = {
-  txtCommercialManager: "Gestor Comercial",
-  txtAnalyst: "Analista",
-};
-
-export const titlesModal = {
-  title: "Información",
-  subTitle: "¿Porque está deshabilitado?",
-  description:
-    "No cuentas con los privilegios necesarios para ejecutar esta acción.",
-  textButtonNext: "Entendido",
-};
-
 export const errorMessages = {
   patchChangeUsersByCreditRequest: {
     description: "",
@@ -176,25 +93,6 @@ export const errorMessaggeEnum = {
     i18n: {
       en: "Oops, something went wrong. Unable to load information. Please try again later.",
       es: "Ups, algo salió mal. No se puede cargar la información. Intente nuevamente más tarde.",
-    },
-  },
-};
-
-export const flagMessagesEnum = {
-  changeSuccess: {
-    code: "FlagMessages_changeSuccess",
-    description: "Message for successful change",
-    i18n: {
-      en: {
-        title: "Change completed",
-        description: "The change was successfully made.",
-        appearance: "success",
-      },
-      es: {
-        title: "Cambio realizado",
-        description: "El cambio se realizó con éxito.",
-        appearance: "success",
-      },
     },
   },
 };
@@ -339,35 +237,38 @@ export const txtOthersOptionsEnum = {
   },
 };
 
-export const soporteInvalidOptionsEnum = {
-  payrollDiscount: {
-    code: "SoporteInvalidOptions_payrollDiscount",
-    description: "Option for payroll discount authorization",
-    i18n: {
-      en: "Promissory note signature",
-      es: "Firma de pagares",
-    },
+export const soporteInvalidOptionsEnum = [
+  {
+    id: "1",
+    code: "SoporteInvalid_payroll",
+    description: "Opción para firma de libranza",
     value: "Payroll_discount_authorization",
-  },
-  promissoryNote: {
-    code: "SoporteInvalidOptions_promissoryNote",
-    description: "Option for promissory note signature",
     i18n: {
-      en: "Payroll signature",
+      en: "Payroll discount signature",
       es: "Firma de libranza",
     },
-    value: "Promissory_note",
   },
-  warranties: {
-    code: "SoporteInvalidOptions_warranties",
-    description: "Option for managing warranties",
+  {
+    id: "2",
+    code: "SoporteInvalid_promissory",
+    description: "Opción para firma de pagarés",
+    value: "Promissory_note",
+    i18n: {
+      en: "Promissory notes signature",
+      es: "Firma de pagarés",
+    },
+  },
+  {
+    id: "3",
+    code: "SoporteInvalid_warranties",
+    description: "Opción para gestión de garantías",
+    value: "Warranties",
     i18n: {
       en: "Warranties management",
-      es: "Gestión de garantías.",
+      es: "Gestión de garantías",
     },
-    value: "Warranties",
   },
-};
+]
 
 export const txtTaskQueryEnum = {
   txtCommercialManager: {

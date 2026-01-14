@@ -25,7 +25,9 @@ import {
   StylePrintListMobile,
   StyledPrintListMobileShow,
 } from "./styles";
-import { fieldLabels } from "./config";
+import { fieldLabelsEnum } from "./config";
+
+import { useEnum } from "@hooks/useEnum";
 
 export const CreditProfileInfo = () => {
   const [requests, setRequests] = useState({} as ICreditRequest);
@@ -34,6 +36,7 @@ export const CreditProfileInfo = () => {
   const { creditRequestCode } = useParams();
 
   const navigate = useNavigate();
+  const language = useEnum().lang;
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
@@ -95,14 +98,14 @@ export const CreditProfileInfo = () => {
                       iconBefore={<MdOutlineChevronLeft />}
                       onClick={() => navigate(-1)}
                     >
-                      {fieldLabels.back}
+                      {fieldLabelsEnum.back.i18n[language]}
                     </Button>
                     <Button
                       spacing="compact"
                       variant="filled"
                       onClick={() => print()}
                     >
-                      {fieldLabels.print}
+                      {fieldLabelsEnum.print.i18n[language]}
                     </Button>
                   </Stack>
                 </StyledNoPrint>
@@ -114,7 +117,7 @@ export const CreditProfileInfo = () => {
                       appearance="gray"
                       weight="bold"
                     >
-                      {fieldLabels.creditProfile}
+                      {fieldLabelsEnum.creditProfile.i18n[language]}
                     </Text>
                     <Text
                       type="title"
@@ -157,7 +160,7 @@ export const CreditProfileInfo = () => {
                       appearance="gray"
                       weight="bold"
                     >
-                      {fieldLabels.creditProfile}
+                      {fieldLabelsEnum.creditProfile.i18n[language]}
                     </Text>
                     <StyledUl>
                       <StyledLi>
@@ -203,7 +206,7 @@ export const CreditProfileInfo = () => {
                     iconBefore={<MdOutlineChevronLeft />}
                     onClick={() => navigate(-1)}
                   >
-                    {fieldLabels.back}
+                    {fieldLabelsEnum.back.i18n[language]}
                   </Button>
                 </StyledNoPrint>
                 <Text
@@ -212,7 +215,7 @@ export const CreditProfileInfo = () => {
                   appearance="gray"
                   weight="bold"
                 >
-                  {fieldLabels.creditProfile}
+                  {fieldLabelsEnum.creditProfile.i18n[language]}
                 </Text>
                 <StyledUl>
                   <StyledLi>
@@ -252,7 +255,7 @@ export const CreditProfileInfo = () => {
                     spacing="compact"
                     variant="filled"
                   >
-                    {fieldLabels.print}
+                    {fieldLabelsEnum.print.i18n[language]}
                   </Button>
                 </StyledNoPrint>
               </>

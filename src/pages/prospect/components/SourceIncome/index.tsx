@@ -9,7 +9,7 @@ import {
   IOption,
 } from "@inubekit/inubekit";
 
-import { incomeCardData } from "@components/cards/IncomeCard/config";
+import { incomeCardDataEnum } from "@components/cards/IncomeCard/config";
 import { CardGray } from "@components/cards/CardGray";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import {
@@ -20,6 +20,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { RestoreIncomeInformationByBorrowerId } from "@services/creditRequest/command/restoreIncome";
+import { useEnum } from "@hooks/useEnum";
 
 import { IIncomeSources } from "../CreditProspect/types";
 import { IncomeEmployment, IncomeCapital, MicroBusinesses } from "./config";
@@ -61,6 +62,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
   const [messageError, setMessageError] = useState("");
 
   const isMobile = useMediaQuery("(max-width:880px)");
+  const language = useEnum().lang;
 
   const dataValues = data
     ? {
@@ -220,7 +222,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
             {!isMobile && (
               <Stack direction="column" gap="8px">
                 <Text type="body" size="small" weight="bold" appearance="dark">
-                  {incomeCardData.borrower}
+                  {incomeCardDataEnum.borrower.i18n[language]}
                 </Text>
                 <Text type="title" size="medium">
                   {borrowerOptions[0].label}
@@ -229,7 +231,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
             )}
             {isMobile && (
               <CardGray
-                label={incomeCardData.borrower}
+                label={incomeCardDataEnum.borrower.i18n[language]}
                 placeHolder={borrowerIncome?.borrower}
                 data={borrowerOptions[0].label}
                 apparencePlaceHolder="gray"
@@ -250,7 +252,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
                 {currencyFormat(totalSum())}
               </Text>
               <Text size="small" appearance="gray" weight="normal">
-                {incomeCardData.income}
+                {incomeCardDataEnum.income.i18n[language]}
               </Text>
             </Stack>
             <Stack
@@ -264,7 +266,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
                 fullwidth={isMobile}
                 onClick={() => setIsOpenModal(true)}
               >
-                {incomeCardData.restore}
+                {incomeCardDataEnum.restore.i18n[language]}
               </Button>
               {showEdit && (
                 <Button
@@ -299,18 +301,21 @@ export function SourceIncome(props: ISourceIncomeProps) {
                   ShowSupport={ShowSupport}
                   disabled={disabled}
                   onValueChange={handleIncomeChange.bind(null, "employment")}
+                  language={language}
                 />
                 <IncomeCapital
                   values={borrowerIncome.capital}
                   ShowSupport={ShowSupport}
                   disabled={disabled}
                   onValueChange={handleIncomeChange.bind(null, "capital")}
+                  language={language}
                 />
                 <MicroBusinesses
                   values={borrowerIncome.businesses}
                   ShowSupport={ShowSupport}
                   disabled={disabled}
                   onValueChange={handleIncomeChange.bind(null, "businesses")}
+                  language={language}
                 />
               </>
             )}
@@ -319,13 +324,13 @@ export function SourceIncome(props: ISourceIncomeProps) {
       </Stack>
       {isOpenModal && (
         <BaseModal
-          title={incomeCardData.restore}
-          nextButton={incomeCardData.restore}
+          title={incomeCardDataEnum.restore.i18n[language]}
+          nextButton={incomeCardDataEnum.restore.i18n[language]}
           handleNext={handleRestore}
           handleClose={() => setIsOpenModal(false)}
           width={isMobile ? "290px" : "400px"}
         >
-          <Text>{incomeCardData.description}</Text>
+          <Text>{incomeCardDataEnum.description.i18n[language]}</Text>
         </BaseModal>
       )}
       {isOpenEditModal && (

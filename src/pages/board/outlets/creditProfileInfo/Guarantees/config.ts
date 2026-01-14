@@ -1,9 +1,3 @@
-export const dataGuarantees = {
-  required: "Requeridas:",
-  offered: "Ofrecidas:",
-  active: "Vigentes:",
-};
-
 export const dataGuaranteesEnum = {
   required: {
     code: "DataGuarantees_required",

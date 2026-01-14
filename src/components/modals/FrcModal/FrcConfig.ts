@@ -1,52 +1,3 @@
-export const frcConfig = {
-  title: "Endeudamiento máximo x FRC",
-  subTitle: "Score de riesgo",
-  totalScoreLabel: "Puntaje total",
-  totalScoreMax: "/1000",
-  seniorityLabel: "Antigüedad",
-  seniorityMax: "/200",
-  centralRiskLabel: "Central de riesgo",
-  centralRiskMax: "/200",
-  employmentStabilityLabel: "Índice de estabilidad laboral",
-  employmentStabilityMax: "/300",
-  maritalStatusLabel: "Estado civil - Casado",
-  maritalStatusMax: "/50",
-  economicActivityLabel: "Actividad economica - Pensionado",
-  economicActivityMax: "/200",
-  incomesLabel: "(+) Ingresos mensuales",
-  timesIncome: "(x) No. de veces el ingreso para este score",
-  maxIndebtedness: "Endeudamiento máximo",
-  closeBtn: "Cerrar",
-  loading: "Cargando...",
-  intercept: "Intercepto",
-  maxLimit: "(=) Tope máximo",
-  totalPortafolio: "(-) Cartera total vigente",
-  scoreLabel: "749",
-  infoModal: {
-    title: "Información",
-    button: "Entendido",
-  },
-  infoTexts: {
-    intercept:
-      "El intercepto es el valor base inicial del análisis de riesgo crediticio. Representa el punto de partida del score antes de aplicar otras variables.",
-    seniority:
-      "La antigüedad evalúa el tiempo de relación del cliente con la entidad. Mayor antigüedad generalmente indica mayor estabilidad y confianza.",
-    centralRisk:
-      "La central de riesgo verifica el historial crediticio del cliente en el sistema financiero. Un buen comportamiento mejora el puntaje.",
-    employmentStability:
-      "Este índice mide la estabilidad laboral del cliente. Considera tiempo en el empleo actual y tipo de vinculación laboral.",
-    maritalStatus:
-      "El estado civil puede influir en la capacidad de pago. Algunos estados civiles se consideran de mayor estabilidad financiera.",
-    economicActivity:
-      "La actividad económica clasifica la fuente de ingresos. Diferentes actividades tienen distintos niveles de riesgo asociados.",
-  },
-  error: {
-    title: "Error cargando datos",
-    message:
-      "No se pudieron cargar los datos. Por favor, intente nuevamente más tarde.",
-  },
-};
-
 export const frcConfigEnum = {
   title: {
     code: "FRC_title",
@@ -54,6 +5,60 @@ export const frcConfigEnum = {
     i18n: {
       en: "Maximum indebtedness by FRC",
       es: "Endeudamiento máximo x FRC",
+    },
+  },
+  totalScoreMax: {
+    id: "totalScoreMax",
+    code: "FRC_totalScoreMax",
+    description: "Sufijo para el puntaje total máximo",
+    i18n: {
+      en: "/1000",
+      es: "/1000",
+    },
+  },
+  seniorityMax: {
+    id: "seniorityMax",
+    code: "FRC_seniorityMax",
+    description: "Sufijo para el puntaje máximo de antigüedad",
+    i18n: {
+      en: "/200",
+      es: "/200",
+    },
+  },
+  centralRiskMax: {
+    id: "centralRiskMax",
+    code: "FRC_centralRiskMax",
+    description: "Sufijo para el puntaje máximo de central de riesgo",
+    i18n: {
+      en: "/200",
+      es: "/200",
+    },
+  },
+  employmentStabilityMax: {
+    id: "employmentStabilityMax",
+    code: "FRC_employmentStabilityMax",
+    description: "Sufijo para el puntaje máximo de estabilidad laboral",
+    i18n: {
+      en: "/300",
+      es: "/300",
+    },
+  },
+  maritalStatusMax: {
+    id: "maritalStatusMax",
+    code: "FRC_maritalStatusMax",
+    description: "Sufijo para el puntaje máximo de estado civil",
+    i18n: {
+      en: "/50",
+      es: "/50",
+    },
+  },
+  economicActivityMax: {
+    id: "economicActivityMax",
+    code: "FRC_economicActivityMax",
+    description: "Sufijo para el puntaje máximo de actividad económica",
+    i18n: {
+      en: "/200",
+      es: "/200",
     },
   },
   subTitle: {

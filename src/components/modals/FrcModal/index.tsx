@@ -20,8 +20,9 @@ import { Fieldset } from "@components/data/Fieldset";
 import { getCreditLimitByCreditRiskAnalysis } from "@services/creditLimit/getCreditLimitByCreditRiskAnalysis";
 import { IMaximumCreditLimitAnalysis } from "@services/creditLimit/types";
 import { ScrollableContainer } from "@pages/prospect/components/AddProductModal/styles";
+import { useEnum } from "@hooks/useEnum";
 
-import { frcConfig } from "./FrcConfig";
+import { frcConfigEnum } from "./FrcConfig";
 import { StyledExpanded } from "./styles";
 
 export interface ScoreModalProps {
@@ -68,6 +69,8 @@ export const ScoreModal = (props: ScoreModalProps) => {
     totalPortfolioObligation: 0,
   });
 
+  const language = useEnum().lang;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -93,14 +96,25 @@ export const ScoreModal = (props: ScoreModalProps) => {
     setShowInfoModal(true);
   };
 
-  const getInfoText = () => {
-    return frcConfig.infoTexts[currentInfoType];
+const getInfoText = (type: string) => {
+  const infoMapping: Record<string, keyof typeof frcConfigEnum> = {
+    intercept: "infoTextsIntercept",
+    seniority: "infoTextsSeniority",
+    centralRisk: "infoTextsCentralRisk",
+    employmentStability: "infoTextsEmploymentStability",
+    maritalStatus: "infoTextsMaritalStatus",
+    economicActivity: "infoTextsEconomicActivity",
   };
+
+  const enumKey = infoMapping[type];
+  
+  return enumKey ? frcConfigEnum[enumKey].i18n[language] : "";
+};
 
   return (
     <BaseModal
-      title={frcConfig.title}
-      nextButton={frcConfig.closeBtn}
+      title={frcConfigEnum.title.i18n[language]}
+      nextButton={frcConfigEnum.closeBtn.i18n[language]}
       handleNext={handleClose}
       handleClose={handleClose}
       variantNext="outlined"
@@ -110,303 +124,303 @@ export const ScoreModal = (props: ScoreModalProps) => {
         <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
-            {frcConfig.error.title}
+            {frcConfigEnum.errorTitle.i18n[language]}
           </Text>
           <Text size="small" appearance="dark" textAlign="center">
-            {frcConfig.error.message}
+            {frcConfigEnum.errorMessage.i18n[language]}
           </Text>
         </Stack>
       ) : (
         <ScrollableContainer $smallScreen={isMobile} $height={isMobile ? "440px" : "auto"}>
-        <Stack direction="column" gap="16px" padding="0 10px 0 0">
-          <Stack direction="column" gap="12px">
-            <Stack alignItems="center" justifyContent="space-between">
-              <Stack gap="8px">
-                <Icon
-                  appearance="primary"
-                  icon={<MdQueryStats />}
-                  disabled={false}
-                  size="34px"
-                />
-                <Text appearance="primary" size="large" type="title">
-                  {frcConfig.subTitle}
-                </Text>
+          <Stack direction="column" gap="16px" padding="0 10px 0 0">
+            <Stack direction="column" gap="12px">
+              <Stack alignItems="center" justifyContent="space-between">
+                <Stack gap="8px">
+                  <Icon
+                    appearance="primary"
+                    icon={<MdQueryStats />}
+                    disabled={false}
+                    size="34px"
+                  />
+                  <Text appearance="primary" size="large" type="title">
+                    {frcConfigEnum.subTitle.i18n[language]}
+                  </Text>
+                </Stack>
+                <Stack alignItems="center">
+                  {loading ? (
+                    <SkeletonLine width="70px" animated={true} />
+                  ) : (
+                    <Text
+                      type="body"
+                      weight="bold"
+                      size="medium"
+                      appearance="primary"
+                    >
+                      {dataMaximumCreditLimitReciprocity.creditRiskScore || 0}
+                    </Text>
+                  )}
+                  <Text type="body" size="medium">
+                    {frcConfigEnum.totalScoreMax.i18n[language]}
+                  </Text>
+                  <StyledExpanded $expanded={isExpanded}>
+                    <Icon
+                      icon={<MdExpandMore />}
+                      appearance="primary"
+                      cursorHover
+                      onClick={() => setIsExpanded((prev) => !prev)}
+                    />
+                  </StyledExpanded>
+                </Stack>
               </Stack>
-              <Stack alignItems="center">
+              <Divider />
+              {isExpanded && (
+                <>
+                  <Stack justifyContent="space-between" alignItems="center">
+                    <Text weight="bold" size="large" type="label">
+                      {frcConfigEnum.intercept.i18n[language]}
+                    </Text>
+                    {loading ? (
+                      <SkeletonLine width="70px" animated={true} />
+                    ) : (
+                      <Stack gap="6px">
+                        <Text appearance="primary" weight="bold" size="large">
+                          0
+                        </Text>
+                        <Stack margin="4px 0 0 0">
+                          <Icon
+                            icon={<MdInfoOutline />}
+                            appearance="primary"
+                            size="14px"
+                            onClick={() => handleInfoClick("intercept")}
+                            cursorHover
+                          />
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Stack>
+                  <Stack justifyContent="space-between" alignItems="center">
+                    <Text weight="bold" size="large" type="label">
+                      {frcConfigEnum.seniorityLabel.i18n[language]}
+                    </Text>
+                    {loading ? (
+                      <SkeletonLine width="70px" animated={true} />
+                    ) : (
+                      <Stack gap="6px">
+                        <Text appearance="primary" weight="bold" size="large">
+                          0
+                        </Text>
+                        <Stack margin="4px 0 0 0">
+                          <Icon
+                            icon={<MdInfoOutline />}
+                            appearance="primary"
+                            size="14px"
+                            onClick={() => handleInfoClick("seniority")}
+                            cursorHover
+                          />
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Stack>
+                  <Stack justifyContent="space-between" alignItems="center">
+                    <Text weight="bold" size="large" type="label">
+                      {frcConfigEnum.centralRiskLabel.i18n[language]}
+                    </Text>
+                    {loading ? (
+                      <SkeletonLine width="70px" animated={true} />
+                    ) : (
+                      <Stack gap="6px">
+                        <Text appearance="primary" weight="bold" size="large">
+                          0
+                        </Text>
+                        <Stack margin="4px 0 0 0">
+                          <Icon
+                            icon={<MdInfoOutline />}
+                            appearance="primary"
+                            size="14px"
+                            onClick={() => handleInfoClick("centralRisk")}
+                            cursorHover
+                          />
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Stack>
+                  <Stack justifyContent="space-between" alignItems="center">
+                    <Text weight="bold" size="large" type="label">
+                      {frcConfigEnum.employmentStabilityLabel.i18n[language]}
+                    </Text>
+                    {loading ? (
+                      <SkeletonLine width="70px" animated={true} />
+                    ) : (
+                      <Stack gap="6px">
+                        <Text appearance="primary" weight="bold" size="large">
+                          0
+                        </Text>
+                        <Stack margin="4px 0 0 0">
+                          <Icon
+                            icon={<MdInfoOutline />}
+                            appearance="primary"
+                            size="14px"
+                            onClick={() => handleInfoClick("employmentStability")}
+                            cursorHover
+                          />
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Stack>
+                  <Stack justifyContent="space-between" alignItems="center">
+                    <Text weight="bold" size="large" type="label">
+                      {frcConfigEnum.maritalStatusLabel.i18n[language]}
+                    </Text>
+                    {loading ? (
+                      <SkeletonLine width="70px" animated={true} />
+                    ) : (
+                      <Stack gap="6px">
+                        <Text appearance="primary" weight="bold" size="large">
+                          0
+                        </Text>
+                        <Stack margin="4px 0 0 0">
+                          <Icon
+                            icon={<MdInfoOutline />}
+                            appearance="primary"
+                            size="14px"
+                            onClick={() => handleInfoClick("maritalStatus")}
+                            cursorHover
+                          />
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Stack>
+                  <Stack justifyContent="space-between" alignItems="center">
+                    <Text weight="bold" size="large" type="label">
+                      {frcConfigEnum.economicActivityLabel.i18n[language]}
+                    </Text>
+                    {loading ? (
+                      <SkeletonLine width="70px" animated={true} />
+                    ) : (
+                      <Stack gap="6px">
+                        <Text appearance="primary" weight="bold" size="large">
+                          0
+                        </Text>
+                        <Stack margin="4px 0 0 0">
+                          <Icon
+                            icon={<MdInfoOutline />}
+                            appearance="primary"
+                            size="14px"
+                            onClick={() => handleInfoClick("economicActivity")}
+                            cursorHover
+                          />
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Stack>
+                </>
+              )}
+            </Stack>
+            <Divider dashed />
+            <Stack justifyContent="space-between">
+              <Text weight="bold" size="large" type="label">
+                {frcConfigEnum.incomesLabel.i18n[language]}
+              </Text>
+              <Stack>
+                <Text appearance="success">$</Text>
                 {loading ? (
                   <SkeletonLine width="70px" animated={true} />
                 ) : (
-                  <Text
-                    type="body"
-                    weight="bold"
-                    size="medium"
-                    appearance="primary"
-                  >
-                    {dataMaximumCreditLimitReciprocity.creditRiskScore || 0}
+                  <Text>
+                    {currencyFormat(
+                      dataMaximumCreditLimitReciprocity.totalMonthlyIncome,
+                      false
+                    )}
                   </Text>
                 )}
-                <Text type="body" size="medium">
-                  {frcConfig.totalScoreMax}
-                </Text>
-                <StyledExpanded $expanded={isExpanded}>
-                  <Icon
-                    icon={<MdExpandMore />}
-                    appearance="primary"
-                    cursorHover
-                    onClick={() => setIsExpanded((prev) => !prev)}
-                  />
-                </StyledExpanded>
               </Stack>
             </Stack>
-            <Divider />
-            {isExpanded && (
-              <>
-                <Stack justifyContent="space-between" alignItems="center">
-                  <Text weight="bold" size="large" type="label">
-                    {frcConfig.intercept}
-                  </Text>
-                  {loading ? (
-                    <SkeletonLine width="70px" animated={true} />
-                  ) : (
-                    <Stack gap="6px">
-                      <Text appearance="primary" weight="bold" size="large">
-                        0
-                      </Text>
-                      <Stack margin="4px 0 0 0">
-                        <Icon
-                          icon={<MdInfoOutline />}
-                          appearance="primary"
-                          size="14px"
-                          onClick={() => handleInfoClick("intercept")}
-                          cursorHover
-                        />
-                      </Stack>
-                    </Stack>
-                  )}
-                </Stack>
-                <Stack justifyContent="space-between" alignItems="center">
-                  <Text weight="bold" size="large" type="label">
-                    {frcConfig.seniorityLabel}
-                  </Text>
-                  {loading ? (
-                    <SkeletonLine width="70px" animated={true} />
-                  ) : (
-                    <Stack gap="6px">
-                      <Text appearance="primary" weight="bold" size="large">
-                        0
-                      </Text>
-                      <Stack margin="4px 0 0 0">
-                        <Icon
-                          icon={<MdInfoOutline />}
-                          appearance="primary"
-                          size="14px"
-                          onClick={() => handleInfoClick("seniority")}
-                          cursorHover
-                        />
-                      </Stack>
-                    </Stack>
-                  )}
-                </Stack>
-                <Stack justifyContent="space-between" alignItems="center">
-                  <Text weight="bold" size="large" type="label">
-                    {frcConfig.centralRiskLabel}
-                  </Text>
-                  {loading ? (
-                    <SkeletonLine width="70px" animated={true} />
-                  ) : (
-                    <Stack gap="6px">
-                      <Text appearance="primary" weight="bold" size="large">
-                        0
-                      </Text>
-                      <Stack margin="4px 0 0 0">
-                        <Icon
-                          icon={<MdInfoOutline />}
-                          appearance="primary"
-                          size="14px"
-                          onClick={() => handleInfoClick("centralRisk")}
-                          cursorHover
-                        />
-                      </Stack>
-                    </Stack>
-                  )}
-                </Stack>
-                <Stack justifyContent="space-between" alignItems="center">
-                  <Text weight="bold" size="large" type="label">
-                    {frcConfig.employmentStabilityLabel}
-                  </Text>
-                  {loading ? (
-                    <SkeletonLine width="70px" animated={true} />
-                  ) : (
-                    <Stack gap="6px">
-                      <Text appearance="primary" weight="bold" size="large">
-                        0
-                      </Text>
-                      <Stack margin="4px 0 0 0">
-                        <Icon
-                          icon={<MdInfoOutline />}
-                          appearance="primary"
-                          size="14px"
-                          onClick={() => handleInfoClick("employmentStability")}
-                          cursorHover
-                        />
-                      </Stack>
-                    </Stack>
-                  )}
-                </Stack>
-                <Stack justifyContent="space-between" alignItems="center">
-                  <Text weight="bold" size="large" type="label">
-                    {frcConfig.maritalStatusLabel}
-                  </Text>
-                  {loading ? (
-                    <SkeletonLine width="70px" animated={true} />
-                  ) : (
-                    <Stack gap="6px">
-                      <Text appearance="primary" weight="bold" size="large">
-                        0
-                      </Text>
-                      <Stack margin="4px 0 0 0">
-                        <Icon
-                          icon={<MdInfoOutline />}
-                          appearance="primary"
-                          size="14px"
-                          onClick={() => handleInfoClick("maritalStatus")}
-                          cursorHover
-                        />
-                      </Stack>
-                    </Stack>
-                  )}
-                </Stack>
-                <Stack justifyContent="space-between" alignItems="center">
-                  <Text weight="bold" size="large" type="label">
-                    {frcConfig.economicActivityLabel}
-                  </Text>
-                  {loading ? (
-                    <SkeletonLine width="70px" animated={true} />
-                  ) : (
-                    <Stack gap="6px">
-                      <Text appearance="primary" weight="bold" size="large">
-                        0
-                      </Text>
-                      <Stack margin="4px 0 0 0">
-                        <Icon
-                          icon={<MdInfoOutline />}
-                          appearance="primary"
-                          size="14px"
-                          onClick={() => handleInfoClick("economicActivity")}
-                          cursorHover
-                        />
-                      </Stack>
-                    </Stack>
-                  )}
-                </Stack>
-              </>
-            )}
-          </Stack>
-          <Divider dashed />
-          <Stack justifyContent="space-between">
-            <Text weight="bold" size="large" type="label">
-              {frcConfig.incomesLabel}
-            </Text>
-            <Stack>
-              <Text appearance="success">$</Text>
-              {loading ? (
-                <SkeletonLine width="70px" animated={true} />
-              ) : (
-                <Text>
-                  {currencyFormat(
-                    dataMaximumCreditLimitReciprocity.totalMonthlyIncome,
-                    false
-                  )}
-                </Text>
-              )}
-            </Stack>
-          </Stack>
-          <Stack justifyContent="space-between" alignItems="center">
-            <Text weight="bold" size="large" type="label">
-              {frcConfig.timesIncome}
-            </Text>
-            {loading ? (
-              <SkeletonLine width="70px" animated={true} />
-            ) : (
-              <Text type="body" size="large">
-                x{dataMaximumCreditLimitReciprocity.creditRiskMultiplier}
+            <Stack justifyContent="space-between" alignItems="center">
+              <Text weight="bold" size="large" type="label">
+                {frcConfigEnum.timesIncome.i18n[language]}
               </Text>
-            )}
-          </Stack>
-          <Divider dashed />
-          <Stack justifyContent="space-between">
-            <Text weight="bold" size="large" type="label">
-              {frcConfig.maxLimit}
-            </Text>
-            <Stack>
-              <Text appearance="success">$</Text>
               {loading ? (
                 <SkeletonLine width="70px" animated={true} />
               ) : (
-                <Text>
-                  {currencyFormat(
-                    dataMaximumCreditLimitReciprocity.maxAmountAvailableByCreditRiskAnalysis,
-                    false
-                  )}
+                <Text type="body" size="large">
+                  x{dataMaximumCreditLimitReciprocity.creditRiskMultiplier}
                 </Text>
               )}
             </Stack>
-          </Stack>
-          <Stack justifyContent="space-between" alignItems="center">
-            <Text weight="bold" size="large" type="label">
-              {frcConfig.totalPortafolio}
-            </Text>
-            <Stack>
-              <Text appearance="success">$</Text>
-              {loading ? (
-                <SkeletonLine width="70px" animated={true} />
-              ) : (
-                <Text>
-                  {currencyFormat(
-                    dataMaximumCreditLimitReciprocity.assignedCreditLimit,
-                    false
-                  )}
-                </Text>
-              )}
-            </Stack>
-          </Stack>
-          <Fieldset>
-            <Stack alignItems="center" direction="column" gap="8px">
-              {loading ? (
-                <SkeletonLine height="50px" width="250px" animated />
-              ) : (
-                <Text
-                  appearance="primary"
-                  weight="bold"
-                  type="headline"
-                  size="large"
-                >
-                  $
-                  {currencyFormat(
-                    dataMaximumCreditLimitReciprocity.totalPortfolioObligation | 0,
-                    false
-                  )}
-                </Text>
-              )}
+            <Divider dashed />
+            <Stack justifyContent="space-between">
+              <Text weight="bold" size="large" type="label">
+                {frcConfigEnum.maxLimit.i18n[language]}
+              </Text>
               <Stack>
-                <Text appearance="gray" size="small" textAlign="center">
-                  {frcConfig.maxIndebtedness}
-                </Text>
+                <Text appearance="success">$</Text>
+                {loading ? (
+                  <SkeletonLine width="70px" animated={true} />
+                ) : (
+                  <Text>
+                    {currencyFormat(
+                      dataMaximumCreditLimitReciprocity.maxAmountAvailableByCreditRiskAnalysis,
+                      false
+                    )}
+                  </Text>
+                )}
               </Stack>
             </Stack>
-          </Fieldset>
-          {showInfoModal && (
-            <BaseModal
-              title={frcConfig.infoModal.title}
-              nextButton={frcConfig.infoModal.button}
-              handleClose={() => setShowInfoModal(false)}
-              handleNext={() => setShowInfoModal(false)}
-              width={isMobile ? "290px" : "500px"}
-            >
-              <Text>{getInfoText()}</Text>
-            </BaseModal>
-          )}
-        </Stack>
+            <Stack justifyContent="space-between" alignItems="center">
+              <Text weight="bold" size="large" type="label">
+                {frcConfigEnum.totalPortafolio.i18n[language]}
+              </Text>
+              <Stack>
+                <Text appearance="success">$</Text>
+                {loading ? (
+                  <SkeletonLine width="70px" animated={true} />
+                ) : (
+                  <Text>
+                    {currencyFormat(
+                      dataMaximumCreditLimitReciprocity.assignedCreditLimit,
+                      false
+                    )}
+                  </Text>
+                )}
+              </Stack>
+            </Stack>
+            <Fieldset>
+              <Stack alignItems="center" direction="column" gap="8px">
+                {loading ? (
+                  <SkeletonLine height="50px" width="250px" animated />
+                ) : (
+                  <Text
+                    appearance="primary"
+                    weight="bold"
+                    type="headline"
+                    size="large"
+                  >
+                    $
+                    {currencyFormat(
+                      dataMaximumCreditLimitReciprocity.totalPortfolioObligation | 0,
+                      false
+                    )}
+                  </Text>
+                )}
+                <Stack>
+                  <Text appearance="gray" size="small" textAlign="center">
+                    {frcConfigEnum.maxIndebtedness.i18n[language]}
+                  </Text>
+                </Stack>
+              </Stack>
+            </Fieldset>
+            {showInfoModal && (
+              <BaseModal
+                title={frcConfigEnum.infoModalTitle.i18n[language]}
+                nextButton={frcConfigEnum.infoModalButton.i18n[language]}
+                handleClose={() => setShowInfoModal(false)}
+                handleNext={() => setShowInfoModal(false)}
+                width={isMobile ? "290px" : "500px"}
+              >
+                <Text>{getInfoText(currentInfoType)}</Text>
+              </BaseModal>
+            )}
+          </Stack>
         </ScrollableContainer>
       )}
     </BaseModal>

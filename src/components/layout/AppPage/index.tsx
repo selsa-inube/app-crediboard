@@ -24,6 +24,7 @@ import { IUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnreadN
 import { getUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnreadNoveltiesByUser";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
+import { useEnum } from "@hooks/useEnum";
 
 import {
   StyledAppPage,
@@ -40,7 +41,7 @@ import {
   StyledCardsContainer,
   StyledUserImage,
 } from "./styles";
-import { emptyNoveltiesConfig } from "./config/errorNovelties";
+import { emptyNoveltiesConfigEnum } from "./config/errorNovelties";
 
 const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
   return (
@@ -65,6 +66,8 @@ function AppPage() {
   );
   const navigate = useNavigate();
   const { businessUnitSigla } = useContext(AppContext);
+  const language = useEnum().lang;
+
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -291,11 +294,11 @@ function AppPage() {
                       )}
                       referenceCode={novelty.creditRequestCode}
                       description={novelty.traceValue}
-                      actionText={emptyNoveltiesConfig.novelties.actionText}
+                      actionText={emptyNoveltiesConfigEnum.novelties.actionText.i18n[language]}
                       onActionClick={() =>
                         handleNoveltyActionClick(novelty.creditRequestCode)
                       }
-                      actionIcon={emptyNoveltiesConfig.novelties.actionIcon}
+                      actionIcon={emptyNoveltiesConfigEnum.novelties.actionIcon}
                     />
                   ))
                 ) : (
@@ -307,15 +310,15 @@ function AppPage() {
                     width={isMobile ? "300px" : "500px"}
                   >
                     <StyledUserImage
-                      src={emptyNoveltiesConfig.image.src}
-                      alt={emptyNoveltiesConfig.image.alt}
+                      src={emptyNoveltiesConfigEnum.image.src}
+                      alt={emptyNoveltiesConfigEnum.image.alt.i18n[language]}
                     />
                     <Stack gap="4px" direction="column">
                       <Text size="large" appearance="gray" textAlign="center">
-                        {emptyNoveltiesConfig.messages.primary}
+                        {emptyNoveltiesConfigEnum.messages.primary.i18n[language]}
                       </Text>
                       <Text size="large" appearance="dark" textAlign="center">
-                        {emptyNoveltiesConfig.messages.secondary}
+                        {emptyNoveltiesConfigEnum.messages.secondary.i18n[language]}
                       </Text>
                     </Stack>
                   </Stack>

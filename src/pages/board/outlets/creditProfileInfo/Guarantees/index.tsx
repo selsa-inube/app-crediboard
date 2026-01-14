@@ -8,8 +8,9 @@ import { StyledDivider } from "@components/cards/SummaryCard/styles";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { getGuaranteesSummary } from "@services/creditRequest/query/guaranteesSummary";
 import { IGuaranteesSummary } from "@services/creditRequest/query/types";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataGuarantees } from "./config";
+import { dataGuaranteesEnum } from "./config";
 
 interface GuaranteesProps {
   businessUnitPublicCode: string;
@@ -27,6 +28,7 @@ export function Guarantees(props: GuaranteesProps) {
     prospectCode,
     isMobile,
   } = props;
+  const language = useEnum().lang;
 
   const [guaranteesSummary, setGuaranteesSummary] =
     useState<IGuaranteesSummary | null>(null);
@@ -83,7 +85,7 @@ export function Guarantees(props: GuaranteesProps) {
         <Stack direction="column" gap={isMobile ? "8px" : "12px"}>
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuarantees.required}
+              {dataGuaranteesEnum.required.i18n[language]}
             </Text>
             <Text
               appearance="primary"
@@ -97,7 +99,7 @@ export function Guarantees(props: GuaranteesProps) {
           <StyledDivider />
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuarantees.offered}
+              {dataGuaranteesEnum.offered.i18n[language]}
             </Text>
             <Text
               appearance="primary"
@@ -111,7 +113,7 @@ export function Guarantees(props: GuaranteesProps) {
           <StyledDivider />
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuarantees.active}
+              {dataGuaranteesEnum.active.i18n[language]}
             </Text>
             <Text
               appearance="primary"

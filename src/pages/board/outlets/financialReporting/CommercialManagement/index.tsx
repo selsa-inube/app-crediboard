@@ -27,7 +27,7 @@ import {
   IModeOfDisbursement,
 } from "@services/creditRequest/query/types";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
-import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
+import { textFlagsUsersEnum } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
   capitalizeFirstLetter,
@@ -55,14 +55,15 @@ import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitM
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
-import { boardColumns } from "@config/pages/board/board";
+import { boardColumnsEnum } from "@config/pages/board/board";
 import { IProspectSummaryById } from "@services/prospect/types";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
+import { useEnum } from "@hooks/useEnum";
 
 import { TBoardColumn } from "../../boardlayout/config/board";
-import { titlesModal } from "../ToDo/config";
-import { errorMessages } from "../config";
-import { incomeOptions, menuOptions, tittleOptions, initialDisbursementState, infoErrorProspect } from "./config/config";
+import { titlesModalEnum } from "../ToDo/config";
+import { errorMessagesEnum } from "../config";
+import { incomeOptions, menuOptions, tittleOptionsEnum, initialDisbursementState, infoErrorProspectEnum } from "./config/config";
 import {
   StyledCollapseIcon,
   StyledFieldset,
@@ -148,6 +149,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   const navigation = useNavigate();
   const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width: 720px)");
+  const language = useEnum().lang;
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
@@ -162,7 +164,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   useEffect(() => {
-    console.log("prospectData: ", prospectData);
     setLocalProspectData(prospectData);
     if (prospectData !== undefined) {
       setLoading(false);
@@ -240,8 +241,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       } catch (error) {
         console.error(error);
         addFlag({
-          title: textFlagsUsers.titleWarning,
-          description: textFlagsUsers.descriptionWarning,
+          title: textFlagsUsersEnum.titleWarning.i18n[language],
+          description: textFlagsUsersEnum.descriptionWarning.i18n[language],
           appearance: "danger",
           duration: 5000,
         });
@@ -482,12 +483,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
   const availableEditCreditRequest = !(data.stage === "GESTION_COMERCIAL" || data.stage === "VERIFICACION_APROBACION");
 
-  let normalizedStageTitle: TBoardColumn[] | string = boardColumns.filter((item) => {
+  let normalizedStageTitle: TBoardColumn[] | string = boardColumnsEnum.filter((item) => {
     return item.id === data.stage;
   }) as TBoardColumn[];
 
   if (normalizedStageTitle[0]) {
-    normalizedStageTitle = normalizedStageTitle[0].value;
+    normalizedStageTitle = normalizedStageTitle[0].i18n[language];
   } else {
     normalizedStageTitle = "";
   }
@@ -521,16 +522,16 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   return (
     <>
       <Fieldset
-        title={errorMessages.comercialManagement.titleCard}
+        title={errorMessagesEnum.comercialManagement.titleCard.i18n[language]}
         descriptionTitle={normalizedStageTitle}
         hasError={!data ? true : false}
       >
         {!data ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessages.comercialManagement.title}
-            description={errorMessages.comercialManagement.description}
-            buttonDescription={errorMessages.comercialManagement.button}
+            title={errorMessagesEnum.comercialManagement.title.i18n[language]}
+            description={errorMessagesEnum.comercialManagement.description.i18n[language]}
+            buttonDescription={errorMessagesEnum.comercialManagement.button.i18n[language]}
             onRetry={() => navigation(-2)}
           />
         ) : (
@@ -541,7 +542,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   <Stack>
                     <Stack gap="6px" width="max-content">
                       <Text type="title" size="small" appearance="gray">
-                        {tittleOptions.titleCreditId}
+                        {tittleOptionsEnum.titleCreditId.i18n[language]}
                       </Text>
                       <Text type="title" size="small">
                         {data.creditRequestCode}
@@ -571,7 +572,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   )}
                   <Stack gap={!isMobile ? "4px" : "4px"}>
                     <Text type="title" size="small" appearance="gray">
-                      {tittleOptions.titleDestination}
+                      {tittleOptionsEnum.titleDestination.i18n[language]}
                     </Text>
                     <TruncatedText
                       text={data.moneyDestinationAbreviatedName}
@@ -583,7 +584,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   </Stack>
                   <Stack gap="4px">
                     <Text type="title" size="small" appearance="gray">
-                      {tittleOptions.tittleAmount}
+                      {tittleOptionsEnum.tittleAmount.i18n[language]}
                     </Text>
                     <Text type="title" size="small">
                       {data.loanAmount === 0
@@ -613,7 +614,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             spacing="compact"
                             path={`/extended-card/${creditRequestCode}/credit-profile`}
                           >
-                            {tittleOptions.titleProfile}
+                            {tittleOptionsEnum.titleProfile.i18n[language]}
                           </Button>
                           <Stack gap="2px" alignItems="center">
                             {
@@ -630,7 +631,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                                   }}
                                   disabled={errorGetProspects}
                                 >
-                                  {tittleOptions.titleDisbursement}
+                                  {tittleOptionsEnum.titleDisbursement.i18n[language]}
                                 </Button>
                               )
                             }
@@ -697,7 +698,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       path={`/extended-card/${creditRequestCode}/credit-profile`}
                       fullwidth
                     >
-                      {tittleOptions.titleProfile}
+                      {tittleOptionsEnum.titleProfile.i18n[language]}
                     </Button>
                   </StyledPrint>
                   <StyledPrint>
@@ -711,7 +712,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       }}
                       fullwidth
                     >
-                      {tittleOptions.titleDisbursement}
+                      {tittleOptionsEnum.titleDisbursement.i18n[language]}
                     </Button>
                   </StyledPrint>
                 </>
@@ -724,7 +725,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     fullwidth
                     iconBefore={<MdOutlinePhone />}
                   >
-                    {tittleOptions.titleCall}
+                    {tittleOptionsEnum.titleCall.i18n[language]}
                   </Button>
                   <Button
                     spacing="compact"
@@ -732,7 +733,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     fullwidth
                     iconBefore={<MdOutlineVideocam />}
                   >
-                    {tittleOptions.titleVideoCall}
+                    {tittleOptionsEnum.titleVideoCall.i18n[language]}
                   </Button>
                 </Stack>
               )}
@@ -759,7 +760,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           disabled={availableEditCreditRequest}
                           onClick={() => handleOpenModal("editProductModal")}
                         >
-                          {tittleOptions.titleAddProduct}
+                          {tittleOptionsEnum.titleAddProduct.i18n[language]}
                         </Button>
                       </Stack>
                     </StyledPrint>
@@ -790,7 +791,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                               }
                               onClick={() => handleOpenModal("extraPayments")}
                             >
-                              {tittleOptions.titleExtraPayments}
+                              {tittleOptionsEnum.titleExtraPayments.i18n[language]}
                             </Button>
                           )}
                       </Stack>
@@ -832,7 +833,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                                 handleOpenModal,
                                 prospectProducts?.some(
                                   (product) => product.extraordinaryInstallments
-                                )
+                                ),
+                                language
                               )}
                             />
                           )}
@@ -975,21 +977,21 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
             {infoModal && (
               <>
                 <BaseModal
-                  title={titlesModal.title}
-                  nextButton={titlesModal.textButtonNext}
+                  title={titlesModalEnum.title.i18n[language]}
+                  nextButton={titlesModalEnum.textButtonNext.i18n[language]}
                   handleNext={() => setInfoModal(false)}
                   handleClose={() => setInfoModal(false)}
                   width={isMobile ? "290px" : "400px"}
                 >
                   <Stack gap="16px" direction="column">
                     <Text weight="bold" size="large">
-                      {titlesModal.subTitle}
+                      {titlesModalEnum.subTitle.i18n[language]}
                     </Text>
                     <Text weight="normal" size="medium" appearance="gray">
                       {
                         errorGetProspects
-                          ? infoErrorProspect.description
-                          : titlesModal.description
+                          ? infoErrorProspectEnum.description.i18n[language]
+                          : titlesModalEnum.description.i18n[language]
                       }
                     </Text>
                   </Stack>

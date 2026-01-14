@@ -1,36 +1,3 @@
-export const approvalsConfig = {
-  title: "Evaluación del requisito",
-  approval: "Después de evaluar el requisito, ¿Cuál es tu respuesta?",
-  observations: "Observaciones",
-  observationdetails:
-    "Proporciona detalles acerca de la evaluación del requisito",
-  answer: "Respuesta",
-  answerPlaceHoleder: "Selecciona de la lista",
-  Cancel: "Cancelar",
-  confirm: "Confirmar",
-  titleError: "Lamentamos los inconvenientes",
-  maxLength: 200,
-};
-
-export const optionsAnswer = [
-  {
-    id: "compliant",
-    label: "Cumple",
-    value: "Cumple",
-  },
-  {
-    id: "does_not_comply",
-    label: "No cumple",
-    value: "No cumple",
-  },
-  { id: "approve", label: "Aprobar", value: "Aprobar" },
-  {
-    id: "reject",
-    label: "No cumple y rechazar solicitud",
-    value: "No cumple y rechazar solicitud",
-  },
-];
-
 export const approvalsConfigEnum = {
   title: {
     code: "Approvals_title",
@@ -108,30 +75,29 @@ export const approvalsConfigEnum = {
 
 export const optionsAnswerEnum = {
   compliant: {
+    id: "compliant",
+    value: "compliant",
     code: "Approvals_answer_compliant",
     description: "Compliant option",
-    i18n: {
-      en: "Compliant",
-      es: "Cumple",
-    },
+    i18n: { en: "Compliant", es: "Cumple" },
   },
   doesNotComply: {
+    id: "doesNotComply",
+    value: "doesNotComply",
     code: "Approvals_answer_doesNotComply",
     description: "Does not comply option",
-    i18n: {
-      en: "Does not comply",
-      es: "No cumple",
-    },
+    i18n: { en: "Does not comply", es: "No cumple" },
   },
   approve: {
+    id: "approve",
+    value: "approve",
     code: "Approvals_answer_approve",
     description: "Approve option",
-    i18n: {
-      en: "Approve",
-      es: "Aprobar",
-    },
+    i18n: { en: "Approve", es: "Aprobar" },
   },
   reject: {
+    id: "reject",
+    value: "reject",
     code: "Approvals_answer_reject",
     description: "Reject option",
     i18n: {

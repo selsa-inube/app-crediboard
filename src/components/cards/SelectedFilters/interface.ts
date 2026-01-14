@@ -11,6 +11,7 @@ export interface Filter {
 
 export interface SelectedFiltersProps {
   filters: Filter[];
+  language: "en" | "es";
   onRemove?: (filterId: string) => void;
 }
 

@@ -15,9 +15,10 @@ import { IProspect } from "@services/prospect/types";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
 import { CardGray } from "@components/cards/CardGray";
+import { useEnum } from "@hooks/useEnum";
 
 import { BaseModal } from "../baseModal";
-import { dataCreditProspect } from "./config";
+import { dataCreditProspectEnum } from "./config";
 
 interface IIncomeBorrowersModalProps {
   borrowersProspect: IProspect | undefined;
@@ -46,6 +47,9 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
     availableEditCreditRequest
   } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const language = useEnum().lang;
+
   const currentBorrower =
     dataProspect.borrowers?.find(
       (borrower) =>
@@ -86,8 +90,8 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
 
   return (
     <BaseModal
-      title={dataCreditProspect.incomeSources}
-      nextButton={dataCreditProspect.close}
+      title={dataCreditProspectEnum.incomeSources.i18n[language]}
+      nextButton={dataCreditProspectEnum.close.i18n[language]}
       handleNext={handleCloseModal}
       handleClose={handleCloseModal}
       width={isMobile ? "300px" : "auto"}
@@ -127,7 +131,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
                 fullwidth={isMobile}
                 disabled={editCreditApplication || availableEditCreditRequest}
               >
-                {dataCreditProspect.edit}
+                {dataCreditProspectEnum.edit.i18n[language]}
               </Button>
               {editCreditApplication || availableEditCreditRequest ? (
                 <Icon
@@ -150,7 +154,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
         </>
       ) : (
         <Stack width="400px">
-          <Text>{dataCreditProspect.noDataIncome}</Text>
+          <Text>{dataCreditProspectEnum.noDataIncome.i18n[language]}</Text>
         </Stack>
       )}
       {isModalOpen ? (

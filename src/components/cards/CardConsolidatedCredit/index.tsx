@@ -13,7 +13,7 @@ import {
   StyledInputRadio 
 } from "./styles";
 import { 
-  dataConsolidatedCredit,
+  dataConsolidatedCreditEnum,
   IApplyPayOption
  } from "./config";
 
@@ -33,6 +33,7 @@ export interface ICardConsolidatedCreditProps {
   description: string;
   date: Date;
   tags: ITag[];
+  language: "en" | "es";
   isMobile?: boolean;
   initialValue?: number;
   allowCustomValue?: boolean;
@@ -61,6 +62,7 @@ export function CardConsolidatedCredit(props: ICardConsolidatedCreditProps) {
     initialType,
     allowCustomValue,
     handleRemoveCredit,
+    language
   } = props;
   
 const hasInitialValue = initialValue !== undefined && initialValue > 0;
@@ -80,19 +82,19 @@ const hasInitialValue = initialValue !== undefined && initialValue > 0;
   const paymentOptions = [
     {
       id: "nextPayment",
-      label: dataConsolidatedCredit.expiredValue,
+      label: dataConsolidatedCreditEnum.expiredValue.i18n[language],
       value: expiredValue,
     },
     {
       id: "nextDueDate",
-      label: dataConsolidatedCredit.nextDueDate,
+      label: dataConsolidatedCreditEnum.nextDueDate.i18n[language],
       value: nextDueDate,
       description: description,
       date: date,
     },
     {
       id: "fullPayment",
-      label: dataConsolidatedCredit.fullPayment,
+      label: dataConsolidatedCreditEnum.fullPayment.i18n[language],
       value: fullPayment,
     },
   ];
@@ -254,6 +256,7 @@ const hasInitialValue = initialValue !== undefined && initialValue > 0;
           onCloseModal={handleToggleModal}
           onApplyPayOption={handleApplyPayOption}
           onChangeOtherValue={handleChangeOption}
+          language={language}
         />
       )}
     </>

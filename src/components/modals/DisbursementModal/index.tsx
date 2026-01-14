@@ -5,8 +5,9 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { BaseModal } from "@components/modals/baseModal";
 import { Fieldset } from "@components/data/Fieldset";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataDisbursement, dataTabs } from "./config";
+import { dataDisbursementEnum, dataTabsEnum } from "./config";
 import { DisbursementInternal } from "./Internal";
 import { DisbursementExternal } from "./External";
 import { DisbursementCheckEntity } from "./CheckEntity";
@@ -46,25 +47,33 @@ export function DisbursementModal(
   } = props;
 
   const [error] = useState(false);
-  const availableTabs = dataTabs.filter((tab) => {
-    const hasValidData = (tabData: dataTabsDisbursement) =>
-      tabData && Object.values(tabData).some((value) => value !== "");
+  const language = useEnum().lang;
 
-    switch (tab.id) {
-      case "Internal":
-        return hasValidData(data.internal);
-      case "External":
-        return hasValidData(data.external);
-      case "CheckEntity":
-        return hasValidData(data.CheckEntity);
-      case "CheckManagement":
-        return hasValidData(data.checkManagementData);
-      case "Cash":
-        return hasValidData(data.cash);
-      default:
-        return false;
-    }
-  });
+  const availableTabs = dataTabsEnum
+    .filter((tab) => {
+      const hasValidData = (tabData: dataTabsDisbursement) =>
+        tabData && Object.values(tabData).some((value) => value !== "");
+
+      switch (tab.id) {
+        case "Internal":
+          return hasValidData(data.internal);
+        case "External":
+          return hasValidData(data.external);
+        case "CheckEntity":
+          return hasValidData(data.CheckEntity);
+        case "CheckManagement":
+          return hasValidData(data.checkManagementData);
+        case "Cash":
+          return hasValidData(data.cash);
+        default:
+          return false;
+      }
+    })
+    .map((tab) => ({
+      ...tab,
+      label: tab.label.i18n[language],
+    }));
+
 
   useEffect(() => {
     if (
@@ -84,11 +93,11 @@ export function DisbursementModal(
 
   return (
     <BaseModal
-      title={dataDisbursement.title}
+      title={dataDisbursementEnum.title.i18n[language]}
       finalDivider={true}
       handleClose={handleClose}
       handleNext={handleClose}
-      nextButton={dataDisbursement.close}
+      nextButton={dataDisbursementEnum.close.i18n[language]}
       backButton="Editar"
       handleBack={handleOpenEdit}
       width={isMobile ? "340px" : "682px"}
@@ -141,9 +150,9 @@ export function DisbursementModal(
         {!loading && error ? (
           <ItemNotFound
             image={userNotFound}
-            title={dataDisbursement.noDataTitle}
-            description={dataDisbursement.noDataDescription}
-            buttonDescription={dataDisbursement.retry}
+            title={dataDisbursementEnum.noDataTitle.i18n[language]}
+            description={dataDisbursementEnum.noDataDescription.i18n[language]}
+            buttonDescription={dataDisbursementEnum.retry.i18n[language]}
             onRetry={handleRetry}
           />
         ) : (
@@ -153,25 +162,27 @@ export function DisbursementModal(
         {!loading && !error ? (
           <>
             {currentTab === "Internal" && (
-              <DisbursementInternal isMobile={isMobile} data={data.internal} />
+              <DisbursementInternal isMobile={isMobile} data={data.internal} language={language} />
             )}
             {currentTab === "External" && (
-              <DisbursementExternal isMobile={isMobile} data={data.external} />
+              <DisbursementExternal isMobile={isMobile} data={data.external} language={language} />
             )}
             {currentTab === "CheckEntity" && (
               <DisbursementCheckEntity
                 isMobile={isMobile}
                 data={data.CheckEntity}
+                language={language}
               />
             )}
             {currentTab === "CheckManagement" && (
               <DisbursementChequeManagement
                 isMobile={isMobile}
                 data={data.checkManagementData}
+                language={language}
               />
             )}
             {currentTab === "Cash" && (
-              <DisbursementCash isMobile={isMobile} data={data.cash} />
+              <DisbursementCash isMobile={isMobile} data={data.cash} language={language} />
             )}
           </>
         ) : (

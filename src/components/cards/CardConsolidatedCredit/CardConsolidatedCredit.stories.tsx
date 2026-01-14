@@ -55,6 +55,7 @@ Default.args = {
   date: new Date(),
   tags: [],
   description: "Próximo pago a realizar",
+  language: "es",
 } satisfies ICardConsolidatedCreditProps;
 
 export default story;

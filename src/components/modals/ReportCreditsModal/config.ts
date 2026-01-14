@@ -10,100 +10,78 @@ export interface IFinancialObligation {
   idUser: string;
 }
 
-export const headers: {
-  label: string;
-  key: keyof IFinancialObligation;
-  action?: boolean;
-}[] = [
-  { label: "Tipo", key: "type" },
-  { label: "Saldo", key: "balance" },
-  { label: "Cuota", key: "fee" },
-  { label: "Entidad", key: "entity" },
-  { label: "Medio de pago", key: "payment" },
-  { label: "Id", key: "idUser" },
-  { label: "Altura", key: "feePaid" },
-  { label: "Acciones", key: "actions", action: true },
-];
-
-export const dataReport = {
-  title: "Obligaciones financieras",
-  close: "Cerrar",
-  addObligations: "Agregar obligaciones",
-  noData: "¡Ups! No se encontraron obligaciones financieras vigentes.",
-  totalFee: "Cuota Total",
-  totalBalance: "Saldo Total",
+export const defaultOptionsSelectEnum = {
+  noDebtors: {
+    id: "0",
+    code: "DebtorSelect_noDebtors",
+    description: "Opción por defecto cuando no hay deudores disponibles",
+    value: "0",
+    i18n: {
+      en: "No debtors",
+      es: "No hay deudores",
+    },
+  },
 };
 
-export const defaultOptionsSelect = {
-  id: "0",
-  label: "No hay deudores",
-  value: "0",
+export const configSelectEnum = {
+  label: {
+    id: "debtorLabel",
+    code: "DebtorSelect_label",
+    description: "Etiqueta para el selector de deudores",
+    i18n: {
+      en: "Debtor",
+      es: "Deudor",
+    },
+  },
+  placeholder: {
+    id: "debtorPlaceholder",
+    code: "DebtorSelect_placeholder",
+    description: "Placeholder para el selector de deudores",
+    i18n: {
+      en: "Select an option",
+      es: "Seleccione una opcion",
+    },
+  },
+  name: {
+    id: "debtorPlaceholder",
+    code: "DebtorSelect_placeholder",
+    description: "name",
+    i18n: {
+      en: "deudor",
+      es: "deudor",
+    },
+  },
 };
 
-export const configSelect = {
-  name: "deudor",
-  label: "Deudor",
-  placeholder: "Seleccione una opcion",
+export const restoreDataEnum = {
+  justification: {
+    id: "restoreJustification",
+    code: "Restore_justification",
+    description: "Justificación para la restauración de obligaciones financieras",
+    i18n: {
+      en: "Restore financial obligations",
+      es: "Restaurar obligaciones financieras",
+    },
+  },
+  label: {
+    id: "restoreLabel",
+    code: "Restore_label",
+    description: "Etiqueta para el botón de restaurar",
+    i18n: {
+      en: "Restore",
+      es: "Restaurar",
+    },
+  },
 };
 
-export const restoreData = {
-  justification: "Restore financial obligations",
-  label: "Restaurar",
-};
-
-export const errorMessages = {
-  updateProspect: {
-    description: "No se pudieron restaurar las obligaciones financieras.",
-  }
-}
-
-export const dataFinancialObligationEnum = {
-  title: {
-    code: "FinancialObligation_title",
-    description: "Financial obligations title",
+export const errorMessagesEnum = {
+  updateProspectDescription: {
+    id: "updateProspectDescription",
+    code: "Error_updateProspectDescription",
+    description: "Mensaje de error cuando falla la restauración de obligaciones",
     i18n: {
-      en: "Financial obligations",
-      es: "Obligaciones financieras",
-    },
-  },
-  close: {
-    code: "FinancialObligation_close",
-    description: "Close",
-    i18n: {
-      en: "Close",
-      es: "Cerrar",
-    },
-  },
-  addObligations: {
-    code: "FinancialObligation_addObligations",
-    description: "Add financial obligations",
-    i18n: {
-      en: "Add obligations",
-      es: "Agregar obligaciones",
-    },
-  },
-  noData: {
-    code: "FinancialObligation_noData",
-    description: "No financial obligations found",
-    i18n: {
-      en: "No financial obligations were found.",
-      es: "¡Ups! No se encontraron obligaciones financieras vigentes.",
-    },
-  },
-  totalFee: {
-    code: "FinancialObligation_totalFee",
-    description: "Total fee",
-    i18n: {
-      en: "Total fee",
-      es: "Cuota Total",
-    },
-  },
-  totalBalance: {
-    code: "FinancialObligation_totalBalance",
-    description: "Total balance",
-    i18n: {
-      en: "Total balance",
-      es: "Saldo Total",
+      en: "Financial obligations could not be restored.",
+      es: "No se pudieron restaurar las obligaciones financieras.",
     },
   },
 };

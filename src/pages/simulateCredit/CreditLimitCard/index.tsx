@@ -9,6 +9,7 @@ import { ScoreModal } from "@components/modals/FrcModal";
 import { MaxLimitModal } from "@components/modals/MaxLimitModal";
 import { PaymentCapacityModal } from "@components/modals/payCapacityModal";
 import { ISourcesOfIncomeState } from "@components/modals/payCapacityModal/types";
+import { useEnum } from "@hooks/useEnum";
 
 import { StyledContainer } from "./styles";
 import { IdataMaximumCreditLimitService, IPaymentCapacityData } from "./types";
@@ -44,6 +45,8 @@ export function CreditLimitCard(props: CreditLimitProps) {
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [localIncomeData, setLocalIncomeData] = useState<ISourcesOfIncomeState | null>(null);
+
+  const language = useEnum().lang;
 
     useEffect(() => {
     if (incomeData) {
@@ -102,6 +105,7 @@ export function CreditLimitCard(props: CreditLimitProps) {
           clientIdentificationNumber={
             dataMaximumCreditLimitService.identificationDocumentNumber
           }
+          language={language}
         />
       )}
 

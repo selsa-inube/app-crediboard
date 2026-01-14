@@ -7,21 +7,9 @@ const entrySelection = (data: IEntries) => {
   console.log(data);
 };
 
-export const titlesPostingvouchers = [
-  {
-    id: "obligationCode",
-    titleName: "No. de Obligación",
-    priority: 1,
-  },
-  {
-    id: "documentCode",
-    titleName: "No. de Documento",
-    priority: 2,
-  },
-];
-
 export const titlesPostingvouchersEnum = {
   obligationCode: {
+    id: "obligationCode", 
     code: "TitlesPostingvouchers_obligationCode",
     description: "Title for obligation code column",
     i18n: {
@@ -31,6 +19,7 @@ export const titlesPostingvouchersEnum = {
     priority: 1,
   },
   documentCode: {
+     id: "documentCode",
     code: "TitlesPostingvouchers_documentCode",
     description: "Title for document code column",
     i18n: {

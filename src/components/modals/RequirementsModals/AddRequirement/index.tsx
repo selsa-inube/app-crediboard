@@ -11,7 +11,8 @@ import {
 
 import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 import { BaseModal } from "@components/modals/baseModal";
-import { dataAddRequirement } from "@pages/board/outlets/financialReporting/Requirements/config";
+import { dataAddRequirementEnum } from "@pages/board/outlets/financialReporting/Requirements/config";
+import { useEnum } from "@hooks/useEnum";
 
 import { IOptionsSelect } from "../types";
 
@@ -52,6 +53,7 @@ export function AddRequirement(props: IRequirement) {
     secondaryButtonText = "Cancelar",
   } = props;
 
+  const language = useEnum().lang;
   const isMobile = useMediaQuery("(max-width: 700px)");
   const [initialValues, setInitialValues] = useState({
     typeOfRequirementToEvaluated: "",
@@ -149,7 +151,7 @@ export function AddRequirement(props: IRequirement) {
                 <Textfield
                   name="typeOfRequirementToEvaluated"
                   id="typeOfRequirementToEvaluated"
-                  label={dataAddRequirement.labelPaymentMethod}
+                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[language]}
                   value={getOptionLabel(
                     options.Requirement,
                     values.typeOfRequirementToEvaluated
@@ -161,7 +163,7 @@ export function AddRequirement(props: IRequirement) {
                 <Select
                   name="typeOfRequirementToEvaluated"
                   id="typeOfRequirementToEvaluated"
-                  label={dataAddRequirement.labelPaymentMethod}
+                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[language]}
                   placeholder={
                     options.Requirement.length > 0
                       ? "Selecciona una opción"
@@ -179,8 +181,8 @@ export function AddRequirement(props: IRequirement) {
               <Textfield
                 name="descriptionUse"
                 id="descriptionUse"
-                label={dataAddRequirement.labelName}
-                placeholder={dataAddRequirement.placeHolderDate}
+                label={dataAddRequirementEnum.labelName.i18n[language]}
+                placeholder={dataAddRequirementEnum.placeHolderDate.i18n[language]}
                 onChange={(event) => {
                   setDescriptionUseValue(event.target.value);
                   setFieldValue("descriptionUse", event.target.value);
@@ -193,8 +195,8 @@ export function AddRequirement(props: IRequirement) {
               <Textarea
                 id={"requirementCatalogName"}
                 name={"requirementCatalogName"}
-                label={dataAddRequirement.labelTextarea}
-                placeholder={dataAddRequirement.placeHolderTextarea}
+                label={dataAddRequirementEnum.labelTextarea.i18n[language]}
+                placeholder={dataAddRequirementEnum.placeHolderTextarea.i18n[language]}
                 value={values.requirementCatalogName}
                 onChange={(event) => {
                   setRequirementName(event.target.value);

@@ -15,12 +15,13 @@ import { evaluateRule } from "@utils/configRules/evaluateRules";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ErrorPage } from "@components/layout/ErrorPage";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataInformationModal, getBoardColumns } from "./config/board";
+import { dataInformationModalEnum, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
-import { selectCheckOptions } from "./config/select";
+import { selectCheckOptionsEnum } from "./config/select";
 import { IBoardData } from "./types";
-import { errorMessages } from "./config";
+import { errorMessagesEnum } from "./config";
 
 export interface IFilterFormValues {
   assignment: string;
@@ -28,6 +29,14 @@ export interface IFilterFormValues {
 }
 
 function BoardLayout() {
+  const language = useEnum().lang;
+  const selectCheckOptions = selectCheckOptionsEnum.map(option => ({
+    id: option.id,
+    label: option.i18n[language],
+    value: option.value,
+    checked: option.checked,
+  }));
+
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { businessUnitSigla, eventData, setEventData } = useContext(AppContext);
@@ -106,9 +115,9 @@ function BoardLayout() {
           ),
           page === 1
             ? getCreditRequestPinned(
-                businessUnitPublicCode,
-                businessManagerCode
-              )
+              businessUnitPublicCode,
+              businessManagerCode
+            )
             : Promise.resolve([]),
         ]);
 
@@ -351,8 +360,8 @@ function BoardLayout() {
 
           const extractedValues = Array.isArray(values)
             ? values
-                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-                .filter((val): val is string => val !== "")
+              .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
+              .filter((val): val is string => val !== "")
             : [];
 
           setValueRule((prev) => {
@@ -765,7 +774,7 @@ function BoardLayout() {
         handleRemoveFilter={handleRemoveFilter}
         isMenuOpen={isMenuOpen}
         selectOptions={[]}
-        handleSelectCheckChange={() => {}}
+        handleSelectCheckChange={() => { }}
         closeFilterModal={closeFilterModal}
         filterValues={filterValues}
         shouldCollapseAll={shouldCollapseAll}
@@ -773,8 +782,8 @@ function BoardLayout() {
       />
       {isOpenModal && (
         <BaseModal
-          title={dataInformationModal.tilte}
-          nextButton={dataInformationModal.button}
+          title={dataInformationModalEnum.tilte.i18n[language]}
+          nextButton={dataInformationModalEnum.button.i18n[language]}
           handleNext={() => setIsOpenModal(false)}
           handleClose={() => setIsOpenModal(false)}
           width={isMobile ? "290px" : "403px"}
@@ -782,7 +791,7 @@ function BoardLayout() {
           <Stack direction="column" alignItems="center" gap="16px">
             <Icon icon={<MdInfoOutline />} size="68px" appearance="primary" />
             <Text type="body" size="medium" appearance="gray">
-              {dataInformationModal.description}
+              {dataInformationModalEnum.description.i18n[language]}
             </Text>
           </Stack>
         </BaseModal>
@@ -790,7 +799,10 @@ function BoardLayout() {
       {errorModal && (
         <ErrorModal
           isMobile={isMobile}
-          message={errorMessages.changeAnchorToCreditRequest.description}
+          message={
+            errorMessagesEnum.changeAnchorToCreditRequest.i18n[language]
+            /* errorMessages.changeAnchorToCreditRequest.description */
+          }
           handleClose={() => {
             setErrorModal(false);
           }}

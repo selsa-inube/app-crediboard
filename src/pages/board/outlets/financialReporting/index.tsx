@@ -29,9 +29,9 @@ import { AppContext } from "@context/AppContext";
 import { patchAssignAccountManager } from "@services/creditRequest/command/patchAssignAccountManager";
 import { lateRejectionOfACreditRequest } from "@services/creditRequest/command/lateRejectionCreditRequest";
 import {
-  textFlagsCancel,
-  textFlagsReject,
-  textFlagsUsers,
+  textFlagsCancelEnum,
+  textFlagsRejectEnum,
+  textFlagsUsersEnum,
 } from "@config/pages/staffModal/addFlag";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import {
@@ -41,7 +41,8 @@ import {
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ShareModal } from "@components/modals/ShareModal";
 import { BaseModal } from "@components/modals/baseModal";
-import { shareModalConfig } from "@components/modals/ShareModal/config";
+import { shareModalConfigEnum } from "@components/modals/ShareModal/config";
+import { useEnum } from "@hooks/useEnum";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -49,8 +50,8 @@ import { ToDo } from "./ToDo";
 import {
   configHandleactions,
   optionButtons,
-  labelsAndValuesShare,
-  errorMessages,
+  labelsAndValuesShareEnum,
+  errorMessagesEnum,
 } from "./config";
 import {
   StyledMarginPrint,
@@ -116,6 +117,7 @@ export const FinancialReporting = () => {
   const { user } = useIAuth();
 
   const navigation = useNavigate();
+  const language = useEnum().lang;
 
   const isMobile: boolean = useMediaQuery("(max-width: 880px)");
 
@@ -194,7 +196,7 @@ export const FinancialReporting = () => {
         );
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
-        setErrorMessage(errorMessages.searchProspect.description);
+        setErrorMessage(errorMessagesEnum.searchProspect.description.i18n[language]);
         setErrorModal(true);
         setErrorGetProspects(true);
         console.error("Error al obtener los prospectos:", error);
@@ -202,6 +204,7 @@ export const FinancialReporting = () => {
     };
 
     idProspect && businessUnitPublicCode && fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
     idProspect,
@@ -216,7 +219,7 @@ export const FinancialReporting = () => {
     try {
       const pdfBlob = await generatePDF(
         dataCommercialManagementRef,
-        labelsAndValuesShare.titleOnPdf,
+        labelsAndValuesShareEnum.titleOnPdf.i18n[language],
         setErrorModal,
         true
       );
@@ -231,7 +234,7 @@ export const FinancialReporting = () => {
       setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-      setErrorMessage(errorMessages.share.description);
+      setErrorMessage(errorMessagesEnum.share.description.i18n[language]);
       setErrorModal(true);
     }
   };
@@ -240,21 +243,21 @@ export const FinancialReporting = () => {
     if (!pdfState.blob) return;
 
     try {
-      const pdfFile = new File([pdfState.blob], labelsAndValuesShare.fileName, {
+      const pdfFile = new File([pdfState.blob], labelsAndValuesShareEnum.fileName.i18n[language], {
         type: "application/pdf",
       });
 
       await navigator.share({
         files: [pdfFile],
-        title: labelsAndValuesShare.titleOnPdf,
-        text: labelsAndValuesShare.text,
+        title: labelsAndValuesShareEnum.titleOnPdf.i18n[language],
+        text: labelsAndValuesShareEnum.text.i18n[language],
       });
 
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
       setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-      setErrorMessage(errorMessages.share.description);
+      setErrorMessage(errorMessagesEnum.share.description.i18n[language]);
       setErrorModal(true);
     }
   };
@@ -319,13 +322,13 @@ export const FinancialReporting = () => {
       );
 
       addFlag({
-        title: textFlagsReject.titleSuccess,
-        description: textFlagsReject.descriptionSuccess,
+        title: textFlagsRejectEnum.titleSuccess.i18n[language],
+        description: textFlagsRejectEnum.descriptionSuccess.i18n[language],
         appearance: "success",
         duration: 5000,
       });
     } catch (error) {
-      setErrorMessage(errorMessages.lateRejectionOfACreditRequest.description);
+      setErrorMessage(errorMessagesEnum.lateRejection.description.i18n[language]);
       setErrorModal(true);
     }
   };
@@ -377,7 +380,7 @@ export const FinancialReporting = () => {
       }
     } catch (error) {
       setErrorModal(true);
-      setErrorMessage(errorMessages.searchAllUnreadErrorsById.description);
+      setErrorMessage(errorMessagesEnum.unreadErrors.description.i18n[language]);
     }
   };
 
@@ -400,16 +403,16 @@ export const FinancialReporting = () => {
     )
       .then(() => {
         addFlag({
-          title: textFlagsUsers.titleSuccess,
-          description: textFlagsUsers.descriptionSuccess,
+          title: textFlagsUsersEnum.titleSuccess.i18n[language],
+          description: textFlagsUsersEnum.descriptionSuccess.i18n[language],
           appearance: "success",
           duration: 5000,
         });
       })
       .catch(() => {
         addFlag({
-          title: textFlagsCancel.titleError,
-          description: textFlagsCancel.descriptionError,
+          title: textFlagsCancelEnum.titleError.i18n[language],
+          description: textFlagsCancelEnum.descriptionError.i18n[language],
           appearance: "danger",
           duration: 5000,
         });
@@ -445,6 +448,7 @@ export const FinancialReporting = () => {
                   message={error.message.toString()}
                   onClose={() => handleCloseErrorService(error.id)}
                   isMobile={isMobile}
+                  language={language}
                 />
               ))}
             </StyledToast>
@@ -457,6 +461,7 @@ export const FinancialReporting = () => {
                 actionButtons={handleActions}
                 navigation={() => navigation("/")}
                 eventData={eventData}
+                language={language}
               />
             }
           >
@@ -647,14 +652,14 @@ export const FinancialReporting = () => {
       )}
       {pdfState.isGenerating && (
         <BaseModal
-          title={shareModalConfig.title}
-          nextButton={shareModalConfig.buttonText}
+          title={shareModalConfigEnum.title.i18n[language]}
+          nextButton={shareModalConfigEnum.buttonText.i18n[language]}
           width={isMobile ? "300px" : "450px"}
         >
           <StyledContainerSpinner>
             <Spinner size="large" appearance="primary" />
             <Text size="large" weight="bold" appearance="dark">
-              {errorMessages.share.spinner}
+              {errorMessagesEnum.share.spinner.i18n[language]}
             </Text>
           </StyledContainerSpinner>
         </BaseModal>
@@ -664,6 +669,7 @@ export const FinancialReporting = () => {
           isMobile={isMobile}
           handleClose={handleSharePdfModal}
           handleNext={handleSharePdf}
+          language={language}
         />
       )}
     </div>

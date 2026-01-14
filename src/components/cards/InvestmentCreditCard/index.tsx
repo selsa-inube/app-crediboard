@@ -1,7 +1,7 @@
 import { Divider, Text, Stack } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
-import { ModalConfig } from "@pages/prospect/components/modals/ConsolidatedCreditModal/config";
+import { ModalConfigEnum } from "@pages/prospect/components/modals/ConsolidatedCreditModal/config";
 
 import { StyledContainer, StyledInput } from "./styles";
 
@@ -10,6 +10,7 @@ interface InvestmentCreditCardProps {
   codeValue: string;
   expired: string;
   expiredValue: number;
+  language: "en" | "es";
   isMobile?: boolean;
 }
 
@@ -19,6 +20,7 @@ export function InvestmentCreditCard({
   expired,
   expiredValue,
   isMobile,
+  language
 }: InvestmentCreditCardProps) {
   return (
     <StyledContainer $isMobile={isMobile}>
@@ -36,7 +38,7 @@ export function InvestmentCreditCard({
           <StyledInput>
             <Stack alignItems="center" justifyContent="space-between">
               <Text type="label" size="medium" weight="bold">
-                {ModalConfig.code}
+                {ModalConfigEnum.code.i18n[language]}
               </Text>
               <Text type="body" size="small" appearance="gray">
                 {codeValue}

@@ -1,9 +1,3 @@
-export const errorMessages = {
-    changeAnchorToCreditRequest: {
-        description: "Error al actualizar la calificación de la solicitud de crédito",
-    },
-}
-
 export const errorMessagesEnum = {
   changeAnchorToCreditRequest: {
     code: "ErrorMessages_changeAnchorToCreditRequest",

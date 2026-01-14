@@ -2,6 +2,7 @@ import * as Yup from "yup";
 import { useEffect } from "react";
 
 import { currencyFormat } from "@utils/formatData/currency";
+import { useEnum } from "@hooks/useEnum";
 
 import { TermSelectionUI } from "./interface";
 import {
@@ -20,6 +21,8 @@ export function TermSelection(props: ITermSelection) {
     onChange,
     onFormValid,
   } = props;
+
+  const language = useEnum().lang;
 
   useEffect(() => {
     if (!quotaCapEnabled && !maximumTermEnabled) {
@@ -175,6 +178,7 @@ export function TermSelection(props: ITermSelection) {
       handleQuotaCapValueChange={handleQuotaCapValueChange}
       handleMaximumTermToggleChange={handleMaximumTermToggleChange}
       handleMaximumTermValueChange={handleMaximumTermValueChange}
+      language={language} 
     />
   );
 }

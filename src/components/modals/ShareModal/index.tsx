@@ -1,9 +1,10 @@
 import { Stack, Text } from "@inubekit/inubekit";
 
 import { BaseModal } from "../baseModal";
-import { shareModalConfig } from "./config";
+import { shareModalConfigEnum } from "./config";
 
 interface IShareModalProps {
+  language: "es" | "en";
   isMobile?: boolean;
   message?: string;
   handleClose?: () => void;
@@ -11,19 +12,19 @@ interface IShareModalProps {
 }
 
 export function ShareModal(props: IShareModalProps) {
-  const { isMobile, message, handleClose, handleNext } = props;
+  const { isMobile, message, handleClose, handleNext, language } = props;
 
   return (
     <BaseModal
-      title={shareModalConfig.title}
-      nextButton={shareModalConfig.buttonText}
+      title={shareModalConfigEnum.title.i18n[language]}
+      nextButton={shareModalConfigEnum.buttonText.i18n[language]}
       handleNext={handleNext}
       handleClose={handleClose}
       width={isMobile ? "300px" : "450px"}
     >
       <Stack direction="column" gap="16px" alignItems="center">
         <Text type="body" size="large" weight="bold">
-          {shareModalConfig.understood}
+          {shareModalConfigEnum.understood.i18n[language]}
         </Text>
         <Text type="body" size="large" appearance="gray">
           {message}

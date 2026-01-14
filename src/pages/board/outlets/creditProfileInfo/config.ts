@@ -1,9 +1,3 @@
-export const fieldLabels = {
-    print: "Imprimir",
-    creditProfile: "Perfil crediticio",
-    back: "Volver",
-}
-
 export const fieldLabelsEnum = {
   print: {
     code: "FieldLabels_print",

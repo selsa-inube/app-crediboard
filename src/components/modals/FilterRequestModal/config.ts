@@ -1,9 +1,3 @@
-export const dataFiltersRequest = {
-    filter: "Filtrar",
-    close: "Cerrar",
-    cancel: "Cancelar",
-}
-
 export const dataFiltersRequestEnum = {
   filter: {
     code: "FiltersRequest_filter",

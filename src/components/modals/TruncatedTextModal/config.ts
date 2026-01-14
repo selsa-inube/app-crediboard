@@ -1,7 +1,3 @@
-export const dataTruncatedText = {
-  info: "Información",
-};
-
 export const dataTruncatedTextEnum = {
   info: {
     code: "DataTruncatedText_info",

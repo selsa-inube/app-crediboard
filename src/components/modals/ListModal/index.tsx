@@ -23,7 +23,8 @@ import { AppContext } from "@context/AppContext";
 import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { formatFileSize } from "@utils/size";
 import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
-import { optionFlags } from "@pages/board/outlets/financialReporting/config";
+import { optionFlagsEnum } from "@pages/board/outlets/financialReporting/config";
+import { useEnum } from "@hooks/useEnum";
 
 import { ErrorModal } from "../ErrorModal";
 import { DocumentViewer } from "../DocumentViewer";
@@ -34,7 +35,7 @@ import {
   StyledFileBox,
   StyledModal,
 } from "./styles";
-import { listModalData } from "./config";
+import { listModalDataEnum } from "./config";
 import { IDocumentUpload } from "./types";
 import { TruncatedText } from "../TruncatedTextModal";
 
@@ -120,6 +121,8 @@ export const ListModal = (props: IListModalProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
+
+  const language = useEnum().lang;
 
   interface IListdataProps {
     data: { id: string; name: string }[] | null | undefined;
@@ -229,9 +232,6 @@ export const ListModal = (props: IListModalProps) => {
     const validFiles = files.filter(
       (file) => validMimeTypes.includes(file.type) && file.size <= MAX_FILE_SIZE
     );
-    if (validFiles.length !== files.length) {
-      alert(listModalData.onlypdf);
-    }
 
     const newFiles = validFiles.map((file) => ({
       id: crypto.randomUUID(),
@@ -248,7 +248,6 @@ export const ListModal = (props: IListModalProps) => {
 
   const handleUpload = async () => {
     if (uploadMode === "local") {
-      console.log("Archivos guardados en estado:", uploadedFiles);
       handleClose(false);
       return;
     }
@@ -282,16 +281,16 @@ export const ListModal = (props: IListModalProps) => {
         filesSaved = true;
 
         handleFlag(
-          optionFlags.title,
-          optionFlags.descriptionSuccess,
-          optionFlags.appearance as FlagAppearance
+          optionFlagsEnum.title.i18n[language],
+          optionFlagsEnum.descriptionSuccess.i18n[language],
+          optionFlagsEnum.appearance.i18n[language] as FlagAppearance
         );
       }
     } catch (error) {
       handleFlag(
-        optionFlags.title,
-        optionFlags.description,
-        optionFlags.appearanceError as FlagAppearance
+        optionFlagsEnum.title.i18n[language],
+        optionFlagsEnum.description.i18n[language],
+        optionFlagsEnum.appearanceError.i18n[language] as FlagAppearance
       );
     } finally {
       handleClose(filesSaved);
@@ -312,7 +311,7 @@ export const ListModal = (props: IListModalProps) => {
       setOpen(true);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(listModalData.errorDocument);
+      setMessageError(listModalDataEnum.errorDocument.i18n[language]);
     }
   };
 
@@ -401,11 +400,11 @@ export const ListModal = (props: IListModalProps) => {
               $isDragging={isDragging}
             >
               <Stack direction="column" alignItems="center">
-                <Text>{listModalData.drag}</Text>
-                <Text>{listModalData.or}</Text>
+                <Text>{listModalDataEnum.drag.i18n[language]}</Text>
+                <Text>{listModalDataEnum.or.i18n[language]}</Text>
               </Stack>
               <Button spacing="compact" onClick={handleBrowseClick}>
-                {listModalData.search}
+                {listModalDataEnum.search.i18n[language]}
               </Button>
               <input
                 type="file"
@@ -417,7 +416,7 @@ export const ListModal = (props: IListModalProps) => {
               />
             </StyledAttachContainer>
             <Text size="medium" appearance="gray">
-              {listModalData.maximum}
+              {listModalDataEnum.maximum.i18n[language]}
             </Text>
             {Array.isArray(pendingFiles) && pendingFiles.length > 0 ? (
               <>
@@ -429,7 +428,7 @@ export const ListModal = (props: IListModalProps) => {
                     weight="bold"
                     appearance="gray"
                   >
-                    {listModalData.attachments}
+                    {listModalDataEnum.attachments.i18n[language]}
                   </Text>
                   <StyledFileBox>
                     {pendingFiles.map((file) => (
@@ -465,7 +464,7 @@ export const ListModal = (props: IListModalProps) => {
                     weight="bold"
                     appearance="gray"
                   >
-                    {listModalData.attachments}
+                    {listModalDataEnum.attachments.i18n[language]}
                   </Text>
                   <StyledFileBox>
                     {uploadedFiles.map((file: IDocumentUpload) => (

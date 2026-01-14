@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -10,9 +10,10 @@ import { IPackagesOfRequirementsById } from "@services/requirementsPackages/type
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { useEnum} from "@hooks/useEnum";
 
 import { IApprovalHuman } from "../types";
-import { approvalsConfig, optionsAnswer } from "./config";
+import { approvalsConfigEnum, optionsAnswerEnum } from "./config";
 
 interface IHumanValidationApprovalModalProps {
   isMobile: boolean;
@@ -40,14 +41,23 @@ export function HumanValidationApprovalModal(
     onConfirm,
     onCloseModal,
   } = props;
+  const language = useEnum().lang;
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
 
+   const optionsAnswer = useMemo(() => 
+    Object.values(optionsAnswerEnum).map((option) => ({
+      id: option.id,
+      value: option.value,
+      label: option.i18n[language],
+    })), 
+  [language]);
+
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
     observations: Yup.string()
-      .max(approvalsConfig.maxLength, validationMessages.limitedTxt)
+      .max(200, validationMessages.limitedTxt)
       .required(validationMessages.required),
   });
 
@@ -111,7 +121,7 @@ export function HumanValidationApprovalModal(
         }
       } catch (error) {
         setShowErrorModal(true);
-        setMessageError(approvalsConfig.titleError);
+        setMessageError(approvalsConfigEnum.titleError.i18n[language]);
       }
     },
   });
@@ -124,22 +134,22 @@ export function HumanValidationApprovalModal(
 
   return (
     <BaseModal
-      title={approvalsConfig.title}
+      title={approvalsConfigEnum.title.i18n[language]}
       handleNext={formik.handleSubmit}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
-      backButton={approvalsConfig.Cancel}
-      nextButton={approvalsConfig.confirm}
+      backButton={approvalsConfigEnum.cancel.i18n[language]}
+      nextButton={approvalsConfigEnum.confirm.i18n[language]}
       disabledNext={!formik.values.observations || !formik.isValid}
     >
       <Stack direction="column" gap="24px">
         <Stack direction="column" gap="8px">
-          <Text>{approvalsConfig.approval}</Text>
+          <Text>{approvalsConfigEnum.approval.i18n[language]}</Text>
           {hasSingleOption ? (
             <Input
               name="answer"
               id="answer"
-              label={approvalsConfig.answer}
+              label={approvalsConfigEnum.answer.i18n[language]}
               value={optionsAnswer[0].label}
               disabled
               size="compact"
@@ -150,8 +160,8 @@ export function HumanValidationApprovalModal(
               name="answer"
               id="answer"
               options={optionsAnswer}
-              label={approvalsConfig.answer}
-              placeholder={approvalsConfig.answerPlaceHoleder}
+              label={approvalsConfigEnum.answer.i18n[language]}
+              placeholder={approvalsConfigEnum.answerPlaceHolder.i18n[language]}
               value={formik.values.answer}
               onChange={(name, value) => formik.setFieldValue(name, value)}
               onBlur={formik.handleBlur}
@@ -163,9 +173,9 @@ export function HumanValidationApprovalModal(
         <Textarea
           id="observations"
           name="observations"
-          label={approvalsConfig.observations}
-          placeholder={approvalsConfig.observationdetails}
-          maxLength={approvalsConfig.maxLength}
+          label={approvalsConfigEnum.observations.i18n[language]}
+          placeholder={approvalsConfigEnum.observationdetails.i18n[language]}
+          maxLength={200}
           value={formik.values.observations}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}

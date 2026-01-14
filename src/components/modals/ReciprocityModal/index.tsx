@@ -13,8 +13,9 @@ import { BaseModal } from "@components/modals/baseModal";
 import { currencyFormat } from "@utils/formatData/currency";
 import { GetCreditLimitByReciprocity } from "@services/creditLimit/getCreditLimitByReciprocity";
 import { IMaximumCreditLimitReciprocity } from "@services/creditLimit/types";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataReciprocity } from "./config";
+import { dataReciprocityEnum } from "./config";
 
 export interface ReciprocityModalProps {
   handleClose: () => void;
@@ -32,7 +33,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
     clientIdentificationNumber,
     loading,
   } = props;
-
+  const language = useEnum().lang;
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const [error, setError] = useState(false);
@@ -69,8 +70,8 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
 
   return (
     <BaseModal
-      title={dataReciprocity.maxReciprocityQuota}
-      nextButton={dataReciprocity.close}
+      title={dataReciprocityEnum.maxReciprocityQuota.i18n[language]}
+      nextButton={dataReciprocityEnum.close.i18n[language]}
       handleNext={handleClose}
       handleBack={handleClose}
       variantNext="outlined"
@@ -80,10 +81,10 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
         <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
-            {dataReciprocity.error.title}
+            {dataReciprocityEnum.errorTitle.i18n[language]}
           </Text>
           <Text size="small" appearance="dark" textAlign="center">
-            {dataReciprocity.error.message}
+            {dataReciprocityEnum.errorMessage.i18n[language]}
           </Text>
         </Stack>
       ) : (
@@ -95,7 +96,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
           <Stack direction="column" justifyContent="space-between" gap="12px">
             <Stack justifyContent="space-between">
               <Text type="label" size="large" weight="bold">
-                {dataReciprocity.contributionsBalance}
+                {dataReciprocityEnum.contributionsBalance.i18n[language]}
               </Text>
               <Stack>
                 <Text type="body" size="medium" appearance="success">
@@ -115,7 +116,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
             </Stack>
             <Stack justifyContent="space-between">
               <Text type="label" size="large" appearance="gray">
-                {dataReciprocity.timesPossible}
+                {dataReciprocityEnum.timesPossible.i18n[language]}
               </Text>
               <Stack>
                 {loading ? (
@@ -136,7 +137,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
           <Stack direction="column" justifyContent="space-between" gap="12px">
             <Stack justifyContent="space-between">
               <Text type="label" size="large" weight="bold">
-                {dataReciprocity.assignedQuota}
+                {dataReciprocityEnum.assignedQuota.i18n[language]}
               </Text>
               <Stack>
                 <Text type="body" size="medium" appearance="success">
@@ -156,7 +157,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
             </Stack>
             <Stack justifyContent="space-between">
               <Text type="label" size="large" appearance="gray">
-                {dataReciprocity.currentPortafolio}
+                {dataReciprocityEnum.currentPortafolio.i18n[language]}
               </Text>
               <Stack>
                 <Text type="body" size="medium" appearance="success">
@@ -195,7 +196,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
             )}
             <Stack>
               <Text appearance="gray" size="small" textAlign="center">
-                {dataReciprocity.mount}
+                {dataReciprocityEnum.mount.i18n[language]}
               </Text>
             </Stack>
           </Stack>

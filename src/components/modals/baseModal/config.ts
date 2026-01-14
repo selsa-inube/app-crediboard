@@ -1,7 +1,3 @@
-export const dataBaseModal = {
-    close: "Cerrar",
-  };
-
 export const dataBaseModalEnum = {
   close: {
     code: "BaseModal_close",

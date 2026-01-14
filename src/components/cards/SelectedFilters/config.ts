@@ -1,7 +1,3 @@
-export const dataFilters = {
-  withoutFilters: "No tienes filtros aplicados.",
-};
-
 export const dataFiltersEnum = {
   withoutFilters: {
     code: "Filters_without_filters",

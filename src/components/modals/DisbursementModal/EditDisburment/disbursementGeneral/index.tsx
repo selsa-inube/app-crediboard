@@ -15,7 +15,7 @@ import { DisbursementWithExternalAccount } from "./disbursementWithExternalAccou
 import { DisbursementWithCheckEntity } from "./disbursementWithCheckEntity";
 import { DisbursementWithCheckManagement } from "./DisbursementWithCheckManagement";
 import { DisbursementWithCash } from "./DisbursementWithCash";
-import { disbursemenTabs, modalTitles } from "./config";
+import { disbursemenTabsEnum, modalTitlesEnum } from "./config";
 import { IDisbursementGeneral, Tab } from "../../types";
 import { mapDataIdToTabId } from "../utils";
 
@@ -29,6 +29,7 @@ interface IDisbursementGeneralProps {
   handleOnChange: (values: IDisbursementGeneral) => void;
   handleTabChange: (id: string) => void;
   prospectSummaryData: IProspectSummaryById | undefined;
+  language: "en" | "es";
   modesOfDisbursement: string[];
   handleClose: () => void;
   handleSave: () => void;
@@ -52,7 +53,8 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
     handleClose,
     handleSave,
     isLoading,
-    prospectData
+    prospectData,
+    language
   } = props;
 
   const formik = useFormik({
@@ -118,13 +120,25 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
     onFormValid(isValid);
   }, [formik.values, getTotalAmount, initialValues.amount, onFormValid]);
 
-  const validTabs = useMemo(() => {
+const validTabs = useMemo(() => {
     if (modesOfDisbursement.length === 0) return [];
-    const allTabsConfig = Object.values(disbursemenTabs);
+    
+    const allTabsConfig = Object.values(disbursemenTabsEnum);
+    
     return modesOfDisbursement
-      .map((modeId) => allTabsConfig.find((tab) => tab.id === modeId))
+      .map((modeId) => {
+        const tabConfig = allTabsConfig.find((tab) => tab.id === modeId);
+        
+        if (!tabConfig) return undefined;
+
+        return {
+          id: tabConfig.id,
+          label: tabConfig.i18n[language],
+          disabled: false,
+        };
+      })
       .filter((tab): tab is Tab => tab !== undefined);
-  }, [modesOfDisbursement]);
+  }, [modesOfDisbursement, language]);
 
   useEffect(() => {
     if (validTabs.length === 1 && !initialTabAmountSet.current) {
@@ -154,9 +168,9 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
 
   return (
     <BaseModal
-      title={modalTitles.title}
-      nextButton={modalTitles.save}
-      backButton={modalTitles.close}
+      title={modalTitlesEnum.title.i18n[language]}
+      nextButton={modalTitlesEnum.save.i18n[language]}
+      backButton={modalTitlesEnum.close.i18n[language]}
       handleClose={handleClose}
       handleBack={handleClose}
       handleNext={handleSave}
@@ -183,8 +197,8 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
             gap="20px"
           >
             <Stack direction="column" width="100%">
-              {validTabs.some((tab) => tab.id === disbursemenTabs.internal.id) &&
-                isSelected === disbursemenTabs.internal.id && (
+              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.internal.id) &&
+                isSelected === disbursemenTabsEnum.internal.id && (
                   <DisbursementWithInternalAccount
                     isMobile={isMobile}
                     onFormValid={onFormValid}
@@ -200,10 +214,11 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
                     prospectSummaryData={prospectSummaryData}
                     businessManagerCode={businessManagerCode}
                     prospectData={prospectData}
+                    language={language}
                   />
                 )}
-              {validTabs.some((tab) => tab.id === disbursemenTabs.external.id) &&
-                isSelected === disbursemenTabs.external.id && (
+              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.external.id) &&
+                isSelected === disbursemenTabsEnum.external.id && (
                   <DisbursementWithExternalAccount
                     isMobile={isMobile}
                     onFormValid={onFormValid}
@@ -218,10 +233,11 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
                     customerData={customerData}
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
+                    language={language}
                   />
                 )}
-              {validTabs.some((tab) => tab.id === disbursemenTabs.check.id) &&
-                isSelected === disbursemenTabs.check.id && (
+              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.check.id) &&
+                isSelected === disbursemenTabsEnum.check.id && (
                   <DisbursementWithCheckEntity
                     isMobile={isMobile}
                     onFormValid={onFormValid}
@@ -236,10 +252,11 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
                     customerData={customerData}
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
+                    language={language}
                   />
                 )}
-              {validTabs.some((tab) => tab.id === disbursemenTabs.management.id) &&
-                isSelected === disbursemenTabs.management.id && (
+              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.management.id) &&
+                isSelected === disbursemenTabsEnum.management.id && (
                   <DisbursementWithCheckManagement
                     isMobile={isMobile}
                     onFormValid={onFormValid}
@@ -254,10 +271,11 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
                     customerData={customerData}
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
+                    language={language}
                   />
                 )}
-              {validTabs.some((tab) => tab.id === disbursemenTabs.cash.id) &&
-                isSelected === disbursemenTabs.cash.id && (
+              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.cash.id) &&
+                isSelected === disbursemenTabsEnum.cash.id && (
                   <DisbursementWithCash
                     isMobile={isMobile}
                     onFormValid={onFormValid}
@@ -272,6 +290,7 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
                     customerData={customerData}
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
+                    language={language}
                   />
                 )}
             </Stack>

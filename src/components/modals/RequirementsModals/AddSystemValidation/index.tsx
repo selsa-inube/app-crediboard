@@ -7,10 +7,11 @@ import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
-import { dataAddRequirement } from "@pages/board/outlets/financialReporting/Requirements/config";
+import { dataAddRequirementEnum } from "@pages/board/outlets/financialReporting/Requirements/config";
+import { useEnum } from "@hooks/useEnum";
 
 import { IOptionsSelect } from "../types";
-import { requirementJustificationMap, validationMessages } from "./config";
+import { requirementJustificationEnum, validationMessagesEnum } from "./config";
 
 export interface IRequirements {
   optionsRequirement: IOptionsSelect[];
@@ -56,6 +57,8 @@ export function AddSystemValidation(props: IRequirements) {
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
+  const language = useEnum().lang;
+
   const [initialValues, setInitialValues] = useState({
     descriptionUseValues: "",
     requirementCatalogName: "",
@@ -71,7 +74,7 @@ export function AddSystemValidation(props: IRequirements) {
 
   const validationSchema = Yup.object().shape({
     descriptionUseValues: Yup.string().required(
-      validationMessages.requiredField
+      validationMessagesEnum.requiredField.i18n[language]
     ),
   });
 
@@ -83,8 +86,14 @@ export function AddSystemValidation(props: IRequirements) {
   };
 
   const getPlaceholderText = (selectedValue: string) => {
-    return requirementJustificationMap[selectedValue] || "";
-  };
+  const requirementEntry = Object.values(requirementJustificationEnum).find(
+    (item) => item.value === selectedValue
+  );
+
+  return requirementEntry 
+    ? requirementEntry.i18n[language] 
+    : selectedValue;
+};
 
   const handleRequirementChange = (
     name: string,
@@ -161,7 +170,7 @@ export function AddSystemValidation(props: IRequirements) {
                 <Textfield
                   name="descriptionUseValues"
                   id="descriptionUseValues"
-                  label={dataAddRequirement.labelPaymentMethod}
+                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[language]}
                   value={getOptionLabel(
                     options.Requirement,
                     values.descriptionUseValues
@@ -173,7 +182,7 @@ export function AddSystemValidation(props: IRequirements) {
                 <Select
                   name="descriptionUseValues"
                   id="descriptionUseValues"
-                  label={dataAddRequirement.labelPaymentMethod}
+                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[language]}
                   placeholder={
                     options.Requirement.length > 0
                       ? "Selecciona una opción"
@@ -190,7 +199,7 @@ export function AddSystemValidation(props: IRequirements) {
               )}
               {values.descriptionUseValues && (
                 <CardGray
-                  label={dataAddRequirement.titleJustification}
+                  label={dataAddRequirementEnum.titleJustification.i18n[language]}
                   placeHolder={justificationRequirement}
                   apparencePlaceHolder="gray"
                   size="large"

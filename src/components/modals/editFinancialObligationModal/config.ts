@@ -1,12 +1,3 @@
-const dataInputs = {
-  close: "Cerrar",
-  cancel: "Cancelar",
-  labelFee: "Cuota",
-  palaceHolderFee: "Valor de la cuota",
-  labelBalance: "Saldo",
-  palaceHolderBalance: "Valor total",
-};
-
 const dataInputsEnum = {
   close: {
     code: "Inputs_close",
@@ -59,4 +50,4 @@ const dataInputsEnum = {
 };
 
 
-export { dataInputs, dataInputsEnum };
+export { dataInputsEnum };

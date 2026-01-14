@@ -22,8 +22,8 @@ import { IProspect } from "@services/prospect/types";
 
 
 import {
-  disbursementGeneral,
-  disbursemenOptionAccount
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum
 } from "../config";
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
@@ -37,6 +37,7 @@ interface IDisbursementWithCashProps {
   businessUnitPublicCode: string;
   isAmountReadOnly: boolean;
   businessManagerCode: string;
+  language: "en" | "es";
   customerData?: ICustomerData;
   onFormValid: (isValid: boolean) => void;
   handleOnChange: (values: IDisbursementGeneral) => void;
@@ -55,6 +56,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
     customerData,
     getTotalAmount,
     prospectData,
+    language
   } = props;
 
   const {
@@ -77,8 +79,8 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
           <Textfield
             id="amount"
             name="amount"
-            label={disbursementGeneral.label}
-            placeholder={disbursementGeneral.place}
+            label={disbursementGeneralEnum.labelTurn.i18n[language]}
+            placeholder={disbursementGeneralEnum.placeTurn.i18n[language]}
             size="compact"
             value={validateCurrencyField(
               "amount",
@@ -100,7 +102,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
               isInvalidAmount ? "invalid" : undefined
             }
             readOnly={isAmountReadOnly}
-            message={`${disbursemenOptionAccount.valueTurnFail}${currencyFormat(initialValues.amount, false)}`}
+            message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[language]}${currencyFormat(initialValues.amount, false)}`}
             fullwidth
           />
         </Stack>
@@ -115,14 +117,14 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
             disabled={isDisabled}
           />
           <Text type="label" size="medium">
-            {disbursementGeneral.labelCheck}
+            {disbursementGeneralEnum.labelCheck.i18n[language]}
           </Text>
         </Stack>
       </Stack>
       <Divider dashed />
       <Stack direction="column" gap="16px">
         <Text type="label" size="medium">
-          {disbursementGeneral.labelToggle}
+          {disbursementGeneralEnum.labelToggle.i18n[language]}
         </Text>
       </Stack>
       <Stack direction="row" gap="16px">
@@ -143,8 +145,8 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
           }
         >
           {(formik.values[optionNameForm]?.toggle ?? true)
-            ? disbursementGeneral.optionToggleYes
-            : disbursementGeneral.optionToggleNo}
+            ? disbursementGeneralEnum.optionToggleYes.i18n[language]
+            : disbursementGeneralEnum.optionToggleNo.i18n[language]}
         </Text>
       </Stack>
       <Divider dashed />
@@ -167,8 +169,8 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
         <Textarea
           id={"description"}
           name={`${optionNameForm}.description`}
-          label={disbursemenOptionAccount.observation}
-          placeholder={disbursemenOptionAccount.placeObservation}
+          label={disbursemenOptionAccountEnum.observation.i18n[language]}
+          placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[language]}
           value={formik.values[optionNameForm]?.description || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}

@@ -1,8 +1,3 @@
-export const dataSeeDetails = {
-  more: "Más detalles",
-  close: "Cerrar",
-};
-
 export const dataSeeDetailsEnum = {
   more: {
     code: "SeeDetails_more",

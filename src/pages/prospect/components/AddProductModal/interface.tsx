@@ -16,9 +16,9 @@ import { ScrollableContainer, ModalContentWrapper } from "./styles";
 import {
   messageNotFound,
   IAddProductModalUIProps,
-  titleButtonTextAssisted,
-  stepsAddProduct,
-  noAvailablePaymentMethods,
+  titleButtonTextAssistedEnum,
+  stepsAddProductEnum,
+  noAvailablePaymentMethodsEnum,
 } from "./config";
 import { PaymentConfiguration } from "./steps/PaymentConfiguration";
 import { AmountCapture } from "./steps/AmountCapture";
@@ -51,6 +51,8 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
     loading,
     setCurrentStep,
     isSendingData,
+    language,
+    assistedControls
   } = props;
 
   return (
@@ -66,10 +68,10 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
         }
         nextButton={
           currentStepsNumber.id === steps[steps.length - 1].id
-            ? titleButtonTextAssisted.submitText
-            : titleButtonTextAssisted.goNextText
+            ? titleButtonTextAssistedEnum.submitText.i18n[language]
+            : titleButtonTextAssistedEnum.goNextText.i18n[language]
         }
-        backButton={titleButtonTextAssisted.goBackText}
+        backButton={titleButtonTextAssistedEnum.goBackText.i18n[language]}
         handleNext={
           currentStepsNumber.id === steps[steps.length - 1].id
             ? handleSubmitClick
@@ -81,9 +83,9 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
         disabledBack={currentStepsNumber.id === steps[0].id}
         iconBeforeNext={
           (currentStepsNumber.id === steps[steps.length - 1].id
-            ? titleButtonTextAssisted.submitText
-            : titleButtonTextAssisted.goNextText) ===
-          titleButtonTextAssisted.submitText
+            ? titleButtonTextAssistedEnum.submitText.i18n[language]
+            : titleButtonTextAssistedEnum.goNextText.i18n[language]) ===
+          titleButtonTextAssistedEnum.submitText.i18n[language]
             ? iconBefore
             : undefined
         }
@@ -105,7 +107,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
               totalSteps={steps.length}
               onBackClick={handlePreviousStep}
               onNextClick={handleNextStep}
-              controls={titleButtonTextAssisted}
+              controls={assistedControls}
               onSubmitClick={handleSubmitClick}
               disableNext={!isCurrentFormValid}
               disableSubmit={!isCurrentFormValid}
@@ -120,7 +122,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
               $width={isMobile ? "280px" : "auto"}
             >
               {currentStepsNumber.id ===
-                stepsAddProduct.creditLineSelection.id && (
+                stepsAddProductEnum.creditLineSelection.id && (
                 <>
                   {loading ? (
                     <SkeletonLine animated width="100%" height="160px" />
@@ -155,6 +157,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                                     creditLine: lineName,
                                   });
                                 }}
+                                language={language}
                               />
                             </Stack>
                           )
@@ -170,7 +173,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
               )}
 
               {currentStepsNumber.id ===
-                stepsAddProduct.paymentConfiguration.id &&
+                stepsAddProductEnum.paymentConfiguration.id &&
                 !loading &&
                 formData.paymentConfiguration.paymentChannelData.length > 0 && (
                   <PaymentConfiguration
@@ -188,23 +191,23 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                 )}
 
               {currentStepsNumber.id ===
-                stepsAddProduct.paymentConfiguration.id &&
+                stepsAddProductEnum.paymentConfiguration.id &&
                 !loading &&
                 formData.paymentConfiguration.paymentChannelData.length ===
                   0 && (
                   <Text
                     type="body"
                     size="medium"
-                    children={noAvailablePaymentMethods}
+                    children={noAvailablePaymentMethodsEnum.i18n[language]}
                     margin="10px 0 0 10px"
                   />
                 )}
 
               {currentStepsNumber.id ===
-                stepsAddProduct.paymentConfiguration.id &&
+                stepsAddProductEnum.paymentConfiguration.id &&
                 loading && <SkeletonLine animated width="100%" height="60px" />}
 
-              {currentStepsNumber.id === stepsAddProduct.amountCapture.id && (
+              {currentStepsNumber.id === stepsAddProductEnum.amountCapture.id && (
                 <AmountCapture
                   creditLine={formData.creditLine}
                   amount={formData.creditAmount}
@@ -219,7 +222,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                 />
               )}
 
-              {currentStepsNumber.id === stepsAddProduct.termSelection.id && (
+              {currentStepsNumber.id === stepsAddProductEnum.termSelection.id && (
                 <TermSelection
                   quotaCapValue={formData.quotaCapValue}
                   maximumTermValue={formData.maximumTermValue}
@@ -237,7 +240,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                   onFormValid={setIsCurrentFormValid}
                 />
               )}
-              {currentStepsNumber.id === stepsAddProduct.verification.id && (
+              {currentStepsNumber.id === stepsAddProductEnum.verification.id && (
                 <VerificationDebtorAddModal
                   formData={formData}
                   creditLineTerms={creditLineTerms}

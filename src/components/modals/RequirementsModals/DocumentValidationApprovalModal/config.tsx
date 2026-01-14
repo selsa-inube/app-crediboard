@@ -2,43 +2,6 @@ import { MdAddCircleOutline } from "react-icons/md";
 
 import { IOptionButtons } from "@components/modals/ListModal";
 
-export const approvalsConfig = {
-  title: "Evaluar",
-  observations: "Observaciones",
-  selectDocument: "Selecciona el documento que corresponde con el requisito.",
-  newDocument: "Cargar documento nuevo",
-  answer: "Respuesta",
-  answerPlaceHoleder: "Selecciona de la lista",
-  observationdetails:
-    "Proporciona detalles acerca de la evaluación del requisito",
-  cancel: "Cancelar",
-  confirm: "Confirmar",
-  see: "Ver",
-  seen: "Visto",
-  titleError: "Lamentamos los inconvenientes",
-  titleErrorDocument: "No se pudo obtener el documento. Intenta de nuevo.",
-  maxLength: 200,
-};
-
-export const optionsAnswer = [
-  {
-    id: "compliant",
-    label: "Cumple",
-    value: "Cumple",
-  },
-  {
-    id: "does_not_comply",
-    label: "No cumple",
-    value: "No cumple",
-  },
-  { id: "approve", label: "Aprobar", value: "Aprobar" },
-  {
-    id: "reject",
-    label: "No cumple y rechazar solicitud",
-    value: "No cumple y rechazar solicitud",
-  },
-];
-
 export const optionButtons: IOptionButtons = {
   label: "Adjuntar archivo",
   variant: "none",
@@ -46,6 +9,18 @@ export const optionButtons: IOptionButtons = {
   fullwidth: false,
   onClick: () => {},
 };
+
+export const optionButtonsEnum = {
+  attachFile: {
+    id: "attachFile",
+    code: "OptionButtons_attachFile",
+    description: "Etiqueta para el botón de adjuntar archivo",
+    i18n: {
+      en: "Attach file",
+      es: "Adjuntar archivo",
+    },
+  },
+}
 
 export const approvalsConfigEnum = {
   title: {
@@ -124,39 +99,43 @@ export const approvalsConfigEnum = {
       en: "The document could not be obtained. Try again.",
       es: "No se pudo obtener el documento. Intenta de nuevo.",
     },
+    maxLength: {
+    code: "Approvals_titleErrorDocument",
+    value: 200,
+    },
   },
 };
 
 export const optionsAnswerEnum = {
   compliant: {
+    id: "compliant",
+    value: "compliant",
     code: "Approvals_answer_compliant",
     description: "Compliant option",
     i18n: { en: "Compliant", es: "Cumple" },
   },
   doesNotComply: {
+    id: "doesNotComply",
+    value: "doesNotComply",
     code: "Approvals_answer_doesNotComply",
     description: "Does not comply option",
     i18n: { en: "Does not comply", es: "No cumple" },
   },
   approve: {
+    id: "approve",
+    value: "approve",
     code: "Approvals_answer_approve",
     description: "Approve option",
     i18n: { en: "Approve", es: "Aprobar" },
   },
   reject: {
+    id: "reject",
+    value: "reject",
     code: "Approvals_answer_reject",
     description: "Reject option",
     i18n: {
       en: "Does not comply and reject request",
       es: "No cumple y rechazar solicitud",
     },
-  },
-};
-
-export const optionButtonsEnum = {
-  attachFile: {
-    code: "Approvals_attachFile",
-    description: "Attach file button",
-    i18n: { en: "Attach file", es: "Adjuntar archivo" },
   },
 };

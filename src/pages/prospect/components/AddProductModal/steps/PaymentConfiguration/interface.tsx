@@ -2,7 +2,7 @@ import { Stack, Select } from "@inubekit/inubekit";
 
 import { CardGray } from "@components/cards/CardGray";
 
-import { IPaymentConfigurationUI, dataAmount } from "../config";
+import { IPaymentConfigurationUI, dataAmountEnum, paymentConfigurationEnum } from "../config";
 
 export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
   const {
@@ -17,18 +17,19 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
     hasOnlyOneFirstPaymentDate,
     hasOnlyOnePaymentCycle,
     hasOnlyOnePaymentMethod,
+    language
   } = props;
 
   return (
     <Stack direction="column" gap="24px" padding="0px 16px">
       {hasOnlyOnePaymentMethod ? (
         <CardGray
-          label={dataAmount.ordinaryPayment}
+          label={dataAmountEnum.ordinaryPayment.i18n[language]}
           placeHolder={paymentMethodOptions[0]?.label || ""}
         />
       ) : (
         <Select
-          label={dataAmount.ordinaryPayment}
+          label={dataAmountEnum.ordinaryPayment.i18n[language]}
           name="paymentMethod"
           id="paymentMethod"
           size="compact"
@@ -47,12 +48,12 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
         <>
           {hasOnlyOnePaymentCycle ? (
             <CardGray
-              label={dataAmount.Periodicity}
+              label={paymentConfigurationEnum.paymentCycle.label.i18n[language]}
               placeHolder={paymentCycleOptions[0]?.label || ""}
             />
           ) : (
             <Select
-              label={dataAmount.Periodicity}
+              label={paymentConfigurationEnum.paymentCycle.label.i18n[language]}
               name="paymentCycle"
               id="paymentCycle"
               size="compact"
@@ -73,12 +74,12 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
         <>
           {hasOnlyOneFirstPaymentDate ? (
             <CardGray
-              label={dataAmount.paymentDate}
+              label={paymentConfigurationEnum.firstPaymentDate.label.i18n[language]}
               placeHolder={firstPaymentDateOptions[0]?.label || ""}
             />
           ) : (
             <Select
-              label={dataAmount.paymentDate}
+              label={paymentConfigurationEnum.paymentDate.label.i18n[language]}
               name="firstPaymentDate"
               id="firstPaymentDate"
               size="compact"

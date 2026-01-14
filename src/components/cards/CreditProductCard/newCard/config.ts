@@ -1,7 +1,3 @@
-export const dataNewCard = {
-    add: "Agregar producto"
-}
-
 export const dataNewCardEnum = {
   add: {
     code: "NewCard_add",

@@ -1,7 +1,3 @@
-export const messages = {
-  defaultError: "Existe un error sin evaluar",
-};
-
 export const messagesEnum = {
   defaultError: {
     code: "Messages_default_error",

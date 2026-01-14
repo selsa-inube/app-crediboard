@@ -11,9 +11,10 @@ import {
 } from "@inubekit/inubekit";
 
 import { validationMessages } from "@validations/validationMessages";
+import { useEnum } from "@hooks/useEnum";
 
 import { StyledContainer, StyledContainerClose } from "./styles";
-import { dataBaseModal } from "./config";
+import { dataBaseModalEnum } from "./config";
 import { Appearance, Variant } from "./types";
 
 export interface IBaseModalProps {
@@ -73,6 +74,8 @@ export function BaseModal(props: IBaseModalProps) {
     marginTop
   } = props;
 
+  const language = useEnum().lang;
+
   const node = document.getElementById(portalId ?? "portal");
   if (!node) {
     throw new Error(validationMessages.errorNodo);
@@ -105,7 +108,7 @@ export function BaseModal(props: IBaseModalProps) {
             <StyledContainerClose onClick={handleClose || handleBack}>
               <Stack alignItems="center" gap="8px">
                 <Text type="body" size="large">
-                  {dataBaseModal.close}
+                  {dataBaseModalEnum.close.i18n[language]}
                 </Text>
                 <Icon
                   icon={<MdClear />}

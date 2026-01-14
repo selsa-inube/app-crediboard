@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useFormik } from "formik";
 import { MdOutlineFileUpload } from "react-icons/md";
 import * as Yup from "yup";
@@ -24,9 +24,10 @@ import { IPackagesOfRequirementsById } from "@services/requirementsPackages/type
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { useEnum } from "@hooks/useEnum";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
-import { approvalsConfig, optionButtons, optionsAnswer } from "./config";
+import { approvalsConfigEnum, optionButtons, optionsAnswerEnum } from "./config";
 import { StyledScroll } from "./styles";
 
 interface IDocumentValidationApprovalModalsProps {
@@ -65,6 +66,7 @@ export function DocumentValidationApprovalModal(
     onConfirm,
     onCloseModal,
   } = props;
+  const language = useEnum().lang;
 
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [isShowModal, setIsShowModal] = useState(false);
@@ -77,17 +79,23 @@ export function DocumentValidationApprovalModal(
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
 
-  const getOptionLabel = (options: typeof optionsAnswer, value: string) => {
-    const option = options?.find(
-      (opt) => opt.id === value || opt.value === value
-    );
-    return option?.label || option?.value || value;
+const optionsAnswer = useMemo(() => 
+    Object.values(optionsAnswerEnum).map((option) => ({
+      id: option.id,
+      value: option.value,
+      label: option.i18n[language],
+    })), 
+  [language]);
+
+  const getOptionLabel = (value: string) => {
+    const option = optionsAnswer.find((opt) => opt.id === value);
+    return option?.label || value;
   };
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
     observations: Yup.string()
-      .max(approvalsConfig.maxLength, validationMessages.limitedTxt)
+      .max(200, validationMessages.limitedTxt)
       .required(validationMessages.required),
     selectedDocumentIds: Yup.object().test(
       (value) => value && Object.values(value).some(Boolean)
@@ -160,7 +168,7 @@ export function DocumentValidationApprovalModal(
         }
       } catch (error) {
         setShowErrorModal(true);
-        setMessageError(approvalsConfig.titleError);
+        setMessageError(approvalsConfigEnum.titleError.i18n[language]);
       }
     },
   });
@@ -188,7 +196,7 @@ export function DocumentValidationApprovalModal(
         setDocuments(response);
       } catch (error) {
         setShowErrorModal(true);
-        setMessageError(approvalsConfig.titleErrorDocument);
+        setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[language]);
       }
     };
 
@@ -211,23 +219,23 @@ export function DocumentValidationApprovalModal(
       setSeenDocuments((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(approvalsConfig.titleErrorDocument);
+      setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[language]);
     }
   };
 
   return (
     <BaseModal
-      title={`${approvalsConfig.title} ${title}`}
+      title={`${approvalsConfigEnum.title.i18n[language]} ${title}`}
       handleNext={formik.handleSubmit}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
-      backButton={approvalsConfig.cancel}
-      nextButton={approvalsConfig.confirm}
+      backButton={approvalsConfigEnum.cancel.i18n[language]}
+      nextButton={approvalsConfigEnum.confirm.i18n[language]}
       disabledNext={!formik.values.observations || !formik.isValid}
     >
       <Stack direction="column" gap="24px">
         <Text type="body" size="large">
-          {approvalsConfig.selectDocument}
+          {approvalsConfigEnum.selectDocument.i18n[language]}
         </Text>
         <Fieldset heightFieldset="210px" borderColor="gray" hasOverflow>
           <StyledScroll>
@@ -269,9 +277,8 @@ export function DocumentValidationApprovalModal(
                         handlePreview(doc.documentId, doc.abbreviatedName)
                       }
                     >
-                      {seenDocuments.includes(doc.documentId)
-                        ? approvalsConfig.seen
-                        : approvalsConfig.see}
+                      {seenDocuments.includes(doc.documentId) &&
+                        approvalsConfigEnum.seen.i18n[language]}
                     </Text>
                   </Stack>
                   {index < documents.length - 1 && <Divider />}
@@ -286,15 +293,15 @@ export function DocumentValidationApprovalModal(
             spacing="compact"
             onClick={() => setIsShowModal(true)}
           >
-            {approvalsConfig.newDocument}
+            {approvalsConfigEnum.newDocument.i18n[language]}
           </Button>
         </Fieldset>
         {optionsAnswer && optionsAnswer.length === 1 ? (
           <Textfield
             name="answer"
             id="answer"
-            label={approvalsConfig.answer}
-            value={getOptionLabel(optionsAnswer, formik.values.answer)}
+            label={approvalsConfigEnum.answer.i18n[language]}
+            value={getOptionLabel(formik.values.answer)}
             disabled
             size="compact"
             fullwidth
@@ -304,8 +311,8 @@ export function DocumentValidationApprovalModal(
             name="answer"
             id="answer"
             options={optionsAnswer}
-            label={approvalsConfig.answer}
-            placeholder={approvalsConfig.answerPlaceHoleder}
+            label={approvalsConfigEnum.answer.i18n[language]}
+            placeholder={approvalsConfigEnum.answerPlaceHolder.i18n[language]}
             value={formik.values.answer}
             onChange={(name, value) => formik.setFieldValue(name, value)}
             onBlur={formik.handleBlur}
@@ -316,9 +323,9 @@ export function DocumentValidationApprovalModal(
         <Textarea
           id="observations"
           name="observations"
-          label={approvalsConfig.observations}
-          placeholder={approvalsConfig.observationdetails}
-          maxLength={approvalsConfig.maxLength}
+          label={approvalsConfigEnum.observations.i18n[language]}
+          placeholder={approvalsConfigEnum.observationdetails.i18n[language]}
+          maxLength={200}
           value={formik.values.observations}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}

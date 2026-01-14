@@ -18,7 +18,7 @@ import {
 } from "@utils/formatData/currency";
 
 import { StyledContainer, StyledTextField, StyledSupport } from "./styles";
-import { incomeCardData } from "./config";
+import { incomeCardDataEnum } from "./config";
 import { CardGray } from "../CardGray";
 
 export interface IIncomeCardProps {
@@ -26,6 +26,7 @@ export interface IIncomeCardProps {
   labels: string[];
   placeholders: string[];
   values: string[];
+  language: "en" | "es";
   ShowSupport?: boolean;
   disabled?: boolean;
   onValueChange?: (index: number, newValue: string) => void;
@@ -40,6 +41,7 @@ export function IncomeCard(props: IIncomeCardProps) {
     ShowSupport,
     disabled = false,
     onValueChange,
+    language = "es",
   } = props;
 
   const validationSchema = Yup.object({
@@ -128,7 +130,7 @@ export function IncomeCard(props: IIncomeCardProps) {
             <StyledSupport onClick={() => console.log("Ver soporte")}>
               <Stack gap="8px" alignItems="center">
                 <Text appearance="primary" type="label" size="large">
-                  {incomeCardData.support}
+                  {incomeCardDataEnum.support.i18n[language]}
                 </Text>
                 <Icon
                   icon={<MdOutlineRemoveRedEye />}

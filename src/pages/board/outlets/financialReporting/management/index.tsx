@@ -22,14 +22,15 @@ import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { useEnum } from "@hooks/useEnum";
 
 import { ChatContent, SkeletonContainer, SkeletonLine } from "./styles";
 import {
   traceObserver,
   errorObserver,
-  errorMessages,
+  errorMessagesEnum,
   optionButtons,
-  editCreditApplicationLabels,
+  editCreditApplicationLabelsEnum,
 } from "../config";
 import { DetailsModal } from "./DetailsModal";
 
@@ -40,6 +41,8 @@ interface IManagementProps {
 }
 
 export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
+  const language = useEnum().lang;
+
   const [creditRequest, setCreditRequest] = useState<ICreditRequest | null>(
     null
   );
@@ -172,7 +175,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         }
       });
     } catch (error) {
-      setErrorMessage(errorMessages.registerNewsToACreditRequest.description);
+      setErrorMessage(errorMessagesEnum.registerNews.description.i18n[language]);
       setErrorModal(true);
     }
   };
@@ -262,7 +265,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   return (
     <>
       <Fieldset
-        title={errorMessages.Management.titleCard}
+        title={errorMessagesEnum.management.titleCard.i18n[language]}
         heightFieldset="340px"
         aspectRatio={isMobile ? "auto" : "1"}
         hasError={error ? true : false}
@@ -270,9 +273,9 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         {!creditRequest || error ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessages.Management.title}
-            description={errorMessages.Management.description}
-            buttonDescription={errorMessages.Management.button}
+            title={errorMessagesEnum.management.title.i18n[language]}
+            description={errorMessagesEnum.management.description.i18n[language]}
+            buttonDescription={errorMessagesEnum.management.button.i18n[language]}
             onRetry={handleRetry}
           />
         ) : (
@@ -303,7 +306,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   />
                   <Textfield
                     id="text"
-                    placeholder={editCreditApplicationLabels.placeholderExample}
+                    placeholder={editCreditApplicationLabelsEnum.placeholderExample.i18n[language]}
                     fullwidth
                     value={newMessage}
                     onChange={handleInputChange}

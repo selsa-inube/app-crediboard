@@ -34,6 +34,7 @@ Default.args = {
   schedule: Schedule.Biweekly,
   onEdit: action("onEdit"),
   onDelete: action("onDelete"),
+  language: "es",
 };
 
 export default story;

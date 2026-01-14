@@ -1,89 +1,224 @@
-const obligationTypeOptions = [
-  {
-    id: "Consumo",
-    label: "Consumo",
-    value: "consumo",
-  },
-  {
-    id: "Tarjeta",
-    label: "Tarjeta",
-    value: "tarjeta",
-  },
-  {
-    id: "Vivienda",
-    label: "Vivienda",
-    value: "vivienda",
-  },
-  {
-    id: "Vehículo",
-    label: "Vehículo",
-    value: "vehículo",
-  },
-  {
-    id: "Otros",
-    label: "Otros",
-    value: "otros",
-  },
-];
-
-const entityOptions = [
+const entityOptionsEnum = [
   {
     id: "Bancolombia",
-    label: "Bancolombia",
+    code: "EntityOption_bancolombia",
+    description: "Opción de entidad Bancolombia",
     value: "bancolombia",
+    i18n: {
+      en: "Bancolombia",
+      es: "Bancolombia",
+    },
   },
   {
     id: "Falabella",
-    label: "Falabella",
+    code: "EntityOption_falabella",
+    description: "Opción de entidad Falabella",
     value: "falabella",
+    i18n: {
+      en: "Falabella",
+      es: "Falabella",
+    },
   },
   {
     id: "Davivienda",
-    label: "Davivienda",
+    code: "EntityOption_davivienda",
+    description: "Opción de entidad Davivienda",
     value: "davivienda",
+    i18n: {
+      en: "Davivienda",
+      es: "Davivienda",
+    },
   },
   {
     id: "Finandina",
-    label: "Finandina",
+    code: "EntityOption_finandina",
+    description: "Opción de entidad Finandina",
     value: "finandina",
+    i18n: {
+      en: "Finandina",
+      es: "Finandina",
+    },
   },
   {
     id: "Propio",
-    label: "Propio",
+    code: "EntityOption_own",
+    description: "Opción de entidad propia",
     value: "propio",
+    i18n: {
+      en: "Own",
+      es: "Propio",
+    },
   },
 ];
 
-const meansPaymentOptions = [
+const meansPaymentOptionsEnum = [
   {
     id: "Caja",
-    label: "Caja",
+    code: "MeansPayment_cash_desk",
+    description: "Medio de pago a través de caja",
     value: "Caja",
+    i18n: {
+      en: "Cash desk",
+      es: "Caja",
+    },
   },
   {
     id: "Nomina convencional",
-    label: "Nomina convencional",
+    code: "MeansPayment_conventional_payroll",
+    description: "Medio de pago por nómina convencional",
     value: "nomina convencional",
+    i18n: {
+      en: "Conventional Payroll",
+      es: "Nomina convencional",
+    },
   },
 ];
 
-const dataInputs = {
-  close: "Cerrar",
-  cancel: "Cancelar",
-  labelType: "Tipo",
-  labelEntity: "Entidad",
-  labelPayment: "Medio de pago",
-  palaceHolderSelect: "Selecciona una opción",
-  labelFee: "Cuota",
-  palaceHolderFee: "Valor de la cuota",
-  labelBalance: "Saldo",
-  palaceHolderBalance: "Valor total",
-  labelId: "Id",
-  palaceHolderId: "Identificador",
-  labelFeePaid: "Cuotas pagadas",
-  palaceHolderFeePaid: "Cuotas pagadas",
-  labelterm: "plazo",
-  palaceHolderterm: "Total de cuotas",
+const dataInputsEnum = {
+  close: {
+    id: "close",
+    code: "FinancialObligation_close",
+    description: "Texto para el botón de cerrar",
+    i18n: {
+      en: "Close",
+      es: "Cerrar",
+    },
+  },
+  cancel: {
+    id: "cancel",
+    code: "FinancialObligation_cancel",
+    description: "Texto para el botón de cancelar",
+    i18n: {
+      en: "Cancel",
+      es: "Cancelar",
+    },
+  },
+  labelType: {
+    id: "labelType",
+    code: "FinancialObligation_labelType",
+    description: "Etiqueta para el tipo de obligación",
+    i18n: {
+      en: "Type",
+      es: "Tipo",
+    },
+  },
+  labelEntity: {
+    id: "labelEntity",
+    code: "FinancialObligation_labelEntity",
+    description: "Etiqueta para la entidad financiera",
+    i18n: {
+      en: "Entity",
+      es: "Entidad",
+    },
+  },
+  labelPayment: {
+    id: "labelPayment",
+    code: "FinancialObligation_labelPayment",
+    description: "Etiqueta para el medio de pago",
+    i18n: {
+      en: "Payment method",
+      es: "Medio de pago",
+    },
+  },
+  palaceHolderSelect: {
+    id: "palaceHolderSelect",
+    code: "FinancialObligation_palaceHolderSelect",
+    description: "Placeholder para campos de selección",
+    i18n: {
+      en: "Select an option",
+      es: "Selecciona una opción",
+    },
+  },
+  labelFee: {
+    id: "labelFee",
+    code: "FinancialObligation_labelFee",
+    description: "Etiqueta para el valor de la cuota",
+    i18n: {
+      en: "Fee",
+      es: "Cuota",
+    },
+  },
+  palaceHolderFee: {
+    id: "palaceHolderFee",
+    code: "FinancialObligation_palaceHolderFee",
+    description: "Placeholder para el valor de la cuota",
+    i18n: {
+      en: "Fee amount",
+      es: "Valor de la cuota",
+    },
+  },
+  labelBalance: {
+    id: "labelBalance",
+    code: "FinancialObligation_labelBalance",
+    description: "Etiqueta para el saldo de la deuda",
+    i18n: {
+      en: "Balance",
+      es: "Saldo",
+    },
+  },
+  palaceHolderBalance: {
+    id: "palaceHolderBalance",
+    code: "FinancialObligation_palaceHolderBalance",
+    description: "Placeholder para el valor total o saldo",
+    i18n: {
+      en: "Total value",
+      es: "Valor total",
+    },
+  },
+  labelId: {
+    id: "labelId",
+    code: "FinancialObligation_labelId",
+    description: "Etiqueta para el identificador",
+    i18n: {
+      en: "Id",
+      es: "Id",
+    },
+  },
+  palaceHolderId: {
+    id: "palaceHolderId",
+    code: "FinancialObligation_palaceHolderId",
+    description: "Placeholder para el identificador",
+    i18n: {
+      en: "Identifier",
+      es: "Identificador",
+    },
+  },
+  labelFeePaid: {
+    id: "labelFeePaid",
+    code: "FinancialObligation_labelFeePaid",
+    description: "Etiqueta para cuotas ya pagadas",
+    i18n: {
+      en: "Fees paid",
+      es: "Cuotas pagadas",
+    },
+  },
+  palaceHolderFeePaid: {
+    id: "palaceHolderFeePaid",
+    code: "FinancialObligation_palaceHolderFeePaid",
+    description: "Placeholder para el número de cuotas pagadas",
+    i18n: {
+      en: "Fees paid",
+      es: "Cuotas pagadas",
+    },
+  },
+  labelterm: {
+    id: "labelterm",
+    code: "FinancialObligation_labelTerm",
+    description: "Etiqueta para el plazo de la obligación",
+    i18n: {
+      en: "Term",
+      es: "plazo",
+    },
+  },
+  palaceHolderterm: {
+    id: "palaceHolderterm",
+    code: "FinancialObligation_palaceHolderTerm",
+    description: "Placeholder para el total de cuotas",
+    i18n: {
+      en: "Total fees",
+      es: "Total de cuotas",
+    },
+  },
 };
 
 export const obligationTypeEnum = {
@@ -191,10 +326,62 @@ export const meansPaymentEnum = {
   },
 };
 
+export const obligationTypeOptionsEnum = [
+  {
+    id: "Consumo",
+    code: "ObligationType_consumption",
+    description: "Tipo de obligación de consumo",
+    value: "consumo",
+    i18n: {
+      en: "Consumption",
+      es: "Consumo",
+    },
+  },
+  {
+    id: "Tarjeta",
+    code: "ObligationType_card",
+    description: "Tipo de obligación de tarjeta de crédito",
+    value: "tarjeta",
+    i18n: {
+      en: "Card",
+      es: "Tarjeta",
+    },
+  },
+  {
+    id: "Vivienda",
+    code: "ObligationType_housing",
+    description: "Tipo de obligación de vivienda",
+    value: "vivienda",
+    i18n: {
+      en: "Housing",
+      es: "Vivienda",
+    },
+  },
+  {
+    id: "Vehículo",
+    code: "ObligationType_vehicle",
+    description: "Tipo de obligación de vehículo",
+    value: "vehículo",
+    i18n: {
+      en: "Vehicle",
+      es: "Vehículo",
+    },
+  },
+  {
+    id: "Otros",
+    code: "ObligationType_others",
+    description: "Otros tipos de obligaciones",
+    value: "otros",
+    i18n: {
+      en: "Others",
+      es: "Otros",
+    },
+  },
+];
+
 
 export {
-  obligationTypeOptions,
-  entityOptions,
-  meansPaymentOptions,
-  dataInputs,
+  entityOptionsEnum,
+  meansPaymentOptionsEnum,
+  dataInputsEnum,
 };

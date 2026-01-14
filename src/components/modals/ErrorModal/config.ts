@@ -1,9 +1,3 @@
-export const errorModalConfig = {
-  title: "Ha ocurrido un error",
-  understood: "Entendido",
-  excuses: "Lo sentimos",
-};
-
 export const errorModalConfigEnum = {
   title: {
     code: "ErrorModal_title",

@@ -13,8 +13,9 @@ import {
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
+import { useEnum } from "@hooks/useEnum";
 
-import { TextLabels } from "./config";
+import { TextLabelsEnum } from "./config";
 import { IExtraordinaryPayment } from "./types";
 
 export interface ExtraordinaryPaymentModalProps {
@@ -54,7 +55,9 @@ export const ExtraordinaryPaymentModal = (
     paymentChannelAbbreviatedName: "",
   });
   const [isAddSeriesModalOpen, setAddSeriesModalOpen] = useState(false);
+
   const isMobile = useMediaQuery("(max-width:880px)");
+  const language = useEnum().lang;
 
   const openAddSeriesModal = () => {
     setInstallmentState({
@@ -89,8 +92,8 @@ export const ExtraordinaryPaymentModal = (
   });
   return (
     <BaseModal
-      title={TextLabels.extraPayments}
-      nextButton={TextLabels.close}
+      title={TextLabelsEnum.extraPayments.i18n[language]}
+      nextButton={TextLabelsEnum.close.i18n[language]}
       handleNext={handleClose}
       handleClose={handleClose}
       width={!isMobile ? "850px" : "360px"}
@@ -114,7 +117,7 @@ export const ExtraordinaryPaymentModal = (
             }
             onClick={openAddSeriesModal}
           >
-            {TextLabels.addSeries}
+            {TextLabelsEnum.addSeries.i18n[language]}
           </Button>
           {editCreditApplication || availableEditCreditRequest && (
             <Icon

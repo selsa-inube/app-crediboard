@@ -2,6 +2,7 @@ import { IncomeCard } from "@components/cards/IncomeCard";
 
 interface IncomeProps {
   values: string[];
+  language: "en" | "es";
   ShowSupport?: boolean;
   disabled?: boolean;
   onValueChange?: (index: number, newValue: string) => void;
@@ -12,6 +13,7 @@ function IncomeCapital({
   ShowSupport,
   disabled,
   onValueChange,
+  language
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -26,6 +28,7 @@ function IncomeCapital({
       ShowSupport={ShowSupport}
       disabled={disabled}
       onValueChange={onValueChange}
+      language={language}
     />
   );
 }
@@ -35,6 +38,7 @@ function IncomeEmployment({
   ShowSupport,
   disabled,
   onValueChange,
+  language
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -53,6 +57,7 @@ function IncomeEmployment({
       ShowSupport={ShowSupport}
       disabled={disabled}
       onValueChange={onValueChange}
+      language={language}
     />
   );
 }
@@ -62,6 +67,7 @@ function MicroBusinesses({
   ShowSupport,
   disabled,
   onValueChange,
+  language
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -72,6 +78,7 @@ function MicroBusinesses({
       ShowSupport={ShowSupport}
       disabled={disabled}
       onValueChange={onValueChange}
+      language={language}
     />
   );
 }

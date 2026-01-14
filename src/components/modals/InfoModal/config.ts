@@ -1,19 +1,3 @@
-export const texts = {
-  infoModal: {
-    check: "Cumple",
-    close: "No Cumple",
-    remove: "Sin Evaluar",
-    info: "Devuelto",
-  },
-};
-
-export const altTexts = {
-  check: "check",
-  close: "close",
-  remove: "remove",
-  info: "Devuelto",
-};
-
 export const textsEnum = {
   infoModalCheck: {
     code: "Texts_infoModal_check",

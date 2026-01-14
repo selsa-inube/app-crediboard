@@ -140,98 +140,6 @@ export const configHandleactions = ({
   };
 };
 
-export const optionFlags = {
-  title: "Adjuntar archivo",
-  description: "El archivo que intentas agregar ya está registrado.",
-  descriptionSuccess: "El archivo se ha guardado exitosamente.",
-  appearance: "success",
-  appearanceError: "danger",
-};
-
-export const errorMessages = {
-  comercialManagement: {
-    titleCard: "Estado",
-    descriptionCard: "Gestión Comercial",
-    title: "No se encontró la solicitud de crédito",
-    description:
-      "No hay datos relacionados a la solicitud de crédito seleccionada.",
-    button: "Volver a buscar",
-  },
-  toDo: {
-    titleCard: "Por hacer",
-    title: "No se encontraron tareas",
-    description: "No hay tareas disponibles para mostrar en este momento.",
-    button: "Volver a intentar",
-  },
-  approval: {
-    titleCard: "Aprobaciones",
-    title: "No se encontraron aprobaciones",
-    description:
-      "No se encontraron datos relacionados con la aprobación del crédito.",
-    button: "Volver a intentar",
-  },
-  Requirements: {
-    titleCard: "Requisitos",
-    title: "No se encontraron requisitos",
-    description: "No hay requisitos disponibles para esta solicitud.",
-    button: "Volver a intentar",
-  },
-  Management: {
-    titleCard: "Gestión",
-    title: "No se encontró gestión",
-    description: "No se ha registrado gestión para esta solicitud.",
-    button: "Volver a intentar",
-  },
-  PromissoryNotes: {
-    titleCard: "Pagarés y Libranzas",
-    title: "No se encontraron documentos de obligación",
-    description:
-      "No hay documentos disponibles relacionados con pagarés o libranzas.",
-    button: "Volver a intentar",
-  },
-  Postingvouchers: {
-    titleCard: "Comprobantes de Contabilización",
-    title: "No se encontraron comprobantes",
-    description: "No hay comprobantes contables asociados a esta solicitud.",
-    button: "Volver a intentar",
-  },
-  share: {
-    titleCard: "Compartir",
-    title: "No se encontraron documentos",
-    description: "Error al generar el documento para compartir.",
-    button: "Volver a intentar",
-    spinner: "Generando PDF...",
-  },
-  getData: {
-    title: "Error al cargar los datos",
-    description:
-      "Hubo un problema al cargar los datos. Por favor, inténtelo de nuevo más tarde.",
-    button: "Volver a intentar",
-  },
-  lateRejectionOfACreditRequest: {
-    description: "Error no se pudo rechazar la solicitud de crédito.",
-  },
-  registerNewsToACreditRequest: {
-    description: "Error al enviar el mensaje. Intente nuevamente.",
-  },
-  searchAllUnreadErrorsById: {
-    description: "Error no se pudo traer los errores no leídos.",
-  },
-  searchProspect: {
-    description: "No se pudo obtener los datos del prospecto relacionado."
-  }
-};
-
-export const labelsAndValuesShare = {
-  titleOnPdf: "Gestión Comercial",
-  fileName: "reporte_comercial.pdf",
-  text: "Reporte Comercial para compartir",
-};
-
-export const editCreditApplicationLabels = {
-  placeholderExample: "Ej.: Escribe tu mensaje",
-};
-
 export const optionFlagsEnum = {
   title: {
     code: "OptionFlags_title",
@@ -278,115 +186,276 @@ export const optionFlagsEnum = {
 export const errorMessagesEnum = {
   comercialManagement: {
     titleCard: {
+      id: "titleCard",
       code: "ErrorMessages_comercialManagement_titleCard",
-      description: "Title for commercial management card",
-      i18n: {
-        en: "Status",
-        es: "Estado",
-      },
+      description: "Título de la tarjeta de gestión comercial",
+      i18n: { en: "Status", es: "Estado" },
     },
     descriptionCard: {
+      id: "descriptionCard",
       code: "ErrorMessages_comercialManagement_descriptionCard",
-      description: "Description for commercial management card",
-      i18n: {
-        en: "Commercial Management",
-        es: "Gestión Comercial",
-      },
+      description: "Descripción de la tarjeta",
+      i18n: { en: "Commercial Management", es: "Gestión Comercial" },
     },
     title: {
+      id: "title",
       code: "ErrorMessages_comercialManagement_title",
-      description: "Title for error message",
-      i18n: {
-        en: "Credit request not found",
-        es: "No se encontró la solicitud de crédito",
-      },
+      description: "Título de error solicitud no encontrada",
+      i18n: { en: "Credit request not found", es: "No se encontró la solicitud de crédito" },
     },
     description: {
+      id: "description",
       code: "ErrorMessages_comercialManagement_description",
-      description: "Description for error message",
-      i18n: {
-        en: "No data related to the selected credit request.",
-        es: "No hay datos relacionados a la solicitud de crédito seleccionada.",
-      },
+      description: "Descripción de error",
+      i18n: { en: "No data related to the selected credit request.", es: "No hay datos relacionados a la solicitud de crédito seleccionada." },
     },
     button: {
+      id: "button",
       code: "ErrorMessages_comercialManagement_button",
-      description: "Label for retry button",
-      i18n: {
-        en: "Search again",
-        es: "Volver a buscar",
-      },
+      description: "Etiqueta botón reintentar",
+      i18n: { en: "Search again", es: "Volver a buscar" },
     },
   },
   toDo: {
     titleCard: {
+      id: "titleCard",
       code: "ErrorMessages_toDo_titleCard",
-      description: "Title for to-do card",
-      i18n: {
-        en: "To do",
-        es: "Por hacer",
-      },
+      description: "Título tarjeta Por hacer",
+      i18n: { en: "To do", es: "Por hacer" },
     },
     title: {
+      id: "title",
       code: "ErrorMessages_toDo_title",
-      description: "Title for to-do error message",
-      i18n: {
-        en: "No tasks found",
-        es: "No se encontraron tareas",
-      },
+      description: "Título error tareas",
+      i18n: { en: "No tasks found", es: "No se encontraron tareas" },
     },
     description: {
+      id: "description",
       code: "ErrorMessages_toDo_description",
-      description: "Description for to-do error message",
-      i18n: {
-        en: "No tasks are available to display at this time.",
-        es: "No hay tareas disponibles para mostrar en este momento.",
-      },
+      description: "Descripción error tareas",
+      i18n: { en: "No tasks are available to display at this time.", es: "No hay tareas disponibles para mostrar en este momento." },
     },
     button: {
+      id: "button",
       code: "ErrorMessages_toDo_button",
-      description: "Label for retry button",
-      i18n: {
-        en: "Try again",
-        es: "Volver a intentar",
-      },
+      description: "Botón reintentar tareas",
+      i18n: { en: "Try again", es: "Volver a intentar" },
     },
   },
   approval: {
     titleCard: {
+      id: "titleCard",
       code: "ErrorMessages_approval_titleCard",
-      description: "Title for approvals card",
-      i18n: {
-        en: "Approvals",
-        es: "Aprobaciones",
-      },
+      description: "Título tarjeta aprobaciones",
+      i18n: { en: "Approvals", es: "Aprobaciones" },
     },
     title: {
+      id: "title",
       code: "ErrorMessages_approval_title",
-      description: "Title for approval error",
-      i18n: {
-        en: "No approvals found",
-        es: "No se encontraron aprobaciones",
-      },
+      description: "Título error aprobaciones",
+      i18n: { en: "No approvals found", es: "No se encontraron aprobaciones" },
     },
     description: {
+      id: "description",
       code: "ErrorMessages_approval_description",
-      description: "Description for approval error",
-      i18n: {
-        en: "No data related to the credit approval was found.",
-        es: "No se encontraron datos relacionados con la aprobación del crédito.",
-      },
+      description: "Descripción error aprobaciones",
+      i18n: { en: "No data related to the credit approval was found.", es: "No se encontraron datos relacionados con la aprobación del crédito." },
     },
     button: {
+      id: "button",
       code: "ErrorMessages_approval_button",
-      description: "Label for retry button",
-      i18n: {
-        en: "Try again",
-        es: "Volver a intentar",
-      },
+      description: "Botón reintentar aprobaciones",
+      i18n: { en: "Try again", es: "Volver a intentar" },
     },
   },
-  // ... Continue for Requirements, Management, PromissoryNotes, Postingvouchers, share, getData, lateRejectionOfACreditRequest, registerNewsToACreditRequest, searchAllUnreadErrorsById
+  requirements: {
+    titleCard: {
+      id: "titleCard",
+      code: "ErrorMessages_requirements_titleCard",
+      description: "Título tarjeta requisitos",
+      i18n: { en: "Requirements", es: "Requisitos" },
+    },
+    title: {
+      id: "title",
+      code: "ErrorMessages_requirements_title",
+      description: "Título error requisitos",
+      i18n: { en: "No requirements found", es: "No se encontraron requisitos" },
+    },
+    description: {
+      id: "description",
+      code: "ErrorMessages_requirements_description",
+      description: "Descripción error requisitos",
+      i18n: { en: "No requirements available for this request.", es: "No hay requisitos disponibles para esta solicitud." },
+    },
+    button: {
+      id: "button",
+      code: "ErrorMessages_requirements_button",
+      description: "Botón reintentar requisitos",
+      i18n: { en: "Try again", es: "Volver a intentar" },
+    },
+  },
+  management: {
+    titleCard: {
+      id: "titleCard",
+      code: "ErrorMessages_management_titleCard",
+      description: "Título tarjeta gestión",
+      i18n: { en: "Management", es: "Gestión" },
+    },
+    title: {
+      id: "title",
+      code: "ErrorMessages_management_title",
+      description: "Título error gestión",
+      i18n: { en: "No management found", es: "No se encontró gestión" },
+    },
+    description: {
+      id: "description",
+      code: "ErrorMessages_management_description",
+      description: "Descripción error gestión",
+      i18n: { en: "No management has been registered for this request.", es: "No se ha registrado gestión para esta solicitud." },
+    },
+    button: {
+      id: "button",
+      code: "ErrorMessages_management_button",
+      description: "Botón reintentar gestión",
+      i18n: { en: "Try again", es: "Volver a intentar" },
+    },
+  },
+  promissoryNotes: {
+    titleCard: {
+      id: "titleCard",
+      code: "ErrorMessages_promissoryNotes_titleCard",
+      description: "Título tarjeta pagarés",
+      i18n: { en: "Promissory Notes and Payroll Deductions", es: "Pagarés y Libranzas" },
+    },
+    title: {
+      id: "title",
+      code: "ErrorMessages_promissoryNotes_title",
+      description: "Título error pagarés",
+      i18n: { en: "No obligation documents found", es: "No se encontraron documentos de obligación" },
+    },
+    description: {
+      id: "description",
+      code: "ErrorMessages_promissoryNotes_description",
+      description: "Descripción error pagarés",
+      i18n: { en: "No documents available related to promissory notes or payroll deductions.", es: "No hay documentos disponibles relacionados con pagarés o libranzas." },
+    },
+    button: {
+      id: "button",
+      code: "ErrorMessages_promissoryNotes_button",
+      description: "Botón reintentar pagarés",
+      i18n: { en: "Try again", es: "Volver a intentar" },
+    },
+  },
+  postingVouchers: {
+    titleCard: {
+      id: "titleCard",
+      code: "ErrorMessages_postingVouchers_titleCard",
+      description: "Título tarjeta comprobantes",
+      i18n: { en: "Accounting Vouchers", es: "Comprobantes de Contabilización" },
+    },
+    title: {
+      id: "title",
+      code: "ErrorMessages_postingVouchers_title",
+      description: "Título error comprobantes",
+      i18n: { en: "No vouchers found", es: "No se encontraron comprobantes" },
+    },
+    description: {
+      id: "description",
+      code: "ErrorMessages_postingVouchers_description",
+      description: "Descripción error comprobantes",
+      i18n: { en: "No accounting vouchers associated with this request.", es: "No hay comprobantes contables asociados a esta solicitud." },
+    },
+    button: {
+      id: "button",
+      code: "ErrorMessages_postingVouchers_button",
+      description: "Botón reintentar comprobantes",
+      i18n: { en: "Try again", es: "Volver a intentar" },
+    },
+  },
+  share: {
+    titleCard: {
+      id: "titleCard",
+      code: "ErrorMessages_share_titleCard",
+      description: "Título tarjeta compartir",
+      i18n: { en: "Share", es: "Compartir" },
+    },
+    title: {
+      id: "title",
+      code: "ErrorMessages_share_title",
+      description: "Título error compartir",
+      i18n: { en: "No documents found", es: "No se encontraron documentos" },
+    },
+    description: {
+      id: "description",
+      code: "ErrorMessages_share_description",
+      description: "Descripción error compartir",
+      i18n: { en: "Error generating the document to share.", es: "Error al generar el documento para compartir." },
+    },
+    button: {
+      id: "button",
+      code: "ErrorMessages_share_button",
+      description: "Botón reintentar compartir",
+      i18n: { en: "Try again", es: "Volver a intentar" },
+    },
+    spinner: {
+      id: "spinner",
+      code: "ErrorMessages_share_spinner",
+      description: "Texto cargando PDF",
+      i18n: { en: "Generating PDF...", es: "Generando PDF..." },
+    },
+  },
+  getData: {
+    title: {
+      id: "title",
+      code: "ErrorMessages_getData_title",
+      description: "Título error carga datos",
+      i18n: { en: "Error loading data", es: "Error al cargar los datos" },
+    },
+    description: {
+      id: "description",
+      code: "ErrorMessages_getData_description",
+      description: "Descripción error carga datos",
+      i18n: { en: "There was a problem loading the data. Please try again later.", es: "Hubo un problema al cargar los datos. Por favor, inténtelo de nuevo más tarde." },
+    },
+    button: {
+      id: "button",
+      code: "ErrorMessages_getData_button",
+      description: "Botón reintentar carga",
+      i18n: { en: "Try again", es: "Volver a intentar" },
+    },
+  },
+  lateRejection: {
+    description: {
+      id: "lateRejectionDescription",
+      code: "ErrorMessages_lateRejection_description",
+      description: "Error rechazo tardío",
+      i18n: { en: "Error: credit request could not be rejected.", es: "Error no se pudo rechazar la solicitud de crédito." },
+    },
+  },
+  registerNews: {
+    description: {
+      id: "registerNewsDescription",
+      code: "ErrorMessages_registerNews_description",
+      description: "Error registro novedades",
+      i18n: { en: "Error sending the message. Please try again.", es: "Error al enviar el mensaje. Intente nuevamente." },
+    },
+  },
+  unreadErrors: {
+    description: {
+      id: "unreadErrorsDescription",
+      code: "ErrorMessages_unreadErrors_description",
+      description: "Error búsqueda errores no leídos",
+      i18n: { en: "Error: could not retrieve unread errors.", es: "Error no se pudo traer los errores no leídos." },
+    },
+  },
+  searchProspect: {
+    description: {
+      id: "searchProspectDescription",
+      code: "ErrorMessages_searchProspect_description",
+      description: "Error búsqueda prospecto",
+      i18n: { en: "Could not retrieve related prospect data.", es: "No se pudo obtener los datos del prospecto relacionado." },
+    },
+  },
 };
 
 export const labelsAndValuesShareEnum = {

@@ -17,7 +17,7 @@ const Template: StoryFn<typeof SelectedFilters> = (args) => {
     );
   };
 
-  return <SelectedFilters filters={filters} onRemove={handleRemove} />;
+  return <SelectedFilters filters={filters} onRemove={handleRemove} language="es"/>;
 };
 
 export const Default = Template.bind({});
