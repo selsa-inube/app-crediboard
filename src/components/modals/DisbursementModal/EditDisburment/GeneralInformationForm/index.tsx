@@ -42,7 +42,7 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
     prospectData
   } = props;
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   useEffect(() => {
     if (typesOfDocuments.length === 1) {
@@ -76,8 +76,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           <Textfield
             id={"documentType"}
             name={`${optionNameForm}.documentType`}
-            label={disbursemenOptionAccountEnum.labelDocumentType.i18n[language]}
-            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[language]}
+            label={disbursemenOptionAccountEnum.labelDocumentType.i18n[lang]}
+            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
             size="compact"
             value={typesOfDocuments[0]?.label || ""}
             readOnly={true}
@@ -88,8 +88,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           <Select
             id={"documentType"}
             name={`${optionNameForm}.documentType`}
-            label={disbursemenOptionAccountEnum.labelDocumentType.i18n[language]}
-            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[language]}
+            label={disbursemenOptionAccountEnum.labelDocumentType.i18n[lang]}
+            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
             size="compact"
             options={typesOfDocuments}
             onBlur={formik.handleBlur}
@@ -104,8 +104,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
         <Input
           id={"identification"}
           name={`${optionNameForm}.identification`}
-          label={disbursemenOptionAccountEnum.labelDocumentNumber.i18n[language]}
-          placeholder={disbursemenOptionAccountEnum.placeDocumentNumber.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelDocumentNumber.i18n[lang]}
+          placeholder={disbursemenOptionAccountEnum.placeDocumentNumber.i18n[lang]}
           value={formik.values[optionNameForm]?.identification || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -121,7 +121,7 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           message={
             formik.values[optionNameForm]?.identification ===
               prospectData?.borrowers?.[0]?.borrowerIdentificationNumber
-              ? dataGeneralInformationFormEnum.identityMismatch.i18n[language]
+              ? dataGeneralInformationFormEnum.identityMismatch.i18n[lang]
               : undefined
           }
         />
@@ -129,8 +129,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
         <Input
           id={"name"}
           name={`${optionNameForm}.name`}
-          label={disbursemenOptionAccountEnum.labelName.i18n[language]}
-          placeholder={disbursemenOptionAccountEnum.placeName.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelName.i18n[lang]}
+          placeholder={disbursemenOptionAccountEnum.placeName.i18n[lang]}
           value={formik.values[optionNameForm]?.name || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -142,8 +142,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
         <Input
           id={"lastName"}
           name={`${optionNameForm}.lastName`}
-          label={disbursemenOptionAccountEnum.labelLastName.i18n[language]}
-          placeholder={disbursemenOptionAccountEnum.placeLastName.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelLastName.i18n[lang]}
+          placeholder={disbursemenOptionAccountEnum.placeLastName.i18n[lang]}
           value={formik.values[optionNameForm]?.lastName || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -155,7 +155,7 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
         <DateInube
           id="birthdate"
           name={`${optionNameForm}.birthdate`}
-          label={disbursemenOptionAccountEnum.labelBirthdate.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelBirthdate.i18n[lang]}
           size="compact"
           fullwidth={true}
           value={formik.values[optionNameForm]?.birthdate || ""}
@@ -173,8 +173,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           <Textfield
             id={"sex"}
             name={`${optionNameForm}.sex`}
-            label={disbursemenOptionAccountEnum.labelSex.i18n[language]}
-            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[language]}
+            label={disbursemenOptionAccountEnum.labelSex.i18n[lang]}
+            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
             size="compact"
             value={Sex[0]?.label || ""}
             readOnly={true}
@@ -185,8 +185,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           <Select
             id={"sex"}
             name={`${optionNameForm}.sex`}
-            label={disbursemenOptionAccountEnum.labelSex.i18n[language]}
-            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[language]}
+            label={disbursemenOptionAccountEnum.labelSex.i18n[lang]}
+            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
             size="compact"
             options={Sex}
             onBlur={formik.handleBlur}
@@ -201,8 +201,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
         <Phonefield
           id={"phone"}
           name={`${optionNameForm}.phone`}
-          label={disbursemenOptionAccountEnum.labelphone.i18n[language]}
-          placeholder={disbursemenOptionAccountEnum.placephone.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelphone.i18n[lang]}
+          placeholder={disbursemenOptionAccountEnum.placephone.i18n[lang]}
           value={formik.values[optionNameForm]?.phone || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -214,8 +214,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
         <Input
           id={"mail"}
           name={`${optionNameForm}.mail`}
-          label={disbursemenOptionAccountEnum.labelMail.i18n[language]}
-          placeholder={disbursemenOptionAccountEnum.placeMail.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelMail.i18n[lang]}
+          placeholder={disbursemenOptionAccountEnum.placeMail.i18n[lang]}
           value={formik.values[optionNameForm]?.mail || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -231,8 +231,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           <Textfield
             id={"city"}
             name={`${optionNameForm}.city`}
-            label={disbursemenOptionAccountEnum.labelCity.i18n[language]}
-            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[language]}
+            label={disbursemenOptionAccountEnum.labelCity.i18n[lang]}
+            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
             size="compact"
             value={City[0]?.label || ""}
             readOnly={true}
@@ -243,8 +243,8 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           <Select
             id={"city"}
             name={`${optionNameForm}.city`}
-            label={disbursemenOptionAccountEnum.labelCity.i18n[language]}
-            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[language]}
+            label={disbursemenOptionAccountEnum.labelCity.i18n[lang]}
+            placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
             size="compact"
             options={City}
             onBlur={formik.handleBlur}

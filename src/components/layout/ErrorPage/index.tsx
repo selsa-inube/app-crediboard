@@ -63,16 +63,16 @@ function ErrorPage(props: ErrorPageProps) {
   const mediaQueries = ["(max-width: 600px)"];
   const matches = useMediaQueries(mediaQueries);
   const queriesMatches = matches["(max-width: 600px)"];
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
  const errorEntry = errorCodesEnum[errorCode as keyof typeof errorCodesEnum];
 
-  const whatWentWrongItems = errorEntry?.whatWentWrong.i18n[language] || [
-    staticTranslations.fallbackError[language],
+  const whatWentWrongItems = errorEntry?.whatWentWrong.i18n[lang] || [
+    staticTranslations.fallbackError[lang],
   ];
   
-  const howToFixItems = errorEntry?.howToFix.i18n[language] || [
-    staticTranslations.fallbackFix[language],
+  const howToFixItems = errorEntry?.howToFix.i18n[lang] || [
+    staticTranslations.fallbackFix[lang],
   ];
 
   return (
@@ -125,7 +125,7 @@ function ErrorPage(props: ErrorPageProps) {
               >
                 <Stack direction="column" gap="24px" width="100%">
                   <Text type="headline" size="medium" weight="bold">
-                    {staticTranslations.whatWentWrong[language]}
+                    {staticTranslations.whatWentWrong[lang]}
                   </Text>
                   <StyledDiv>
                     <ListContent items={whatWentWrongItems} />
@@ -137,7 +137,7 @@ function ErrorPage(props: ErrorPageProps) {
 
                 <Stack direction="column" gap="24px" width="100%">
                   <Text type="headline" size="medium" weight="bold">
-                    {staticTranslations.howToFix[language]}
+                    {staticTranslations.howToFix[lang]}
                   </Text>
                   <StyledDiv>
                     <ListContent

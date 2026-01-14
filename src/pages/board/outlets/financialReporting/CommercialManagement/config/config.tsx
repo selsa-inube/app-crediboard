@@ -156,28 +156,28 @@ export const menuOptionsEnum = {
 export const menuOptions = (
   handleOpenModal: (modalName: string) => void,
   visibleExtraPayments: boolean,
-  language: "en" | "es"
+  lang: "en" | "es"
 ): IOptions[] => [
   {
-    title: menuOptionsEnum.creditLimit.i18n[language],
+    title: menuOptionsEnum.creditLimit.i18n[lang],
     onClick: () => handleOpenModal("creditLimit"),
     icon: <MdOutlineBalance />,
     visible: true,
   },
   {
-    title: menuOptionsEnum.incomeSources.i18n[language],
+    title: menuOptionsEnum.incomeSources.i18n[lang],
     onClick: () => handleOpenModal("IncomeModal"),
     icon: <MdOutlineAccountBalanceWallet />,
     visible: true,
   },
   {
-    title: menuOptionsEnum.financialObligations.i18n[language],
+    title: menuOptionsEnum.financialObligations.i18n[lang],
     onClick: () => handleOpenModal("reportCreditsModal"),
     icon: <MdOutlineMonetizationOn />,
     visible: true,
   },
   {
-    title: menuOptionsEnum.preApprovalObservations.i18n[language],
+    title: menuOptionsEnum.preApprovalObservations.i18n[lang],
     onClick: () => {
       handleOpenModal("observationsModal");
     },
@@ -185,7 +185,7 @@ export const menuOptions = (
     visible: true,
   },
   {
-    title: menuOptionsEnum.extraPayments.i18n[language],
+    title: menuOptionsEnum.extraPayments.i18n[lang],
     onClick: () => {
       handleOpenModal("extraPayments");
     },

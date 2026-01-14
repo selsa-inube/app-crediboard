@@ -36,7 +36,7 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
       lineOfCreditLoanAmountLimitRegulation: 0,
     });
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,7 +80,7 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
       handleClose={handleClose}
       isMobile={isMobile}
       dataMaximumCreditLimitService={dataMaximumCreditLimit}
-      language={language}
+      lang={lang}
     />
   );
 };

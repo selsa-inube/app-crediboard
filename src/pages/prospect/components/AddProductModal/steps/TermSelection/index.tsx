@@ -22,7 +22,7 @@ export function TermSelection(props: ITermSelection) {
     onFormValid,
   } = props;
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   useEffect(() => {
     if (!quotaCapEnabled && !maximumTermEnabled) {
@@ -178,7 +178,7 @@ export function TermSelection(props: ITermSelection) {
       handleQuotaCapValueChange={handleQuotaCapValueChange}
       handleMaximumTermToggleChange={handleMaximumTermToggleChange}
       handleMaximumTermValueChange={handleMaximumTermValueChange}
-      language={language} 
+      lang={lang} 
     />
   );
 }

@@ -59,7 +59,7 @@ export interface IFinancialObligation {
 }
 
 export function ReportCreditsModal(props: ReportCreditsModalProps) {
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const {
     handleClose,
     prospectData,
@@ -187,14 +187,14 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
     const fallbackOption = {
       id: defaultOptionsSelectEnum.noDebtors.id,
-      label: defaultOptionsSelectEnum.noDebtors.i18n[language],
+      label: defaultOptionsSelectEnum.noDebtors.i18n[lang],
       value: defaultOptionsSelectEnum.noDebtors.value,
     };
 
     setOptionsBorrowers(options && options.length > 0 ? options : [fallbackOption]);
 
     return () => clearTimeout(timeout);
-  }, [filterListBorrowers, getOptionsSelect, buildObjectSelection, language]);
+  }, [filterListBorrowers, getOptionsSelect, buildObjectSelection, lang]);
 
   useEffect(() => {
     if (
@@ -244,7 +244,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         businessManagerCode,
         selectedBorrower.value,
         creditRequestCode,
-        restoreDataEnum.justification.i18n[language]
+        restoreDataEnum.justification.i18n[lang]
       );
 
       setTableRefreshKey((prev) => prev + 1);
@@ -257,7 +257,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
       setLocalProspectData([refreshedData]);
     } catch (error) {
-      setErrorMessage(errorMessagesEnum.updateProspectDescription.i18n[language]);
+      setErrorMessage(errorMessagesEnum.updateProspectDescription.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -293,9 +293,9 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                 ) : (
                   <Select
                     id="income"
-                    name={configSelectEnum.name.i18n[language]}
-                    label={configSelectEnum.label.i18n[language]}
-                    placeholder={configSelectEnum.placeholder.i18n[language]}
+                    name={configSelectEnum.name.i18n[lang]}
+                    label={configSelectEnum.label.i18n[lang]}
+                    placeholder={configSelectEnum.placeholder.i18n[lang]}
                     options={optionsBorrowers || []}
                     value={selectedBorrower?.value || ""}
                     onChange={(name, value) => onChangeSelect(name, value)}
@@ -322,7 +322,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                     }
                   >
                     <Button
-                      children={restoreDataEnum.label.i18n[language]}
+                      children={restoreDataEnum.label.i18n[lang]}
                       iconBefore={<MdCached />}
                       fullwidth={isMobile}
                       variant="outlined"

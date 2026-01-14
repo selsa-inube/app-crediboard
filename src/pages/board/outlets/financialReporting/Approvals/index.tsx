@@ -37,7 +37,7 @@ interface IApprovalsProps {
 
 export const Approvals = (props: IApprovalsProps) => {
   const { isMobile, id } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,7 @@ export const Approvals = (props: IApprovalsProps) => {
         requests.creditRequestId
       );
       if (data && Array.isArray(data)) {
-        const entries: IEntries[] = entriesApprovals(data, language).map((entry) => ({
+        const entries: IEntries[] = entriesApprovals(data, lang).map((entry) => ({
           ...entry,
           error: entry.concept === "Pendiente",
         }));
@@ -115,23 +115,23 @@ export const Approvals = (props: IApprovalsProps) => {
   }, [fetchApprovalsData]);
 
   const handleNotificationClickBound = (data: IEntries) => {
-    handleNotificationClick(data, setSelectedData, setShowNotificationModal, language);
+    handleNotificationClick(data, setSelectedData, setShowNotificationModal, lang);
   };
 
   const handleErrorClickBound = (data: IEntries) => {
-    handleErrorClick(data, setSelectedData, setErrorModal, language);
+    handleErrorClick(data, setSelectedData, setErrorModal, lang);
   };
 
   const desktopActionsConfig = !isMobile
-    ? desktopActions([], handleNotificationClickBound, handleErrorClickBound, language)
+    ? desktopActions([], handleNotificationClickBound, handleErrorClickBound, lang)
     : [];
 
   const mobileActions = !isMobile
     ? getMobileActionsConfig(
-      getActionMobileApprovals(language),
+      getActionMobileApprovals(lang),
       handleNotificationClickBound,
       handleErrorClickBound,
-      language
+      lang
     )
     : [];
 
@@ -147,8 +147,8 @@ export const Approvals = (props: IApprovalsProps) => {
       );
 
       addFlag({
-        title: dataInfoApprovalsEnum.notifySend.i18n[language],
-        description: `${dataInfoApprovalsEnum.notidyDescription.i18n[language]} ${code?.codeNotification}.`,
+        title: dataInfoApprovalsEnum.notifySend.i18n[lang],
+        description: `${dataInfoApprovalsEnum.notidyDescription.i18n[lang]} ${code?.codeNotification}.`,
         appearance: "success",
         duration: 5000,
       });
@@ -156,7 +156,7 @@ export const Approvals = (props: IApprovalsProps) => {
     } catch (error) {
       setShowNotificationModal(false);
 
-      setErrorMessage(dataInfoApprovalsEnum.error.i18n[language]);
+      setErrorMessage(dataInfoApprovalsEnum.error.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -172,7 +172,7 @@ export const Approvals = (props: IApprovalsProps) => {
   return (
     <>
       <Fieldset
-        title={errorMessagesEnum.approval.titleCard.i18n[language]}
+        title={errorMessagesEnum.approval.titleCard.i18n[lang]}
         heightFieldset="100%"
         hasTable
         hasError={!requests ? true : false}
@@ -181,19 +181,19 @@ export const Approvals = (props: IApprovalsProps) => {
         {!requests || error ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessagesEnum.approval.title.i18n[language]}
-            description={errorMessagesEnum.approval.description.i18n[language]}
-            buttonDescription={errorMessagesEnum.approval.button.i18n[language]}
+            title={errorMessagesEnum.approval.title.i18n[lang]}
+            description={errorMessagesEnum.approval.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.approval.button.i18n[lang]}
             onRetry={handleRetry}
           />
         ) : (
           <TableBoard
             id="usuarios"
-            titles={getTitlesApprovals(language)}
+            titles={getTitlesApprovals(lang)}
             entries={approvalsEntries}
             actions={desktopActionsConfig}
             actionMobile={mobileActions}
-            actionMobileIcon={getActionsMobileIcon(language)}
+            actionMobileIcon={getActionsMobileIcon(lang)}
             loading={loading}
             isFirstTable={true}
             hideTagOnTablet={false}
@@ -205,13 +205,13 @@ export const Approvals = (props: IApprovalsProps) => {
       </Fieldset>
       {showNotificationModal && selectedData && (
         <BaseModal
-          title={dataInfoApprovalsEnum.notify.i18n[language]}
+          title={dataInfoApprovalsEnum.notify.i18n[lang]}
           nextButton="Enviar"
           handleNext={handleSubmit}
           handleClose={handleCloseNotificationModal}
           width={isMobile ? "290px" : "400px"}
         >
-          <Text>{dataInfoApprovalsEnum.notifyModal.i18n[language]}</Text>
+          <Text>{dataInfoApprovalsEnum.notifyModal.i18n[lang]}</Text>
         </BaseModal>
       )}
 

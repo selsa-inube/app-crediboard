@@ -110,7 +110,7 @@ export interface IAddProductModalUIProps {
   errorMessage: string;
   loading: boolean;
   setCurrentStep: (step: number) => void;
-  language: "en" | "es";
+  lang: "en" | "es";
   iconBefore?: React.JSX.Element;
   iconAfter?: React.JSX.Element;
   assistedControls?: {

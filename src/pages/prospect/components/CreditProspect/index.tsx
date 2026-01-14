@@ -129,7 +129,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   const [isSendingData, setIsSendingData] = useState(false);
 
   const { addFlag } = useFlag();
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
@@ -225,14 +225,14 @@ export function CreditProspect(props: ICreditProspectProps) {
       handleCloseModal();
 
       addFlag({
-        title: dataCreditProspectEnum.successTitle.i18n[language],
-        description: dataCreditProspectEnum.successDescription.i18n[language],
+        title: dataCreditProspectEnum.successTitle.i18n[lang],
+        description: dataCreditProspectEnum.successDescription.i18n[lang],
         appearance: "success",
         duration: 5000,
       });
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataCreditProspectEnum.errorCredit.i18n[language]);
+      setMessageError(dataCreditProspectEnum.errorCredit.i18n[lang]);
     }
   };
 
@@ -333,7 +333,7 @@ export function CreditProspect(props: ICreditProspectProps) {
               }
               onClick={() => handleOpenModal("editProductModal")}
             >
-              {dataCreditProspectEnum.addProduct.i18n[language]}
+              {dataCreditProspectEnum.addProduct.i18n[lang]}
             </Button>
             {editCreditApplication ||
               (availableEditCreditRequest && (
@@ -365,7 +365,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                   }
                   onClick={() => handleOpenModal("extraPayments")}
                 >
-                  {dataCreditProspectEnum.extraPayment.i18n[language]}
+                  {dataCreditProspectEnum.extraPayment.i18n[lang]}
                 </Button>
               )}
             <StyledVerticalDivider />
@@ -399,7 +399,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                       Array.isArray(product.extraordinaryInstallments) &&
                       product.extraordinaryInstallments.length > 0
                   ) || false,
-                  language
+                  lang
                 )}
                 onMouseLeave={showMenu}
               />
@@ -452,8 +452,8 @@ export function CreditProspect(props: ICreditProspectProps) {
       )}
       {currentModal === "editProductModal" && (
         <AddProductModal
-          title={dataCreditProspectEnum.addProduct.i18n[language]}
-          confirmButtonText={dataCreditProspectEnum.save.i18n[language]}
+          title={dataCreditProspectEnum.addProduct.i18n[lang]}
+          confirmButtonText={dataCreditProspectEnum.save.i18n[lang]}
           initialValues={initialValues}
           iconBefore={<MdOutlineAdd />}
           onCloseModal={handleCloseModal}
@@ -553,7 +553,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         <>
           <BaseModal
             width={isMobile ? "300px" : "500px"}
-            title={dataCreditProspectEnum.observations.i18n[language]}
+            title={dataCreditProspectEnum.observations.i18n[lang]}
             handleClose={handleCloseModal}
             handleNext={() => {
               setEditedApprovalObservations(
@@ -567,20 +567,20 @@ export function CreditProspect(props: ICreditProspectProps) {
             <Stack direction="column" gap="16px">
               <CardGray
                 apparencePlaceHolder="gray"
-                label={dataCreditProspectEnum.approvalObservations.i18n[language]}
+                label={dataCreditProspectEnum.approvalObservations.i18n[lang]}
                 placeHolder={
                   dataProspect?.clientManagerObservation === ""
-                    ? dataCreditProspectEnum.approvalObservations.i18n[language]
-                    : dataCreditProspectEnum.approvalObservationsNotFound.i18n[language]
+                    ? dataCreditProspectEnum.approvalObservations.i18n[lang]
+                    : dataCreditProspectEnum.approvalObservationsNotFound.i18n[lang]
                 }
               />
               <CardGray
                 apparencePlaceHolder="gray"
-                label={dataCreditProspectEnum.clientsObservations.i18n[language]}
+                label={dataCreditProspectEnum.clientsObservations.i18n[lang]}
                 placeHolder={
                   dataProspect?.clientManagerObservation === ""
-                    ? dataCreditProspectEnum.approvalObservations.i18n[language]
-                    : dataCreditProspectEnum.clientsObservationsNotFound.i18n[language]
+                    ? dataCreditProspectEnum.approvalObservations.i18n[lang]
+                    : dataCreditProspectEnum.clientsObservationsNotFound.i18n[lang]
                 }
               />
             </Stack>
@@ -591,7 +591,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       {showEditApprovalModal && (
         <BaseModal
           width={isMobile ? "300px" : "500px"}
-          title={dataCreditProspectEnum.observations.i18n[language]}
+          title={dataCreditProspectEnum.observations.i18n[lang]}
           handleClose={() => setShowEditApprovalModal(false)}
           handleNext={handleSaveApprovalObservations}
           nextButton="Guardar"
@@ -600,7 +600,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           <Stack direction="column" gap="16px">
             <Textarea
               id="approvalObservations"
-              label={dataCreditProspectEnum.approvalObservations.i18n[language]}
+              label={dataCreditProspectEnum.approvalObservations.i18n[lang]}
               value={editedApprovalObservations}
               onChange={handleApprovalObservationsChange}
               maxLength={250}
@@ -608,7 +608,7 @@ export function CreditProspect(props: ICreditProspectProps) {
             />
             <CardGray
               apparencePlaceHolder="gray"
-              label={dataCreditProspectEnum.clientsObservations.i18n[language]}
+              label={dataCreditProspectEnum.clientsObservations.i18n[lang]}
               placeHolder={dataProspect?.clientComments}
             />
           </Stack>

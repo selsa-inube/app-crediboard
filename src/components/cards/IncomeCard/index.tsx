@@ -26,7 +26,7 @@ export interface IIncomeCardProps {
   labels: string[];
   placeholders: string[];
   values: string[];
-  language: "en" | "es";
+  lang: "en" | "es";
   ShowSupport?: boolean;
   disabled?: boolean;
   onValueChange?: (index: number, newValue: string) => void;
@@ -41,7 +41,7 @@ export function IncomeCard(props: IIncomeCardProps) {
     ShowSupport,
     disabled = false,
     onValueChange,
-    language = "es",
+    lang = "es",
   } = props;
 
   const validationSchema = Yup.object({
@@ -130,7 +130,7 @@ export function IncomeCard(props: IIncomeCardProps) {
             <StyledSupport onClick={() => console.log("Ver soporte")}>
               <Stack gap="8px" alignItems="center">
                 <Text appearance="primary" type="label" size="large">
-                  {incomeCardDataEnum.support.i18n[language]}
+                  {incomeCardDataEnum.support.i18n[lang]}
                 </Text>
                 <Icon
                   icon={<MdOutlineRemoveRedEye />}

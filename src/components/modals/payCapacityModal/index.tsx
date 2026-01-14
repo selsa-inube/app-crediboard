@@ -62,7 +62,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
     businessUnitPublicCode,
     businessManagerCode,
   } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [currentTab, setCurrentTab] = useState("ordinary");
   const [selectedDetail, setSelectedDetail] = useState<IExtraordinaryInstallments | null>(null);
@@ -76,20 +76,20 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
 
     const allTabs = Object.values(dataTabsEnum).map((tab) => ({
       id: tab.id,
-      label: tab.i18n[language],
+      label: tab.i18n[lang],
     }));
 
     return hasExtraordinary
       ? allTabs
       : allTabs.filter((tab) => tab.id === dataTabsEnum.ordinary.id);
-  }, [maximumCreditLimitData, language]);
+  }, [maximumCreditLimitData, lang]);
 
   const tableHeaders = useMemo(() => {
     return Object.values(headersEnum).map((header) => ({
       key: header.key,
-      label: header.i18n[language],
+      label: header.i18n[lang],
     }));
-  }, [language]);
+  }, [lang]);
 
   const onChange = (tabId: string) => {
     setCurrentTab(tabId);
@@ -174,10 +174,10 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
           >
             <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
             <Text size="large" weight="bold" appearance="danger">
-              {paymentCapacityDataEnum.errorLoadingData.i18n[language]}
+              {paymentCapacityDataEnum.errorLoadingData.i18n[lang]}
             </Text>
             <Text size="small" appearance="dark" textAlign="center">
-              {paymentCapacityDataEnum.errorNoData.i18n[language]}
+              {paymentCapacityDataEnum.errorNoData.i18n[lang]}
             </Text>
           </Stack>
         </Fieldset>
@@ -206,7 +206,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                 <Stack direction="column" gap="16px" >
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" weight="bold">
-                      {paymentCapacityDataEnum.incomeSources.i18n[language]}
+                      {paymentCapacityDataEnum.incomeSources.i18n[lang]}
                     </Text>
                     <Stack alignItems="center" gap="4px">
                       <Text appearance="success">$</Text>
@@ -225,7 +225,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                   </Stack>
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" appearance="gray">
-                      {paymentCapacityDataEnum.subsistenceReserve.i18n[language]}
+                      {paymentCapacityDataEnum.subsistenceReserve.i18n[lang]}
                     </Text>
                     <Stack alignItems="center" gap="4px">
                       <Text appearance="success">$</Text>
@@ -245,7 +245,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                   <Divider dashed />
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" weight="bold">
-                      {paymentCapacityDataEnum.newPromises.i18n[language]}
+                      {paymentCapacityDataEnum.newPromises.i18n[lang]}
                     </Text>
                     <Stack alignItems="center" gap="4px">
                       <Text appearance="success">$</Text>
@@ -264,14 +264,14 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" appearance="gray">
                       {
-                      paymentCapacityDataEnum.lineOfCredit.i18n[language] + " " + maximumCreditLimitData?.lineOfCreditAbbreviatedName}
+                      paymentCapacityDataEnum.lineOfCredit.i18n[lang] + " " + maximumCreditLimitData?.lineOfCreditAbbreviatedName}
                     </Text>
                     <Stack alignItems="center" gap="4px">
                       {loading ? (
                         <SkeletonLine width="70px" animated={true} />
                       ) : (
                         <Text type="body" size="small">
-                          {maximumCreditLimitData?.maxTerm + paymentCapacityDataEnum.months.i18n[language]}
+                          {maximumCreditLimitData?.maxTerm + paymentCapacityDataEnum.months.i18n[lang]}
                         </Text>
                       )}
                     </Stack>
@@ -281,7 +281,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                     {getMaxValueText(
                       maximumCreditLimitData?.maxAmount || 0,
                       maximumCreditLimitData?.maxTerm || 0,
-                      language,
+                      lang,
                     )}
                   </Text>
                   <Stack direction="column" alignItems="center" margin="0 0 8px 0">
@@ -302,7 +302,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                           )}
                         </Text>
                         <Text type="body" size="small" appearance="gray">
-                          {paymentCapacityDataEnum.maxValueDescription.i18n[language]}
+                          {paymentCapacityDataEnum.maxValueDescription.i18n[lang]}
                         </Text>
                       </>
                     )}
@@ -370,7 +370,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                           <Tr>
                             <Td colSpan={isMobile ? 2 : 3} align="center">
                               <Text type="body" size="small" appearance="gray">
-                                {paymentCapacityDataEnum.noExtraordinaryInstallmentsAvailable.i18n[language]}
+                                {paymentCapacityDataEnum.noExtraordinaryInstallmentsAvailable.i18n[lang]}
                               </Text>
                             </Td>
                           </Tr>
@@ -391,7 +391,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                   spacing="narrow"
                 />
                 <Text margin="0px 5px" size="small">
-                  {paymentCapacityDataEnum.maxAmountExtraordinary.i18n[language]}
+                  {paymentCapacityDataEnum.maxAmountExtraordinary.i18n[lang]}
                 </Text>
               </Stack>
               <Stack direction="column" alignItems="center" gap="4px">
@@ -408,7 +408,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                       {currencyFormat(totalExtraordinary, true)}
                     </Text>
                     <Text type="body" size="small" appearance="gray">
-                      {paymentCapacityDataEnum.maxTotal.i18n[language]}
+                      {paymentCapacityDataEnum.maxTotal.i18n[lang]}
                     </Text>
                   </>
                 )}
@@ -421,8 +421,8 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
 
     {selectedDetail && (
       <BaseModal
-        title={detailsExtraordinaryInstallmentsEnum.title.i18n[language]}
-        nextButton={detailsExtraordinaryInstallmentsEnum.close.i18n[language]}
+        title={detailsExtraordinaryInstallmentsEnum.title.i18n[lang]}
+        nextButton={detailsExtraordinaryInstallmentsEnum.close.i18n[lang]}
         handleNext={handleCloseDetail}
         handleClose={handleCloseDetail}
         width="335px"
@@ -433,12 +433,12 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
           gap="16px"
         >
           <CardGray
-            label={detailsExtraordinaryInstallmentsEnum.date.i18n[language]}
+            label={detailsExtraordinaryInstallmentsEnum.date.i18n[lang]}
             placeHolder={currencyFormat(Number(selectedDetail.installmentAmount) || 0, true)}
             height="52px"
           />
           <CardGray
-            label={detailsExtraordinaryInstallmentsEnum.value.i18n[language]}
+            label={detailsExtraordinaryInstallmentsEnum.value.i18n[lang]}
             placeHolder={formatPrimaryDate(new Date(selectedDetail.installmentDate))}
             height="52px"
           />

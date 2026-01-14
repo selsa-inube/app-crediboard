@@ -195,12 +195,12 @@ export const paymentCapacityDataEnum = {
 export const getMaxValueText = (
   maxAmount: number,
   maxTerm: number,
-  language: "en" | "es"
+  lang: "en" | "es"
 ) => {
-  const locale = language === "es" ? "es-CO" : "en-US";
+  const locale = lang === "es" ? "es-CO" : "en-US";
   const formattedAmount = maxAmount.toLocaleString(locale);
 
-  return language === "es" ? (
+  return lang === "es" ? (
     <>
       Monto máximo calculado para una cuota de{" "}
       <strong>{formattedAmount}</strong> y plazo de{" "}

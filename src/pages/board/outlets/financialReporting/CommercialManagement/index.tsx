@@ -149,7 +149,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   const navigation = useNavigate();
   const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width: 720px)");
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
@@ -241,8 +241,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       } catch (error) {
         console.error(error);
         addFlag({
-          title: textFlagsUsersEnum.titleWarning.i18n[language],
-          description: textFlagsUsersEnum.descriptionWarning.i18n[language],
+          title: textFlagsUsersEnum.titleWarning.i18n[lang],
+          description: textFlagsUsersEnum.descriptionWarning.i18n[lang],
           appearance: "danger",
           duration: 5000,
         });
@@ -488,7 +488,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   }) as TBoardColumn[];
 
   if (normalizedStageTitle[0]) {
-    normalizedStageTitle = normalizedStageTitle[0].i18n[language];
+    normalizedStageTitle = normalizedStageTitle[0].i18n[lang];
   } else {
     normalizedStageTitle = "";
   }
@@ -522,16 +522,16 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   return (
     <>
       <Fieldset
-        title={errorMessagesEnum.comercialManagement.titleCard.i18n[language]}
+        title={errorMessagesEnum.comercialManagement.titleCard.i18n[lang]}
         descriptionTitle={normalizedStageTitle}
         hasError={!data ? true : false}
       >
         {!data ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessagesEnum.comercialManagement.title.i18n[language]}
-            description={errorMessagesEnum.comercialManagement.description.i18n[language]}
-            buttonDescription={errorMessagesEnum.comercialManagement.button.i18n[language]}
+            title={errorMessagesEnum.comercialManagement.title.i18n[lang]}
+            description={errorMessagesEnum.comercialManagement.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.comercialManagement.button.i18n[lang]}
             onRetry={() => navigation(-2)}
           />
         ) : (
@@ -542,7 +542,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   <Stack>
                     <Stack gap="6px" width="max-content">
                       <Text type="title" size="small" appearance="gray">
-                        {tittleOptionsEnum.titleCreditId.i18n[language]}
+                        {tittleOptionsEnum.titleCreditId.i18n[lang]}
                       </Text>
                       <Text type="title" size="small">
                         {data.creditRequestCode}
@@ -572,7 +572,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   )}
                   <Stack gap={!isMobile ? "4px" : "4px"}>
                     <Text type="title" size="small" appearance="gray">
-                      {tittleOptionsEnum.titleDestination.i18n[language]}
+                      {tittleOptionsEnum.titleDestination.i18n[lang]}
                     </Text>
                     <TruncatedText
                       text={data.moneyDestinationAbreviatedName}
@@ -584,7 +584,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   </Stack>
                   <Stack gap="4px">
                     <Text type="title" size="small" appearance="gray">
-                      {tittleOptionsEnum.tittleAmount.i18n[language]}
+                      {tittleOptionsEnum.tittleAmount.i18n[lang]}
                     </Text>
                     <Text type="title" size="small">
                       {data.loanAmount === 0
@@ -614,7 +614,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             spacing="compact"
                             path={`/extended-card/${creditRequestCode}/credit-profile`}
                           >
-                            {tittleOptionsEnum.titleProfile.i18n[language]}
+                            {tittleOptionsEnum.titleProfile.i18n[lang]}
                           </Button>
                           <Stack gap="2px" alignItems="center">
                             {
@@ -631,7 +631,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                                   }}
                                   disabled={errorGetProspects}
                                 >
-                                  {tittleOptionsEnum.titleDisbursement.i18n[language]}
+                                  {tittleOptionsEnum.titleDisbursement.i18n[lang]}
                                 </Button>
                               )
                             }
@@ -698,7 +698,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       path={`/extended-card/${creditRequestCode}/credit-profile`}
                       fullwidth
                     >
-                      {tittleOptionsEnum.titleProfile.i18n[language]}
+                      {tittleOptionsEnum.titleProfile.i18n[lang]}
                     </Button>
                   </StyledPrint>
                   <StyledPrint>
@@ -712,7 +712,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       }}
                       fullwidth
                     >
-                      {tittleOptionsEnum.titleDisbursement.i18n[language]}
+                      {tittleOptionsEnum.titleDisbursement.i18n[lang]}
                     </Button>
                   </StyledPrint>
                 </>
@@ -725,7 +725,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     fullwidth
                     iconBefore={<MdOutlinePhone />}
                   >
-                    {tittleOptionsEnum.titleCall.i18n[language]}
+                    {tittleOptionsEnum.titleCall.i18n[lang]}
                   </Button>
                   <Button
                     spacing="compact"
@@ -733,7 +733,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     fullwidth
                     iconBefore={<MdOutlineVideocam />}
                   >
-                    {tittleOptionsEnum.titleVideoCall.i18n[language]}
+                    {tittleOptionsEnum.titleVideoCall.i18n[lang]}
                   </Button>
                 </Stack>
               )}
@@ -760,7 +760,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                           disabled={availableEditCreditRequest}
                           onClick={() => handleOpenModal("editProductModal")}
                         >
-                          {tittleOptionsEnum.titleAddProduct.i18n[language]}
+                          {tittleOptionsEnum.titleAddProduct.i18n[lang]}
                         </Button>
                       </Stack>
                     </StyledPrint>
@@ -791,7 +791,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                               }
                               onClick={() => handleOpenModal("extraPayments")}
                             >
-                              {tittleOptionsEnum.titleExtraPayments.i18n[language]}
+                              {tittleOptionsEnum.titleExtraPayments.i18n[lang]}
                             </Button>
                           )}
                       </Stack>
@@ -834,7 +834,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                                 prospectProducts?.some(
                                   (product) => product.extraordinaryInstallments
                                 ),
-                                language
+                                lang
                               )}
                             />
                           )}
@@ -977,21 +977,21 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
             {infoModal && (
               <>
                 <BaseModal
-                  title={titlesModalEnum.title.i18n[language]}
-                  nextButton={titlesModalEnum.textButtonNext.i18n[language]}
+                  title={titlesModalEnum.title.i18n[lang]}
+                  nextButton={titlesModalEnum.textButtonNext.i18n[lang]}
                   handleNext={() => setInfoModal(false)}
                   handleClose={() => setInfoModal(false)}
                   width={isMobile ? "290px" : "400px"}
                 >
                   <Stack gap="16px" direction="column">
                     <Text weight="bold" size="large">
-                      {titlesModalEnum.subTitle.i18n[language]}
+                      {titlesModalEnum.subTitle.i18n[lang]}
                     </Text>
                     <Text weight="normal" size="medium" appearance="gray">
                       {
                         errorGetProspects
-                          ? infoErrorProspectEnum.description.i18n[language]
-                          : titlesModalEnum.description.i18n[language]
+                          ? infoErrorProspectEnum.description.i18n[lang]
+                          : titlesModalEnum.description.i18n[lang]
                       }
                     </Text>
                   </Stack>

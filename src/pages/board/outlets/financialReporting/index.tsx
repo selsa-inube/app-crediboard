@@ -117,7 +117,7 @@ export const FinancialReporting = () => {
   const { user } = useIAuth();
 
   const navigation = useNavigate();
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const isMobile: boolean = useMediaQuery("(max-width: 880px)");
 
@@ -196,7 +196,7 @@ export const FinancialReporting = () => {
         );
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
-        setErrorMessage(errorMessagesEnum.searchProspect.description.i18n[language]);
+        setErrorMessage(errorMessagesEnum.searchProspect.description.i18n[lang]);
         setErrorModal(true);
         setErrorGetProspects(true);
         console.error("Error al obtener los prospectos:", error);
@@ -219,7 +219,7 @@ export const FinancialReporting = () => {
     try {
       const pdfBlob = await generatePDF(
         dataCommercialManagementRef,
-        labelsAndValuesShareEnum.titleOnPdf.i18n[language],
+        labelsAndValuesShareEnum.titleOnPdf.i18n[lang],
         setErrorModal,
         true
       );
@@ -234,7 +234,7 @@ export const FinancialReporting = () => {
       setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-      setErrorMessage(errorMessagesEnum.share.description.i18n[language]);
+      setErrorMessage(errorMessagesEnum.share.description.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -243,21 +243,21 @@ export const FinancialReporting = () => {
     if (!pdfState.blob) return;
 
     try {
-      const pdfFile = new File([pdfState.blob], labelsAndValuesShareEnum.fileName.i18n[language], {
+      const pdfFile = new File([pdfState.blob], labelsAndValuesShareEnum.fileName.i18n[lang], {
         type: "application/pdf",
       });
 
       await navigator.share({
         files: [pdfFile],
-        title: labelsAndValuesShareEnum.titleOnPdf.i18n[language],
-        text: labelsAndValuesShareEnum.text.i18n[language],
+        title: labelsAndValuesShareEnum.titleOnPdf.i18n[lang],
+        text: labelsAndValuesShareEnum.text.i18n[lang],
       });
 
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
       setErrorModal(false);
     } catch (error) {
       setPdfState({ isGenerating: false, blob: null, showShareModal: false });
-      setErrorMessage(errorMessagesEnum.share.description.i18n[language]);
+      setErrorMessage(errorMessagesEnum.share.description.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -322,13 +322,13 @@ export const FinancialReporting = () => {
       );
 
       addFlag({
-        title: textFlagsRejectEnum.titleSuccess.i18n[language],
-        description: textFlagsRejectEnum.descriptionSuccess.i18n[language],
+        title: textFlagsRejectEnum.titleSuccess.i18n[lang],
+        description: textFlagsRejectEnum.descriptionSuccess.i18n[lang],
         appearance: "success",
         duration: 5000,
       });
     } catch (error) {
-      setErrorMessage(errorMessagesEnum.lateRejection.description.i18n[language]);
+      setErrorMessage(errorMessagesEnum.lateRejection.description.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -380,7 +380,7 @@ export const FinancialReporting = () => {
       }
     } catch (error) {
       setErrorModal(true);
-      setErrorMessage(errorMessagesEnum.unreadErrors.description.i18n[language]);
+      setErrorMessage(errorMessagesEnum.unreadErrors.description.i18n[lang]);
     }
   };
 
@@ -403,16 +403,16 @@ export const FinancialReporting = () => {
     )
       .then(() => {
         addFlag({
-          title: textFlagsUsersEnum.titleSuccess.i18n[language],
-          description: textFlagsUsersEnum.descriptionSuccess.i18n[language],
+          title: textFlagsUsersEnum.titleSuccess.i18n[lang],
+          description: textFlagsUsersEnum.descriptionSuccess.i18n[lang],
           appearance: "success",
           duration: 5000,
         });
       })
       .catch(() => {
         addFlag({
-          title: textFlagsCancelEnum.titleError.i18n[language],
-          description: textFlagsCancelEnum.descriptionError.i18n[language],
+          title: textFlagsCancelEnum.titleError.i18n[lang],
+          description: textFlagsCancelEnum.descriptionError.i18n[lang],
           appearance: "danger",
           duration: 5000,
         });
@@ -448,7 +448,7 @@ export const FinancialReporting = () => {
                   message={error.message.toString()}
                   onClose={() => handleCloseErrorService(error.id)}
                   isMobile={isMobile}
-                  language={language}
+                  lang={lang}
                 />
               ))}
             </StyledToast>
@@ -461,7 +461,7 @@ export const FinancialReporting = () => {
                 actionButtons={handleActions}
                 navigation={() => navigation("/")}
                 eventData={eventData}
-                language={language}
+                lang={lang}
               />
             }
           >
@@ -652,14 +652,14 @@ export const FinancialReporting = () => {
       )}
       {pdfState.isGenerating && (
         <BaseModal
-          title={shareModalConfigEnum.title.i18n[language]}
-          nextButton={shareModalConfigEnum.buttonText.i18n[language]}
+          title={shareModalConfigEnum.title.i18n[lang]}
+          nextButton={shareModalConfigEnum.buttonText.i18n[lang]}
           width={isMobile ? "300px" : "450px"}
         >
           <StyledContainerSpinner>
             <Spinner size="large" appearance="primary" />
             <Text size="large" weight="bold" appearance="dark">
-              {errorMessagesEnum.share.spinner.i18n[language]}
+              {errorMessagesEnum.share.spinner.i18n[lang]}
             </Text>
           </StyledContainerSpinner>
         </BaseModal>
@@ -669,7 +669,7 @@ export const FinancialReporting = () => {
           isMobile={isMobile}
           handleClose={handleSharePdfModal}
           handleNext={handleSharePdf}
-          language={language}
+          lang={lang}
         />
       )}
     </div>

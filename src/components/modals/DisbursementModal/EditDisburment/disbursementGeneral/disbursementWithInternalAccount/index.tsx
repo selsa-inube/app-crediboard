@@ -39,7 +39,7 @@ interface IDisbursementWithInternalAccountProps {
   handleOnChange: (values: IDisbursementGeneral) => void;
   getTotalAmount: () => number;
   prospectData: IProspect;
-  language: "en" | "es";
+  lang: "en" | "es";
   customerData?: ICustomerData;
 }
 
@@ -54,7 +54,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
     prospectSummaryData,
     isAmountReadOnly,
     customerData,
-    language
+    lang
   } = props;
 
   const {
@@ -157,8 +157,8 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
           <Textfield
             id="amount"
             name="amount"
-            label={disbursementGeneralEnum.labelTurn.i18n[language]}
-            placeholder={disbursementGeneralEnum.placeTurn.i18n[language]}
+            label={disbursementGeneralEnum.labelTurn.i18n[lang]}
+            placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
             size="compact"
             value={validateCurrencyField("amount", formik, false, optionNameForm)}
             onChange={(event) => handleChangeWithCurrency(formik, event, optionNameForm)}
@@ -169,7 +169,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
             status={isInvalidAmount ? "invalid" : undefined}
             readOnly={isAmountReadOnly}
             iconBefore={<MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />}
-            message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[language]}${currencyFormat(prospectSummaryData?.netAmountToDisburse ?? 0)}`}
+            message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[lang]}${currencyFormat(prospectSummaryData?.netAmountToDisburse ?? 0)}`}
             fullwidth
           />
         </Stack>
@@ -182,12 +182,12 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
             onChange={handleCheckboxChange}
             disabled={isDisabled}
           />
-          <Text type="label" size="medium">{disbursementGeneralEnum.labelCheck.i18n[language]}</Text>
+          <Text type="label" size="medium">{disbursementGeneralEnum.labelCheck.i18n[lang]}</Text>
         </Stack>
       </Stack>
       <Divider dashed />
       <Stack direction="column" gap="16px">
-        <Text type="label" size="medium">{disbursementGeneralEnum.labelToggle.i18n[language]}</Text>
+        <Text type="label" size="medium">{disbursementGeneralEnum.labelToggle.i18n[lang]}</Text>
       </Stack>
       <Stack direction="row" gap="16px">
         <Toggle
@@ -198,7 +198,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
           size="large"
         />
         <Text appearance={(formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"}>
-          {(formik.values[optionNameForm]?.toggle ?? true) ? disbursementGeneralEnum.optionToggleYes.i18n[language] : disbursementGeneralEnum.optionToggleNo.i18n[language]}
+          {(formik.values[optionNameForm]?.toggle ?? true) ? disbursementGeneralEnum.optionToggleYes.i18n[lang] : disbursementGeneralEnum.optionToggleNo.i18n[lang]}
         </Text>
       </Stack>
       <Divider dashed />
@@ -227,8 +227,8 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
               <Select
                 id={`${optionNameForm}.accountNumber`}
                 name={`${optionNameForm}.accountNumber`}
-                label={disbursemenOptionAccountEnum.labelAccount.i18n[language]}
-                placeholder={disbursemenOptionAccountEnum.placeOption.i18n[language]}
+                label={disbursemenOptionAccountEnum.labelAccount.i18n[lang]}
+                placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
                 size="compact"
                 options={accountOptions}
                 onBlur={formik.handleBlur}
@@ -240,7 +240,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
               />
             ) : (
               <CardGray
-                label={disbursemenOptionAccountEnum.labelAccount.i18n[language]}
+                label={disbursemenOptionAccountEnum.labelAccount.i18n[lang]}
                 placeHolder={accountOptions[0]?.label || ""}
                 isMobile={isMobile}
               />
@@ -252,8 +252,8 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
       <Textarea
         id={`${optionNameForm}.description`}
         name={`${optionNameForm}.description`}
-        label={disbursemenOptionAccountEnum.observation.i18n[language]}
-        placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[language]}
+        label={disbursemenOptionAccountEnum.observation.i18n[lang]}
+        placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
         value={formik.values[optionNameForm]?.description || ""}
         onChange={(e) => formik.setFieldValue(`${optionNameForm}.description`, e.target.value)}
         onBlur={formik.handleBlur}

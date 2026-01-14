@@ -26,7 +26,7 @@ function createAttribute(
 export const VerificationDebtorAddModal = (
   props: IVerificationAddProductProps,
 ) => {
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const { formData, creditLineTerms, setCurrentStep } = props;
   const isMobile = useMediaQuery("(max-width: 740px)");
 
@@ -34,15 +34,15 @@ export const VerificationDebtorAddModal = (
 
   const paymentConfigAttributes = [
     createAttribute(
-      getVerificationAddProductConfig(language).paymentConfiguration.fields.paymentMethod,
+      getVerificationAddProductConfig(lang).paymentConfiguration.fields.paymentMethod,
       formData.paymentConfiguration.paymentMethod,
     ),
     createAttribute(
-      getVerificationAddProductConfig(language).paymentConfiguration.fields.paymentCycle,
+      getVerificationAddProductConfig(lang).paymentConfiguration.fields.paymentCycle,
       formData.paymentConfiguration.paymentCycle,
     ),
     createAttribute(
-      getVerificationAddProductConfig(language).paymentConfiguration.fields
+      getVerificationAddProductConfig(lang).paymentConfiguration.fields
         .firstPaymentDate,
       formData.paymentConfiguration.firstPaymentDate
         ? formatPrimaryDate(
@@ -56,7 +56,7 @@ export const VerificationDebtorAddModal = (
     ...(formData.quotaCapEnabled
       ? [
         createAttribute(
-          getVerificationAddProductConfig(language).termInfo.fields.quotaCap,
+          getVerificationAddProductConfig(lang).termInfo.fields.quotaCap,
           currencyFormat(formData.quotaCapValue),
         ),
       ]
@@ -64,7 +64,7 @@ export const VerificationDebtorAddModal = (
     ...(formData.maximumTermEnabled
       ? [
         createAttribute(
-          getVerificationAddProductConfig(language).termInfo.fields.maximumTerm,
+          getVerificationAddProductConfig(lang).termInfo.fields.maximumTerm,
           `${formData.maximumTermValue} meses`,
         ),
       ]
@@ -73,7 +73,7 @@ export const VerificationDebtorAddModal = (
 
   const amountAttributes = [
     createAttribute(
-      getVerificationAddProductConfig(language).amountInfo.fields.creditAmount,
+      getVerificationAddProductConfig(lang).amountInfo.fields.creditAmount,
       currencyFormat(formData.creditAmount),
     ),
   ].filter((attr) => attr.value);
@@ -82,7 +82,7 @@ export const VerificationDebtorAddModal = (
     {
       sections: {
         creditLineInfo: {
-          title: getVerificationAddProductConfig(language).creditLineInfo.title,
+          title: getVerificationAddProductConfig(lang).creditLineInfo.title,
           attributes: [],
           stepNumber: 1,
           customComponent: selectedCreditLineData ? ( 
@@ -99,17 +99,17 @@ export const VerificationDebtorAddModal = (
           ) : null,
         },
         paymentConfiguration: {
-          title: getVerificationAddProductConfig(language).paymentConfiguration.title,
+          title: getVerificationAddProductConfig(lang).paymentConfiguration.title,
           attributes: paymentConfigAttributes,
           stepNumber: 2,
         },
         termInfo: {
-          title: getVerificationAddProductConfig(language).termInfo.title,
+          title: getVerificationAddProductConfig(lang).termInfo.title,
           attributes: termAttributes,
           stepNumber: 3,
         },
         amountInfo: {
-          title: getVerificationAddProductConfig(language).amountInfo.title,
+          title: getVerificationAddProductConfig(lang).amountInfo.title,
           attributes: amountAttributes,
           stepNumber: 4,
         },

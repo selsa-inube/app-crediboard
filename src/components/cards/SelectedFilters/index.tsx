@@ -11,7 +11,7 @@ import { useSelectedFilters, SelectedFiltersProps } from "./interface";
 import { dataFiltersEnum } from "./config";
 
 function SelectedFilters(props: SelectedFiltersProps) {
-  const { filters, onRemove, language } = props;
+  const { filters, onRemove, lang } = props;
 
   const {
     containerRef,
@@ -74,7 +74,7 @@ function SelectedFilters(props: SelectedFiltersProps) {
         </Stack>
       ) : (
         <Text type="label" size="small" appearance="gray">
-          {dataFiltersEnum.withoutFilters.i18n[language]}
+          {dataFiltersEnum.withoutFilters.i18n[lang]}
         </Text>
       )}
     </StyledContainerFilters>

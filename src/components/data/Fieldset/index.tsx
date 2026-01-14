@@ -64,7 +64,7 @@ export const Fieldset = (props: IFieldsetProps) => {
   const [infoModal, setInfoModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const isMobile = useMediaQuery("(max-width:880px)");
   const handleOnClick = () => {
     if (isClickable) {
@@ -190,10 +190,10 @@ export const Fieldset = (props: IFieldsetProps) => {
             {isModalOpen ? (
               <InfoModal
                 onClose={handleInfoModalClose}
-                title={titlesModalEnum.title.i18n[language]}
-                subtitle={titlesModalEnum.subTitle.i18n[language]}
-                description={titlesModalEnum.description.i18n[language]}
-                nextButtonText={titlesModalEnum.textButtonNext.i18n[language]}
+                title={titlesModalEnum.title.i18n[lang]}
+                subtitle={titlesModalEnum.subTitle.i18n[lang]}
+                description={titlesModalEnum.description.i18n[lang]}
+                nextButtonText={titlesModalEnum.textButtonNext.i18n[lang]}
                 isMobile={isMobile}
               />
             ) : (
@@ -220,18 +220,18 @@ export const Fieldset = (props: IFieldsetProps) => {
       {infoModal && (
         <>
           <BaseModal
-            title={titlesModalEnum.title.i18n[language]}
-            nextButton={titlesModalEnum.textButtonNext.i18n[language]}
+            title={titlesModalEnum.title.i18n[lang]}
+            nextButton={titlesModalEnum.textButtonNext.i18n[lang]}
             handleNext={() => setInfoModal(false)}
             handleClose={() => setInfoModal(false)}
             width={isMobile ? "290px" : "400px"}
           >
             <Stack gap="16px" direction="column">
               <Text weight="bold" size="large">
-                {titlesModalEnum.subTitle.i18n[language]}
+                {titlesModalEnum.subTitle.i18n[lang]}
               </Text>
               <Text weight="normal" size="medium" appearance="gray">
-                {titlesModalEnum.description.i18n[language]}
+                {titlesModalEnum.description.i18n[lang]}
               </Text>
             </Stack>
           </BaseModal>

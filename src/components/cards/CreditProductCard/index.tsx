@@ -13,7 +13,7 @@ interface CreditProductCardProps {
   onEdit: () => void;
   onDelete: () => void;
   availableEditCreditRequest: boolean;
-  language: "en" | "es";
+  lang: "en" | "es";
 }
 
 function CreditProductCard(props: CreditProductCardProps) {
@@ -28,7 +28,7 @@ function CreditProductCard(props: CreditProductCardProps) {
     onEdit,
     onDelete,
     availableEditCreditRequest,
-    language
+    lang
   } = props;
 
   return (
@@ -43,7 +43,7 @@ function CreditProductCard(props: CreditProductCardProps) {
       onEdit={onEdit}
       onDelete={onDelete}
       availableEditCreditRequest={availableEditCreditRequest}
-      language={language}
+      lang={lang}
     />
   );
 }

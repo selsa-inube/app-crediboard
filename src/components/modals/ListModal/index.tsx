@@ -122,7 +122,7 @@ export const ListModal = (props: IListModalProps) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   interface IListdataProps {
     data: { id: string; name: string }[] | null | undefined;
@@ -281,16 +281,16 @@ export const ListModal = (props: IListModalProps) => {
         filesSaved = true;
 
         handleFlag(
-          optionFlagsEnum.title.i18n[language],
-          optionFlagsEnum.descriptionSuccess.i18n[language],
-          optionFlagsEnum.appearance.i18n[language] as FlagAppearance
+          optionFlagsEnum.title.i18n[lang],
+          optionFlagsEnum.descriptionSuccess.i18n[lang],
+          optionFlagsEnum.appearance.i18n[lang] as FlagAppearance
         );
       }
     } catch (error) {
       handleFlag(
-        optionFlagsEnum.title.i18n[language],
-        optionFlagsEnum.description.i18n[language],
-        optionFlagsEnum.appearanceError.i18n[language] as FlagAppearance
+        optionFlagsEnum.title.i18n[lang],
+        optionFlagsEnum.description.i18n[lang],
+        optionFlagsEnum.appearanceError.i18n[lang] as FlagAppearance
       );
     } finally {
       handleClose(filesSaved);
@@ -311,7 +311,7 @@ export const ListModal = (props: IListModalProps) => {
       setOpen(true);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(listModalDataEnum.errorDocument.i18n[language]);
+      setMessageError(listModalDataEnum.errorDocument.i18n[lang]);
     }
   };
 
@@ -400,11 +400,11 @@ export const ListModal = (props: IListModalProps) => {
               $isDragging={isDragging}
             >
               <Stack direction="column" alignItems="center">
-                <Text>{listModalDataEnum.drag.i18n[language]}</Text>
-                <Text>{listModalDataEnum.or.i18n[language]}</Text>
+                <Text>{listModalDataEnum.drag.i18n[lang]}</Text>
+                <Text>{listModalDataEnum.or.i18n[lang]}</Text>
               </Stack>
               <Button spacing="compact" onClick={handleBrowseClick}>
-                {listModalDataEnum.search.i18n[language]}
+                {listModalDataEnum.search.i18n[lang]}
               </Button>
               <input
                 type="file"
@@ -416,7 +416,7 @@ export const ListModal = (props: IListModalProps) => {
               />
             </StyledAttachContainer>
             <Text size="medium" appearance="gray">
-              {listModalDataEnum.maximum.i18n[language]}
+              {listModalDataEnum.maximum.i18n[lang]}
             </Text>
             {Array.isArray(pendingFiles) && pendingFiles.length > 0 ? (
               <>
@@ -428,7 +428,7 @@ export const ListModal = (props: IListModalProps) => {
                     weight="bold"
                     appearance="gray"
                   >
-                    {listModalDataEnum.attachments.i18n[language]}
+                    {listModalDataEnum.attachments.i18n[lang]}
                   </Text>
                   <StyledFileBox>
                     {pendingFiles.map((file) => (
@@ -464,7 +464,7 @@ export const ListModal = (props: IListModalProps) => {
                     weight="bold"
                     appearance="gray"
                   >
-                    {listModalDataEnum.attachments.i18n[language]}
+                    {listModalDataEnum.attachments.i18n[lang]}
                   </Text>
                   <StyledFileBox>
                     {uploadedFiles.map((file: IDocumentUpload) => (

@@ -15,7 +15,7 @@ export function TermSelectionUI(props: ITermSelectionUI) {
     handleQuotaCapValueChange,
     handleMaximumTermToggleChange,
     handleMaximumTermValueChange,
-    language
+    lang
   } = props;
 
   return (
@@ -50,7 +50,7 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                       : "gray"
                     }
                   >
-                    {loanDataEnum.quotaCapTitle.i18n[language]}
+                    {loanDataEnum.quotaCapTitle.i18n[lang]}
                   </Text>
                   <Stack
                     alignItems={
@@ -88,8 +88,8 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         }
                       >
                         {values.toggles.quotaCapToggle
-                          ? loanDataEnum.yes.i18n[language]
-                          : loanDataEnum.no.i18n[language]}
+                          ? loanDataEnum.yes.i18n[lang]
+                          : loanDataEnum.no.i18n[lang]}
                       </Text>
                     </Stack>
 
@@ -101,8 +101,8 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                       <Textfield
                         id="quotaCap"
                         name="quotaCapValue"
-                        label={loanDataEnum.quotaCapLabel.i18n[language]}
-                        placeholder={loanDataEnum.quotaCapLabel.i18n[language]}
+                        label={loanDataEnum.quotaCapLabel.i18n[lang]}
+                        placeholder={loanDataEnum.quotaCapLabel.i18n[lang]}
                         size="compact"
                         type="text"
                         fullwidth={isMobile}
@@ -133,7 +133,7 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         : "gray"
                       }
                     >
-                      {loanDataEnum.maximumTermTitle.i18n[language]}
+                      {loanDataEnum.maximumTermTitle.i18n[lang]}
                     </Text>
                     <Stack
                       gap="16px"
@@ -176,8 +176,8 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                           }
                         >
                           {values.toggles.maximumTermToggle
-                            ? loanDataEnum.yes.i18n[language]
-                            : loanDataEnum.no.i18n[language]}
+                            ? loanDataEnum.yes.i18n[lang]
+                            : loanDataEnum.no.i18n[lang]}
                         </Text>
                       </Stack>
 
@@ -185,8 +185,8 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         <Textfield
                           id="maximumTerm"
                           name="maximumTermValue"
-                          label={loanDataEnum.maximumTermLabel.i18n[language]}
-                          placeholder={loanDataEnum.maximumTermPlaceholder.i18n[language]}
+                          label={loanDataEnum.maximumTermLabel.i18n[lang]}
+                          placeholder={loanDataEnum.maximumTermPlaceholder.i18n[lang]}
                           size="compact"
                           type="number"
                           disabled={!values.toggles.maximumTermToggle}

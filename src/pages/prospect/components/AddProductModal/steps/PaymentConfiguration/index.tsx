@@ -8,7 +8,7 @@ import { IPaymentConfigurationMain, paymentConfigurationEnum, IResponsePaymentDa
 
 export function PaymentConfiguration(props: IPaymentConfigurationMain) {
   const { paymentConfig, onChange, onFormValid } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const onChangeRef = useRef(onChange);
   useEffect(() => {
@@ -154,15 +154,15 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
 
   const configUI = {
     paymentMethod: {
-      label: paymentConfigurationEnum.paymentMethod.label.i18n[language],
-      placeholder: paymentConfigurationEnum.paymentMethod.placeholder.i18n[language],
+      label: paymentConfigurationEnum.paymentMethod.label.i18n[lang],
+      placeholder: paymentConfigurationEnum.paymentMethod.placeholder.i18n[lang],
     },
     paymentCycle: {
-      label: paymentConfigurationEnum.paymentCycle.label.i18n[language],
+      label: paymentConfigurationEnum.paymentCycle.label.i18n[lang],
     },
     firstPaymentDate: {
-      label: paymentConfigurationEnum.firstPaymentDate.label.i18n[language],
-      placeholder: paymentConfigurationEnum.paymentMethod.placeholder.i18n[language],
+      label: paymentConfigurationEnum.firstPaymentDate.label.i18n[lang],
+      placeholder: paymentConfigurationEnum.paymentMethod.placeholder.i18n[lang],
     },
   };
 
@@ -182,7 +182,7 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
       hasOnlyOnePaymentMethod={hasOnlyOnePaymentMethod}
       hasOnlyOnePaymentCycle={hasOnlyOnePaymentCycle}
       hasOnlyOneFirstPaymentDate={hasOnlyOneFirstPaymentDate}
-      language={language}
+      lang={lang}
     />
   );
 }

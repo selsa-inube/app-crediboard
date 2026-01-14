@@ -27,7 +27,7 @@ export interface ICreditLimitProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
   clientIdentificationNumber: string;
-  language: "en" | "es";
+  lang: "en" | "es";
   loading?: boolean;
   handleClose: () => void;
   onOpenMaxLimitModal?: () => void;
@@ -48,7 +48,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
     onOpenPaymentCapacityModal,
     onOpenReciprocityModal,
     onOpenFrcModal,
-    language,
+    lang,
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
@@ -117,7 +117,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
   return (
     <BaseModal
       title={title}
-      nextButton={creditLimitTextsEnum.close.i18n[language]}
+      nextButton={creditLimitTextsEnum.close.i18n[lang]}
       handleNext={handleClose}
       width={isMobile ? "280px" : "550px"}
       height={isMobile ? "600px" : "497px"}
@@ -128,10 +128,10 @@ export const CreditLimit = (props: ICreditLimitProps) => {
         <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
-            {creditLimitTextsEnum.errorTitle.i18n[language]}
+            {creditLimitTextsEnum.errorTitle.i18n[lang]}
           </Text>
           <Text size="small" appearance="dark" textAlign="center">
-            {creditLimitTextsEnum.errorMessage.i18n[language]}
+            {creditLimitTextsEnum.errorMessage.i18n[lang]}
           </Text>
         </Stack>
       ) : (
@@ -156,7 +156,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.maxPaymentCapacity.i18n[language]}
+                        {creditLimitTextsEnum.maxPaymentCapacity.i18n[lang]}
                       </Text>
 
                       <Stack alignItems="center">
@@ -193,7 +193,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.maxReciprocity.i18n[language]}
+                        {creditLimitTextsEnum.maxReciprocity.i18n[lang]}
                       </Text>
                       <Stack alignItems="center">
                         <Text appearance="success">$</Text>
@@ -229,7 +229,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.maxDebtFRC.i18n[language]}
+                        {creditLimitTextsEnum.maxDebtFRC.i18n[lang]}
                       </Text>
                       <Stack alignItems="center">
                         <Text appearance="success">$</Text>
@@ -266,7 +266,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.maxIndebtedness.i18n[language]}
+                        {creditLimitTextsEnum.maxIndebtedness.i18n[lang]}
                       </Text>
                       <Stack alignItems="center">
                         <Text appearance="success">$</Text>
@@ -302,7 +302,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.assignedLimit.i18n[language]}
+                        {creditLimitTextsEnum.assignedLimit.i18n[lang]}
                       </Text>
                       <Stack alignItems="center" gap="4px">
                         <Text appearance="success">$</Text>
@@ -346,7 +346,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                   spacing="narrow"
                 />
                 <Text margin="0px 5px" size="small">
-                  {creditLimitTextsEnum.maxUsableQuote.i18n[language]}
+                  {creditLimitTextsEnum.maxUsableQuote.i18n[lang]}
                 </Text>
               </Stack>
               <Stack direction="column" alignItems="center">
@@ -359,7 +359,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                   {currencyFormat(usableQuota, true)}
                 </Text>
                 <Text type="body" size="small">
-                  {creditLimitTextsEnum.maxMount.i18n[language]}
+                  {creditLimitTextsEnum.maxMount.i18n[lang]}
                 </Text>
               </Stack>
             </>

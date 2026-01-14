@@ -33,7 +33,7 @@ export interface ICardConsolidatedCreditProps {
   description: string;
   date: Date;
   tags: ITag[];
-  language: "en" | "es";
+  lang: "en" | "es";
   isMobile?: boolean;
   initialValue?: number;
   allowCustomValue?: boolean;
@@ -62,7 +62,7 @@ export function CardConsolidatedCredit(props: ICardConsolidatedCreditProps) {
     initialType,
     allowCustomValue,
     handleRemoveCredit,
-    language
+    lang
   } = props;
   
 const hasInitialValue = initialValue !== undefined && initialValue > 0;
@@ -82,19 +82,19 @@ const hasInitialValue = initialValue !== undefined && initialValue > 0;
   const paymentOptions = [
     {
       id: "nextPayment",
-      label: dataConsolidatedCreditEnum.expiredValue.i18n[language],
+      label: dataConsolidatedCreditEnum.expiredValue.i18n[lang],
       value: expiredValue,
     },
     {
       id: "nextDueDate",
-      label: dataConsolidatedCreditEnum.nextDueDate.i18n[language],
+      label: dataConsolidatedCreditEnum.nextDueDate.i18n[lang],
       value: nextDueDate,
       description: description,
       date: date,
     },
     {
       id: "fullPayment",
-      label: dataConsolidatedCreditEnum.fullPayment.i18n[language],
+      label: dataConsolidatedCreditEnum.fullPayment.i18n[lang],
       value: fullPayment,
     },
   ];
@@ -256,7 +256,7 @@ const hasInitialValue = initialValue !== undefined && initialValue > 0;
           onCloseModal={handleToggleModal}
           onApplyPayOption={handleApplyPayOption}
           onChangeOtherValue={handleChangeOption}
-          language={language}
+          lang={lang}
         />
       )}
     </>

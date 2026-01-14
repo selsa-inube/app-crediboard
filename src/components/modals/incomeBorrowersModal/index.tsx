@@ -48,7 +48,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
   } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const currentBorrower =
     dataProspect.borrowers?.find(
@@ -90,8 +90,8 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
 
   return (
     <BaseModal
-      title={dataCreditProspectEnum.incomeSources.i18n[language]}
-      nextButton={dataCreditProspectEnum.close.i18n[language]}
+      title={dataCreditProspectEnum.incomeSources.i18n[lang]}
+      nextButton={dataCreditProspectEnum.close.i18n[lang]}
       handleNext={handleCloseModal}
       handleClose={handleCloseModal}
       width={isMobile ? "300px" : "auto"}
@@ -131,7 +131,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
                 fullwidth={isMobile}
                 disabled={editCreditApplication || availableEditCreditRequest}
               >
-                {dataCreditProspectEnum.edit.i18n[language]}
+                {dataCreditProspectEnum.edit.i18n[lang]}
               </Button>
               {editCreditApplication || availableEditCreditRequest ? (
                 <Icon
@@ -154,7 +154,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
         </>
       ) : (
         <Stack width="400px">
-          <Text>{dataCreditProspectEnum.noDataIncome.i18n[language]}</Text>
+          <Text>{dataCreditProspectEnum.noDataIncome.i18n[lang]}</Text>
         </Stack>
       )}
       {isModalOpen ? (

@@ -123,7 +123,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const businessManagerCode = eventData.businessManager.abbreviatedName;
   const stackRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   useEffect(() => {
     if (activeOptions.length === 0) {
@@ -246,7 +246,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
 
         return {
           id: columnId,
-          name: column?.i18n[language] || apiKey,
+          name: column?.i18n[lang] || apiKey,
           counter: value,
         };
       })
@@ -319,7 +319,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
 
   const selectCheckOptions = selectCheckOptionsEnum.map(option => ({
     id: option.id,
-    label: option.i18n[language],
+    label: option.i18n[lang],
     value: option.value,
     checked: option.checked,
   }));
@@ -440,7 +440,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 <SelectedFilters
                   filters={activeOptions}
                   onRemove={handleRemoveFilter}
-                  language={language}
+                  lang={lang}
                 />
                 <Button
                   appearance="primary"
@@ -451,7 +451,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   disabled={!activeOptions.length}
                   onClick={handleClearFilters}
                 >
-                  {boardLayoutDataEnum.remove.i18n[language]}
+                  {boardLayoutDataEnum.remove.i18n[lang]}
                 </Button>
                 <Button
                   appearance="primary"
@@ -461,7 +461,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   variant="outlined"
                   onClick={openFilterModal}
                 >
-                  {boardLayoutDataEnum.filter.i18n[language]}
+                  {boardLayoutDataEnum.filter.i18n[lang]}
                 </Button>
               </StyledRequestsContainer>
             )}
@@ -527,7 +527,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
               <BoardSection
                 key={column.id}
                 sectionId={column.id}
-                sectionTitle={column.i18n[language]}
+                sectionTitle={column.i18n[lang]}
                 sectionCounter={counterTotalsData(column.id) || 0}
                 sectionBackground={column.sectionBackground}
                 orientation={boardOrientation}
@@ -550,15 +550,15 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         </StyledBoardContainer>
         {isTextSearchModalOpen && (
           <BaseModal
-            title={dataInformationSearchModalEnum.titleModal.i18n[language]}
+            title={dataInformationSearchModalEnum.titleModal.i18n[lang]}
             width="400px"
-            nextButton={dataInformationSearchModalEnum.successModal.i18n[language]}
-            backButton={dataInformationSearchModalEnum.buttonModal.i18n[language]}
+            nextButton={dataInformationSearchModalEnum.successModal.i18n[lang]}
+            backButton={dataInformationSearchModalEnum.buttonModal.i18n[lang]}
             handleBack={handleTextSearchModalBack}
             handleNext={handleTextSearchModalNext}
             handleClose={handleTextSearchModalClose}
           >
-            <Text>{dataInformationSearchModalEnum.descriptionModal.i18n[language]}</Text>
+            <Text>{dataInformationSearchModalEnum.descriptionModal.i18n[lang]}</Text>
           </BaseModal>
         )}
         {boardOrientation === "vertical" && <div ref={observerRef} />}

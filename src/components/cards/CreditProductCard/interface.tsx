@@ -21,7 +21,7 @@ function CreditProductCardUI(props: CreditProductCardProps) {
     onEdit,
     onDelete,
     availableEditCreditRequest,
-    language
+    lang
   } = props;
 
   return (
@@ -39,7 +39,7 @@ function CreditProductCardUI(props: CreditProductCardProps) {
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.paymentMethod.i18n[language]}
+            {CREDIT_PRODUCT_TEXTS_ENUM.paymentMethod.i18n[lang]}
           </Text>
           <TruncatedText
             text={paymentMethod}
@@ -49,25 +49,25 @@ function CreditProductCardUI(props: CreditProductCardProps) {
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.loanAmount.i18n[language]}
+            {CREDIT_PRODUCT_TEXTS_ENUM.loanAmount.i18n[lang]}
           </Text>
           <Text>{loanAmount === 0 ? "$ 0" : currencyFormat(loanAmount)}</Text>
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.interestRate.i18n[language]}
+            {CREDIT_PRODUCT_TEXTS_ENUM.interestRate.i18n[lang]}
           </Text>
           <Text>{interestRate.toFixed(4)} %</Text>
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.termMonths.i18n[language]}
+            {CREDIT_PRODUCT_TEXTS_ENUM.termMonths.i18n[lang]}
           </Text>
           <Text>{termMonths}</Text>
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.periodicFee.i18n[language]}
+            {CREDIT_PRODUCT_TEXTS_ENUM.periodicFee.i18n[lang]}
           </Text>
           <Text>
             {periodicFee === 0
@@ -77,7 +77,7 @@ function CreditProductCardUI(props: CreditProductCardProps) {
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.paymentCycle.i18n[language]}
+            {CREDIT_PRODUCT_TEXTS_ENUM.paymentCycle.i18n[lang]}
           </Text>
           <TruncatedText
             text={schedule}

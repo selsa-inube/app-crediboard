@@ -60,7 +60,7 @@ export interface ITermSelection {
 export interface ITermSelectionUI {
   isMobile: boolean;
   initialValues: ITermSelectionValuesMain;
-  language: "en" | "es";
+  lang: "en" | "es";
   validationSchema: Yup.ObjectSchema<{
     quotaCapValue?: string;
     maximumTermValue?: string;
@@ -106,7 +106,7 @@ export interface IPaymentConfigurationUI {
   paymentMethodOptions: IPaymentsOptions[];
   paymentCycleOptions: IPaymentsOptions[];
   firstPaymentDateOptions: IPaymentsOptions[];
-  language: "en" | "es";
+  lang: "en" | "es";
   paymentConfiguration: {
     paymentMethod: {
       label: string;
@@ -366,33 +366,33 @@ export const loanDataEnum = {
 };
 
 
-export const getVerificationAddProductConfig = (language: "en" | "es") => ({
+export const getVerificationAddProductConfig = (lang: "en" | "es") => ({
   creditLineInfo: {
-    title: stepsAddProductEnum.creditLineSelection.i18n[language],
+    title: stepsAddProductEnum.creditLineSelection.i18n[lang],
     fields: {
-      creditLine: language === "en" ? "Credit line" : "Línea de crédito",
-      products: language === "en" ? "Selected products" : "Productos seleccionados",
+      creditLine: lang === "en" ? "Credit line" : "Línea de crédito",
+      products: lang === "en" ? "Selected products" : "Productos seleccionados",
     },
   },
   paymentConfiguration: {
-    title: stepsAddProductEnum.paymentConfiguration.i18n[language],
+    title: stepsAddProductEnum.paymentConfiguration.i18n[lang],
     fields: {
-      paymentMethod: dataAmountEnum.ordinaryPayment.i18n[language],
-      paymentCycle: paymentConfigurationEnum.paymentCycle.label.i18n[language],
-      firstPaymentDate: paymentConfigurationEnum.firstPaymentDate.label.i18n[language],
+      paymentMethod: dataAmountEnum.ordinaryPayment.i18n[lang],
+      paymentCycle: paymentConfigurationEnum.paymentCycle.label.i18n[lang],
+      firstPaymentDate: paymentConfigurationEnum.firstPaymentDate.label.i18n[lang],
     },
   },
   termInfo: {
-    title: stepsAddProductEnum.termSelection.i18n[language],
+    title: stepsAddProductEnum.termSelection.i18n[lang],
     fields: {
-      quotaCap: loanDataEnum.quotaCapTitle.i18n[language],
-      maximumTerm: loanDataEnum.maximumTermTitle.i18n[language],
+      quotaCap: loanDataEnum.quotaCapTitle.i18n[lang],
+      maximumTerm: loanDataEnum.maximumTermTitle.i18n[lang],
     },
   },
   amountInfo: {
-    title: stepsAddProductEnum.amountCapture.i18n[language],
+    title: stepsAddProductEnum.amountCapture.i18n[lang],
     fields: {
-      creditAmount: amountCaptureTextsEnum.label.i18n[language],
+      creditAmount: amountCaptureTextsEnum.label.i18n[lang],
     },
   },
 });

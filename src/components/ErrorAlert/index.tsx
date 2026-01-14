@@ -5,14 +5,14 @@ import { AlertContainer, StyledPrint } from "./styles";
 import { messagesEnum } from "./config";
 
 export interface ErrorAlertProps {
-  language: "en" | "es";
+  lang: "en" | "es";
   message?: string;
   onClose?: () => void;
   isMobile?: boolean;
 }
 
 const ErrorAlert = (props: ErrorAlertProps) => {
-  const { message, onClose, isMobile, language } = props;
+  const { message, onClose, isMobile, lang } = props;
 
   return (
     <StyledPrint>
@@ -25,7 +25,7 @@ const ErrorAlert = (props: ErrorAlertProps) => {
         >
           <Icon appearance="warning" icon={<MdWarningAmber />} size="24px" />
           <Stack justifyContent="center">
-            <Text>{message || messagesEnum.defaultError.i18n[language]}</Text>
+            <Text>{message || messagesEnum.defaultError.i18n[lang]}</Text>
           </Stack>
 
           <Icon

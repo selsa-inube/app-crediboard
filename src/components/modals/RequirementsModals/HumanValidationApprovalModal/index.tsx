@@ -41,7 +41,7 @@ export function HumanValidationApprovalModal(
     onConfirm,
     onCloseModal,
   } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
@@ -50,9 +50,9 @@ export function HumanValidationApprovalModal(
     Object.values(optionsAnswerEnum).map((option) => ({
       id: option.id,
       value: option.value,
-      label: option.i18n[language],
+      label: option.i18n[lang],
     })), 
-  [language]);
+  [lang]);
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
@@ -121,7 +121,7 @@ export function HumanValidationApprovalModal(
         }
       } catch (error) {
         setShowErrorModal(true);
-        setMessageError(approvalsConfigEnum.titleError.i18n[language]);
+        setMessageError(approvalsConfigEnum.titleError.i18n[lang]);
       }
     },
   });
@@ -134,22 +134,22 @@ export function HumanValidationApprovalModal(
 
   return (
     <BaseModal
-      title={approvalsConfigEnum.title.i18n[language]}
+      title={approvalsConfigEnum.title.i18n[lang]}
       handleNext={formik.handleSubmit}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
-      backButton={approvalsConfigEnum.cancel.i18n[language]}
-      nextButton={approvalsConfigEnum.confirm.i18n[language]}
+      backButton={approvalsConfigEnum.cancel.i18n[lang]}
+      nextButton={approvalsConfigEnum.confirm.i18n[lang]}
       disabledNext={!formik.values.observations || !formik.isValid}
     >
       <Stack direction="column" gap="24px">
         <Stack direction="column" gap="8px">
-          <Text>{approvalsConfigEnum.approval.i18n[language]}</Text>
+          <Text>{approvalsConfigEnum.approval.i18n[lang]}</Text>
           {hasSingleOption ? (
             <Input
               name="answer"
               id="answer"
-              label={approvalsConfigEnum.answer.i18n[language]}
+              label={approvalsConfigEnum.answer.i18n[lang]}
               value={optionsAnswer[0].label}
               disabled
               size="compact"
@@ -160,8 +160,8 @@ export function HumanValidationApprovalModal(
               name="answer"
               id="answer"
               options={optionsAnswer}
-              label={approvalsConfigEnum.answer.i18n[language]}
-              placeholder={approvalsConfigEnum.answerPlaceHolder.i18n[language]}
+              label={approvalsConfigEnum.answer.i18n[lang]}
+              placeholder={approvalsConfigEnum.answerPlaceHolder.i18n[lang]}
               value={formik.values.answer}
               onChange={(name, value) => formik.setFieldValue(name, value)}
               onBlur={formik.handleBlur}
@@ -173,8 +173,8 @@ export function HumanValidationApprovalModal(
         <Textarea
           id="observations"
           name="observations"
-          label={approvalsConfigEnum.observations.i18n[language]}
-          placeholder={approvalsConfigEnum.observationdetails.i18n[language]}
+          label={approvalsConfigEnum.observations.i18n[lang]}
+          placeholder={approvalsConfigEnum.observationdetails.i18n[lang]}
           maxLength={200}
           value={formik.values.observations}
           onChange={formik.handleChange}

@@ -14,7 +14,7 @@ import { textConfigEnum } from "./config";
 import { ISelectcheckProps } from ".";
 
 export interface ISelectcheckUIProps extends ISelectcheckProps {
-  language: "es" | "en";
+  lang: "es" | "en";
   focused?: boolean;
   displayList: boolean;
 }
@@ -76,7 +76,7 @@ export const SelectcheckUI = forwardRef<HTMLDivElement, ISelectcheckUIProps>(
       onChange,
       displayList,
       onChangeCheck,
-      language
+      lang
     } = props;
 
     return (
@@ -101,7 +101,7 @@ export const SelectcheckUI = forwardRef<HTMLDivElement, ISelectcheckUIProps>(
 
             {required && !disabled && (
               <Text type="body" size="small" appearance="dark">
-                {textConfigEnum.requiredText.i18n[language]}
+                {textConfigEnum.requiredText.i18n[lang]}
               </Text>
             )}
           </Stack>

@@ -70,7 +70,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
   );
   const [loadingDisbursementData, setLoadingDisbursementData] = useState<boolean>(false);
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   useEffect(() => {
     const newData = mapModesToFormikInitialValues(initialDisbursementData);
@@ -267,7 +267,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
         handleClose={handleClose}
         handleSave={handleSave}
         isLoading={loadingDisbursementData}
-        language={language}
+        lang={lang}
       />
     ) : (
       <DisbursementModal

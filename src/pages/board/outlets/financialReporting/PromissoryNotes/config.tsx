@@ -67,10 +67,10 @@ export const actionsFinancialReportingEnum = {
   },
 };
 
-export const getTitlesFinancialReporting = (language: "es" | "en") =>
+export const getTitlesFinancialReporting = (lang: "es" | "en") =>
   Object.values(titlesFinancialReportingEnum).map(item => ({
     id: item.id,
-    titleName: item.i18n[language],
+    titleName: item.i18n[lang],
     priority: item.priority
   }));
 
@@ -82,11 +82,11 @@ export const appearanceTag = (tag: string): "success" | "warning" | "danger" => 
 
 export const getTableBoardActions = (
   entrySelection: (data: IEntries) => void,
-  language: "es" | "en"
+  lang: "es" | "en"
 ) => [
     {
       id: actionsFinancialReportingEnum.resend.id,
-      actionName: actionsFinancialReportingEnum.resend.i18n[language],
+      actionName: actionsFinancialReportingEnum.resend.i18n[lang],
       content: (data: IEntries) => (
         <Icon
           appearance="primary"
@@ -99,7 +99,7 @@ export const getTableBoardActions = (
     },
     {
       id: actionsFinancialReportingEnum.viewImage.id,
-      actionName: actionsFinancialReportingEnum.viewImage.i18n[language],
+      actionName: actionsFinancialReportingEnum.viewImage.i18n[lang],
       content: (data: IEntries) => (
         <Icon
           appearance="primary"
@@ -111,20 +111,20 @@ export const getTableBoardActions = (
     },
   ];
 
-const getIconByTagStatus = (tagElement: React.ReactElement, language: "es" | "en") => {
+const getIconByTagStatus = (tagElement: React.ReactElement, lang: "es" | "en") => {
   const label = tagElement.props.label;
 
   if (label === statusFinancialReportingEnum.signed.value) {
-    return <img src={check} alt={statusFinancialReportingEnum.signed.i18n[language]} width={14} height={14} />;
+    return <img src={check} alt={statusFinancialReportingEnum.signed.i18n[lang]} width={14} height={14} />;
   } else if (label === statusFinancialReportingEnum.inProcess.value) {
-    return <img src={remove} alt={statusFinancialReportingEnum.inProcess.i18n[language]} width={14} height={14} />;
+    return <img src={remove} alt={statusFinancialReportingEnum.inProcess.i18n[lang]} width={14} height={14} />;
   } else if (label === statusFinancialReportingEnum.withError.value) {
-    return <img src={close} alt={statusFinancialReportingEnum.withError.i18n[language]} width={14} height={14} />;
+    return <img src={close} alt={statusFinancialReportingEnum.withError.i18n[lang]} width={14} height={14} />;
   }
   return null;
 };
 
-export const getActionsMobileIcon = (language: "es" | "en") => [
+export const getActionsMobileIcon = (lang: "es" | "en") => [
   {
     id: "status_icon",
     actionName: "",
@@ -133,7 +133,7 @@ export const getActionsMobileIcon = (language: "es" | "en") => [
       return (
         <Stack>
           <Icon
-            icon={getIconByTagStatus(tagElement, language)}
+            icon={getIconByTagStatus(tagElement, lang)}
             appearance={tagElement.props.appearance}
             size="20px"
           />

@@ -36,7 +36,7 @@ export const CreditProfileInfo = () => {
   const { creditRequestCode } = useParams();
 
   const navigate = useNavigate();
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
@@ -98,14 +98,14 @@ export const CreditProfileInfo = () => {
                       iconBefore={<MdOutlineChevronLeft />}
                       onClick={() => navigate(-1)}
                     >
-                      {fieldLabelsEnum.back.i18n[language]}
+                      {fieldLabelsEnum.back.i18n[lang]}
                     </Button>
                     <Button
                       spacing="compact"
                       variant="filled"
                       onClick={() => print()}
                     >
-                      {fieldLabelsEnum.print.i18n[language]}
+                      {fieldLabelsEnum.print.i18n[lang]}
                     </Button>
                   </Stack>
                 </StyledNoPrint>
@@ -117,7 +117,7 @@ export const CreditProfileInfo = () => {
                       appearance="gray"
                       weight="bold"
                     >
-                      {fieldLabelsEnum.creditProfile.i18n[language]}
+                      {fieldLabelsEnum.creditProfile.i18n[lang]}
                     </Text>
                     <Text
                       type="title"
@@ -160,7 +160,7 @@ export const CreditProfileInfo = () => {
                       appearance="gray"
                       weight="bold"
                     >
-                      {fieldLabelsEnum.creditProfile.i18n[language]}
+                      {fieldLabelsEnum.creditProfile.i18n[lang]}
                     </Text>
                     <StyledUl>
                       <StyledLi>
@@ -206,7 +206,7 @@ export const CreditProfileInfo = () => {
                     iconBefore={<MdOutlineChevronLeft />}
                     onClick={() => navigate(-1)}
                   >
-                    {fieldLabelsEnum.back.i18n[language]}
+                    {fieldLabelsEnum.back.i18n[lang]}
                   </Button>
                 </StyledNoPrint>
                 <Text
@@ -215,7 +215,7 @@ export const CreditProfileInfo = () => {
                   appearance="gray"
                   weight="bold"
                 >
-                  {fieldLabelsEnum.creditProfile.i18n[language]}
+                  {fieldLabelsEnum.creditProfile.i18n[lang]}
                 </Text>
                 <StyledUl>
                   <StyledLi>
@@ -255,7 +255,7 @@ export const CreditProfileInfo = () => {
                     spacing="compact"
                     variant="filled"
                   >
-                    {fieldLabelsEnum.print.i18n[language]}
+                    {fieldLabelsEnum.print.i18n[lang]}
                   </Button>
                 </StyledNoPrint>
               </>

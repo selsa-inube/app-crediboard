@@ -10,7 +10,7 @@ interface InvestmentCreditCardProps {
   codeValue: string;
   expired: string;
   expiredValue: number;
-  language: "en" | "es";
+  lang: "en" | "es";
   isMobile?: boolean;
 }
 
@@ -20,7 +20,7 @@ export function InvestmentCreditCard({
   expired,
   expiredValue,
   isMobile,
-  language
+  lang
 }: InvestmentCreditCardProps) {
   return (
     <StyledContainer $isMobile={isMobile}>
@@ -38,7 +38,7 @@ export function InvestmentCreditCard({
           <StyledInput>
             <Stack alignItems="center" justifyContent="space-between">
               <Text type="label" size="medium" weight="bold">
-                {ModalConfigEnum.code.i18n[language]}
+                {ModalConfigEnum.code.i18n[lang]}
               </Text>
               <Text type="body" size="small" appearance="gray">
                 {codeValue}

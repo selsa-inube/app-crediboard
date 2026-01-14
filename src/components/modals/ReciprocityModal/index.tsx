@@ -33,7 +33,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
     clientIdentificationNumber,
     loading,
   } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const isMobile = useMediaQuery("(max-width:880px)");
 
   const [error, setError] = useState(false);
@@ -70,8 +70,8 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
 
   return (
     <BaseModal
-      title={dataReciprocityEnum.maxReciprocityQuota.i18n[language]}
-      nextButton={dataReciprocityEnum.close.i18n[language]}
+      title={dataReciprocityEnum.maxReciprocityQuota.i18n[lang]}
+      nextButton={dataReciprocityEnum.close.i18n[lang]}
       handleNext={handleClose}
       handleBack={handleClose}
       variantNext="outlined"
@@ -81,10 +81,10 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
         <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
-            {dataReciprocityEnum.errorTitle.i18n[language]}
+            {dataReciprocityEnum.errorTitle.i18n[lang]}
           </Text>
           <Text size="small" appearance="dark" textAlign="center">
-            {dataReciprocityEnum.errorMessage.i18n[language]}
+            {dataReciprocityEnum.errorMessage.i18n[lang]}
           </Text>
         </Stack>
       ) : (
@@ -96,7 +96,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
           <Stack direction="column" justifyContent="space-between" gap="12px">
             <Stack justifyContent="space-between">
               <Text type="label" size="large" weight="bold">
-                {dataReciprocityEnum.contributionsBalance.i18n[language]}
+                {dataReciprocityEnum.contributionsBalance.i18n[lang]}
               </Text>
               <Stack>
                 <Text type="body" size="medium" appearance="success">
@@ -116,7 +116,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
             </Stack>
             <Stack justifyContent="space-between">
               <Text type="label" size="large" appearance="gray">
-                {dataReciprocityEnum.timesPossible.i18n[language]}
+                {dataReciprocityEnum.timesPossible.i18n[lang]}
               </Text>
               <Stack>
                 {loading ? (
@@ -137,7 +137,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
           <Stack direction="column" justifyContent="space-between" gap="12px">
             <Stack justifyContent="space-between">
               <Text type="label" size="large" weight="bold">
-                {dataReciprocityEnum.assignedQuota.i18n[language]}
+                {dataReciprocityEnum.assignedQuota.i18n[lang]}
               </Text>
               <Stack>
                 <Text type="body" size="medium" appearance="success">
@@ -157,7 +157,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
             </Stack>
             <Stack justifyContent="space-between">
               <Text type="label" size="large" appearance="gray">
-                {dataReciprocityEnum.currentPortafolio.i18n[language]}
+                {dataReciprocityEnum.currentPortafolio.i18n[lang]}
               </Text>
               <Stack>
                 <Text type="body" size="medium" appearance="success">
@@ -196,7 +196,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
             )}
             <Stack>
               <Text appearance="gray" size="small" textAlign="center">
-                {dataReciprocityEnum.mount.i18n[language]}
+                {dataReciprocityEnum.mount.i18n[lang]}
               </Text>
             </Stack>
           </Stack>

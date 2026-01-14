@@ -46,7 +46,7 @@ export function CreditLimitCard(props: CreditLimitProps) {
   const [loading, setLoading] = useState(false);
   const [localIncomeData, setLocalIncomeData] = useState<ISourcesOfIncomeState | null>(null);
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
     useEffect(() => {
     if (incomeData) {
@@ -105,7 +105,7 @@ export function CreditLimitCard(props: CreditLimitProps) {
           clientIdentificationNumber={
             dataMaximumCreditLimitService.identificationDocumentNumber
           }
-          language={language}
+          lang={lang}
         />
       )}
 

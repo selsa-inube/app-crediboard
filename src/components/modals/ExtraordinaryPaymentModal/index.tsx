@@ -57,7 +57,7 @@ export const ExtraordinaryPaymentModal = (
   const [isAddSeriesModalOpen, setAddSeriesModalOpen] = useState(false);
 
   const isMobile = useMediaQuery("(max-width:880px)");
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const openAddSeriesModal = () => {
     setInstallmentState({
@@ -92,8 +92,8 @@ export const ExtraordinaryPaymentModal = (
   });
   return (
     <BaseModal
-      title={TextLabelsEnum.extraPayments.i18n[language]}
-      nextButton={TextLabelsEnum.close.i18n[language]}
+      title={TextLabelsEnum.extraPayments.i18n[lang]}
+      nextButton={TextLabelsEnum.close.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
       width={!isMobile ? "850px" : "360px"}
@@ -117,7 +117,7 @@ export const ExtraordinaryPaymentModal = (
             }
             onClick={openAddSeriesModal}
           >
-            {TextLabelsEnum.addSeries.i18n[language]}
+            {TextLabelsEnum.addSeries.i18n[lang]}
           </Button>
           {editCreditApplication || availableEditCreditRequest && (
             <Icon

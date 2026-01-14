@@ -51,7 +51,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
     loading,
     setCurrentStep,
     isSendingData,
-    language,
+    lang,
     assistedControls
   } = props;
 
@@ -68,10 +68,10 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
         }
         nextButton={
           currentStepsNumber.id === steps[steps.length - 1].id
-            ? titleButtonTextAssistedEnum.submitText.i18n[language]
-            : titleButtonTextAssistedEnum.goNextText.i18n[language]
+            ? titleButtonTextAssistedEnum.submitText.i18n[lang]
+            : titleButtonTextAssistedEnum.goNextText.i18n[lang]
         }
-        backButton={titleButtonTextAssistedEnum.goBackText.i18n[language]}
+        backButton={titleButtonTextAssistedEnum.goBackText.i18n[lang]}
         handleNext={
           currentStepsNumber.id === steps[steps.length - 1].id
             ? handleSubmitClick
@@ -83,9 +83,9 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
         disabledBack={currentStepsNumber.id === steps[0].id}
         iconBeforeNext={
           (currentStepsNumber.id === steps[steps.length - 1].id
-            ? titleButtonTextAssistedEnum.submitText.i18n[language]
-            : titleButtonTextAssistedEnum.goNextText.i18n[language]) ===
-          titleButtonTextAssistedEnum.submitText.i18n[language]
+            ? titleButtonTextAssistedEnum.submitText.i18n[lang]
+            : titleButtonTextAssistedEnum.goNextText.i18n[lang]) ===
+          titleButtonTextAssistedEnum.submitText.i18n[lang]
             ? iconBefore
             : undefined
         }
@@ -157,7 +157,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                                     creditLine: lineName,
                                   });
                                 }}
-                                language={language}
+                                lang={lang}
                               />
                             </Stack>
                           )
@@ -198,7 +198,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                   <Text
                     type="body"
                     size="medium"
-                    children={noAvailablePaymentMethodsEnum.i18n[language]}
+                    children={noAvailablePaymentMethodsEnum.i18n[lang]}
                     margin="10px 0 0 10px"
                   />
                 )}

@@ -41,7 +41,7 @@ interface IManagementProps {
 }
 
 export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [creditRequest, setCreditRequest] = useState<ICreditRequest | null>(
     null
@@ -175,7 +175,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         }
       });
     } catch (error) {
-      setErrorMessage(errorMessagesEnum.registerNews.description.i18n[language]);
+      setErrorMessage(errorMessagesEnum.registerNews.description.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -265,7 +265,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   return (
     <>
       <Fieldset
-        title={errorMessagesEnum.management.titleCard.i18n[language]}
+        title={errorMessagesEnum.management.titleCard.i18n[lang]}
         heightFieldset="340px"
         aspectRatio={isMobile ? "auto" : "1"}
         hasError={error ? true : false}
@@ -273,9 +273,9 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         {!creditRequest || error ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessagesEnum.management.title.i18n[language]}
-            description={errorMessagesEnum.management.description.i18n[language]}
-            buttonDescription={errorMessagesEnum.management.button.i18n[language]}
+            title={errorMessagesEnum.management.title.i18n[lang]}
+            description={errorMessagesEnum.management.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.management.button.i18n[lang]}
             onRetry={handleRetry}
           />
         ) : (
@@ -306,7 +306,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   />
                   <Textfield
                     id="text"
-                    placeholder={editCreditApplicationLabelsEnum.placeholderExample.i18n[language]}
+                    placeholder={editCreditApplicationLabelsEnum.placeholderExample.i18n[lang]}
                     fullwidth
                     value={newMessage}
                     onChange={handleInputChange}

@@ -42,7 +42,7 @@ export function SystemValidationApprovalModal(
     onConfirm,
     onCloseModal,
   } = props;
-  const { lang: language } = useEnum();
+  const { lang: lang } = useEnum();
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
@@ -102,15 +102,15 @@ export function SystemValidationApprovalModal(
         }
       } catch (error) {
         setShowErrorModal(true);
-        setMessageError(approvalsConfigEnum.titleError.i18n[language]);
+        setMessageError(approvalsConfigEnum.titleError.i18n[lang]);
       }
     },
   });
 
   useEffect(() => {
     const label = formik.values.toggleChecked
-      ? approvalsConfigEnum.approveRequirementLabel.i18n[language]
-      : approvalsConfigEnum.rejectRequirementLabel.i18n[language];
+      ? approvalsConfigEnum.approveRequirementLabel.i18n[lang]
+      : approvalsConfigEnum.rejectRequirementLabel.i18n[lang];
 
     formik.setFieldValue("labelText", label);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,17 +118,17 @@ export function SystemValidationApprovalModal(
 
   return (
     <BaseModal
-      title={approvalsConfigEnum.title.i18n[language]}
+      title={approvalsConfigEnum.title.i18n[lang]}
       handleNext={formik.handleSubmit}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
-      backButton={approvalsConfigEnum.cancel.i18n[language]}
-      nextButton={approvalsConfigEnum.confirm.i18n[language]}
+      backButton={approvalsConfigEnum.cancel.i18n[lang]}
+      nextButton={approvalsConfigEnum.confirm.i18n[lang]}
       disabledNext={!formik.values.observations || !formik.isValid}
     >
       <Stack direction="column" gap="24px">
         <Stack direction="column" gap="8px">
-          <Text>{`${approvalsConfigEnum.approval.i18n[language]} ${questionToBeAskedInModal}`}</Text>
+          <Text>{`${approvalsConfigEnum.approval.i18n[lang]} ${questionToBeAskedInModal}`}</Text>
           <Stack>
             <Toggle
               checked={formik.values.toggleChecked}
@@ -138,8 +138,8 @@ export function SystemValidationApprovalModal(
                 formik.setFieldValue(
                   "labelText",
                   checked
-                    ? approvalsConfigEnum.approveRequirementLabel.i18n[language]
-                    : approvalsConfigEnum.rejectRequirementLabel.i18n[language]
+                    ? approvalsConfigEnum.approveRequirementLabel.i18n[lang]
+                    : approvalsConfigEnum.rejectRequirementLabel.i18n[lang]
                 );
               }}
             />
@@ -151,8 +151,8 @@ export function SystemValidationApprovalModal(
         <Textarea
           id="observations"
           name="observations"
-          label={approvalsConfigEnum.observations.i18n[language]}
-          placeholder={approvalsConfigEnum.observationdetails.i18n[language]}
+          label={approvalsConfigEnum.observations.i18n[lang]}
+          placeholder={approvalsConfigEnum.observationdetails.i18n[lang]}
           maxLength={200}
           value={formik.values.observations}
           onChange={formik.handleChange}

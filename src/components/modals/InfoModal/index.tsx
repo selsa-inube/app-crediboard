@@ -32,24 +32,24 @@ interface InfoModalProps {
 }
 
 export const InfoModal = ({ onClose, items = [] }: InfoModalProps) => {
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const defaultItems: InfoItem[] = [
     {
-      icon: <img src={check} alt={altTextsEnum.check.i18n[language]} width={16} height={16} />,
-      text: textsEnum.infoModalCheck.i18n[language],
+      icon: <img src={check} alt={altTextsEnum.check.i18n[lang]} width={16} height={16} />,
+      text: textsEnum.infoModalCheck.i18n[lang],
     },
     {
-      icon: <img src={close} alt={altTextsEnum.close.i18n[language]} width={16} height={16} />,
-      text: textsEnum.infoModalClose.i18n[language],
+      icon: <img src={close} alt={altTextsEnum.close.i18n[lang]} width={16} height={16} />,
+      text: textsEnum.infoModalClose.i18n[lang],
     },
     {
-      icon: <img src={remove} alt={altTextsEnum.remove.i18n[language]} width={16} height={16} />,
-      text: textsEnum.infoModalRemove.i18n[language],
+      icon: <img src={remove} alt={altTextsEnum.remove.i18n[lang]} width={16} height={16} />,
+      text: textsEnum.infoModalRemove.i18n[lang],
     },
     {
-      icon: <img src={info} alt={altTextsEnum.info.i18n[language]} width={16} height={16} />,
-      text: textsEnum.infoModalInfo.i18n[language],
+      icon: <img src={info} alt={altTextsEnum.info.i18n[lang]} width={16} height={16} />,
+      text: textsEnum.infoModalInfo.i18n[lang],
     },
   ];
 

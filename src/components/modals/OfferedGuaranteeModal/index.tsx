@@ -47,7 +47,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
   const onChange = (tabId: string) => {
     setCurrentTab(tabId);
   };
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const dataResponse = prospectData;
 
@@ -64,7 +64,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       setDataProperty(result);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataGuaranteeEnum.errorCoDebtor.i18n[language]);
+      setMessageError(dataGuaranteeEnum.errorCoDebtor.i18n[lang]);
     }
   };
 
@@ -79,7 +79,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       setDataProperty(result);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataGuaranteeEnum.errorMortgage.i18n[language]);
+      setMessageError(dataGuaranteeEnum.errorMortgage.i18n[lang]);
     } finally {
       setIsLoadingMortgage(false);
     }
@@ -96,7 +96,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       setDataProperty(result);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataGuaranteeEnum.errorPledge.i18n[language]);
+      setMessageError(dataGuaranteeEnum.errorPledge.i18n[lang]);
     } finally {
       setIsLoadingPledge(false);
     }
@@ -114,13 +114,13 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
 
   const tabs = Object.values(dataTabsEnum).map((tab) => ({
     id: tab.id,
-    label: tab.i18n[language],
+    label: tab.i18n[lang],
   }));
 
   return (
     <BaseModal
-      title={dataGuaranteeEnum.title.i18n[language]}
-      nextButton={dataGuaranteeEnum.close.i18n[language]}
+      title={dataGuaranteeEnum.title.i18n[lang]}
+      nextButton={dataGuaranteeEnum.close.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
       width={isMobile ? "300px" : "602px"}
@@ -148,7 +148,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                 >
                   <CardBorrower
                     key={index}
-                    title={`${dataGuaranteeEnum.borrower.i18n[language]} ${index + 1}`}
+                    title={`${dataGuaranteeEnum.borrower.i18n[lang]} ${index + 1}`}
                     name={getPropertyValue(borrower.borrowerProperties, "name")}
                     lastName={getPropertyValue(
                       borrower.borrowerProperties,
@@ -184,7 +184,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                       false
                     )}
                     showIcons={false}
-                    language={language}
+                    lang={lang}
                   />
                 </Stack>
               ))
@@ -197,9 +197,9 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                 >
                   <ItemNotFound
                     image={userNotFound}
-                    title={dataGuaranteeEnum.noBorrowersTitle.i18n[language]}
-                    description={dataGuaranteeEnum.noBorrowersDescription.i18n[language]}
-                    buttonDescription={dataGuaranteeEnum.retry.i18n[language]}
+                    title={dataGuaranteeEnum.noBorrowersTitle.i18n[lang]}
+                    description={dataGuaranteeEnum.noBorrowersDescription.i18n[lang]}
+                    buttonDescription={dataGuaranteeEnum.retry.i18n[lang]}
                   />
                 </Stack>
               </Fieldset>
@@ -212,7 +212,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
             initialValues={mortgageData}
             onRetry={handleRetryMortgage}
             isLoadingMortgage={isLoadingMortgage}
-            language={language}
+            lang={lang}
           />
         )}
         {currentTab === "pledge" && (
@@ -223,7 +223,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
             isLoadingPledge={isLoadingPledge}
           />
         )}
-        {currentTab === "bail" && <Bail language={language} data={dataResponse?.bondValue ?? 0} />}
+        {currentTab === "bail" && <Bail lang={lang} data={dataResponse?.bondValue ?? 0} />}
 
         {showErrorModal && (
           <ErrorModal

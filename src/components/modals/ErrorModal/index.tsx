@@ -15,12 +15,12 @@ interface IErrorModalProps {
 export function ErrorModal(props: IErrorModalProps) {
   const { isMobile, message, handleClose } = props;
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   return (
     <BaseModal
-      title={errorModalConfigEnum.title.i18n[language]}
-      nextButton={errorModalConfigEnum.understood.i18n[language]}
+      title={errorModalConfigEnum.title.i18n[lang]}
+      nextButton={errorModalConfigEnum.understood.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
       width={isMobile ? "300px" : "450px"}
@@ -35,7 +35,7 @@ export function ErrorModal(props: IErrorModalProps) {
           size="68px"
         />
         <Text type="body" size="large" weight="bold">
-          {errorModalConfigEnum.excuses.i18n[language]}
+          {errorModalConfigEnum.excuses.i18n[lang]}
         </Text>
         <Text type="body" size="large" appearance="gray">
           {message}

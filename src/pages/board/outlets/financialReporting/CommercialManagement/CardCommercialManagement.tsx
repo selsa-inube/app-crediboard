@@ -103,7 +103,7 @@ export const CardCommercialManagement = (
     }
   }, [prospectData]);
   const isMobile = useMediaQuery("(max-width: 800px)");
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const { addFlag } = useFlag();
 
   const handleDelete = async () => {
@@ -136,8 +136,8 @@ export const CardCommercialManagement = (
       setShowDeleteModal(false);
 
       addFlag({
-        title: tittleOptionsEnum.successDeleteTitle.i18n[language],
-        description: tittleOptionsEnum.successDeleteDescription.i18n[language],
+        title: tittleOptionsEnum.successDeleteTitle.i18n[lang],
+        description: tittleOptionsEnum.successDeleteDescription.i18n[lang],
         appearance: "success",
         duration: 5000,
       });
@@ -151,7 +151,7 @@ export const CardCommercialManagement = (
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       const description = code + err?.message + (err?.data?.description || "");
       setShowErrorModal(true);
-      setMessageError(tittleOptionsEnum.errorDeleteProduct.i18n[language] || description);
+      setMessageError(tittleOptionsEnum.errorDeleteProduct.i18n[lang] || description);
       setIsSendingData(false);
 
     }
@@ -175,8 +175,8 @@ export const CardCommercialManagement = (
         }
       } catch (error) {
         addFlag({
-          title: tittleOptionsEnum.titleError.i18n[language],
-          description: tittleOptionsEnum.descriptionError.i18n[language],
+          title: tittleOptionsEnum.titleError.i18n[lang],
+          description: tittleOptionsEnum.descriptionError.i18n[lang],
           appearance: "danger",
           duration: 5000,
         });
@@ -201,7 +201,7 @@ export const CardCommercialManagement = (
         setDeductibleExpenses(data);
       } catch (error) {
         addFlag({
-          title: tittleOptionsEnum.deductibleExpensesErrorTitle.i18n[language],
+          title: tittleOptionsEnum.deductibleExpensesErrorTitle.i18n[lang],
           description: `${error}`,
           appearance: "danger",
           duration: 5000,
@@ -254,13 +254,13 @@ export const CardCommercialManagement = (
                     ? handleInfo
                     : () => handleDeleteClick(entry.creditProductCode)
                 }
-                language={language}
+                lang={lang}
               />
             ))}
             {
               !availableEditCreditRequest && (
                 <StyledPrint>
-                  <NewCreditProductCard onClick={onClick} language={language} />
+                  <NewCreditProductCard onClick={onClick} lang={lang} />
                 </StyledPrint>
               )
             }
@@ -279,7 +279,7 @@ export const CardCommercialManagement = (
                 <CardValues
                   key={index}
                   items={entry.item.map((item) => ({
-                    title: item.title.i18n[language],
+                    title: item.title.i18n[lang],
                     amount: String(prospectSummaryData?.[item.id] ?? 0),
                     operation: item.operation,
                     miniIcon: item.miniIcon,
@@ -302,7 +302,7 @@ export const CardCommercialManagement = (
           <DeleteModal
             handleClose={() => setShowDeleteModal(false)}
             handleDelete={handleDelete}
-            TextDelete={tittleOptionsEnum.descriptionDelete.i18n[language]}
+            TextDelete={tittleOptionsEnum.descriptionDelete.i18n[lang]}
             isSendingData={isSendingData}
           />
         )}

@@ -29,7 +29,7 @@ interface IDisbursementGeneralProps {
   handleOnChange: (values: IDisbursementGeneral) => void;
   handleTabChange: (id: string) => void;
   prospectSummaryData: IProspectSummaryById | undefined;
-  language: "en" | "es";
+  lang: "en" | "es";
   modesOfDisbursement: string[];
   handleClose: () => void;
   handleSave: () => void;
@@ -54,7 +54,7 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
     handleSave,
     isLoading,
     prospectData,
-    language
+    lang
   } = props;
 
   const formik = useFormik({
@@ -133,12 +133,12 @@ const validTabs = useMemo(() => {
 
         return {
           id: tabConfig.id,
-          label: tabConfig.i18n[language],
+          label: tabConfig.i18n[lang],
           disabled: false,
         };
       })
       .filter((tab): tab is Tab => tab !== undefined);
-  }, [modesOfDisbursement, language]);
+  }, [modesOfDisbursement, lang]);
 
   useEffect(() => {
     if (validTabs.length === 1 && !initialTabAmountSet.current) {
@@ -168,9 +168,9 @@ const validTabs = useMemo(() => {
 
   return (
     <BaseModal
-      title={modalTitlesEnum.title.i18n[language]}
-      nextButton={modalTitlesEnum.save.i18n[language]}
-      backButton={modalTitlesEnum.close.i18n[language]}
+      title={modalTitlesEnum.title.i18n[lang]}
+      nextButton={modalTitlesEnum.save.i18n[lang]}
+      backButton={modalTitlesEnum.close.i18n[lang]}
       handleClose={handleClose}
       handleBack={handleClose}
       handleNext={handleSave}
@@ -214,7 +214,7 @@ const validTabs = useMemo(() => {
                     prospectSummaryData={prospectSummaryData}
                     businessManagerCode={businessManagerCode}
                     prospectData={prospectData}
-                    language={language}
+                    lang={lang}
                   />
                 )}
               {validTabs.some((tab) => tab.id === disbursemenTabsEnum.external.id) &&
@@ -233,7 +233,7 @@ const validTabs = useMemo(() => {
                     customerData={customerData}
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
-                    language={language}
+                    lang={lang}
                   />
                 )}
               {validTabs.some((tab) => tab.id === disbursemenTabsEnum.check.id) &&
@@ -252,7 +252,7 @@ const validTabs = useMemo(() => {
                     customerData={customerData}
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
-                    language={language}
+                    lang={lang}
                   />
                 )}
               {validTabs.some((tab) => tab.id === disbursemenTabsEnum.management.id) &&
@@ -271,7 +271,7 @@ const validTabs = useMemo(() => {
                     customerData={customerData}
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
-                    language={language}
+                    lang={lang}
                   />
                 )}
               {validTabs.some((tab) => tab.id === disbursemenTabsEnum.cash.id) &&
@@ -290,7 +290,7 @@ const validTabs = useMemo(() => {
                     customerData={customerData}
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
-                    language={language}
+                    lang={lang}
                   />
                 )}
             </Stack>

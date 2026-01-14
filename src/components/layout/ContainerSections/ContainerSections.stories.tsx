@@ -20,7 +20,7 @@ const meta: Meta<typeof ContainerSections> = {
 
 export const Default: Story = {
   args: {
-    stockTray: <StockTray navigation={() => console.log("previous route")} language="es" />,
+    stockTray: <StockTray navigation={() => console.log("previous route")} lang="es" />,
   },
 };
 

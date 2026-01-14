@@ -17,7 +17,7 @@ export interface ICardBorrowerProps {
   email: string;
   income: string;
   obligations: string;
-  language: "en" | "es";
+  lang: "en" | "es";
   handleView?: () => void;
   handleEdit?: () => void;
   handleDelete?: () => void;
@@ -38,7 +38,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
     handleDelete = () => {},
     showIcons = true,
     isMobile = false,
-    language = "es",
+    lang = "es",
   } = props;
   
   return (
@@ -54,7 +54,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
         <Stack direction="column" gap="8px">
           <Stack direction="column" gap="4px">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDataEnum.names.i18n[language]}
+              {newBorrowedDataEnum.names.i18n[lang]}
             </Text>
             <Text type="body" size="large">
               {name}
@@ -62,7 +62,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
           </Stack>
           <Stack direction="column" gap="4px">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDataEnum.lastNames.i18n[language]}
+              {newBorrowedDataEnum.lastNames.i18n[lang]}
             </Text>
             <Text type="body" size="large">
               {lastName}
@@ -70,7 +70,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
           </Stack>
           <Stack direction="column" gap="4px">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDataEnum.email.i18n[language]}
+              {newBorrowedDataEnum.email.i18n[lang]}
             </Text>
             <Text type="body" size="large">
               {email}
@@ -78,7 +78,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
           </Stack>
           <Stack direction="column" gap="4px" justifyContent="center">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDataEnum.income.i18n[language]}
+              {newBorrowedDataEnum.income.i18n[lang]}
             </Text>
             <Stack alignItems="center">
               <Icon
@@ -93,7 +93,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
           </Stack>
           <Stack direction="column" gap="4px" justifyContent="center">
             <Text type="label" weight="bold" size="medium" appearance="gray">
-              {newBorrowedDataEnum.obligations.i18n[language]}
+              {newBorrowedDataEnum.obligations.i18n[lang]}
             </Text>
             <Stack alignItems="center">
               <Icon

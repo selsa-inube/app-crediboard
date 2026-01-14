@@ -71,7 +71,7 @@ export function StaffModal(props: StaffModalProps) {
     analyst: "",
   });
   const isMobile = useMediaQuery("(max-width: 700px)");
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [showModal, setShowModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
@@ -134,8 +134,8 @@ export function StaffModal(props: StaffModalProps) {
         setAnalystList(analysts);
       } catch (error) {
         addFlag({
-          title: txtFlagsEnum.titleDanger.i18n[language],
-          description: txtFlagsEnum.descriptionDanger.i18n[language],
+          title: txtFlagsEnum.titleDanger.i18n[lang],
+          description: txtFlagsEnum.descriptionDanger.i18n[lang],
           appearance: "danger",
           duration: 5000,
         });
@@ -235,8 +235,8 @@ export function StaffModal(props: StaffModalProps) {
       }
 
       addFlag({
-        title: textFlagsUsersEnum.titleSuccess.i18n[language],
-        description: textFlagsUsersEnum.descriptionSuccess.i18n[language],
+        title: textFlagsUsersEnum.titleSuccess.i18n[lang],
+        description: textFlagsUsersEnum.descriptionSuccess.i18n[lang],
         appearance: "success",
         duration: 5000,
       });

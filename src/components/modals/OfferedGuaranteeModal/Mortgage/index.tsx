@@ -13,11 +13,11 @@ interface IMortgage {
   initialValues: IMortgages[];
   onRetry: () => Promise<void>;
   isLoadingMortgage: boolean;
-  language: "es" | "en";
+  lang: "es" | "en";
 }
 
 export function Mortgage(props: IMortgage) {
-  const { isMobile, initialValues, onRetry, isLoadingMortgage, language } = props;
+  const { isMobile, initialValues, onRetry, isLoadingMortgage, lang } = props;
 
   const data = initialValues[0];
 
@@ -33,7 +33,7 @@ export function Mortgage(props: IMortgage) {
         {data ? (
           <>
             <Text type="label" weight="bold" size="large">
-              {dataMortgageEnum.title.i18n[language]}
+              {dataMortgageEnum.title.i18n[lang]}
             </Text>
             <Divider dashed />
             <Grid
@@ -42,24 +42,24 @@ export function Mortgage(props: IMortgage) {
               gap="20px"
             >
               <CardGray
-                label={dataMortgageEnum.property.i18n[language]}
+                label={dataMortgageEnum.property.i18n[lang]}
                 placeHolder={data.propertyType}
               />
               <CardGray
-                label={dataMortgageEnum.state.i18n[language]}
+                label={dataMortgageEnum.state.i18n[lang]}
                 placeHolder={data.propertyState}
               />
               <CardGray
-                label={dataMortgageEnum.years.i18n[language]}
+                label={dataMortgageEnum.years.i18n[lang]}
                 placeHolder={data.propertyAge}
               />
               <CardGray
-                label={dataMortgageEnum.value.i18n[language]}
+                label={dataMortgageEnum.value.i18n[lang]}
                 placeHolder={`$ ${data.propertyPrice}`}
               />
             </Grid>
             <CardGray
-              label={dataMortgageEnum.description.i18n[language]}
+              label={dataMortgageEnum.description.i18n[lang]}
               placeHolder={data.descriptionUse}
             />
           </>
@@ -67,9 +67,9 @@ export function Mortgage(props: IMortgage) {
           <Stack margin="auto">
             <ItemNotFound
               image={userNotFound}
-              title={dataMortgageEnum.noBorrowersTitle.i18n[language]}
-              description={dataMortgageEnum.noBorrowersDescription.i18n[language]}
-              buttonDescription={dataMortgageEnum.retry.i18n[language]}
+              title={dataMortgageEnum.noBorrowersTitle.i18n[lang]}
+              description={dataMortgageEnum.noBorrowersDescription.i18n[lang]}
+              buttonDescription={dataMortgageEnum.retry.i18n[lang]}
               onRetry={isLoadingMortgage ? undefined : onRetry}
             />
           </Stack>

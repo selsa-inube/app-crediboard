@@ -6,7 +6,7 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { selectDataEnum } from "./config";
 
 export interface ICardProductSelectionProps {
-  language?: "en" | "es";
+  lang?: "en" | "es";
   amount?: number;
   rate?: number;
   term?: number;
@@ -31,7 +31,7 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
     typeCheck,
     isMobile,
     viewOnly = false,
-    language = "es",
+    lang = "es",
   } = props;
 
   return (
@@ -67,7 +67,7 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
               size="large"
               weight="bold"
             >
-              {selectDataEnum.amount.i18n[language]}
+              {selectDataEnum.amount.i18n[lang]}
             </Text>
             <Text appearance="gray" size="medium">
               <Text as="span" appearance="primary" size="small" weight="bold">
@@ -83,7 +83,7 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
               size="large"
               weight="bold"
             >
-              {selectDataEnum.rate.i18n[language]}
+              {selectDataEnum.rate.i18n[lang]}
             </Text>
             <Text appearance="gray" size="medium">
               {rate.toFixed(3)} % M.V
@@ -96,10 +96,10 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
               size="large"
               weight="bold"
             >
-              {selectDataEnum.term.i18n[language]}
+              {selectDataEnum.term.i18n[lang]}
             </Text>
             <Text appearance="gray" size="medium">
-              {term} {selectDataEnum.months.i18n[language]}
+              {term} {selectDataEnum.months.i18n[lang]}
             </Text>
           </Stack>
         </Stack>

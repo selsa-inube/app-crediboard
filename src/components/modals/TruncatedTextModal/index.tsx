@@ -27,7 +27,7 @@ export const TruncatedText = ({
   weight,
   transformFn,
 }: TruncatedTextProps) => {
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [showModal, setShowModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 700px)");
@@ -63,7 +63,7 @@ export const TruncatedText = ({
 
       {showModal && (
         <BaseModal
-          title={dataTruncatedTextEnum.info.i18n[language]}
+          title={dataTruncatedTextEnum.info.i18n[lang]}
           nextButton="Cerrar"
           handleNext={handleClose}
           handleClose={handleClose}

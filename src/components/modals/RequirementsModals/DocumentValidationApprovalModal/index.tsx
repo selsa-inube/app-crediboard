@@ -66,7 +66,7 @@ export function DocumentValidationApprovalModal(
     onConfirm,
     onCloseModal,
   } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [isShowModal, setIsShowModal] = useState(false);
@@ -83,9 +83,9 @@ const optionsAnswer = useMemo(() =>
     Object.values(optionsAnswerEnum).map((option) => ({
       id: option.id,
       value: option.value,
-      label: option.i18n[language],
+      label: option.i18n[lang],
     })), 
-  [language]);
+  [lang]);
 
   const getOptionLabel = (value: string) => {
     const option = optionsAnswer.find((opt) => opt.id === value);
@@ -168,7 +168,7 @@ const optionsAnswer = useMemo(() =>
         }
       } catch (error) {
         setShowErrorModal(true);
-        setMessageError(approvalsConfigEnum.titleError.i18n[language]);
+        setMessageError(approvalsConfigEnum.titleError.i18n[lang]);
       }
     },
   });
@@ -196,7 +196,7 @@ const optionsAnswer = useMemo(() =>
         setDocuments(response);
       } catch (error) {
         setShowErrorModal(true);
-        setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[language]);
+        setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[lang]);
       }
     };
 
@@ -219,23 +219,23 @@ const optionsAnswer = useMemo(() =>
       setSeenDocuments((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[language]);
+      setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[lang]);
     }
   };
 
   return (
     <BaseModal
-      title={`${approvalsConfigEnum.title.i18n[language]} ${title}`}
+      title={`${approvalsConfigEnum.title.i18n[lang]} ${title}`}
       handleNext={formik.handleSubmit}
       width={isMobile ? "300px" : "432px"}
       handleBack={onCloseModal}
-      backButton={approvalsConfigEnum.cancel.i18n[language]}
-      nextButton={approvalsConfigEnum.confirm.i18n[language]}
+      backButton={approvalsConfigEnum.cancel.i18n[lang]}
+      nextButton={approvalsConfigEnum.confirm.i18n[lang]}
       disabledNext={!formik.values.observations || !formik.isValid}
     >
       <Stack direction="column" gap="24px">
         <Text type="body" size="large">
-          {approvalsConfigEnum.selectDocument.i18n[language]}
+          {approvalsConfigEnum.selectDocument.i18n[lang]}
         </Text>
         <Fieldset heightFieldset="210px" borderColor="gray" hasOverflow>
           <StyledScroll>
@@ -278,7 +278,7 @@ const optionsAnswer = useMemo(() =>
                       }
                     >
                       {seenDocuments.includes(doc.documentId) &&
-                        approvalsConfigEnum.seen.i18n[language]}
+                        approvalsConfigEnum.seen.i18n[lang]}
                     </Text>
                   </Stack>
                   {index < documents.length - 1 && <Divider />}
@@ -293,14 +293,14 @@ const optionsAnswer = useMemo(() =>
             spacing="compact"
             onClick={() => setIsShowModal(true)}
           >
-            {approvalsConfigEnum.newDocument.i18n[language]}
+            {approvalsConfigEnum.newDocument.i18n[lang]}
           </Button>
         </Fieldset>
         {optionsAnswer && optionsAnswer.length === 1 ? (
           <Textfield
             name="answer"
             id="answer"
-            label={approvalsConfigEnum.answer.i18n[language]}
+            label={approvalsConfigEnum.answer.i18n[lang]}
             value={getOptionLabel(formik.values.answer)}
             disabled
             size="compact"
@@ -311,8 +311,8 @@ const optionsAnswer = useMemo(() =>
             name="answer"
             id="answer"
             options={optionsAnswer}
-            label={approvalsConfigEnum.answer.i18n[language]}
-            placeholder={approvalsConfigEnum.answerPlaceHolder.i18n[language]}
+            label={approvalsConfigEnum.answer.i18n[lang]}
+            placeholder={approvalsConfigEnum.answerPlaceHolder.i18n[lang]}
             value={formik.values.answer}
             onChange={(name, value) => formik.setFieldValue(name, value)}
             onBlur={formik.handleBlur}
@@ -323,8 +323,8 @@ const optionsAnswer = useMemo(() =>
         <Textarea
           id="observations"
           name="observations"
-          label={approvalsConfigEnum.observations.i18n[language]}
-          placeholder={approvalsConfigEnum.observationdetails.i18n[language]}
+          label={approvalsConfigEnum.observations.i18n[lang]}
+          placeholder={approvalsConfigEnum.observationdetails.i18n[lang]}
           maxLength={200}
           value={formik.values.observations}
           onChange={formik.handleChange}

@@ -28,7 +28,7 @@ export function Guarantees(props: GuaranteesProps) {
     prospectCode,
     isMobile,
   } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [guaranteesSummary, setGuaranteesSummary] =
     useState<IGuaranteesSummary | null>(null);
@@ -85,7 +85,7 @@ export function Guarantees(props: GuaranteesProps) {
         <Stack direction="column" gap={isMobile ? "8px" : "12px"}>
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuaranteesEnum.required.i18n[language]}
+              {dataGuaranteesEnum.required.i18n[lang]}
             </Text>
             <Text
               appearance="primary"
@@ -99,7 +99,7 @@ export function Guarantees(props: GuaranteesProps) {
           <StyledDivider />
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuaranteesEnum.offered.i18n[language]}
+              {dataGuaranteesEnum.offered.i18n[lang]}
             </Text>
             <Text
               appearance="primary"
@@ -113,7 +113,7 @@ export function Guarantees(props: GuaranteesProps) {
           <StyledDivider />
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuaranteesEnum.active.i18n[language]}
+              {dataGuaranteesEnum.active.i18n[lang]}
             </Text>
             <Text
               appearance="primary"

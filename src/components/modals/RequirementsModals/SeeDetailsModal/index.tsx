@@ -33,7 +33,7 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
     onCloseModal,
   } = props;
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const isMobile = useMediaQuery("(max-width: 700px)");
   const node = document.getElementById(portalId ?? "portal");
   if (!node) {
@@ -49,11 +49,11 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
       <StyledModal $smallScreen={isMobile}>
         <Stack alignItems="center" justifyContent="space-between">
           <Text type="headline" size="small">
-            {dataSeeDetailsEnum.more.i18n[language]}
+            {dataSeeDetailsEnum.more.i18n[lang]}
           </Text>
           <StyledContainerClose onClick={onCloseModal}>
             <Stack alignItems="center" gap="8px">
-              <Text>{dataSeeDetailsEnum.close.i18n[language]}</Text>
+              <Text>{dataSeeDetailsEnum.close.i18n[lang]}</Text>
               <Icon
                 icon={<MdClear />}
                 size="24px"
@@ -83,7 +83,7 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
           </StyledTextarea>
         </Stack>
         <Stack justifyContent="flex-end" margin="16px 0">
-          <Button onClick={onCloseModal}>{dataSeeDetailsEnum.close.i18n[language]}</Button>
+          <Button onClick={onCloseModal}>{dataSeeDetailsEnum.close.i18n[lang]}</Button>
         </Stack>
       </StyledModal>
     </Blanket>,

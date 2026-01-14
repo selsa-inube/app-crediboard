@@ -66,7 +66,7 @@ function AppPage() {
   );
   const navigate = useNavigate();
   const { businessUnitSigla } = useContext(AppContext);
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -294,7 +294,7 @@ function AppPage() {
                       )}
                       referenceCode={novelty.creditRequestCode}
                       description={novelty.traceValue}
-                      actionText={emptyNoveltiesConfigEnum.novelties.actionText.i18n[language]}
+                      actionText={emptyNoveltiesConfigEnum.novelties.actionText.i18n[lang]}
                       onActionClick={() =>
                         handleNoveltyActionClick(novelty.creditRequestCode)
                       }
@@ -311,14 +311,14 @@ function AppPage() {
                   >
                     <StyledUserImage
                       src={emptyNoveltiesConfigEnum.image.src}
-                      alt={emptyNoveltiesConfigEnum.image.alt.i18n[language]}
+                      alt={emptyNoveltiesConfigEnum.image.alt.i18n[lang]}
                     />
                     <Stack gap="4px" direction="column">
                       <Text size="large" appearance="gray" textAlign="center">
-                        {emptyNoveltiesConfigEnum.messages.primary.i18n[language]}
+                        {emptyNoveltiesConfigEnum.messages.primary.i18n[lang]}
                       </Text>
                       <Text size="large" appearance="dark" textAlign="center">
-                        {emptyNoveltiesConfigEnum.messages.secondary.i18n[language]}
+                        {emptyNoveltiesConfigEnum.messages.secondary.i18n[lang]}
                       </Text>
                     </Stack>
                   </Stack>

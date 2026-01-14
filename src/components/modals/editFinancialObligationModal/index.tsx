@@ -35,7 +35,7 @@ function EditFinancialObligationModal(
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 880px)");
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const validationSchema = Yup.object({
     fee: Yup.number().required(""),
@@ -59,7 +59,7 @@ function EditFinancialObligationModal(
       {(formik) => (
         <BaseModal
           title={title}
-          backButton={dataInputsEnum.cancel.i18n[language]}
+          backButton={dataInputsEnum.cancel.i18n[lang]}
           nextButton={confirmButtonText}
           handleBack={onCloseModal}
           handleNext={formik.submitForm}
@@ -76,7 +76,7 @@ function EditFinancialObligationModal(
             width={isMobile ? "280px" : "100%"}
           >
             <Textfield
-              label={dataInputsEnum.labelFee.i18n[language]}
+              label={dataInputsEnum.labelFee.i18n[lang]}
               name="fee"
               id="fee"
               iconBefore={
@@ -86,7 +86,7 @@ function EditFinancialObligationModal(
                   size="20px"
                 />
               }
-              placeholder={dataInputsEnum.palaceHolderFee.i18n[language]}
+              placeholder={dataInputsEnum.palaceHolderFee.i18n[lang]}
               value={validateCurrencyField("fee", formik, false, "")}
               size="compact"
               onBlur={formik.handleBlur}
@@ -94,7 +94,7 @@ function EditFinancialObligationModal(
               fullwidth
             />
             <Textfield
-              label={dataInputsEnum.labelBalance.i18n[language]}
+              label={dataInputsEnum.labelBalance.i18n[lang]}
               name="balance"
               id="balance"
               iconBefore={
@@ -104,7 +104,7 @@ function EditFinancialObligationModal(
                   size="20px"
                 />
               }
-              placeholder={dataInputsEnum.palaceHolderBalance.i18n[language]}
+              placeholder={dataInputsEnum.palaceHolderBalance.i18n[lang]}
               value={validateCurrencyField("balance", formik, false, "")}
               size="compact"
               onBlur={formik.handleBlur}

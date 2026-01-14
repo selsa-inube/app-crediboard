@@ -64,7 +64,7 @@ export const Requirements = (props: IRequirementsProps) => {
     businessManagerCode,
     creditRequestCode,
   } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
@@ -116,7 +116,7 @@ export const Requirements = (props: IRequirementsProps) => {
     IPackagesOfRequirementsById[]
   >([]);
   const [justificationRequirement, setJustificationRequirement] = useState(
-    dataAddRequirementEnum.descriptionJustification.i18n[language]
+    dataAddRequirementEnum.descriptionJustification.i18n[lang]
   );
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
   const { addFlag } = useFlag();
@@ -270,8 +270,8 @@ export const Requirements = (props: IRequirementsProps) => {
         setApprovalDocumentValues(documentVals);
         setApprovalHumanValues(humanVals);
 
-        const processedEntries = maperEntries(mapped, language);
-        const processedRequirements = maperDataRequirements(processedEntries, language);
+        const processedEntries = maperEntries(mapped, lang);
+        const processedRequirements = maperDataRequirements(processedEntries, lang);
         setDataRequirements(processedRequirements);
       } catch (error) {
         console.error("Error fetching requirements:", error);
@@ -384,7 +384,7 @@ export const Requirements = (props: IRequirementsProps) => {
           code + err?.message + (err?.data?.description || "");
 
         addFlag({
-          title: textFlagsRequirementsEnum.titleError.i18n[language],
+          title: textFlagsRequirementsEnum.titleError.i18n[lang],
           description,
           appearance: "danger",
           duration: 5000,
@@ -525,8 +525,8 @@ export const Requirements = (props: IRequirementsProps) => {
         });
       });
 
-      const processedEntries = maperEntries(mapped, language);
-      const processedRequirements = maperDataRequirements(processedEntries, language);
+      const processedEntries = maperEntries(mapped, lang);
+      const processedRequirements = maperDataRequirements(processedEntries, lang);
       setDataRequirements(processedRequirements);
     } catch (error) {
       console.error("Error refreshing requirements:", error);
@@ -537,9 +537,9 @@ export const Requirements = (props: IRequirementsProps) => {
   return (
     <>
       <Fieldset
-        title={errorMessagesEnum.requirements.titleCard.i18n[language]}
+        title={errorMessagesEnum.requirements.titleCard.i18n[lang]}
         activeButton={getDataButton(
-          language,
+          lang,
           () => setShowAddRequirementModal(true),
           () => setShowAddSystemValidationModal(true)
         )}
@@ -552,9 +552,9 @@ export const Requirements = (props: IRequirementsProps) => {
         {hasEntriesRequirements.length === 0 ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessagesEnum.requirements.title.i18n[language]}
-            description={errorMessagesEnum.requirements.description.i18n[language]}
-            buttonDescription={errorMessagesEnum.requirements.button.i18n[language]}
+            title={errorMessagesEnum.requirements.title.i18n[lang]}
+            description={errorMessagesEnum.requirements.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.requirements.button.i18n[lang]}
             onRetry={() => setError(false)}
           />
         ) : (
@@ -749,8 +749,8 @@ export const Requirements = (props: IRequirementsProps) => {
         )}
       {showAddRequirementModal && (
         <AddRequirement
-          title={dataAddRequirementEnum.title.i18n[language]}
-          buttonText={dataAddRequirementEnum.add.i18n[language]}
+          title={dataAddRequirementEnum.title.i18n[lang]}
+          buttonText={dataAddRequirementEnum.add.i18n[lang]}
           optionsRequirement={AddRequirementMock}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}
@@ -765,8 +765,8 @@ export const Requirements = (props: IRequirementsProps) => {
       )}
       {showAddSystemValidationModal && (
         <AddSystemValidation
-          title={dataAddRequirementEnum.title.i18n[language]}
-          buttonText={dataAddRequirementEnum.add.i18n[language]}
+          title={dataAddRequirementEnum.title.i18n[lang]}
+          buttonText={dataAddRequirementEnum.add.i18n[lang]}
           optionsRequirement={AddRequirementMockSistemValidations}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}

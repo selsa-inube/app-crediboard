@@ -74,7 +74,7 @@ export function BaseModal(props: IBaseModalProps) {
     marginTop
   } = props;
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const node = document.getElementById(portalId ?? "portal");
   if (!node) {
@@ -108,7 +108,7 @@ export function BaseModal(props: IBaseModalProps) {
             <StyledContainerClose onClick={handleClose || handleBack}>
               <Stack alignItems="center" gap="8px">
                 <Text type="body" size="large">
-                  {dataBaseModalEnum.close.i18n[language]}
+                  {dataBaseModalEnum.close.i18n[lang]}
                 </Text>
                 <Icon
                   icon={<MdClear />}

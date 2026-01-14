@@ -10,11 +10,11 @@ import { dataBailEnum } from "./config";
 
 interface IBailProps {
   data: number;
-  language: "es" | "en";
+  lang: "es" | "en";
 }
 
 export function Bail(props: IBailProps) {
-  const { data, language } = props;
+  const { data, lang } = props;
 
   return (
     <Fieldset>
@@ -38,16 +38,16 @@ export function Bail(props: IBailProps) {
                 {currencyFormat(data)}
               </Text>
               <Text type="body" size="small" appearance="gray">
-                {dataBailEnum.bail.i18n[language]}
+                {dataBailEnum.bail.i18n[lang]}
               </Text>
             </Stack>
             <Text type="label" size="large">
-              {dataBailEnum.customer.i18n[language]}
+              {dataBailEnum.customer.i18n[lang]}
             </Text>
             <Stack gap="4px">
               <Icon icon={<MdInfoOutline />} appearance="dark" size="16px" />
               <Text type="body" size="medium" appearance="gray">
-                {dataBailEnum.disbursement.i18n[language]}
+                {dataBailEnum.disbursement.i18n[lang]}
               </Text>
             </Stack>
           </>
@@ -55,9 +55,9 @@ export function Bail(props: IBailProps) {
           <Stack margin="auto">
             <ItemNotFound
               image={userNotFound}
-              title={dataBailEnum.noBorrowersTitle.i18n[language]}
-              description={dataBailEnum.noBorrowersDescription.i18n[language]}
-              buttonDescription={dataBailEnum.retry.i18n[language]}
+              title={dataBailEnum.noBorrowersTitle.i18n[lang]}
+              description={dataBailEnum.noBorrowersDescription.i18n[lang]}
+              buttonDescription={dataBailEnum.retry.i18n[lang]}
             />
           </Stack>
         )}

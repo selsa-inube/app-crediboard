@@ -60,7 +60,7 @@ export const commercialManagementEnum = {
   },
 };
 
-export const getTitlesCommercialManagement = (language: "es" | "en") => [
+export const getTitlesCommercialManagement = (lang: "es" | "en") => [
   {
     id: commercialManagementEnum.titles.obligation.id,
     titleName: "",
@@ -68,42 +68,42 @@ export const getTitlesCommercialManagement = (language: "es" | "en") => [
   },
   {
     id: commercialManagementEnum.titles.firstHome.id,
-    titleName: commercialManagementEnum.titles.firstHome.i18n[language],
+    titleName: commercialManagementEnum.titles.firstHome.i18n[lang],
     priority: 2,
   },
   {
     id: commercialManagementEnum.titles.freeInvestment.id,
-    titleName: commercialManagementEnum.titles.freeInvestment.i18n[language],
+    titleName: commercialManagementEnum.titles.freeInvestment.i18n[lang],
     priority: 3,
   },
 ];
 
-export const getEntriesCommercialManagement = (language: "es" | "en") => [
+export const getEntriesCommercialManagement = (lang: "es" | "en") => [
   {
     id: "1",
     [commercialManagementEnum.titles.obligation.id]: (
       <Text type="label" size="medium">
-        {commercialManagementEnum.rows.paymentMethod.i18n[language]}
+        {commercialManagementEnum.rows.paymentMethod.i18n[lang]}
       </Text>
     ),
-    [commercialManagementEnum.titles.firstHome.id]: commercialManagementEnum.values.payroll[language],
-    [commercialManagementEnum.titles.freeInvestment.id]: commercialManagementEnum.values.payroll[language],
+    [commercialManagementEnum.titles.firstHome.id]: commercialManagementEnum.values.payroll[lang],
+    [commercialManagementEnum.titles.freeInvestment.id]: commercialManagementEnum.values.payroll[lang],
   },
   {
     id: "2",
     [commercialManagementEnum.titles.obligation.id]: (
       <Text type="label" size="medium">
-        {commercialManagementEnum.rows.guaranteeType.i18n[language]}
+        {commercialManagementEnum.rows.guaranteeType.i18n[lang]}
       </Text>
     ),
-    [commercialManagementEnum.titles.firstHome.id]: commercialManagementEnum.values.mortgage[language],
-    [commercialManagementEnum.titles.freeInvestment.id]: commercialManagementEnum.values.noGuarantee[language],
+    [commercialManagementEnum.titles.firstHome.id]: commercialManagementEnum.values.mortgage[lang],
+    [commercialManagementEnum.titles.freeInvestment.id]: commercialManagementEnum.values.noGuarantee[lang],
   },
   {
     id: "3",
     [commercialManagementEnum.titles.obligation.id]: (
       <Text type="label" size="medium">
-        {commercialManagementEnum.rows.creditAmount.i18n[language]}
+        {commercialManagementEnum.rows.creditAmount.i18n[lang]}
       </Text>
     ),
     [commercialManagementEnum.titles.firstHome.id]: "$50.000.000",
@@ -113,7 +113,7 @@ export const getEntriesCommercialManagement = (language: "es" | "en") => [
     id: "4",
     [commercialManagementEnum.titles.obligation.id]: (
       <Text type="label" size="medium">
-        {commercialManagementEnum.rows.installmentsNumber.i18n[language]}
+        {commercialManagementEnum.rows.installmentsNumber.i18n[lang]}
       </Text>
     ),
     [commercialManagementEnum.titles.firstHome.id]: "24",
@@ -123,7 +123,7 @@ export const getEntriesCommercialManagement = (language: "es" | "en") => [
     id: "5",
     [commercialManagementEnum.titles.obligation.id]: (
       <Text type="label" size="medium">
-        {commercialManagementEnum.rows.installmentValue.i18n[language]}
+        {commercialManagementEnum.rows.installmentValue.i18n[lang]}
       </Text>
     ),
     [commercialManagementEnum.titles.firstHome.id]: "$1.120.000",

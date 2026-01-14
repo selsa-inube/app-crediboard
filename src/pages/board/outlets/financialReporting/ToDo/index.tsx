@@ -58,7 +58,7 @@ function ToDo(props: ToDoProps) {
   const { icon, button, isMobile, id, setIdProspect } = props;
 
   const { approverid } = useParams();
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
@@ -170,7 +170,7 @@ function ToDo(props: ToDoProps) {
         const formattedDecisions = Array.isArray(decision)
           ? decision.map((decisions: DecisionItem, index: number) => ({
               id: `decision-${index}`,
-              label: decisions.I18n ? decisions.I18n[language] : decisions.value,
+              label: decisions.I18n ? decisions.I18n[lang] : decisions.value,
               value: decisions.value,
               code: decisions.decision,
               originalLabel: decisions.decision,
@@ -192,7 +192,7 @@ function ToDo(props: ToDoProps) {
     taskData,
     businessUnitPublicCode,
     businessManagerCode,
-    language,
+    lang,
     taskDecisions.length,
   ]);
 
@@ -304,7 +304,7 @@ function ToDo(props: ToDoProps) {
   );
 
   const taskLabel = useMemo(() => {
-    if (!taskData?.taskToBeDone) return errorMessaggeEnum.default.i18n[language];
+    if (!taskData?.taskToBeDone) return errorMessaggeEnum.default.i18n[lang];
 
     const matchedTask = taskPrs.find(
       (taskItem) => taskItem.Code === taskData.taskToBeDone
@@ -343,7 +343,7 @@ function ToDo(props: ToDoProps) {
   return (
     <>
       <Fieldset
-        title={errorMessagesEnum.toDo.titleCard.i18n[language]}
+        title={errorMessagesEnum.toDo.titleCard.i18n[lang]}
         descriptionTitle={
           taskRole === "CredicarAccountManager"
             ? assignedStaff.commercialManager
@@ -356,9 +356,9 @@ function ToDo(props: ToDoProps) {
         {!taskData ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessagesEnum.toDo.title.i18n[language]}
-            description={errorMessagesEnum.toDo.description.i18n[language]}
-            buttonDescription={errorMessagesEnum.toDo.button.i18n[language]}
+            title={errorMessagesEnum.toDo.title.i18n[lang]}
+            description={errorMessagesEnum.toDo.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.toDo.button.i18n[lang]}
             onRetry={handleRetry}
           />
         ) : (
@@ -425,7 +425,7 @@ function ToDo(props: ToDoProps) {
                     spacing="compact"
                     disabled={!hasPermitSend}
                   >
-                    {button?.label || txtLabelsEnum.buttonText.i18n[language]}
+                    {button?.label || txtLabelsEnum.buttonText.i18n[lang]}
                   </Button>
                   {!hasPermitSend && (
                     <Icon
@@ -449,11 +449,11 @@ function ToDo(props: ToDoProps) {
             >
               {isModalOpen && (
                 <DecisionModal
-                  title={txtLabelsEnum.title.i18n[language]}
-                  buttonText={txtLabelsEnum.buttonText.i18n[language]}
-                  secondaryButtonText={txtLabelsEnum.secondaryButtonText.i18n[language]}
-                  inputLabel={txtLabelsEnum.inputLabel.i18n[language]}
-                  inputPlaceholder={txtLabelsEnum.inputPlaceholder.i18n[language]}
+                  title={txtLabelsEnum.title.i18n[lang]}
+                  buttonText={txtLabelsEnum.buttonText.i18n[lang]}
+                  secondaryButtonText={txtLabelsEnum.secondaryButtonText.i18n[lang]}
+                  inputLabel={txtLabelsEnum.inputLabel.i18n[lang]}
+                  inputPlaceholder={txtLabelsEnum.inputPlaceholder.i18n[lang]}
                   businessManagerCode={businessManagerCode}
                   onSecondaryButtonClick={handleCloseModal}
                   onCloseModal={handleCloseModal}
@@ -476,7 +476,7 @@ function ToDo(props: ToDoProps) {
                         appearance="gray"
                         textAlign="start"
                       >
-                        {txtTaskQueryEnum.txtCommercialManager.i18n[language]}
+                        {txtTaskQueryEnum.txtCommercialManager.i18n[lang]}
                       </Text>
                     </StyledTextField>
                     <StyledTextField>
@@ -501,7 +501,7 @@ function ToDo(props: ToDoProps) {
                         appearance="gray"
                         textAlign="start"
                       >
-                        {txtTaskQueryEnum.txtAnalyst.i18n[language]}
+                        {txtTaskQueryEnum.txtAnalyst.i18n[lang]}
                       </Text>
                     </StyledTextField>
                     <StyledTextField>
@@ -546,16 +546,16 @@ function ToDo(props: ToDoProps) {
           onCloseModal={handleToggleStaffModal}
           taskData={taskData}
           setAssignedStaff={setAssignedStaff}
-          buttonText={staffConfigEnum.confirm.i18n[language]}
-          title={staffConfigEnum.title.i18n[language]}
+          buttonText={staffConfigEnum.confirm.i18n[lang]}
+          title={staffConfigEnum.title.i18n[lang]}
           handleRetry={handleRetry}
         />
       )}
       {isModalInfo && (
         <>
           <BaseModal
-            title={titlesModalEnum.title.i18n[language]}
-            nextButton={titlesModalEnum.textButtonNext.i18n[language]}
+            title={titlesModalEnum.title.i18n[lang]}
+            nextButton={titlesModalEnum.textButtonNext.i18n[lang]}
             handleNext={() => setIsModalInfo(false)}
             handleClose={() => setIsModalInfo(false)}
             width={isMobile ? "290px" : "400px"}
@@ -563,10 +563,10 @@ function ToDo(props: ToDoProps) {
             <Stack gap="16px" direction="column">
               <Stack direction="column" gap="8px">
                 <Text weight="bold" size="large">
-                  {titlesModalEnum.subTitle.i18n[language]}
+                  {titlesModalEnum.subTitle.i18n[lang]}
                 </Text>
                 <Text weight="normal" size="medium" appearance="gray">
-                  {titlesModalEnum.description.i18n[language]}
+                  {titlesModalEnum.description.i18n[lang]}
                 </Text>
               </Stack>
             </Stack>

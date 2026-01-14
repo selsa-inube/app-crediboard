@@ -29,10 +29,10 @@ export interface IFilterFormValues {
 }
 
 function BoardLayout() {
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const selectCheckOptions = selectCheckOptionsEnum.map(option => ({
     id: option.id,
-    label: option.i18n[language],
+    label: option.i18n[lang],
     value: option.value,
     checked: option.checked,
   }));
@@ -782,8 +782,8 @@ function BoardLayout() {
       />
       {isOpenModal && (
         <BaseModal
-          title={dataInformationModalEnum.tilte.i18n[language]}
-          nextButton={dataInformationModalEnum.button.i18n[language]}
+          title={dataInformationModalEnum.tilte.i18n[lang]}
+          nextButton={dataInformationModalEnum.button.i18n[lang]}
           handleNext={() => setIsOpenModal(false)}
           handleClose={() => setIsOpenModal(false)}
           width={isMobile ? "290px" : "403px"}
@@ -791,7 +791,7 @@ function BoardLayout() {
           <Stack direction="column" alignItems="center" gap="16px">
             <Icon icon={<MdInfoOutline />} size="68px" appearance="primary" />
             <Text type="body" size="medium" appearance="gray">
-              {dataInformationModalEnum.description.i18n[language]}
+              {dataInformationModalEnum.description.i18n[lang]}
             </Text>
           </Stack>
         </BaseModal>
@@ -800,7 +800,7 @@ function BoardLayout() {
         <ErrorModal
           isMobile={isMobile}
           message={
-            errorMessagesEnum.changeAnchorToCreditRequest.i18n[language]
+            errorMessagesEnum.changeAnchorToCreditRequest.i18n[lang]
             /* errorMessages.changeAnchorToCreditRequest.description */
           }
           handleClose={() => {

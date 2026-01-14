@@ -37,7 +37,7 @@ export function OpenWallet(props: OpenWalletProps) {
     setLoading,
   } = props;
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [data, setData] = useState<IUncoveredPortfolio | null>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -76,7 +76,7 @@ export function OpenWallet(props: OpenWalletProps) {
         }, retryDelay);
       } else {
         setShowErrorModal(true);
-        setMessageError(dataOpenWalletEnum.modalError.i18n[language]);
+        setMessageError(dataOpenWalletEnum.modalError.i18n[lang]);
         setIsInitialLoad(false);
       }
     } finally {
@@ -101,16 +101,16 @@ export function OpenWallet(props: OpenWalletProps) {
 
   return (
     <CardInfoContainer
-      title={dataOpenWalletEnum.title.i18n[language]}
+      title={dataOpenWalletEnum.title.i18n[lang]}
       icon={<MdOutlineRequestQuote />}
       isMobile={isMobile}
     >
       {!data ? (
         <ItemNotFound
           image={userNotFound}
-          title={dataOpenWalletEnum.itemNotFound.title.i18n[language]}
-          description={dataOpenWalletEnum.itemNotFound.description.i18n[language]}
-          buttonDescription={dataOpenWalletEnum.itemNotFound.buttonDescription.i18n[language]}
+          title={dataOpenWalletEnum.itemNotFound.title.i18n[lang]}
+          description={dataOpenWalletEnum.itemNotFound.description.i18n[lang]}
+          buttonDescription={dataOpenWalletEnum.itemNotFound.buttonDescription.i18n[lang]}
           route="#"
           onRetry={handleRetry}
         />
@@ -119,7 +119,7 @@ export function OpenWallet(props: OpenWalletProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "110px" : "150px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWalletEnum.labels.overdraftFactor.i18n[language]}
+                {dataOpenWalletEnum.labels.overdraftFactor.i18n[lang]}
               </Text>
             </Stack>
             <Stack alignItems="center" gap="8px">
@@ -131,7 +131,7 @@ export function OpenWallet(props: OpenWalletProps) {
                 {Math.round(data.reciprocityRatio)}
               </Text>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWalletEnum.labels.overdraftFactorSuffix.i18n[language]}
+                {dataOpenWalletEnum.labels.overdraftFactorSuffix.i18n[lang]}
               </Text>
             </Stack>
           </Stack>
@@ -140,7 +140,7 @@ export function OpenWallet(props: OpenWalletProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "110px" : "150px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWalletEnum.labels.valueDiscovered.i18n[language]}
+                {dataOpenWalletEnum.labels.valueDiscovered.i18n[lang]}
               </Text>
             </Stack>
             <Text
@@ -156,7 +156,7 @@ export function OpenWallet(props: OpenWalletProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "120px" : "150px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWalletEnum.labels.reciprocity.i18n[language]}
+                {dataOpenWalletEnum.labels.reciprocity.i18n[lang]}
               </Text>
             </Stack>
             <Stack alignItems="center" gap="8px">
@@ -168,7 +168,7 @@ export function OpenWallet(props: OpenWalletProps) {
                 {Math.round(data.reciprocityRatio)}
               </Text>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWalletEnum.labels.reciprocitySuffix.i18n[language]}
+                {dataOpenWalletEnum.labels.reciprocitySuffix.i18n[lang]}
               </Text>
             </Stack>
           </Stack>

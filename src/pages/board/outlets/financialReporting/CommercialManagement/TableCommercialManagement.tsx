@@ -16,16 +16,16 @@ interface IDataCommercialManagement {
 
 export const DataCommercialManagement = (props: IDataCommercialManagement) => {
   const { dataAccordeon, dataRef, isOpen = false } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
    const titles = useMemo(
-    () => getTitlesCommercialManagement(language),
-    [language]
+    () => getTitlesCommercialManagement(lang),
+    [lang]
   );
   
   const entries = useMemo(
-    () => getEntriesCommercialManagement(language),
-    [language]
+    () => getEntriesCommercialManagement(lang),
+    [lang]
   );
   return (
     <div ref={dataRef}>

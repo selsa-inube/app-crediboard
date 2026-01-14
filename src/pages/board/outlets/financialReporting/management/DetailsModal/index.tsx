@@ -17,7 +17,7 @@ export interface DetailsModalProps {
 export function DetailsModal(props: DetailsModalProps) {
   const { data, portalId = "portal", handleClose } = props;
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const isMobile = useMediaQuery("(max-width: 700px)");
 
   const node = document.getElementById(portalId);
@@ -33,8 +33,8 @@ export function DetailsModal(props: DetailsModalProps) {
 
   return (
     <BaseModal
-      title={txtLabelsEnum.title.i18n[language]}
-      nextButton={txtLabelsEnum.buttonText.i18n[language]}
+      title={txtLabelsEnum.title.i18n[lang]}
+      nextButton={txtLabelsEnum.buttonText.i18n[lang]}
       width={isMobile ? "287px" : "402px"}
       height={isMobile ? "auto" : "auto"}
       handleNext={handleClose}
@@ -42,12 +42,12 @@ export function DetailsModal(props: DetailsModalProps) {
     >
       <Stack direction="column" gap="16px">
         <CardGray
-          label={txtLabelsEnum.userLabel.i18n[language]}
+          label={txtLabelsEnum.userLabel.i18n[lang]}
           placeHolder={data.userName}
           apparencePlaceHolder="gray"
         />
         <CardGray
-          label={txtLabelsEnum.justificationLabel.i18n[language]}
+          label={txtLabelsEnum.justificationLabel.i18n[lang]}
           placeHolder={
             data.traceType === "Executed_task"
               ? data.justification

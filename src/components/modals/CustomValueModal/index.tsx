@@ -37,7 +37,7 @@ interface CustomValueModalProps {
   nextPaymentValue: number;
   totalPaymentValue: number;
   expiredValue: number;
-  language: "en" | "es";
+  lang: "en" | "es";
   onCloseModal: () => void;
   onChangeOtherValue: (option: IPaymentOption) => void;
   nextPaymentDate?: Date;
@@ -58,7 +58,7 @@ function CustomValueModal(props: CustomValueModalProps) {
     onCloseModal,
     onChangeOtherValue,
     onApplyPayOption,
-    language
+    lang
   } = props;
   const [showResponse, setShowResponse] = useState(false);
   const [inputValidation, setInputValidation] = useState<{
@@ -78,7 +78,7 @@ function CustomValueModal(props: CustomValueModalProps) {
     if (totalPaymentValue !== 0 && customValue > totalPaymentValue) {
       setInputValidation({
         state: "invalid",
-        message: optionsEnum.messageValidation.i18n[language],
+        message: optionsEnum.messageValidation.i18n[lang],
       });
 
       return;
@@ -104,7 +104,7 @@ function CustomValueModal(props: CustomValueModalProps) {
       setShowResponse(true);
     } else {
       onChangeOtherValue({
-        label: optionsEnum.labelOtherValue.i18n[language],
+        label: optionsEnum.labelOtherValue.i18n[lang],
         value: customValue,
       });
       onCloseModal();
@@ -137,7 +137,7 @@ function CustomValueModal(props: CustomValueModalProps) {
         <Stack direction="column" width="100%" gap="8px">
           <Stack justifyContent="space-between" alignItems="center">
             <Text type="title" size="medium">
-              {optionsEnum.labelPayAnotherValue.i18n[language]}
+              {optionsEnum.labelPayAnotherValue.i18n[lang]}
             </Text>
 
             <Icon
@@ -150,7 +150,7 @@ function CustomValueModal(props: CustomValueModalProps) {
             />
           </Stack>
           <Text type="body" size="medium" appearance="gray">
-            {optionsEnum.labelInputValue.i18n[language]}
+            {optionsEnum.labelInputValue.i18n[lang]}
           </Text>
         </Stack>
 
@@ -160,7 +160,7 @@ function CustomValueModal(props: CustomValueModalProps) {
           <Moneyfield
             id="customValue"
             name="customValue"
-            label={optionsEnum.labelCustomValue.i18n[language]}
+            label={optionsEnum.labelCustomValue.i18n[lang]}
             placeholder=""
             value={customValue ? currencyFormat(customValue, false) : ""}
             onChange={handleChangeCustomValue}
@@ -178,7 +178,7 @@ function CustomValueModal(props: CustomValueModalProps) {
               onClick={handleValidateValue}
               disabled={customValue === 0 || showResponse}
             >
-              {optionsEnum.buttonContinue.i18n[language]}
+              {optionsEnum.buttonContinue.i18n[lang]}
             </Button>
           </Stack>
         </Stack>
@@ -193,7 +193,7 @@ function CustomValueModal(props: CustomValueModalProps) {
               {customValue !== totalPaymentValue && (
                 <>
                   <Text type="body" size="medium" appearance="gray">
-                    {optionsEnum.labelSelectPaymentApplication.i18n[language]}
+                    {optionsEnum.labelSelectPaymentApplication.i18n[lang]}
                   </Text>
 
                   <StyledApplyPayContainer>
@@ -229,7 +229,7 @@ function CustomValueModal(props: CustomValueModalProps) {
                   spacing="compact"
                   onClick={onCloseModal}
                 >
-                  {optionsEnum.buttonCancel.i18n[language]}
+                  {optionsEnum.buttonCancel.i18n[lang]}
                 </Button>
                 <Button
                   spacing="compact"
@@ -239,7 +239,7 @@ function CustomValueModal(props: CustomValueModalProps) {
                     (totalPaymentValue !== 0 && customValue > totalPaymentValue)
                   }
                 >
-                  {optionsEnum.buttonAccept.i18n[language]}
+                  {optionsEnum.buttonAccept.i18n[lang]}
                 </Button>
               </Stack>
             </Stack>

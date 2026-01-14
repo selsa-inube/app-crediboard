@@ -47,7 +47,7 @@ export function DisbursementModal(
   } = props;
 
   const [error] = useState(false);
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const availableTabs = dataTabsEnum
     .filter((tab) => {
@@ -71,7 +71,7 @@ export function DisbursementModal(
     })
     .map((tab) => ({
       ...tab,
-      label: tab.label.i18n[language],
+      label: tab.label.i18n[lang],
     }));
 
 
@@ -93,11 +93,11 @@ export function DisbursementModal(
 
   return (
     <BaseModal
-      title={dataDisbursementEnum.title.i18n[language]}
+      title={dataDisbursementEnum.title.i18n[lang]}
       finalDivider={true}
       handleClose={handleClose}
       handleNext={handleClose}
-      nextButton={dataDisbursementEnum.close.i18n[language]}
+      nextButton={dataDisbursementEnum.close.i18n[lang]}
       backButton="Editar"
       handleBack={handleOpenEdit}
       width={isMobile ? "340px" : "682px"}
@@ -150,9 +150,9 @@ export function DisbursementModal(
         {!loading && error ? (
           <ItemNotFound
             image={userNotFound}
-            title={dataDisbursementEnum.noDataTitle.i18n[language]}
-            description={dataDisbursementEnum.noDataDescription.i18n[language]}
-            buttonDescription={dataDisbursementEnum.retry.i18n[language]}
+            title={dataDisbursementEnum.noDataTitle.i18n[lang]}
+            description={dataDisbursementEnum.noDataDescription.i18n[lang]}
+            buttonDescription={dataDisbursementEnum.retry.i18n[lang]}
             onRetry={handleRetry}
           />
         ) : (
@@ -162,27 +162,27 @@ export function DisbursementModal(
         {!loading && !error ? (
           <>
             {currentTab === "Internal" && (
-              <DisbursementInternal isMobile={isMobile} data={data.internal} language={language} />
+              <DisbursementInternal isMobile={isMobile} data={data.internal} lang={lang} />
             )}
             {currentTab === "External" && (
-              <DisbursementExternal isMobile={isMobile} data={data.external} language={language} />
+              <DisbursementExternal isMobile={isMobile} data={data.external} lang={lang} />
             )}
             {currentTab === "CheckEntity" && (
               <DisbursementCheckEntity
                 isMobile={isMobile}
                 data={data.CheckEntity}
-                language={language}
+                lang={lang}
               />
             )}
             {currentTab === "CheckManagement" && (
               <DisbursementChequeManagement
                 isMobile={isMobile}
                 data={data.checkManagementData}
-                language={language}
+                lang={lang}
               />
             )}
             {currentTab === "Cash" && (
-              <DisbursementCash isMobile={isMobile} data={data.cash} language={language} />
+              <DisbursementCash isMobile={isMobile} data={data.cash} lang={lang} />
             )}
           </>
         ) : (

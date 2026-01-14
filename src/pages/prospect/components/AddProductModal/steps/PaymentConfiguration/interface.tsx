@@ -17,19 +17,19 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
     hasOnlyOneFirstPaymentDate,
     hasOnlyOnePaymentCycle,
     hasOnlyOnePaymentMethod,
-    language
+    lang
   } = props;
 
   return (
     <Stack direction="column" gap="24px" padding="0px 16px">
       {hasOnlyOnePaymentMethod ? (
         <CardGray
-          label={dataAmountEnum.ordinaryPayment.i18n[language]}
+          label={dataAmountEnum.ordinaryPayment.i18n[lang]}
           placeHolder={paymentMethodOptions[0]?.label || ""}
         />
       ) : (
         <Select
-          label={dataAmountEnum.ordinaryPayment.i18n[language]}
+          label={dataAmountEnum.ordinaryPayment.i18n[lang]}
           name="paymentMethod"
           id="paymentMethod"
           size="compact"
@@ -48,12 +48,12 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
         <>
           {hasOnlyOnePaymentCycle ? (
             <CardGray
-              label={paymentConfigurationEnum.paymentCycle.label.i18n[language]}
+              label={paymentConfigurationEnum.paymentCycle.label.i18n[lang]}
               placeHolder={paymentCycleOptions[0]?.label || ""}
             />
           ) : (
             <Select
-              label={paymentConfigurationEnum.paymentCycle.label.i18n[language]}
+              label={paymentConfigurationEnum.paymentCycle.label.i18n[lang]}
               name="paymentCycle"
               id="paymentCycle"
               size="compact"
@@ -74,12 +74,12 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
         <>
           {hasOnlyOneFirstPaymentDate ? (
             <CardGray
-              label={paymentConfigurationEnum.firstPaymentDate.label.i18n[language]}
+              label={paymentConfigurationEnum.firstPaymentDate.label.i18n[lang]}
               placeHolder={firstPaymentDateOptions[0]?.label || ""}
             />
           ) : (
             <Select
-              label={paymentConfigurationEnum.paymentDate.label.i18n[language]}
+              label={paymentConfigurationEnum.paymentDate.label.i18n[lang]}
               name="firstPaymentDate"
               id="firstPaymentDate"
               size="compact"

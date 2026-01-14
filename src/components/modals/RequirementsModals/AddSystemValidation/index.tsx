@@ -57,7 +57,7 @@ export function AddSystemValidation(props: IRequirements) {
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [initialValues, setInitialValues] = useState({
     descriptionUseValues: "",
@@ -74,7 +74,7 @@ export function AddSystemValidation(props: IRequirements) {
 
   const validationSchema = Yup.object().shape({
     descriptionUseValues: Yup.string().required(
-      validationMessagesEnum.requiredField.i18n[language]
+      validationMessagesEnum.requiredField.i18n[lang]
     ),
   });
 
@@ -91,7 +91,7 @@ export function AddSystemValidation(props: IRequirements) {
   );
 
   return requirementEntry 
-    ? requirementEntry.i18n[language] 
+    ? requirementEntry.i18n[lang] 
     : selectedValue;
 };
 
@@ -170,7 +170,7 @@ export function AddSystemValidation(props: IRequirements) {
                 <Textfield
                   name="descriptionUseValues"
                   id="descriptionUseValues"
-                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[language]}
+                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[lang]}
                   value={getOptionLabel(
                     options.Requirement,
                     values.descriptionUseValues
@@ -182,7 +182,7 @@ export function AddSystemValidation(props: IRequirements) {
                 <Select
                   name="descriptionUseValues"
                   id="descriptionUseValues"
-                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[language]}
+                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[lang]}
                   placeholder={
                     options.Requirement.length > 0
                       ? "Selecciona una opción"
@@ -199,7 +199,7 @@ export function AddSystemValidation(props: IRequirements) {
               )}
               {values.descriptionUseValues && (
                 <CardGray
-                  label={dataAddRequirementEnum.titleJustification.i18n[language]}
+                  label={dataAddRequirementEnum.titleJustification.i18n[lang]}
                   placeHolder={justificationRequirement}
                   apparencePlaceHolder="gray"
                   size="large"

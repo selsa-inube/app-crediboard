@@ -61,7 +61,7 @@ function AddProductModal(props: IAddProductModalProps) {
     selectedProducts: [],
   });
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   useEffect(() => {
     (async () => {
@@ -95,7 +95,7 @@ function AddProductModal(props: IAddProductModalProps) {
         setLoading(false);
         setCreditLineTerms(result);
       } catch (error) {
-        setErrorMessage(errorMessagesEnum.linesOfCredit.i18n[language]);
+        setErrorMessage(errorMessagesEnum.linesOfCredit.i18n[lang]);
         setErrorModal(true);
         setLoading(false);
       }
@@ -127,7 +127,7 @@ function AddProductModal(props: IAddProductModalProps) {
         );
 
         if (!response || response.length === 0) {
-          throw new Error(errorMessagesEnum.getPaymentMethods.i18n[language]);
+          throw new Error(errorMessagesEnum.getPaymentMethods.i18n[lang]);
         }
         setLoading(false);
         setFormData((prev) => ({
@@ -138,7 +138,7 @@ function AddProductModal(props: IAddProductModalProps) {
           },
         }));
       } catch (error) {
-        setErrorMessage(errorMessagesEnum.getPaymentMethods.i18n[language]);
+        setErrorMessage(errorMessagesEnum.getPaymentMethods.i18n[lang]);
         setErrorModal(true);
         setLoading(false);
       }
@@ -211,42 +211,42 @@ function AddProductModal(props: IAddProductModalProps) {
   });
 
   const assistedControls = useMemo(() => ({
-    goBackText: titleButtonTextAssistedEnum.goBackText.i18n[language],
-    goNextText: titleButtonTextAssistedEnum.goNextText.i18n[language],
-    submitText: titleButtonTextAssistedEnum.submitText.i18n[language],
-  }), [language]);
+    goBackText: titleButtonTextAssistedEnum.goBackText.i18n[lang],
+    goNextText: titleButtonTextAssistedEnum.goNextText.i18n[lang],
+    submitText: titleButtonTextAssistedEnum.submitText.i18n[lang],
+  }), [lang]);
 
   const stepsMap: StepDetails[] = useMemo(() => [
     {
       ...stepsAddProductEnum.creditLineSelection,
-      name: stepsAddProductEnum.creditLineSelection.i18n[language],
+      name: stepsAddProductEnum.creditLineSelection.i18n[lang],
     },
     {
       ...stepsAddProductEnum.paymentConfiguration,
-      name: stepsAddProductEnum.paymentConfiguration.i18n[language],
+      name: stepsAddProductEnum.paymentConfiguration.i18n[lang],
     },
     {
       ...stepsAddProductEnum.termSelection,
-      name: stepsAddProductEnum.termSelection.i18n[language],
+      name: stepsAddProductEnum.termSelection.i18n[lang],
     },
     {
       ...stepsAddProductEnum.amountCapture,
-      name: stepsAddProductEnum.amountCapture.i18n[language],
+      name: stepsAddProductEnum.amountCapture.i18n[lang],
     },
     {
       ...stepsAddProductEnum.verification,
-      name: stepsAddProductEnum.verification.i18n[language],
+      name: stepsAddProductEnum.verification.i18n[lang],
     },
-  ], [language]);
+  ], [lang]);
 
   const stepsList: StepDetails[] = useMemo(() =>
     Object.values(stepsAddProductEnum).map((step) => ({
       id: step.id,
       number: step.number,
-      name: step.i18n[language as "en" | "es"],
+      name: step.i18n[lang as "en" | "es"],
       description: step.description,
     })),
-    [language]);
+    [lang]);
 
 
   const currentStepsNumberReference = stepsList[currentStep - 1];
@@ -285,7 +285,7 @@ function AddProductModal(props: IAddProductModalProps) {
       errorModal={errorModal}
       setCurrentStep={setCurrentStep}
       isSendingData={isSendingData}
-      language={language}
+      lang={lang}
       assistedControls={assistedControls}
     />
   );

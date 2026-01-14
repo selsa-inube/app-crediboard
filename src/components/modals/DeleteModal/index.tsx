@@ -17,13 +17,13 @@ export function DeleteModal(props: IDeleteModalProps) {
   const { handleClose, handleDelete = () => {}, TextDelete, isSendingData } = props;
 
   const isMobile = useMediaQuery("(max-width:880px)");
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   return (
     <BaseModal
-      title={DeleteDataEnum.title.i18n[language]}
-      nextButton={DeleteDataEnum.delate.i18n[language]}
-      backButton={DeleteDataEnum.cancel.i18n[language]}
+      title={DeleteDataEnum.title.i18n[lang]}
+      nextButton={DeleteDataEnum.delate.i18n[lang]}
+      backButton={DeleteDataEnum.cancel.i18n[lang]}
       handleNext={handleDelete}
       handleClose={handleClose}
       initialDivider={false}

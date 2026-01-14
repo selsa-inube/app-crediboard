@@ -11,11 +11,11 @@ import { dataTabsDisbursement } from "../types";
 export interface IDisbursement {
   isMobile: boolean;
   data: dataTabsDisbursement;
-  language: "es" | "en";
+  lang: "es" | "en";
 }
 
 export function DisbursementCash(props: IDisbursement) {
-  const { isMobile, data, language } = props;
+  const { isMobile, data, lang } = props;
   return (
     <Stack
       direction="column"
@@ -29,52 +29,52 @@ export function DisbursementCash(props: IDisbursement) {
         autoRows="auto"
       >
         <CardGray
-          label={disbursementGeneralEnum.label.i18n[language]}
+          label={disbursementGeneralEnum.label.i18n[lang]}
           placeHolder={currencyFormat(Number(data.disbursementAmount), false)}
         />
         <CardGray
-          label={disbursementGeneralEnum.labelToggle.i18n[language]}
+          label={disbursementGeneralEnum.labelToggle.i18n[lang]}
           placeHolder={formatYesNo(data.isInTheNameOfBorrower)}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelName.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelName.i18n[lang]}
           placeHolder={data.payeeName}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelLastName.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelLastName.i18n[lang]}
           placeHolder={data.payeeSurname}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelSex.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelSex.i18n[lang]}
           placeHolder={formatBiologicalSex(data.payeeBiologicalSex)}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelDocumentType.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelDocumentType.i18n[lang]}
           placeHolder={data.payeeIdentificationType}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelDocumentNumber.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelDocumentNumber.i18n[lang]}
           placeHolder={data.payeeIdentificationNumber}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelBirthdate.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelBirthdate.i18n[lang]}
           placeHolder={formatPrimaryDate(new Date(data.payeeBirthday))}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelphone.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelphone.i18n[lang]}
           placeHolder={data.payeePhoneNumber}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelMail.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelMail.i18n[lang]}
           placeHolder={data.payeeEmail}
         />
         <CardGray
-          label={disbursemenOptionAccountEnum.labelCity.i18n[language]}
+          label={disbursemenOptionAccountEnum.labelCity.i18n[lang]}
           placeHolder={capitalizeFirstLetter(data.payeeCityOfResidence)}
         />
       </Grid>
       <CardGray
-        label={disbursemenOptionAccountEnum.observation.i18n[language]}
+        label={disbursemenOptionAccountEnum.observation.i18n[lang]}
         placeHolder={formatObservation(data.observation)}
       />
     </Stack>

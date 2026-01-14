@@ -69,7 +69,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
     totalPortfolioObligation: 0,
   });
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,13 +108,13 @@ const getInfoText = (type: string) => {
 
   const enumKey = infoMapping[type];
   
-  return enumKey ? frcConfigEnum[enumKey].i18n[language] : "";
+  return enumKey ? frcConfigEnum[enumKey].i18n[lang] : "";
 };
 
   return (
     <BaseModal
-      title={frcConfigEnum.title.i18n[language]}
-      nextButton={frcConfigEnum.closeBtn.i18n[language]}
+      title={frcConfigEnum.title.i18n[lang]}
+      nextButton={frcConfigEnum.closeBtn.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
       variantNext="outlined"
@@ -124,10 +124,10 @@ const getInfoText = (type: string) => {
         <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
-            {frcConfigEnum.errorTitle.i18n[language]}
+            {frcConfigEnum.errorTitle.i18n[lang]}
           </Text>
           <Text size="small" appearance="dark" textAlign="center">
-            {frcConfigEnum.errorMessage.i18n[language]}
+            {frcConfigEnum.errorMessage.i18n[lang]}
           </Text>
         </Stack>
       ) : (
@@ -143,7 +143,7 @@ const getInfoText = (type: string) => {
                     size="34px"
                   />
                   <Text appearance="primary" size="large" type="title">
-                    {frcConfigEnum.subTitle.i18n[language]}
+                    {frcConfigEnum.subTitle.i18n[lang]}
                   </Text>
                 </Stack>
                 <Stack alignItems="center">
@@ -160,7 +160,7 @@ const getInfoText = (type: string) => {
                     </Text>
                   )}
                   <Text type="body" size="medium">
-                    {frcConfigEnum.totalScoreMax.i18n[language]}
+                    {frcConfigEnum.totalScoreMax.i18n[lang]}
                   </Text>
                   <StyledExpanded $expanded={isExpanded}>
                     <Icon
@@ -177,7 +177,7 @@ const getInfoText = (type: string) => {
                 <>
                   <Stack justifyContent="space-between" alignItems="center">
                     <Text weight="bold" size="large" type="label">
-                      {frcConfigEnum.intercept.i18n[language]}
+                      {frcConfigEnum.intercept.i18n[lang]}
                     </Text>
                     {loading ? (
                       <SkeletonLine width="70px" animated={true} />
@@ -200,7 +200,7 @@ const getInfoText = (type: string) => {
                   </Stack>
                   <Stack justifyContent="space-between" alignItems="center">
                     <Text weight="bold" size="large" type="label">
-                      {frcConfigEnum.seniorityLabel.i18n[language]}
+                      {frcConfigEnum.seniorityLabel.i18n[lang]}
                     </Text>
                     {loading ? (
                       <SkeletonLine width="70px" animated={true} />
@@ -223,7 +223,7 @@ const getInfoText = (type: string) => {
                   </Stack>
                   <Stack justifyContent="space-between" alignItems="center">
                     <Text weight="bold" size="large" type="label">
-                      {frcConfigEnum.centralRiskLabel.i18n[language]}
+                      {frcConfigEnum.centralRiskLabel.i18n[lang]}
                     </Text>
                     {loading ? (
                       <SkeletonLine width="70px" animated={true} />
@@ -246,7 +246,7 @@ const getInfoText = (type: string) => {
                   </Stack>
                   <Stack justifyContent="space-between" alignItems="center">
                     <Text weight="bold" size="large" type="label">
-                      {frcConfigEnum.employmentStabilityLabel.i18n[language]}
+                      {frcConfigEnum.employmentStabilityLabel.i18n[lang]}
                     </Text>
                     {loading ? (
                       <SkeletonLine width="70px" animated={true} />
@@ -269,7 +269,7 @@ const getInfoText = (type: string) => {
                   </Stack>
                   <Stack justifyContent="space-between" alignItems="center">
                     <Text weight="bold" size="large" type="label">
-                      {frcConfigEnum.maritalStatusLabel.i18n[language]}
+                      {frcConfigEnum.maritalStatusLabel.i18n[lang]}
                     </Text>
                     {loading ? (
                       <SkeletonLine width="70px" animated={true} />
@@ -292,7 +292,7 @@ const getInfoText = (type: string) => {
                   </Stack>
                   <Stack justifyContent="space-between" alignItems="center">
                     <Text weight="bold" size="large" type="label">
-                      {frcConfigEnum.economicActivityLabel.i18n[language]}
+                      {frcConfigEnum.economicActivityLabel.i18n[lang]}
                     </Text>
                     {loading ? (
                       <SkeletonLine width="70px" animated={true} />
@@ -319,7 +319,7 @@ const getInfoText = (type: string) => {
             <Divider dashed />
             <Stack justifyContent="space-between">
               <Text weight="bold" size="large" type="label">
-                {frcConfigEnum.incomesLabel.i18n[language]}
+                {frcConfigEnum.incomesLabel.i18n[lang]}
               </Text>
               <Stack>
                 <Text appearance="success">$</Text>
@@ -337,7 +337,7 @@ const getInfoText = (type: string) => {
             </Stack>
             <Stack justifyContent="space-between" alignItems="center">
               <Text weight="bold" size="large" type="label">
-                {frcConfigEnum.timesIncome.i18n[language]}
+                {frcConfigEnum.timesIncome.i18n[lang]}
               </Text>
               {loading ? (
                 <SkeletonLine width="70px" animated={true} />
@@ -350,7 +350,7 @@ const getInfoText = (type: string) => {
             <Divider dashed />
             <Stack justifyContent="space-between">
               <Text weight="bold" size="large" type="label">
-                {frcConfigEnum.maxLimit.i18n[language]}
+                {frcConfigEnum.maxLimit.i18n[lang]}
               </Text>
               <Stack>
                 <Text appearance="success">$</Text>
@@ -368,7 +368,7 @@ const getInfoText = (type: string) => {
             </Stack>
             <Stack justifyContent="space-between" alignItems="center">
               <Text weight="bold" size="large" type="label">
-                {frcConfigEnum.totalPortafolio.i18n[language]}
+                {frcConfigEnum.totalPortafolio.i18n[lang]}
               </Text>
               <Stack>
                 <Text appearance="success">$</Text>
@@ -404,15 +404,15 @@ const getInfoText = (type: string) => {
                 )}
                 <Stack>
                   <Text appearance="gray" size="small" textAlign="center">
-                    {frcConfigEnum.maxIndebtedness.i18n[language]}
+                    {frcConfigEnum.maxIndebtedness.i18n[lang]}
                   </Text>
                 </Stack>
               </Stack>
             </Fieldset>
             {showInfoModal && (
               <BaseModal
-                title={frcConfigEnum.infoModalTitle.i18n[language]}
-                nextButton={frcConfigEnum.infoModalButton.i18n[language]}
+                title={frcConfigEnum.infoModalTitle.i18n[lang]}
+                nextButton={frcConfigEnum.infoModalButton.i18n[lang]}
                 handleClose={() => setShowInfoModal(false)}
                 handleNext={() => setShowInfoModal(false)}
                 width={isMobile ? "290px" : "500px"}

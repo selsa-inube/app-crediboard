@@ -58,7 +58,7 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
 
   const [loading, setLoading] = useState(false);
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const validationSchema = Yup.object({
     assignment: Yup.string().required(validationMessages.required),
@@ -112,11 +112,11 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
           margin="0px 0px 10px 0px"
         >
           <Text type="headline" size="small">
-            {dataFiltersRequestEnum.filter.i18n[language]}
+            {dataFiltersRequestEnum.filter.i18n[lang]}
           </Text>
           <StyledContainerClose onClick={onCloseModal}>
             <Stack alignItems="center" gap="8px">
-              <Text>{dataFiltersRequestEnum.close.i18n[language]}</Text>
+              <Text>{dataFiltersRequestEnum.close.i18n[lang]}</Text>
               <Icon
                 icon={<MdClear />}
                 size="24px"
@@ -138,7 +138,7 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
               <SelectedFilters
                 filters={selectedFilters}
                 onRemove={onRemoveFilter}
-                language={language}
+                lang={lang}
               />
             </Stack>
             <Divider dashed />
@@ -181,10 +181,10 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
                 appearance="gray"
                 variant="outlined"
               >
-                {dataFiltersRequestEnum.cancel.i18n[language]}
+                {dataFiltersRequestEnum.cancel.i18n[lang]}
               </Button>
               <Button onClick={handleSubmit} loading={loading}>
-                {dataFiltersRequestEnum.filter.i18n[language]}
+                {dataFiltersRequestEnum.filter.i18n[lang]}
               </Button>
             </Stack>
           </Stack>

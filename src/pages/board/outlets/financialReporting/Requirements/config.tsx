@@ -18,12 +18,12 @@ import { IEntries } from "@components/data/TableBoard/types";
 import { MappedRequirements } from "./types";
 
 export const getDataButton = (
-  language: "en" | "es",
+  lang: "en" | "es",
   onClick: () => void,
   onClickSistemValidation: () => void
 ) => ({
-  title: language === "en" ? "Add human validation" : "Agregar validación humana",
-  titleSistemValidation: language === "en" ? "Add system validation" : "Agregar validación del sistema",
+  title: lang === "en" ? "Add human validation" : "Agregar validación humana",
+  titleSistemValidation: lang === "en" ? "Add system validation" : "Agregar validación del sistema",
   onClick,
   onClickSistemValidation,
 });
@@ -32,20 +32,20 @@ const receiveData = (data: IEntries) => {
   console.log(data, "function que recibe data");
 };
 
-export const getTitlesRequirements = (language: "en" | "es") => [
+export const getTitlesRequirements = (lang: "en" | "es") => [
   Object.values(titlesRequirementsEnum.validacionesDelSistema.columns).map(col => ({
     id: col.code.includes("main") ? "Validaciones del sistema" : "tag",
-    titleName: col.i18n[language],
+    titleName: col.i18n[lang],
     priority: col.priority
   })),
   Object.values(titlesRequirementsEnum.requisitosDocumentales.columns).map(col => ({
     id: col.code.includes("main") ? "Requisitos documentales" : "tag",
-    titleName: col.i18n[language],
+    titleName: col.i18n[lang],
     priority: col.priority
   })),
   Object.values(titlesRequirementsEnum.validacionesHumanas.columns).map(col => ({
     id: col.code.includes("main") ? "Validaciones humanas" : "tag",
-    titleName: col.i18n[language],
+    titleName: col.i18n[lang],
     priority: col.priority
   })),
 ];
@@ -492,7 +492,7 @@ export const requirementLabelsEnum = {
   },
 }
 
-const generateTag = (value: string, language: "en" | "es"): JSX.Element => {
+const generateTag = (value: string, lang: "en" | "es"): JSX.Element => {
   const isPassed = [
     "PASSED_WITH_SYSTEM_VALIDATION", "DOCUMENT_STORED_WITHOUT_VALIDATION",
     "PASSED_WITH_HUMAN_VALIDATION", "DOCUMENT_VALIDATED_BY_THE_USER",
@@ -506,27 +506,27 @@ const generateTag = (value: string, language: "en" | "es"): JSX.Element => {
     "FAILED_DOCUMENT_VALIDATION", "FAILED_HUMAN_VALIDATION",
   ].includes(value);
 
-  if (isPassed) return <Tag label={requirementLabelsEnum.compliant.i18n[language]} appearance="success" />;
-  if (isFailed) return <Tag label={requirementLabelsEnum.notCompliant.i18n[language]} appearance="danger" />;
-  return <Tag label={requirementLabelsEnum.notEvaluated.i18n[language]} appearance="warning" />;
+  if (isPassed) return <Tag label={requirementLabelsEnum.compliant.i18n[lang]} appearance="success" />;
+  if (isFailed) return <Tag label={requirementLabelsEnum.notCompliant.i18n[lang]} appearance="danger" />;
+  return <Tag label={requirementLabelsEnum.notEvaluated.i18n[lang]} appearance="warning" />;
 };
 
-export const maperEntries = (data: MappedRequirements, language: "en" | "es"): IEntries[][] => {
+export const maperEntries = (data: MappedRequirements, lang: "en" | "es"): IEntries[][] => {
   return [
     Object.entries(data.SYSTEM_VALIDATION).map(([key, value], index) => ({
       id: `sistema-${index + 1}`,
       "Validaciones del sistema": key,
-      tag: generateTag(value, language),
+      tag: generateTag(value, lang),
     })),
     Object.entries(data.DOCUMENT).map(([key, value], index) => ({
       id: `documento-${index + 1}`,
       "Requisitos documentales": key,
-      tag: generateTag(value, language),
+      tag: generateTag(value, lang),
     })),
     Object.entries(data.HUMAN_VALIDATION).map(([key, value], index) => ({
       id: `humano-${index + 1}`,
       "Validaciones humanas": key,
-      tag: generateTag(value, language),
+      tag: generateTag(value, lang),
     })),
   ];
 };
@@ -567,8 +567,8 @@ export const getActionsMobileIcon = () => {
   ];
 };
 
-export const maperDataRequirements = (processedEntries: IEntries[][], language: "en" | "es") => {
-  const titles = getTitlesRequirements(language);
+export const maperDataRequirements = (processedEntries: IEntries[][], lang: "en" | "es") => {
+  const titles = getTitlesRequirements(lang);
   return [
     { id: "tableApprovalSystem", titlesRequirements: titles[0], entriesRequirements: processedEntries[0], actionsMovile: actionsMobile },
     { id: "tableDocumentValues", titlesRequirements: titles[1], entriesRequirements: processedEntries[1], actionsMovile: actionsMobile },

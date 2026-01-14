@@ -11,10 +11,10 @@ import { StyledCreditProductCard, StyledPrint } from "../styles";
 
 interface INewCreditProductCardProps {
   onClick: () => void;
-  language: "en" | "es";
+  lang: "en" | "es";
 }
 export function NewCreditProductCard(props: INewCreditProductCardProps) {
-  const { onClick, language = "es"} = props;
+  const { onClick, lang = "es"} = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
@@ -36,7 +36,7 @@ export function NewCreditProductCard(props: INewCreditProductCardProps) {
         <Stack direction="column" alignItems="center" margin="auto">
           <Icon icon={<MdOutlineAdd />} appearance="gray" size="45px" />
           <Text type="body" size="large" appearance="gray">
-            {dataNewCardEnum.add.i18n[language]}
+            {dataNewCardEnum.add.i18n[lang]}
           </Text>
         </Stack>
       </StyledCreditProductCard>

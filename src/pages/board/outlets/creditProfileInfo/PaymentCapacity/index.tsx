@@ -37,7 +37,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
     setLoading,
   } = props;
 
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [data, setData] = useState<IPaymentCapacityById | null>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -80,7 +80,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
         }, retryDelay);
       } else {
         setShowErrorModal(true);
-        setMessageError(dataPaymentCapacityEnum.modalError.i18n[language]);
+        setMessageError(dataPaymentCapacityEnum.modalError.i18n[lang]);
         setIsInitialLoad(false);
       }
     } finally {
@@ -111,16 +111,16 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
 
   return (
     <CardInfoContainer
-      title={dataPaymentCapacityEnum.cardTitle.i18n[language]}
+      title={dataPaymentCapacityEnum.cardTitle.i18n[lang]}
       icon={<MdOutlinePaid />}
       isMobile={isMobile}
     >
       {!data ? (
         <ItemNotFound
           image={userNotFound}
-          title={dataPaymentCapacityEnum.itemNotFoundTitle.i18n[language]}
-          description={dataPaymentCapacityEnum.itemNotFoundDescription.i18n[language]}
-          buttonDescription={dataPaymentCapacityEnum.itemNotFoundButton.i18n[language]}
+          title={dataPaymentCapacityEnum.itemNotFoundTitle.i18n[lang]}
+          description={dataPaymentCapacityEnum.itemNotFoundDescription.i18n[lang]}
+          buttonDescription={dataPaymentCapacityEnum.itemNotFoundButton.i18n[lang]}
           route="#"
           onRetry={handleRetry}
         />
@@ -129,7 +129,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width="110px">
               <Text size={isMobile ? "small" : "medium"}>
-                {dataPaymentCapacityEnum.availableValueLabel.i18n[language]}
+                {dataPaymentCapacityEnum.availableValueLabel.i18n[lang]}
               </Text>
             </Stack>
             <Stack>
@@ -148,7 +148,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width="110px">
               <Text size={isMobile ? "small" : "medium"}>
-                {dataPaymentCapacityEnum.availablePercentageLabel.i18n[language]}
+                {dataPaymentCapacityEnum.availablePercentageLabel.i18n[lang]}
               </Text>
             </Stack>
             <Stack>
@@ -161,7 +161,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
                   {availablePercentage.toFixed(4)}%
                 </Text>
                 <Text size={isMobile ? "small" : "medium"}>
-                  {dataPaymentCapacityEnum.incomeLabel.i18n[language]}{" "}
+                  {dataPaymentCapacityEnum.incomeLabel.i18n[lang]}{" "}
                   {currencyFormat(Math.round(data.totalMonthlyIncome))}
                 </Text>
               </Stack>
@@ -173,7 +173,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
           <Stack gap={"32px"}>
             <Stack width="110px">
               <Text size={isMobile ? "small" : "medium"}>
-                {dataPaymentCapacityEnum.usedPercentageLabel.i18n[language]}
+                {dataPaymentCapacityEnum.usedPercentageLabel.i18n[lang]}
               </Text>
             </Stack>
             <Stack>

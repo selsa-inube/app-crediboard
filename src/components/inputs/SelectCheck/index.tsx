@@ -9,7 +9,7 @@ export interface ISelectcheckProps {
   name: string;
   value: string | number;
   options: IOptionItemCheckedProps[];
-  language: "es" | "en";
+  lang: "es" | "en";
   onChange: (event: React.ChangeEvent<HTMLInputElement>, name: string) => void;
   label?: string;
   placeholder?: string;
@@ -46,7 +46,7 @@ export const Selectcheck = (props: ISelectcheckProps) => {
     onChange,
     onClick,
     onChangeCheck,
-    language
+    lang
   } = props;
 
   const [focused, setFocused] = useState(false);
@@ -110,7 +110,7 @@ export const Selectcheck = (props: ISelectcheckProps) => {
       onClick={handleClick}
       displayList={displayList}
       onChangeCheck={onChangeCheck}
-      language={language}
+      lang={lang}
     />
   );
 };

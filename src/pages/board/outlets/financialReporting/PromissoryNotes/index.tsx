@@ -39,7 +39,7 @@ type DocumentEntry = IPayrollDiscountAuthorization | IPromissoryNotes;
 export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   const { id, isMobile } = props;
   const { addFlag } = useFlag();
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const [creditRequets, setCreditRequests] = useState<ICreditRequest | null>(
     null
@@ -126,10 +126,10 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
               [titlesFinancialReportingEnum.type.id]:
                 // eslint-disable-next-line no-nested-ternary
                 sourceType === "payroll"
-                  ? language === "es"
+                  ? lang === "es"
                     ? "Libranza"
                     : "Payroll"
-                  : language === "es"
+                  : lang === "es"
                   ? "Pagaré"
                   : "Promissory Note",
               tag: (
@@ -161,7 +161,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       setDataPromissoryNotes(combinedData);
     } catch (error) {
    if ((error as Error).message === "NoData") {
-      setErrorMessage(errorMessagesEnum.promissoryNotes.description.i18n[language]);
+      setErrorMessage(errorMessagesEnum.promissoryNotes.description.i18n[lang]);
     } else {
       setErrorMessage((error as Error).message);
     }
@@ -184,7 +184,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
 
   return (
     <Fieldset
-      title={errorMessagesEnum.promissoryNotes.titleCard.i18n[language]}
+      title={errorMessagesEnum.promissoryNotes.titleCard.i18n[lang]}
       heightFieldset="100%"
       hasTable
       hasError={!creditRequets ? true : false}
@@ -193,22 +193,22 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       {!creditRequets || showRetry ? (
         <UnfoundData
           image={ItemNotFound}
-          title={errorMessagesEnum.promissoryNotes.title.i18n[language]}
+          title={errorMessagesEnum.promissoryNotes.title.i18n[lang]}
           description={
-            errorMessagesEnum.promissoryNotes.description.i18n[language] || errorMessage
+            errorMessagesEnum.promissoryNotes.description.i18n[lang] || errorMessage
           }
-          buttonDescription={errorMessagesEnum.promissoryNotes.button.i18n[language]}
+          buttonDescription={errorMessagesEnum.promissoryNotes.button.i18n[lang]}
           onRetry={handleRetry}
         />
       ) : (
         <Stack direction="column" height={!isMobile ? "100%" : "auto"}>
           <TableBoard
             id="promissoryNotes"
-            titles={getTitlesFinancialReporting(language)}
+            titles={getTitlesFinancialReporting(lang)}
             entries={dataPromissoryNotes}
-            actions={getTableBoardActions(() => setShowModal(true), language)}
+            actions={getTableBoardActions(() => setShowModal(true), lang)}
             actionMobile={getTableBoardActionMobile(() => setShowModal(true))}
-            actionMobileIcon={getActionsMobileIcon(language)}
+            actionMobileIcon={getActionsMobileIcon(lang)}
             loading={loading}
             appearanceTable={{
               widthTd: isMobile ? "23%" : undefined,

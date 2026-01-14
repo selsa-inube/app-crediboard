@@ -22,22 +22,22 @@ interface IActionConfig {
 }
 
 
-export const getTitlesApprovals = (language: "es" | "en") => [
+export const getTitlesApprovals = (lang: "es" | "en") => [
   {
-    id: approvalsConfigEnum.ids.users.i18n[language],
-    titleName: approvalsConfigEnum.titles.assignedApprovers.i18n[language],
+    id: approvalsConfigEnum.ids.users.i18n[lang],
+    titleName: approvalsConfigEnum.titles.assignedApprovers.i18n[lang],
     priority: 1,
   },
   {
-    id: approvalsConfigEnum.ids.tag.i18n[language],
-    titleName: approvalsConfigEnum.titles.decision.i18n[language],
+    id: approvalsConfigEnum.ids.tag.i18n[lang],
+    titleName: approvalsConfigEnum.titles.decision.i18n[lang],
     priority: 2,
   },
 ];
 
-export const getActionMobileApprovals = (language: "es" | "en") => [
+export const getActionMobileApprovals = (lang: "es" | "en") => [
   {
-    id: approvalsConfigEnum.ids.error.i18n[language],
+    id: approvalsConfigEnum.ids.error.i18n[lang],
     actionName: "",
     content: (data: IEntries) => (
       <Icon
@@ -49,13 +49,13 @@ export const getActionMobileApprovals = (language: "es" | "en") => [
         onClick={() => handleData(data)}
         disabled={
           isValidElement(data?.tag) &&
-          data?.tag?.props?.label !== approvalsConfigEnum.status.pending.i18n[language]
+          data?.tag?.props?.label !== approvalsConfigEnum.status.pending.i18n[lang]
         }
       />
     ),
   },
   {
-    id: approvalsConfigEnum.ids.notifications.i18n[language],
+    id: approvalsConfigEnum.ids.notifications.i18n[lang],
     actionName: "",
     content: (data: IEntries) => (
       <Icon
@@ -67,7 +67,7 @@ export const getActionMobileApprovals = (language: "es" | "en") => [
         onClick={() => handleData(data)}
         disabled={
           isValidElement(data?.tag) &&
-          data?.tag?.props?.label !== approvalsConfigEnum.status.pending.i18n[language]
+          data?.tag?.props?.label !== approvalsConfigEnum.status.pending.i18n[lang]
         }
       />
     ),
@@ -78,12 +78,12 @@ export const handleNotificationClick = (
   data: IEntries,
   setSelectedData: (data: IEntries) => void,
   setShowModal: (showModal: boolean) => void,
-  language: "es" | "en"
+  lang: "es" | "en"
 ) => {
   const tag = data?.tag;
   if (
     isValidElement(tag) &&
-    tag.props?.label === approvalsConfigEnum.status.pending.i18n[language]
+    tag.props?.label === approvalsConfigEnum.status.pending.i18n[lang]
   ) {
     setSelectedData(data);
     setShowModal(true);
@@ -94,12 +94,12 @@ export const handleErrorClick = (
   data: IEntries,
   setSelectedData: (data: IEntries) => void,
   setShowModal: (showModal: boolean) => void,
-  language: "es" | "en"
+  lang: "es" | "en"
 ) => {
   const tag = data?.tag;
   if (
     isValidElement(tag) &&
-    tag.props?.label === approvalsConfigEnum.status.pending.i18n[language]
+    tag.props?.label === approvalsConfigEnum.status.pending.i18n[lang]
   ) {
     setSelectedData(data);
     setShowModal(true);
@@ -110,16 +110,16 @@ export const desktopActions = (
   actions: IActionConfig[],
   handleNotificationClick: (data: IEntries) => void,
   handleErrorClick: (data: IEntries) => void,
-  language: "es" | "en"
+  lang: "es" | "en"
 ) => {
   return actions.map((action) => ({
     id: action.id,
     actionName: action.actionName,
     content: (data: IEntries) => {
       const handleClick = () => {
-        if (action.id === approvalsConfigEnum.ids.notifications.i18n[language]) {
+        if (action.id === approvalsConfigEnum.ids.notifications.i18n[lang]) {
           handleNotificationClick(data);
-        } else if (action.id === approvalsConfigEnum.ids.error.i18n[language]) {
+        } else if (action.id === approvalsConfigEnum.ids.error.i18n[lang]) {
           handleErrorClick(data);
         }
       };
@@ -138,15 +138,15 @@ export const getMobileActionsConfig = (
   actionMobileApprovals: IActionConfig[],
   handleNotificationClickBound: (data: IEntries) => void,
   handleErrorClickBound: (data: IEntries) => void,
-  language: "en" | "es"
+  lang: "en" | "es"
 ) => {
   return actionMobileApprovals.map((action) => ({
     id: action.id,
     content: (data: IEntries) => {
       const handleClick = () => {
-        if (action.id === approvalsConfigEnum.ids.notifications.i18n[language]) {
+        if (action.id === approvalsConfigEnum.ids.notifications.i18n[lang]) {
           handleNotificationClickBound(data);
-        } else if (action.id === approvalsConfigEnum.ids.error.i18n[language]) {
+        } else if (action.id === approvalsConfigEnum.ids.error.i18n[lang]) {
           handleErrorClickBound(data);
         }
       };
@@ -166,39 +166,39 @@ export const getMobileActionsConfig = (
   }));
 };
 
-const appearanceTag = (label: string, language: "es" | "en") => {
-  if (label === approvalsConfigEnum.status.approved.i18n[language]) return "success";
-  if (label === approvalsConfigEnum.status.pending.i18n[language]) return "warning";
-  if (label === approvalsConfigEnum.status.returned.i18n[language]) return "help";
-  if (label === approvalsConfigEnum.status.commercialManagement.i18n[language]) return "help";
-  if (label === approvalsConfigEnum.status.riskAnalysis.i18n[language]) return "dark";
+const appearanceTag = (label: string, lang: "es" | "en") => {
+  if (label === approvalsConfigEnum.status.approved.i18n[lang]) return "success";
+  if (label === approvalsConfigEnum.status.pending.i18n[lang]) return "warning";
+  if (label === approvalsConfigEnum.status.returned.i18n[lang]) return "help";
+  if (label === approvalsConfigEnum.status.commercialManagement.i18n[lang]) return "help";
+  if (label === approvalsConfigEnum.status.riskAnalysis.i18n[lang]) return "dark";
   return "danger";
 };
-const getIconByTagStatus = (tagElement: React.ReactElement, language: "es" | "en") => {
+const getIconByTagStatus = (tagElement: React.ReactElement, lang: "es" | "en") => {
   const label = tagElement.props.label;
 
-  if (label === approvalsConfigEnum.status.approved.i18n[language]) {
-    return <img src={check} alt={approvalsConfigEnum.altTexts.complies.i18n[language]} width={14} height={14} />;
-  } else if (label === approvalsConfigEnum.status.pending.i18n[language]) {
-    return <img src={remove} alt={approvalsConfigEnum.altTexts.notEvaluated.i18n[language]} width={14} height={14} />;
-  } else if (label === approvalsConfigEnum.status.rejected.i18n[language]) {
-    return <img src={close} alt={approvalsConfigEnum.altTexts.doesNotComply.i18n[language]} width={14} height={14} />;
-  } else if (label === approvalsConfigEnum.status.returned.i18n[language]) {
-    return <img src={info} alt={approvalsConfigEnum.altTexts.returned.i18n[language]} width={14} height={14} />;
+  if (label === approvalsConfigEnum.status.approved.i18n[lang]) {
+    return <img src={check} alt={approvalsConfigEnum.altTexts.complies.i18n[lang]} width={14} height={14} />;
+  } else if (label === approvalsConfigEnum.status.pending.i18n[lang]) {
+    return <img src={remove} alt={approvalsConfigEnum.altTexts.notEvaluated.i18n[lang]} width={14} height={14} />;
+  } else if (label === approvalsConfigEnum.status.rejected.i18n[lang]) {
+    return <img src={close} alt={approvalsConfigEnum.altTexts.doesNotComply.i18n[lang]} width={14} height={14} />;
+  } else if (label === approvalsConfigEnum.status.returned.i18n[lang]) {
+    return <img src={info} alt={approvalsConfigEnum.altTexts.returned.i18n[lang]} width={14} height={14} />;
   }
   return null;
 };
 
-export const getActionsMobileIcon = (language: "es" | "en") => [
+export const getActionsMobileIcon = (lang: "es" | "en") => [
   {
-    id: approvalsConfigEnum.ids.status.i18n[language],
+    id: approvalsConfigEnum.ids.status.i18n[lang],
     actionName: "",
     content: (entry: IEntries) => {
       const tagElement = entry.tag as React.ReactElement;
       return (
         <Stack>
           <Icon
-            icon={getIconByTagStatus(tagElement, language)}
+            icon={getIconByTagStatus(tagElement, lang)}
             appearance={tagElement.props.appearance}
             cursorHover
             size="20px"
@@ -210,17 +210,17 @@ export const getActionsMobileIcon = (language: "es" | "en") => [
 ];
 
 
-export const entriesApprovals = (data: IApprovals[], language: "es" | "en") => {
+export const entriesApprovals = (data: IApprovals[], lang: "es" | "en") => {
   return data.map((entry) => ({
     id: entry?.approverName?.toString(),
-    [approvalsConfigEnum.ids.users.i18n[language]]: entry?.approverName,
+    [approvalsConfigEnum.ids.users.i18n[lang]]: entry?.approverName,
     concept: entry?.concept,
     identificationNumber: entry?.approverIdentificationNumber,
     identificationType: entry?.approverIdentificationType,
     approvalId: entry?.approvalId,
     approverId: entry?.approverId,
     tag: (
-      <Tag label={entry.concept} appearance={appearanceTag(entry.concept, language)} />
+      <Tag label={entry.concept} appearance={appearanceTag(entry.concept, lang)} />
     ),
     error: entry.error,
   }));

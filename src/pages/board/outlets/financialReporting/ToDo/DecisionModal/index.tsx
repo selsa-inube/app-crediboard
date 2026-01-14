@@ -64,7 +64,7 @@ export function DecisionModal(props: DecisionModalProps) {
 
   const navigate = useNavigate();
   const { addFlag } = useFlag();
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const isMobile = useMediaQuery("(max-width: 700px)");
 
@@ -82,10 +82,10 @@ export function DecisionModal(props: DecisionModalProps) {
   const mappedSoporteOptions = useMemo(() =>
     soporteInvalidOptionsEnum.map((option) => ({
       id: option.id,
-      label: option.i18n[language as "en" | "es"],
+      label: option.i18n[lang as "en" | "es"],
       value: option.value,
     })),
-    [language]);
+    [lang]);
   const handleNonCompliantDocuments = (formValues: FormValues): string[] => {
     let selectedIds: string[] = [];
 
@@ -130,17 +130,17 @@ export function DecisionModal(props: DecisionModalProps) {
       if (response?.statusServices === 200) {
         navigate("/");
         addFlag({
-          title: txtFlagsEnum.titleSuccess.i18n[language],
-          description: `${txtFlagsEnum.descriptionSuccess.i18n[language]} ${response.status}`,
+          title: txtFlagsEnum.titleSuccess.i18n[lang],
+          description: `${txtFlagsEnum.descriptionSuccess.i18n[lang]} ${response.status}`,
           appearance: "success",
-          duration: txtFlagsEnum.duration.i18n[language],
+          duration: txtFlagsEnum.duration.i18n[lang],
         });
       } else {
-        setErrorMessage(txtFlagsEnum.descriptionWarning.i18n[language]);
+        setErrorMessage(txtFlagsEnum.descriptionWarning.i18n[lang]);
         setErrorModal(true);
       }
     } catch (error) {
-      setErrorMessage(txtFlagsEnum.descriptionDanger.i18n[language]);
+      setErrorMessage(txtFlagsEnum.descriptionDanger.i18n[lang]);
       setErrorModal(true);
     } finally {
       onCloseModal?.();
@@ -188,7 +188,7 @@ export function DecisionModal(props: DecisionModalProps) {
                     appearance="dark"
                     weight="bold"
                   >
-                    {txtOthersOptionsEnum.txtDecision.i18n[language]}
+                    {txtOthersOptionsEnum.txtDecision.i18n[lang]}
                   </Text>
                   <Text
                     type="body"
@@ -199,7 +199,7 @@ export function DecisionModal(props: DecisionModalProps) {
                   >
                     {data.humanDecisionDescription
                       ? data.humanDecisionDescription
-                      : txtOthersOptionsEnum.txtNoSelect.i18n[language]}
+                      : txtOthersOptionsEnum.txtNoSelect.i18n[lang]}
                   </Text>
                 </Stack>
               </StyledContainerTextField>

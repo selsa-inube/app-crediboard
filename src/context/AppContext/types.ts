@@ -75,7 +75,7 @@ interface IBusinessUnit {
   businessUnitPublicCode: string;
   abbreviatedName: string;
   urlLogo: string;
-  languageId: string;
+  langId: string;
   descriptionUse?: string;
   firstMonthOfFiscalYear?: string;
 }

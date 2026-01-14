@@ -59,24 +59,24 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
   const isMobile = useMediaQuery("(max-width: 880px)");
   const isInitialMount = useRef(true);
   const formikRef = useRef<FormikProps<FormikValues> | null>(null);
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const mappedObligationTypeOptions = obligationTypeOptionsEnum.map((opt) => ({
     id: opt.id,
     value: opt.value,
-    label: opt.i18n[language],
+    label: opt.i18n[lang],
   }));
 
   const mappedEntityOptions = entityOptionsEnum.map((opt) => ({
     id: opt.id,
     value: opt.value,
-    label: opt.i18n[language],
+    label: opt.i18n[lang],
   }));
 
   const mappedMeansPaymentOptions = meansPaymentOptionsEnum.map((opt) => ({
     id: opt.id,
     value: opt.value,
-    label: opt.i18n[language],
+    label: opt.i18n[lang],
   }));
 
   const validationSchema = Yup.object({
@@ -189,7 +189,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
               />
             }
             nextButton={confirmButtonText}
-            backButton={dataInputsEnum.cancel.i18n[language]}
+            backButton={dataInputsEnum.cancel.i18n[lang]}
             handleNext={formik.submitForm}
             handleBack={onCloseModal}
             disabledNext={!formik.dirty || !formik.isValid}
@@ -207,7 +207,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
               >
                 {mappedObligationTypeOptions && mappedObligationTypeOptions.length === 1 ? (
                   <Textfield
-                    label={dataInputsEnum.labelType.i18n[language]}
+                    label={dataInputsEnum.labelType.i18n[lang]}
                     name="type"
                     id="type"
                     size="compact"
@@ -220,11 +220,11 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                   />
                 ) : (
                   <Select
-                    label={dataInputsEnum.labelType.i18n[language]}
+                    label={dataInputsEnum.labelType.i18n[lang]}
                     name="type"
                     id="type"
                     size="compact"
-                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[language]}
+                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
                     options={mappedObligationTypeOptions}
                     onBlur={formik.handleBlur}
                     onChange={(name, value) =>
@@ -237,7 +237,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
 
                 {mappedEntityOptions && mappedEntityOptions.length === 1 ? (
                   <Textfield
-                    label={dataInputsEnum.labelEntity.i18n[language]}
+                    label={dataInputsEnum.labelEntity.i18n[lang]}
                     name="entity"
                     id="entity"
                     size="compact"
@@ -247,11 +247,11 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                   />
                 ) : (
                   <Select
-                    label={dataInputsEnum.labelEntity.i18n[language]}
+                    label={dataInputsEnum.labelEntity.i18n[lang]}
                     name="entity"
                     id="entity"
                     size="compact"
-                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[language]}
+                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
                     options={mappedEntityOptions}
                     onBlur={formik.handleBlur}
                     onChange={(name, value) =>
@@ -263,7 +263,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 )}
 
                 <Textfield
-                  label={dataInputsEnum.labelFee.i18n[language]}
+                  label={dataInputsEnum.labelFee.i18n[lang]}
                   name="fee"
                   id="fee"
                   iconBefore={
@@ -273,7 +273,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputsEnum.palaceHolderFee.i18n[language]}
+                  placeholder={dataInputsEnum.palaceHolderFee.i18n[lang]}
                   value={validateCurrencyField("fee", formik, false, "")}
                   size="compact"
                   onBlur={formik.handleBlur}
@@ -282,7 +282,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 />
 
                 <Textfield
-                  label={dataInputsEnum.labelBalance.i18n[language]}
+                  label={dataInputsEnum.labelBalance.i18n[lang]}
                   name="balance"
                   id="balance"
                   iconBefore={
@@ -292,7 +292,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputsEnum.palaceHolderBalance.i18n[language]}
+                  placeholder={dataInputsEnum.palaceHolderBalance.i18n[lang]}
                   value={validateCurrencyField("balance", formik, false, "")}
                   size="compact"
                   onBlur={formik.handleBlur}
@@ -302,7 +302,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
 
                 {mappedMeansPaymentOptions && mappedMeansPaymentOptions.length === 1 ? (
                   <Textfield
-                    label={dataInputsEnum.labelPayment.i18n[language]}
+                    label={dataInputsEnum.labelPayment.i18n[lang]}
                     name="payment"
                     id="payment"
                     size="compact"
@@ -315,11 +315,11 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                   />
                 ) : (
                   <Select
-                    label={dataInputsEnum.labelPayment.i18n[language]}
+                    label={dataInputsEnum.labelPayment.i18n[lang]}
                     name="payment"
                     id="payment"
                     size="compact"
-                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[language]}
+                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
                     options={mappedMeansPaymentOptions}
                     onBlur={formik.handleBlur}
                     onChange={(name, value) =>
@@ -331,7 +331,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 )}
 
                 <Textfield
-                  label={dataInputsEnum.labelId.i18n[language]}
+                  label={dataInputsEnum.labelId.i18n[lang]}
                   name="idUser"
                   id="idUser"
                   iconBefore={
@@ -341,7 +341,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputsEnum.palaceHolderId.i18n[language]}
+                  placeholder={dataInputsEnum.palaceHolderId.i18n[lang]}
                   value={formik.values.idUser}
                   size="compact"
                   onBlur={formik.handleBlur}
@@ -350,7 +350,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 />
 
                 <Textfield
-                  label={dataInputsEnum.labelFeePaid.i18n[language]}
+                  label={dataInputsEnum.labelFeePaid.i18n[lang]}
                   name="feePaid"
                   id="feePaid"
                   iconBefore={
@@ -360,7 +360,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputsEnum.palaceHolderFeePaid.i18n[language]}
+                  placeholder={dataInputsEnum.palaceHolderFeePaid.i18n[lang]}
                   value={formik.values.feePaid}
                   size="compact"
                   onBlur={formik.handleBlur}
@@ -370,7 +370,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 />
 
                 <Textfield
-                  label={dataInputsEnum.labelterm.i18n[language]}
+                  label={dataInputsEnum.labelterm.i18n[lang]}
                   name="term"
                   id="term"
                   iconBefore={
@@ -380,7 +380,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputsEnum.palaceHolderterm.i18n[language]}
+                  placeholder={dataInputsEnum.palaceHolderterm.i18n[lang]}
                   value={formik.values.term}
                   size="compact"
                   onBlur={formik.handleBlur}

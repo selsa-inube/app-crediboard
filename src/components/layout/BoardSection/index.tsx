@@ -86,7 +86,7 @@ function BoardSection(props: BoardSectionProps) {
   const flagMessage = useRef(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
-  const language = useEnum().lang;
+  const { lang } = useEnum();
 
   const businessManagerCode = eventData.businessManager.abbreviatedName;
   const missionName = eventData.user.staff.missionName;
@@ -109,15 +109,15 @@ function BoardSection(props: BoardSectionProps) {
   const getNoDataMessage = () => {
     if (sectionInformation.length === 0) {
       if (showPinnedOnly) {
-        return configOptionEnum.noPinnedRequests.i18n[language];
+        return configOptionEnum.noPinnedRequests.i18n[lang];
       }
       if (searchRequestValue && searchRequestValue.trim().length >= 1) {
-        return configOptionEnum.noKeywordResults.i18n[language];
+        return configOptionEnum.noKeywordResults.i18n[lang];
       }
       if (hasActiveFilters) {
-        return configOptionEnum.noFilterResults.i18n[language];
+        return configOptionEnum.noFilterResults.i18n[lang];
       }
-      return configOptionEnum.textNodata.i18n[language];
+      return configOptionEnum.textNodata.i18n[lang];
     }
     return "";
   };
@@ -166,7 +166,7 @@ function BoardSection(props: BoardSectionProps) {
         businessManagerCode
       );
     } catch (error) {
-      setErrorMessage(messagesErrorEnum.changeTracesToReadById.description.i18n[language]);
+      setErrorMessage(messagesErrorEnum.changeTracesToReadById.description.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -362,7 +362,7 @@ function BoardSection(props: BoardSectionProps) {
                 appearance="dark"
                 onClick={handleLoadMoreData}
               >
-                {configOptionEnum.load.i18n[language]}
+                {configOptionEnum.load.i18n[lang]}
               </Button>
             </Stack>
           )}
@@ -379,8 +379,8 @@ function BoardSection(props: BoardSectionProps) {
       )}
       {isInfoModalOpen && (
         <BaseModal
-          title={infoModalEnum.title.i18n[language]}
-          nextButton={infoModalEnum.button.i18n[language]}
+          title={infoModalEnum.title.i18n[lang]}
+          nextButton={infoModalEnum.button.i18n[lang]}
           handleNext={() => setIsInfoModalOpen(false)}
           handleClose={() => setIsInfoModalOpen(false)}
           width={isMobile ? "290px" : "403px"}
@@ -388,7 +388,7 @@ function BoardSection(props: BoardSectionProps) {
           <Stack direction="column" alignItems="center" gap="16px">
             <Icon icon={<MdInfoOutline />} size="68px" appearance="primary" />
             <Text type="body" size="medium" appearance="gray">
-              {infoModalEnum.message.i18n[language]}
+              {infoModalEnum.message.i18n[lang]}
             </Text>
           </Stack>
         </BaseModal>

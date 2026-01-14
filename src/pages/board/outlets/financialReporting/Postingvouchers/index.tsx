@@ -27,7 +27,7 @@ interface IApprovalsProps {
 }
 export const Postingvouchers = (props: IApprovalsProps) => {
   const { id, isMobile } = props;
-  const language = useEnum().lang;
+  const { lang } = useEnum();
   const { user } = useIAuth();
 
   const [error, setError] = useState(false);
@@ -40,10 +40,10 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   const titles = useMemo(() => {
     return Object.values(titlesPostingvouchersEnum).map((title) => ({
       id: title.id,
-      titleName: title.i18n[language as "en" | "es"],
+      titleName: title.i18n[lang as "en" | "es"],
       priority: title.priority,
     }));
-  }, [language]);
+  }, [lang]);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -97,16 +97,16 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   return (
     <Stack direction="column">
       <Fieldset
-        title={errorMessagesEnum.postingVouchers.titleCard.i18n[language]}
+        title={errorMessagesEnum.postingVouchers.titleCard.i18n[lang]}
         heightFieldset={isMobile ? "100%" : "162px"}
         hasTable
         hasOverflow={isMobile}
       >
         {error || (!loading && positionsAccountingVouchers.length === 0) ? (
           <UnfoundData
-            title={errorMessagesEnum.postingVouchers.title.i18n[language]}
-            description={errorMessagesEnum.postingVouchers.description.i18n[language]}
-            buttonDescription={errorMessagesEnum.postingVouchers.button.i18n[language]}
+            title={errorMessagesEnum.postingVouchers.title.i18n[lang]}
+            description={errorMessagesEnum.postingVouchers.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.postingVouchers.button.i18n[lang]}
             onRetry={() => {
               setError(false);
               fetchCreditRequest();
