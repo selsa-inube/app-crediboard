@@ -310,7 +310,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     interestRate: "",
     rateType: "",
   };
-
+  console.log("dataProspect: ", dataProspect);
   return (
     <Stack direction="column" gap="24px">
       {!isMobile && (
@@ -566,8 +566,8 @@ export function CreditProspect(props: ICreditProspectProps) {
                 apparencePlaceHolder="gray"
                 label={dataCreditProspect.approvalObservations}
                 placeHolder={
-                  dataProspect?.clientManagerObservation === ""
-                    ? dataCreditProspect.approvalObservations
+                  dataProspect?.clientManagerObservation
+                    ? dataProspect?.clientManagerObservation 
                     : dataCreditProspect.approvalObservationsNotFound
                 }
               />
@@ -575,8 +575,8 @@ export function CreditProspect(props: ICreditProspectProps) {
                 apparencePlaceHolder="gray"
                 label={dataCreditProspect.clientsObservations}
                 placeHolder={
-                  dataProspect?.clientManagerObservation === ""
-                    ? dataCreditProspect.approvalObservations
+                  dataProspect?.clientComments
+                    ? dataProspect?.clientComments
                     : dataCreditProspect.clientsObservationsNotFound
                 }
               />
