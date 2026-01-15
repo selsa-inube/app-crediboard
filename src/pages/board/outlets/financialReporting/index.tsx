@@ -430,8 +430,6 @@ export const FinancialReporting = () => {
     setPdfState({ isGenerating: false, blob: null, showShareModal: false });
   };
 
-
-
   return (
     <div ref={dataCommercialManagementRef}>
       <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
