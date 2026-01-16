@@ -5,6 +5,8 @@ import { searchAllModesOfDisbursementTypes } from "@services/lineOfCredit/getSea
 import { IProspectSummaryById } from "@services/prospect/types";
 import { getSearchProspectSummaryById } from "@services/creditRequest/query/ProspectSummaryById";
 import { IModeOfDisbursement } from "@services/creditRequest/query/types";
+import { getClientPortfolioObligationsById } from "@services/creditRequest/updateModeOfDisbursement";
+import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 
 import { disbursemenTabs } from "./disbursementGeneral/config";
 import { DisbursementGeneral } from "./disbursementGeneral";
@@ -232,9 +234,63 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     return mappedData;
   };
 
-  const handleSave = () => {
+  const handleSave = async (data: IDisbursementGeneral) => {
     try {
-      setLoadingDisbursementData(true);
+      console.log(data);
+      const disbursementMethods: (keyof Omit<IDisbursementGeneral, "amount">)[] = [
+        "Internal_account",
+        "External_account",
+        "Certified_check",
+        "Business_check",
+        "Cash",
+      ];
+
+      disbursementMethods.forEach(async (method) => {
+        const dataFiltered = data[method];
+
+        if (dataFiltered && typeof dataFiltered === "object" && Object.keys(dataFiltered).length > 0) {
+          console.log(".......", await searchAllCustomerCatalog(identificationNumber, businessUnitPublicCode, businessManagerCode));
+          setLoadingDisbursementData(true);
+          let rawData = {};
+          console.log("dataFiltered.toggle ", dataFiltered.toggle);
+          if (dataFiltered.toggle) {
+            const dataClient = await searchAllCustomerCatalog(identificationNumber, businessUnitPublicCode, businessManagerCode);
+            console.log("dataClient ", dataClient);
+            if (dataClient != null) {
+              rawData = {
+                ...dataFiltered,
+                disbursementAmount: Number(dataFiltered.amount),
+                isInTheNameOfBorrower: dataFiltered.toggle ? "Y" : "N",
+                payeeEmail: dataClient.generalAttributeClientNaturalPersons[0].emailContact || "",
+                payeeIdentificationNumber: identificationNumber || "",
+                payeeIdentificationType: dataClient.generalAttributeClientNaturalPersons[0].typeIdentification || "",
+                payeeName: dataClient.generalAttributeClientNaturalPersons[0].firstNames || "",
+                payeePhoneNumber: dataClient.generalAttributeClientNaturalPersons[0].cellPhoneContact || "",
+                payeeSurname: dataClient.generalAttributeClientNaturalPersons[0].lastNames  || "",
+                payeeBiologicalSex: dataClient.generalAttributeClientNaturalPersons[0].gender === "F-Femenino" ? "F" : "M",
+
+              }
+            }
+
+          } else {
+            rawData = {
+              ...dataFiltered,
+              disbursementAmount: Number(dataFiltered.amount),
+              isInTheNameOfBorrower: dataFiltered.toggle ? "Y" : "N",
+              payeeEmail: dataFiltered.mail || "",
+              payeeIdentificationNumber: dataFiltered.identification || "",
+              payeeIdentificationType: dataFiltered.documentType || "",
+              payeeName: dataFiltered.name || "",
+              payeePhoneNumber: dataFiltered.phone || "",
+              payeeSurname: dataFiltered.lastName || "",
+              payeeBiologicalSex: dataFiltered.sex === "F-Femenino" ? "F" : "M",
+
+            }
+          }
+          console.log("...rawData....", rawData);
+          await getClientPortfolioObligationsById(businessUnitPublicCode, businessManagerCode, rawData);
+        }
+      });
     } finally {
       handleClose();
       setLoadingDisbursementData(false);

@@ -213,11 +213,11 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
           />
         </Stack>
         <Textarea
-          id={"description"}
-          name={`${optionNameForm}.description`}
+          id={"observation"}
+          name={`${optionNameForm}.observation`}
           label={disbursemenOptionAccount.observation}
           placeholder={disbursemenOptionAccount.placeObservation}
-          value={formik.values[optionNameForm]?.description || ""}
+          value={formik.values[optionNameForm]?.observation || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           fullwidth

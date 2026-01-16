@@ -166,11 +166,11 @@ export function DisbursementWithCheckManagement(
       )}
       <Stack direction="row" gap="16px">
         <Textarea
-          id={"description"}
-          name={`${optionNameForm}.description`}
+          id={"observation"}
+          name={`${optionNameForm}.observation`}
           label={disbursemenOptionAccount.observation}
           placeholder={disbursemenOptionAccount.placeObservation}
-          value={formik.values[optionNameForm]?.description || ""}
+          value={formik.values[optionNameForm]?.observation || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           fullwidth

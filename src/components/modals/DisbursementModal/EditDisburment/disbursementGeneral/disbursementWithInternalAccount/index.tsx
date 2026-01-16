@@ -121,7 +121,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
       }
     }
     fetchAccounts();
-  }, [currentIdentification, businessUnitPublicCode, businessManagerCode]);
+  }, [currentIdentification, businessUnitPublicCode, businessManagerCode, formik.values[optionNameForm]?.toggle]);
 
   const previousIdentificationRef = useRef<string>();
   useEffect(() => {
@@ -154,7 +154,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
         <Stack>
           <Textfield
             id="amount"
-            name="amount"
+            name={`amount`}
             label={disbursementGeneral.label}
             placeholder={disbursementGeneral.place}
             size="compact"
@@ -248,12 +248,12 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
       </Stack>
 
       <Textarea
-        id={`${optionNameForm}.description`}
-        name={`${optionNameForm}.description`}
+        id={`${optionNameForm}.observation`}
+        name={`${optionNameForm}.observation`}
         label={disbursemenOptionAccount.observation}
         placeholder={disbursemenOptionAccount.placeObservation}
-        value={formik.values[optionNameForm]?.description || ""}
-        onChange={(e) => formik.setFieldValue(`${optionNameForm}.description`, e.target.value)}
+        value={formik.values[optionNameForm]?.observation || ""}
+        onChange={(e) => formik.setFieldValue(`${optionNameForm}.observation`, e.target.value)}
         onBlur={formik.handleBlur}
         fullwidth
       />
