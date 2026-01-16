@@ -14,11 +14,12 @@ import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 import { IEntries } from "@components/data/TableBoard/types";
+import { EnumType } from "@hooks/useEnum";
 
 import { MappedRequirements } from "./types";
 
 export const getDataButton = (
-  lang: "en" | "es",
+  lang: EnumType,
   onClick: () => void,
   onClickSistemValidation: () => void
 ) => ({
@@ -32,7 +33,7 @@ const receiveData = (data: IEntries) => {
   console.log(data, "function que recibe data");
 };
 
-export const getTitlesRequirements = (lang: "en" | "es") => [
+export const getTitlesRequirements = (lang: EnumType) => [
   Object.values(titlesRequirementsEnum.validacionesDelSistema.columns).map(col => ({
     id: col.code.includes("main") ? "Validaciones del sistema" : "tag",
     titleName: col.i18n[lang],
@@ -492,7 +493,7 @@ export const requirementLabelsEnum = {
   },
 }
 
-const generateTag = (value: string, lang: "en" | "es"): JSX.Element => {
+const generateTag = (value: string, lang: EnumType): JSX.Element => {
   const isPassed = [
     "PASSED_WITH_SYSTEM_VALIDATION", "DOCUMENT_STORED_WITHOUT_VALIDATION",
     "PASSED_WITH_HUMAN_VALIDATION", "DOCUMENT_VALIDATED_BY_THE_USER",
@@ -511,7 +512,7 @@ const generateTag = (value: string, lang: "en" | "es"): JSX.Element => {
   return <Tag label={requirementLabelsEnum.notEvaluated.i18n[lang]} appearance="warning" />;
 };
 
-export const maperEntries = (data: MappedRequirements, lang: "en" | "es"): IEntries[][] => {
+export const maperEntries = (data: MappedRequirements, lang: EnumType): IEntries[][] => {
   return [
     Object.entries(data.SYSTEM_VALIDATION).map(([key, value], index) => ({
       id: `sistema-${index + 1}`,
@@ -567,7 +568,7 @@ export const getActionsMobileIcon = () => {
   ];
 };
 
-export const maperDataRequirements = (processedEntries: IEntries[][], lang: "en" | "es") => {
+export const maperDataRequirements = (processedEntries: IEntries[][], lang: EnumType) => {
   const titles = getTitlesRequirements(lang);
   return [
     { id: "tableApprovalSystem", titlesRequirements: titles[0], entriesRequirements: processedEntries[0], actionsMovile: actionsMobile },

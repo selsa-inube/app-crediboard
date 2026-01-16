@@ -19,6 +19,7 @@ import {
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { IProspect } from "@services/prospect/types";
+import { EnumType } from "@hooks/useEnum";
 
 import {
   disbursementGeneralEnum,
@@ -36,7 +37,7 @@ interface IDisbursementWithCheckEntityProps {
   businessUnitPublicCode: string;
   isAmountReadOnly: boolean;
   businessManagerCode: string;
-  lang: "en" | "es";
+  lang: EnumType;
   customerData?: ICustomerData;
   onFormValid: (isValid: boolean) => void;
   handleOnChange: (values: IDisbursementGeneral) => void;

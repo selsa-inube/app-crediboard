@@ -2,6 +2,7 @@ import { Divider, Text, Stack } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
 import { ModalConfigEnum } from "@pages/prospect/components/modals/ConsolidatedCreditModal/config";
+import { EnumType } from "@hooks/useEnum";
 
 import { StyledContainer, StyledInput } from "./styles";
 
@@ -10,7 +11,7 @@ interface InvestmentCreditCardProps {
   codeValue: string;
   expired: string;
   expiredValue: number;
-  lang: "en" | "es";
+  lang: EnumType;
   isMobile?: boolean;
 }
 

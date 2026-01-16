@@ -19,6 +19,7 @@ import {
   parseCurrencyString,
 } from "@utils/formatData/currency";
 import { validationMessages } from "@validations/validationMessages";
+import { EnumType } from "@hooks/useEnum";
 
 import {
   StyledApplyPayContainer,
@@ -37,7 +38,7 @@ interface CustomValueModalProps {
   nextPaymentValue: number;
   totalPaymentValue: number;
   expiredValue: number;
-  lang: "en" | "es";
+  lang: EnumType;
   onCloseModal: () => void;
   onChangeOtherValue: (option: IPaymentOption) => void;
   nextPaymentDate?: Date;

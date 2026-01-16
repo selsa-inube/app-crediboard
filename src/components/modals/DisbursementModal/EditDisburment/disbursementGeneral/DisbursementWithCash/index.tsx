@@ -19,7 +19,7 @@ import {
   validateCurrencyField,
 } from "@utils/formatData/currency";
 import { IProspect } from "@services/prospect/types";
-
+import { EnumType } from "@hooks/useEnum";
 
 import {
   disbursementGeneralEnum,
@@ -37,7 +37,7 @@ interface IDisbursementWithCashProps {
   businessUnitPublicCode: string;
   isAmountReadOnly: boolean;
   businessManagerCode: string;
-  lang: "en" | "es";
+  lang: EnumType;
   customerData?: ICustomerData;
   onFormValid: (isValid: boolean) => void;
   handleOnChange: (values: IDisbursementGeneral) => void;

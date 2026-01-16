@@ -1,11 +1,13 @@
 import { MdWarningAmber, MdClear } from "react-icons/md";
 import { Stack, Icon, Text } from "@inubekit/inubekit";
 
+import { EnumType } from "@hooks/useEnum";
+
 import { AlertContainer, StyledPrint } from "./styles";
 import { messagesEnum } from "./config";
 
 export interface ErrorAlertProps {
-  lang: "en" | "es";
+  lang: EnumType;
   message?: string;
   onClose?: () => void;
   isMobile?: boolean;

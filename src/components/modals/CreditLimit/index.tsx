@@ -17,6 +17,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { currencyFormat } from "@utils/formatData/currency";
 import { getGlobalCreditLimitByLineOfCredit } from "@services/creditLimit/getGlobalCreditLimitByLineOfCredit";
 import { IMaximumCreditLimitByLineOfCredit } from "@services/creditLimit/types";
+import { EnumType } from "@hooks/useEnum";
 
 import { creditLimitTextsEnum } from "./creditLimitConfig";
 import { StyledList } from "./styles";
@@ -27,7 +28,7 @@ export interface ICreditLimitProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
   clientIdentificationNumber: string;
-  lang: "en" | "es";
+  lang: EnumType;
   loading?: boolean;
   handleClose: () => void;
   onOpenMaxLimitModal?: () => void;

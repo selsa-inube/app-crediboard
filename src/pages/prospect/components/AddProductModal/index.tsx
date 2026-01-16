@@ -243,7 +243,7 @@ function AddProductModal(props: IAddProductModalProps) {
     Object.values(stepsAddProductEnum).map((step) => ({
       id: step.id,
       number: step.number,
-      name: step.i18n[lang as "en" | "es"],
+      name: step.i18n[lang],
       description: step.description,
     })),
     [lang]);

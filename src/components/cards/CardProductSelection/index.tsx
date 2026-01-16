@@ -2,11 +2,12 @@ import { Stack, Text } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
 import { currencyFormat } from "@utils/formatData/currency";
+import { EnumType } from "@hooks/useEnum";
 
 import { selectDataEnum } from "./config";
 
 export interface ICardProductSelectionProps {
-  lang?: "en" | "es";
+  lang?: EnumType;
   amount?: number;
   rate?: number;
   term?: number;

@@ -8,6 +8,7 @@ import remove from "@assets/images/remove.svg";
 import info from "@assets/images/info.svg";
 import { IEntries } from "@components/data/TableBoard/types";
 import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/types";
+import { EnumType } from "@hooks/useEnum";
 
 import { approvalsConfigEnum } from "./configApprovalTexts";
 
@@ -138,7 +139,7 @@ export const getMobileActionsConfig = (
   actionMobileApprovals: IActionConfig[],
   handleNotificationClickBound: (data: IEntries) => void,
   handleErrorClickBound: (data: IEntries) => void,
-  lang: "en" | "es"
+  lang: EnumType
 ) => {
   return actionMobileApprovals.map((action) => ({
     id: action.id,

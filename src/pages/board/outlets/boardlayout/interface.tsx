@@ -211,32 +211,27 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   }, [searchRequestValue]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            handleLoadMoreData();
-          }
-        },
-        { threshold: 1.0 }
-      );
+    if (boardOrientation !== "vertical") return;
 
-      const currentRef = observerRef.current;
-
-      if (currentRef) {
-        observer.observe(currentRef);
-      }
-
-      return () => {
-        if (currentRef) {
-          observer.unobserve(currentRef);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          handleLoadMoreData();
         }
-      };
-    }, 3000);
+      },
+      { threshold: 0.5 }
+    );
 
-    return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const currentRef = observerRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+    //eslint-disable-next-line
+  }, [BoardRequests.length, boardOrientation]);
 
   const normalizedTotalData = (result: ICreditRequestTotalsByStage) => {
     return result

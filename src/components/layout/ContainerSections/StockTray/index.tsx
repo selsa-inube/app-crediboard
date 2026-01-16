@@ -83,13 +83,13 @@ export const StockTray = (props: IStockTrayProps) => {
       </StyledPrint>
       {isMobile && (
         <StyledPrint>
-        <Icon
-          icon={<MdMenu />}
-          appearance="dark"
-          size="32px"
-          spacing="narrow"
-          onClick={actionButtons?.menuIcon}
-        />
+          <Icon
+            icon={<MdMenu />}
+            appearance="dark"
+            size="32px"
+            spacing="narrow"
+            onClick={actionButtons?.menuIcon}
+          />
         </StyledPrint>
       )}
 

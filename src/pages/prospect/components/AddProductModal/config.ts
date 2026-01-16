@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 
 import { IProspect } from "@services/prospect/types";
+import { EnumType } from "@hooks/useEnum";
 
 import { IPaymentConfiguration } from "./steps/config";
 import { ICustomerData } from "./types";
@@ -110,7 +111,7 @@ export interface IAddProductModalUIProps {
   errorMessage: string;
   loading: boolean;
   setCurrentStep: (step: number) => void;
-  lang: "en" | "es";
+  lang: EnumType;
   iconBefore?: React.JSX.Element;
   iconAfter?: React.JSX.Element;
   assistedControls?: {

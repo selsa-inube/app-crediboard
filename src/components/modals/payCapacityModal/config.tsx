@@ -1,3 +1,5 @@
+import { EnumType } from "@hooks/useEnum";
+
 export const dataTabsEnum = {
   ordinary: {
     id: "ordinary",
@@ -195,7 +197,7 @@ export const paymentCapacityDataEnum = {
 export const getMaxValueText = (
   maxAmount: number,
   maxTerm: number,
-  lang: "en" | "es"
+  lang: EnumType
 ) => {
   const locale = lang === "es" ? "es-CO" : "en-US";
   const formattedAmount = maxAmount.toLocaleString(locale);

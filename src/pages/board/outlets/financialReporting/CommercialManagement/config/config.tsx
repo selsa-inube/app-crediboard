@@ -9,6 +9,7 @@ import {
 } from "react-icons/md";
 
 import { IOptions } from "@components/navigation/MenuProspect/types";
+import { EnumType } from "@hooks/useEnum";
 
 export const SummaryTitlesEnum = {
   requestedAmount: {
@@ -156,7 +157,7 @@ export const menuOptionsEnum = {
 export const menuOptions = (
   handleOpenModal: (modalName: string) => void,
   visibleExtraPayments: boolean,
-  lang: "en" | "es"
+  lang: EnumType
 ): IOptions[] => [
   {
     title: menuOptionsEnum.creditLimit.i18n[lang],

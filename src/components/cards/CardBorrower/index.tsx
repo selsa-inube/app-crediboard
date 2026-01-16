@@ -7,6 +7,8 @@ import {
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
 
+import { EnumType } from "@hooks/useEnum";
+
 import { StyledContainer } from "./styles";
 import { newBorrowedDataEnum } from "./config";
 
@@ -17,7 +19,7 @@ export interface ICardBorrowerProps {
   email: string;
   income: string;
   obligations: string;
-  lang: "en" | "es";
+  lang: EnumType;
   handleView?: () => void;
   handleEdit?: () => void;
   handleDelete?: () => void;

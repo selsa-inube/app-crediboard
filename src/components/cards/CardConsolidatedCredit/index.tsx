@@ -6,6 +6,7 @@ import { CustomValueModal } from "@components/modals/CustomValueModal";
 import { currencyFormat } from "@utils/formatData/currency";
 import { IPaymentOption } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
 import { EPaymentOptionType } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
+import { EnumType } from "@hooks/useEnum";
 
 import { 
   StyledCardContainer, 
@@ -33,7 +34,7 @@ export interface ICardConsolidatedCreditProps {
   description: string;
   date: Date;
   tags: ITag[];
-  lang: "en" | "es";
+  lang: EnumType;
   isMobile?: boolean;
   initialValue?: number;
   allowCustomValue?: boolean;

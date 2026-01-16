@@ -1,4 +1,5 @@
 import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
+import { EnumType } from "@hooks/useEnum";
 
 import { CreditProductCardUI } from "./interface";
 
@@ -13,7 +14,7 @@ interface CreditProductCardProps {
   onEdit: () => void;
   onDelete: () => void;
   availableEditCreditRequest: boolean;
-  lang: "en" | "es";
+  lang: EnumType;
 }
 
 function CreditProductCard(props: CreditProductCardProps) {

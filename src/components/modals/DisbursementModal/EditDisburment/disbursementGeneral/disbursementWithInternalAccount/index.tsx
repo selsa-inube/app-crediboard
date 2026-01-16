@@ -20,6 +20,7 @@ import { ICustomerData } from "@pages/prospect/components/AddProductModal/types"
 import { searchAllCardSavingProducts } from "@services/bank/cardSavingProducts/SearchAllCardSavingProducts";
 import { IProspectSummaryById, IProspect } from "@services/prospect/types";
 import { CardGray } from "@components/cards/CardGray";
+import { EnumType } from "@hooks/useEnum";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { disbursementGeneralEnum, disbursemenOptionAccountEnum } from "../config";
@@ -39,7 +40,7 @@ interface IDisbursementWithInternalAccountProps {
   handleOnChange: (values: IDisbursementGeneral) => void;
   getTotalAmount: () => number;
   prospectData: IProspect;
-  lang: "en" | "es";
+  lang: EnumType;
   customerData?: ICustomerData;
 }
 

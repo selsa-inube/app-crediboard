@@ -16,6 +16,7 @@ import {
   parseCurrencyString,
   validateCurrencyField,
 } from "@utils/formatData/currency";
+import { EnumType } from "@hooks/useEnum"; 
 
 import { StyledContainer, StyledTextField, StyledSupport } from "./styles";
 import { incomeCardDataEnum } from "./config";
@@ -26,7 +27,7 @@ export interface IIncomeCardProps {
   labels: string[];
   placeholders: string[];
   values: string[];
-  lang: "en" | "es";
+  lang: EnumType;
   ShowSupport?: boolean;
   disabled?: boolean;
   onValueChange?: (index: number, newValue: string) => void;

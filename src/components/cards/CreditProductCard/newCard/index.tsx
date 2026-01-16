@@ -5,13 +5,14 @@ import { useState } from "react";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
+import { EnumType } from "@hooks/useEnum";
 
 import { dataNewCardEnum } from "./config";
 import { StyledCreditProductCard, StyledPrint } from "../styles";
 
 interface INewCreditProductCardProps {
   onClick: () => void;
-  lang: "en" | "es";
+  lang: EnumType;
 }
 export function NewCreditProductCard(props: INewCreditProductCardProps) {
   const { onClick, lang = "es"} = props;

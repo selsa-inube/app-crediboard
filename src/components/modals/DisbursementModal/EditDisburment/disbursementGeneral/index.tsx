@@ -9,6 +9,7 @@ import { IProspectSummaryById } from "@services/prospect/types";
 import { IProspect } from "@services/prospect/types";
 import { BaseModal } from "@components/modals/baseModal";
 import { ScrollableContainer } from "@pages/prospect/components/AddProductModal/styles";
+import { EnumType } from "@hooks/useEnum";
 
 import { DisbursementWithInternalAccount } from "./disbursementWithInternalAccount/index";
 import { DisbursementWithExternalAccount } from "./disbursementWithExternalAccount";
@@ -29,7 +30,7 @@ interface IDisbursementGeneralProps {
   handleOnChange: (values: IDisbursementGeneral) => void;
   handleTabChange: (id: string) => void;
   prospectSummaryData: IProspectSummaryById | undefined;
-  lang: "en" | "es";
+  lang: EnumType;
   modesOfDisbursement: string[];
   handleClose: () => void;
   handleSave: () => void;

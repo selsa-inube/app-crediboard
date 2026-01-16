@@ -1,5 +1,7 @@
 import * as Yup from "yup";
 
+import { EnumType } from "@hooks/useEnum";
+
 import { stepsAddProductEnum } from "../config";
 
 export interface IResponsePaymentDatesChannel {
@@ -60,7 +62,7 @@ export interface ITermSelection {
 export interface ITermSelectionUI {
   isMobile: boolean;
   initialValues: ITermSelectionValuesMain;
-  lang: "en" | "es";
+  lang: EnumType;
   validationSchema: Yup.ObjectSchema<{
     quotaCapValue?: string;
     maximumTermValue?: string;
@@ -106,7 +108,7 @@ export interface IPaymentConfigurationUI {
   paymentMethodOptions: IPaymentsOptions[];
   paymentCycleOptions: IPaymentsOptions[];
   firstPaymentDateOptions: IPaymentsOptions[];
-  lang: "en" | "es";
+  lang: EnumType;
   paymentConfiguration: {
     paymentMethod: {
       label: string;
@@ -366,7 +368,7 @@ export const loanDataEnum = {
 };
 
 
-export const getVerificationAddProductConfig = (lang: "en" | "es") => ({
+export const getVerificationAddProductConfig = (lang: EnumType) => ({
   creditLineInfo: {
     title: stepsAddProductEnum.creditLineSelection.i18n[lang],
     fields: {

@@ -82,7 +82,7 @@ export function DecisionModal(props: DecisionModalProps) {
   const mappedSoporteOptions = useMemo(() =>
     soporteInvalidOptionsEnum.map((option) => ({
       id: option.id,
-      label: option.i18n[lang as "en" | "es"],
+      label: option.i18n[lang],
       value: option.value,
     })),
     [lang]);

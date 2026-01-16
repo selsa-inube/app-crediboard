@@ -11,6 +11,7 @@ import { SearchAllBank } from "@services/bank/SearchAllBank";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { IProspect } from "@services/prospect/types";
+import { EnumType } from "@hooks/useEnum";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { disbursementGeneralEnum, disbursemenOptionAccountEnum } from "../config";
@@ -25,7 +26,7 @@ interface IDisbursementWithExternalAccountProps {
   businessUnitPublicCode: string;
   isAmountReadOnly: boolean;
   businessManagerCode: string;
-  lang: "en" | "es";
+  lang: EnumType;
   onFormValid: (isValid: boolean) => void;
   handleOnChange: (values: IDisbursementGeneral) => void;
   getTotalAmount: () => number;

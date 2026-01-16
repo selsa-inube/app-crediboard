@@ -1,8 +1,9 @@
 import { IncomeCard } from "@components/cards/IncomeCard";
+import { EnumType } from "@hooks/useEnum";
 
 interface IncomeProps {
   values: string[];
-  lang: "en" | "es";
+  lang: EnumType;
   ShowSupport?: boolean;
   disabled?: boolean;
   onValueChange?: (index: number, newValue: string) => void;
