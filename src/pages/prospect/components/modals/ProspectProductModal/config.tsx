@@ -369,9 +369,9 @@ export const fieldLabelsEnum = {
   },
   paymentMethod: {
     code: "FieldLabels_paymentMethod",
-    description: "Label for payment method",
+    description: "Label for Payment channel",
     i18n: {
-      en: "Payment method",
+      en: "Payment channel",
       es: "Método de pago",
     },
   },

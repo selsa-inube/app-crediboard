@@ -19,7 +19,7 @@ export const TextLabelsEnum = {
     code: "TextLabels_extra_payments",
     description: "Extra payments",
     i18n: {
-      en: "Extra payments",
+      en: "Extraordinary installments",
       es: "Pagos extras",
     },
   },

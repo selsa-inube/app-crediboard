@@ -41,7 +41,7 @@ export function IncomeCard(props: IIncomeCardProps) {
     ShowSupport,
     disabled = false,
     onValueChange,
-    lang = "es",
+    lang,
   } = props;
 
   const validationSchema = Yup.object({

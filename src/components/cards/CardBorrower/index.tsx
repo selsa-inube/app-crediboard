@@ -38,7 +38,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
     handleDelete = () => {},
     showIcons = true,
     isMobile = false,
-    lang = "es",
+    lang,
   } = props;
   
   return (

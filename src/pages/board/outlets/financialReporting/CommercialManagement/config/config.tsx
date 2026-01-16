@@ -147,7 +147,7 @@ export const menuOptionsEnum = {
     code: "MenuOptions_extraPayments",
     description: "Menu option for extra payments",
     i18n: {
-      en: "Extra Payments",
+      en: "Extraordinary installments",
       es: "Pagos extras",
     },
   },
@@ -229,9 +229,9 @@ export const tittleOptionsEnum = {
   },
   titleDisbursement: {
     code: "TittleOptions_titleDisbursement",
-    description: "Label for disbursement methods",
+    description: "Label for Disbursements modeinstead",
     i18n: {
-      en: "Disbursement methods",
+      en: "Disbursements modeinstead",
       es: "Medios de desembolso",
     },
   },
@@ -263,7 +263,7 @@ export const tittleOptionsEnum = {
     code: "TittleOptions_titleExtraPayments",
     description: "Label for extra payments",
     i18n: {
-      en: "Extra payments",
+      en: "Extraordinary installments",
       es: "Pagos extras",
     },
   },

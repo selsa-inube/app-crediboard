@@ -1,9 +1,9 @@
 export const CREDIT_PRODUCT_TEXTS_ENUM = {
   paymentMethod: {
     code: "Credit_payment_method",
-    description: "Payment method",
+    description: "Payment channel",
     i18n: {
-      en: "Payment method",
+      en: "Payment channel",
       es: "Medio de pago",
     },
   },

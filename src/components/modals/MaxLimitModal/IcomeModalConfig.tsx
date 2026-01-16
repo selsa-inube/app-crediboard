@@ -32,7 +32,7 @@ export const incomeModalConfigEnum = {
     description: "Mensaje detallado de error",
     i18n: {
       en: "The data could not be loaded. Please try again later.",
-      es: "No se pudieron cargar los datos. Por favor, intente nuevamente más tarde.",
+      es: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
     },
   },
   incomeSourcesLabel: {

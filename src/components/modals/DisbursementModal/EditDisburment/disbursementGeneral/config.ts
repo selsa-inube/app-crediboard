@@ -79,7 +79,7 @@ export const disbursementGeneralEnum = {
     code: "DisbursementGeneral_labelToggle",
     description: "Pregunta sobre desembolso a nombre propio",
     i18n: {
-      en: "Is the disbursement in your own name?",
+      en: "Is the Disbursement is in the name of the borrower?",
       es: "¿El desembolso es a nombre propio?",
     },
   },
@@ -307,7 +307,7 @@ export const disbursemenOptionAccountEnum = {
     code: "DisbursementAccount_valueTurnFail",
     description: "Error cuando el valor a girar es incorrecto",
     i18n: {
-      en: "The total amount with this disbursement method is different from ",
+      en: "The total amount with this Disbursement modeinstead is different from ",
       es: "El valor a girar sumando esta forma de desembolso es distinto a ",
     },
   },

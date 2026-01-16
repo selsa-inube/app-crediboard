@@ -116,7 +116,7 @@ const dataInputsEnum = {
     code: "FinancialObligation_labelPayment",
     description: "Etiqueta para el medio de pago",
     i18n: {
-      en: "Payment method",
+      en: "Payment channel",
       es: "Medio de pago",
     },
   },
@@ -188,7 +188,7 @@ const dataInputsEnum = {
     code: "FinancialObligation_labelFeePaid",
     description: "Etiqueta para cuotas ya pagadas",
     i18n: {
-      en: "Fees paid",
+      en: "Paid installments",
       es: "Cuotas pagadas",
     },
   },
@@ -197,7 +197,7 @@ const dataInputsEnum = {
     code: "FinancialObligation_palaceHolderFeePaid",
     description: "Placeholder para el número de cuotas pagadas",
     i18n: {
-      en: "Fees paid",
+      en: "Paid installments",
       es: "Cuotas pagadas",
     },
   },

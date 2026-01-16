@@ -120,7 +120,7 @@ export const creditLimitTextsEnum = {
     description: "Error loading data message",
     i18n: {
       en: "Could not load data. Please try again later.",
-      es: "No se pudieron cargar los datos. Por favor, intente nuevamente más tarde.",
+      es: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
     },
   },
 };

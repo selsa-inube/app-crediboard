@@ -1,23 +1,23 @@
 export const dataBailEnum = {
-  bail: {
+  bond: {
     code: "Bail_bail",
-    description: "Bail amount to pay",
+    description: "Bond amount to pay",
     i18n: {
-      en: "Amount to be paid for bail.",
+      en: "Amount to be paid for bond.",
       es: "Valor a pagar por fianza.",
     },
   },
   customer: {
     code: "Bail_customer",
-    description: "Customer acceptance of bail amount",
+    description: "Customer acceptance of bond amount",
     i18n: {
-      en: "The customer accepted the bail amount.",
+      en: "The customer accepted the bond amount.",
       es: "El cliente aceptó el valor de la fianza.",
     },
   },
   disbursement: {
     code: "Bail_disbursement",
-    description: "Bail charged at disbursement",
+    description: "Bond charged at disbursement",
     i18n: {
       en: "This amount will be charged at the time of disbursement.",
       es: "Este valor será cobrado en el momento del desembolso.",
@@ -25,17 +25,17 @@ export const dataBailEnum = {
   },
   noBorrowersTitle: {
     code: "Bail_noBorrowersTitle",
-    description: "No bail found title",
+    description: "No bond found title",
     i18n: {
-      en: "No bail found.",
+      en: "No bond found.",
       es: "No se encontraro una fianza.",
     },
   },
   noBorrowersDescription: {
     code: "Bail_noBorrowersDescription",
-    description: "No bail found description",
+    description: "No bond found description",
     i18n: {
-      en: "There is no bail available for this request.",
+      en: "There is no bond available for this request.",
       es: "No hay una fianza disponible para esta solicitud.",
     },
   },

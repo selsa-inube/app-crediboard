@@ -13,7 +13,7 @@ interface IBailProps {
   lang: "es" | "en";
 }
 
-export function Bail(props: IBailProps) {
+export function Bond(props: IBailProps) {
   const { data, lang } = props;
 
   return (
@@ -38,7 +38,7 @@ export function Bail(props: IBailProps) {
                 {currencyFormat(data)}
               </Text>
               <Text type="body" size="small" appearance="gray">
-                {dataBailEnum.bail.i18n[lang]}
+                {dataBailEnum.bond.i18n[lang]}
               </Text>
             </Stack>
             <Text type="label" size="large">

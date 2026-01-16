@@ -17,7 +17,7 @@ export const dataCreditProspectEnum = {
     code: "DataCreditProspect_extraPayment",
     description: "Label for extra payments",
     i18n: {
-      en: "Extra payments",
+      en: "Extraordinary installments",
       es: "Pagos extras",
     },
   },

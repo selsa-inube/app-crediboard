@@ -26,12 +26,12 @@ export const dataTabsEnum = {
       es: "Pignoración",
     },
   },
-  bail: {
-    id: "bail",
+  bond: {
+    id: "bond",
     code: "GuaranteeTabs_bail",
-    description: "Bail tab",
+    description: "Bond tab",
     i18n: {
-      en: "Bail",
+      en: "Bond",
       es: "Fianza",
     },
   },

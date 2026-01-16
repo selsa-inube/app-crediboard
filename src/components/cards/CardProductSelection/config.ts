@@ -32,14 +32,3 @@ export const selectDataEnum = {
     },
   },
 };
-
-
-
-
-
-
-
-
-
-
-

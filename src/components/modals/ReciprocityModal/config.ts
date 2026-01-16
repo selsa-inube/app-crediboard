@@ -76,7 +76,7 @@ export const dataReciprocityEnum = {
     description: "Error message",
     i18n: {
       en: "Data could not be loaded. Please try again later.",
-      es: "No se pudieron cargar los datos. Por favor, intente nuevamente más tarde.",
+      es: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
     },
   },
 };

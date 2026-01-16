@@ -344,15 +344,15 @@ export const errorCodesEnum = {
   1014: {
     whatWentWrong: {
       code: "ErrorCodes_1014_whatWentWrong",
-      description: "Disbursement method not defined",
+      description: "Disbursement modeinstead not defined",
       i18n: {
-        en: ["It is necessary to define the disbursement method for the prospect."],
+        en: ["It is necessary to define the Disbursement modeinstead for the prospect."],
         es: ["Es necesario definir el medio de desembolso para el prospecto."],
       },
     },
     howToFix: {
       code: "ErrorCodes_1014_howToFix",
-      description: "How to fix missing disbursement method",
+      description: "How to fix missing Disbursement modeinstead",
       i18n: {
         en: ["Check the configuration of the business rule:"],
         es: ["Confirma la configuración de la regla de negocio:"],

@@ -142,9 +142,9 @@ export const stepsAddProductEnum = {
     id: 2,
     number: 2,
     code: "StepsAddProduct_paymentConfiguration",
-    description: "Step to configure payment method",
+    description: "Step to configure Payment channel",
     i18n: {
-      en: "Payment method",
+      en: "Payment channel",
       es: "Medio de pago",
     },
   },

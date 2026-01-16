@@ -26,7 +26,7 @@ export const commercialManagementEnum = {
       id: "paymentMethod",
       code: "CommercialManagement_rows_paymentMethod",
       description: "Etiqueta para medio de pago",
-      i18n: { en: "Payment Method", es: "Medio de Pago" },
+      i18n: { en: "Payment channel", es: "Medio de Pago" },
     },
     guaranteeType: {
       id: "guaranteeType",

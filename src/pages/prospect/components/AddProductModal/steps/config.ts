@@ -219,7 +219,7 @@ export const paymentConfigurationEnum = {
       id: "paymentMethodLabel",
       code: "PaymentConfig_methodLabel",
       description: "Etiqueta medio de pago",
-      i18n: { en: "Payment method", es: "Medio de pago" },
+      i18n: { en: "Payment channel", es: "Medio de pago" },
     },
     placeholder: {
       id: "paymentMethodPlaceholder",
@@ -326,7 +326,7 @@ export const loanDataEnum = {
     code: "maximumTermPlaceholder",
     description: "Máximo sobre el tope de cuota",
     i18n: {
-      en: "Do you have a limit for the ordinary fee value?",
+      en: "Do you have a limit for the ordinary loan amount value?",
       es: "¿Tienes un tope para el valor de la cuota ordinaria?",
     },
   },

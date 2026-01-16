@@ -9,7 +9,7 @@ export const dataCreditLimitModal = {
   error: {
     title: "Error cargando datos",
     message:
-      "No se pudieron cargar los datos. Por favor, intente nuevamente más tarde.",
+      "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
   },
 };
 
@@ -67,7 +67,7 @@ export const dataCreditLimitModalEnum = {
     description: "Error message for failed data load",
     i18n: {
       en: "Could not load the data. Please try again later.",
-      es: "No se pudieron cargar los datos. Por favor, intente nuevamente más tarde.",
+      es: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
     },
   },
 };

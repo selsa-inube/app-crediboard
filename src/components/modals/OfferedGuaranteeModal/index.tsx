@@ -16,7 +16,7 @@ import { useEnum } from "@hooks/useEnum";
 
 import { Mortgage } from "./Mortgage";
 import { Pledge } from "./Pledge";
-import { Bail } from "./bail";
+import { Bond } from "./bail";
 import { dataTabsEnum, dataGuaranteeEnum } from "./config";
 import { ScrollableContainer } from "./styles";
 import { ErrorModal } from "../ErrorModal";
@@ -223,7 +223,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
             isLoadingPledge={isLoadingPledge}
           />
         )}
-        {currentTab === "bail" && <Bail lang={lang} data={dataResponse?.bondValue ?? 0} />}
+        {currentTab === "bond" && <Bond lang={lang} data={dataResponse?.bondValue ?? 0} />}
 
         {showErrorModal && (
           <ErrorModal

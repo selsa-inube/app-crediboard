@@ -81,9 +81,9 @@ export const dataReportEnum = {
   },
   descriptionTotalFee: {
     code: "DataReport_descriptionTotalFee",
-    description: "Label for total fee",
+    description: "Label for total loan amount",
     i18n: {
-      en: "Total fee.",
+      en: "Total loan amount.",
       es: "Cuota total.",
     },
   },

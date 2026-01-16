@@ -17,9 +17,9 @@ export const errorModalConfigEnum = {
   },
   excuses: {
     code: "ErrorModal_excuses",
-    description: "We are sorry",
+    description: "Apologies",
     i18n: {
-      en: "We are sorry",
+      en: "Apologies",
       es: "Lo sentimos",
     },
   },

@@ -50,7 +50,7 @@ export const dataTabsEnum = [
       description: "Cash",
       i18n: {
         en: "Cash",
-        es: "Dinero Efectivo",
+        es: "Efectivo",
       },
     },
   },
@@ -59,9 +59,9 @@ export const dataTabsEnum = [
 export const dataDisbursementEnum = {
   title: {
     code: "Disbursement_title",
-    description: "Disbursement method",
+    description: "Disbursement modeinstead",
     i18n: {
-      en: "Disbursement method",
+      en: "Disbursement modeinstead",
       es: "Medio de Desembolso",
     },
   },
@@ -75,17 +75,17 @@ export const dataDisbursementEnum = {
   },
   noDataTitle: {
     code: "Disbursement_no_data_title",
-    description: "No disbursement methods found",
+    description: "No Disbursements modeinstead found",
     i18n: {
-      en: "No disbursement methods found",
+      en: "No Disbursements modeinstead found",
       es: "No se encontraron medios de desembolso",
     },
   },
   noDataDescription: {
     code: "Disbursement_no_data_description",
-    description: "There are no disbursement methods available for this request.",
+    description: "There are no Disbursements modeinstead available for this request.",
     i18n: {
-      en: "There are no disbursement methods available for this request.",
+      en: "There are no Disbursements modeinstead available for this request.",
       es: "No hay medios de desembolso disponibles para esta solicitud.",
     },
   },
@@ -127,10 +127,10 @@ export const disbursementGeneralEnum = {
   },
   labelToggle: {
     code: "Disbursement_general_toggle_label",
-    description: "Disbursement in your own name?",
+    description: "Disbursement is in the name of the borrower?",
     i18n: {
-      en: "Disbursement in your own name?",
-      es: "¿Desembolso a nombre propio?",
+      en: "Disbursement to the client's name?",
+      es: "¿Desembolso a nombre del cliente?",
     },
   },
   optionToggleYes: {

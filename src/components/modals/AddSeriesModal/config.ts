@@ -33,9 +33,9 @@ export const dataAddSeriesModalEnum = {
   },
   labelPaymentMethod: {
     code: "AddSeriesModal_label_payment_method",
-    description: "Payment method",
+    description: "Payment channel",
     i18n: {
-      en: "Payment method",
+      en: "Payment channel",
       es: "Medio de pago",
     },
   },
