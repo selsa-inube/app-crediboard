@@ -107,7 +107,7 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           businessManagerCode,
           id,
-          userAccount
+          userAccount,
         );
 
         setRequests(data[0] as ICreditRequest);
@@ -133,7 +133,7 @@ function ToDo(props: ToDoProps) {
         const data = await getToDoByCreditRequestId(
           businessUnitPublicCode,
           businessManagerCode,
-          requests.creditRequestId
+          requests.creditRequestId,
         );
 
         setTaskData(data);
@@ -164,7 +164,7 @@ function ToDo(props: ToDoProps) {
         const decision = await getSearchDecisionById(
           businessUnitPublicCode,
           businessManagerCode,
-          requests.creditRequestId
+          requests.creditRequestId,
         );
 
         const formattedDecisions = Array.isArray(decision)
@@ -202,16 +202,16 @@ function ToDo(props: ToDoProps) {
         (staffMember: IStaff) => ({
           ...staffMember,
           userName: capitalizeFirstLetterEachWord(staffMember.userName),
-        })
+        }),
       );
       setStaff(formattedStaff);
 
       const firstAccountManager = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAccountManager"
+        (staffMember) => staffMember.role === "CredicarAccountManager",
       );
 
       const firstAnalyst = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAnalyst"
+        (staffMember) => staffMember.role === "CredicarAnalyst",
       );
 
       const newStaffState = {
@@ -230,7 +230,7 @@ function ToDo(props: ToDoProps) {
         const data = await getToDoByCreditRequestId(
           businessUnitPublicCode,
           businessManagerCode,
-          requests.creditRequestId
+          requests.creditRequestId,
         );
         setTaskData(data);
       } catch (error) {
@@ -255,7 +255,7 @@ function ToDo(props: ToDoProps) {
     setDecisionValue({ decision: newValue });
 
     const selected = taskDecisions.find(
-      (decision) => decision.value === newValue
+      (decision) => decision.value === newValue,
     );
     setSelectedDecision(selected || null);
   };
@@ -284,30 +284,25 @@ function ToDo(props: ToDoProps) {
   const data = {
     makeDecision: {
       creditRequestId: requests?.creditRequestId || "",
-      humanDecision:
-        selectedDecision?.code || selectedDecision?.label.split(":")[0] || "",
+      humanDecision: selectedDecision?.code || "",
       justification: "",
     },
     businessUnit: businessUnitPublicCode,
     user: eventData.user.identificationDocumentNumber || "",
-    xAction: getXAction(
-      selectedDecision?.code || selectedDecision?.label.split(":")[0] || "",
-      validationId()
-    ),
-    humanDecisionDescription:
-      selectedDecision?.originalLabel || selectedDecision?.label || "",
+    xAction: getXAction(selectedDecision?.code || "", validationId()),
+    humanDecisionDescription: selectedDecision?.label || "",
   };
 
   const taskRole = useMemo(
     () => taskPrs.find((t) => t.Code === taskData?.taskToBeDone)?.Role,
-    [taskData?.taskToBeDone]
+    [taskData?.taskToBeDone],
   );
 
   const taskLabel = useMemo(() => {
     if (!taskData?.taskToBeDone) return errorMessagge;
 
     const matchedTask = taskPrs.find(
-      (taskItem) => taskItem.Code === taskData.taskToBeDone
+      (taskItem) => taskItem.Code === taskData.taskToBeDone,
     );
 
     return matchedTask ? `${matchedTask.Value}` : taskData.taskToBeDone;
@@ -325,8 +320,8 @@ function ToDo(props: ToDoProps) {
     setHasPermitSend(
       staff.some(
         (s) =>
-          s.role === taskRole && s.userId === eventData?.user?.staff?.staffId
-      )
+          s.role === taskRole && s.userId === eventData?.user?.staff?.staffId,
+      ),
     );
   }, [staff, eventData, taskData, taskRole]);
 
