@@ -18,13 +18,14 @@ import {
   handleChangeWithCurrency,
   validateCurrencyField,
 } from "@utils/formatData/currency";
+import { useEnum } from "@hooks/useEnum";
 
 import { ScrollableContainer } from "./styles";
 import {
-  obligationTypeOptions,
-  entityOptions,
-  meansPaymentOptions,
-  dataInputs,
+  obligationTypeOptionsEnum,
+  entityOptionsEnum,
+  meansPaymentOptionsEnum,
+  dataInputsEnum,
 } from "./config";
 import { TruncatedText } from "../TruncatedTextModal";
 
@@ -58,6 +59,25 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
   const isMobile = useMediaQuery("(max-width: 880px)");
   const isInitialMount = useRef(true);
   const formikRef = useRef<FormikProps<FormikValues> | null>(null);
+  const { lang } = useEnum();
+
+  const mappedObligationTypeOptions = obligationTypeOptionsEnum.map((opt) => ({
+    id: opt.id,
+    value: opt.value,
+    label: opt.i18n[lang],
+  }));
+
+  const mappedEntityOptions = entityOptionsEnum.map((opt) => ({
+    id: opt.id,
+    value: opt.value,
+    label: opt.i18n[lang],
+  }));
+
+  const mappedMeansPaymentOptions = meansPaymentOptionsEnum.map((opt) => ({
+    id: opt.id,
+    value: opt.value,
+    label: opt.i18n[lang],
+  }));
 
   const validationSchema = Yup.object({
     type: Yup.string().required(""),
@@ -117,24 +137,24 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
 
     const formik = formikRef.current;
 
-    if (obligationTypeOptions && obligationTypeOptions.length === 1) {
-      const singleOption = obligationTypeOptions[0];
+    if (mappedObligationTypeOptions && mappedObligationTypeOptions.length === 1) {
+      const singleOption = mappedObligationTypeOptions[0];
       const optionValue = singleOption.id || singleOption.value;
       if (!formik.values.type && optionValue) {
         formik.setFieldValue("type", optionValue);
       }
     }
 
-    if (entityOptions && entityOptions.length === 1) {
-      const singleOption = entityOptions[0];
+    if (mappedEntityOptions && mappedEntityOptions.length === 1) {
+      const singleOption = mappedEntityOptions[0];
       const optionValue = singleOption.id || singleOption.value;
       if (!formik.values.entity && optionValue) {
         formik.setFieldValue("entity", optionValue);
       }
     }
 
-    if (meansPaymentOptions && meansPaymentOptions.length === 1) {
-      const singleOption = meansPaymentOptions[0];
+    if (meansPaymentOptionsEnum && meansPaymentOptionsEnum.length === 1) {
+      const singleOption = meansPaymentOptionsEnum[0];
       const optionValue = singleOption.id || singleOption.value;
       if (!formik.values.payment && optionValue) {
         formik.setFieldValue("payment", optionValue);
@@ -142,6 +162,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
     }
 
     isInitialMount.current = false;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -168,7 +189,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
               />
             }
             nextButton={confirmButtonText}
-            backButton={dataInputs.cancel}
+            backButton={dataInputsEnum.cancel.i18n[lang]}
             handleNext={formik.submitForm}
             handleBack={onCloseModal}
             disabledNext={!formik.dirty || !formik.isValid}
@@ -184,14 +205,14 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 gap="20px"
                 width={isMobile ? "280px" : "100%"}
               >
-                {obligationTypeOptions && obligationTypeOptions.length === 1 ? (
+                {mappedObligationTypeOptions && mappedObligationTypeOptions.length === 1 ? (
                   <Textfield
-                    label={dataInputs.labelType}
+                    label={dataInputsEnum.labelType.i18n[lang]}
                     name="type"
                     id="type"
                     size="compact"
                     value={getOptionLabel(
-                      obligationTypeOptions,
+                      mappedObligationTypeOptions,
                       formik.values.type
                     )}
                     disabled
@@ -199,12 +220,12 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                   />
                 ) : (
                   <Select
-                    label={dataInputs.labelType}
+                    label={dataInputsEnum.labelType.i18n[lang]}
                     name="type"
                     id="type"
                     size="compact"
-                    placeholder={dataInputs.palaceHolderSelect}
-                    options={obligationTypeOptions}
+                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
+                    options={mappedObligationTypeOptions}
                     onBlur={formik.handleBlur}
                     onChange={(name, value) =>
                       formik.setFieldValue(name, value)
@@ -214,24 +235,24 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                   />
                 )}
 
-                {entityOptions && entityOptions.length === 1 ? (
+                {mappedEntityOptions && mappedEntityOptions.length === 1 ? (
                   <Textfield
-                    label={dataInputs.labelEntity}
+                    label={dataInputsEnum.labelEntity.i18n[lang]}
                     name="entity"
                     id="entity"
                     size="compact"
-                    value={getOptionLabel(entityOptions, formik.values.entity)}
+                    value={getOptionLabel(mappedEntityOptions, formik.values.entity)}
                     disabled
                     fullwidth
                   />
                 ) : (
                   <Select
-                    label={dataInputs.labelEntity}
+                    label={dataInputsEnum.labelEntity.i18n[lang]}
                     name="entity"
                     id="entity"
                     size="compact"
-                    placeholder={dataInputs.palaceHolderSelect}
-                    options={entityOptions}
+                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
+                    options={mappedEntityOptions}
                     onBlur={formik.handleBlur}
                     onChange={(name, value) =>
                       formik.setFieldValue(name, value)
@@ -242,7 +263,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 )}
 
                 <Textfield
-                  label={dataInputs.labelFee}
+                  label={dataInputsEnum.labelFee.i18n[lang]}
                   name="fee"
                   id="fee"
                   iconBefore={
@@ -252,7 +273,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputs.palaceHolderFee}
+                  placeholder={dataInputsEnum.palaceHolderFee.i18n[lang]}
                   value={validateCurrencyField("fee", formik, false, "")}
                   size="compact"
                   onBlur={formik.handleBlur}
@@ -261,7 +282,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 />
 
                 <Textfield
-                  label={dataInputs.labelBalance}
+                  label={dataInputsEnum.labelBalance.i18n[lang]}
                   name="balance"
                   id="balance"
                   iconBefore={
@@ -271,7 +292,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputs.palaceHolderBalance}
+                  placeholder={dataInputsEnum.palaceHolderBalance.i18n[lang]}
                   value={validateCurrencyField("balance", formik, false, "")}
                   size="compact"
                   onBlur={formik.handleBlur}
@@ -279,14 +300,14 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                   fullwidth
                 />
 
-                {meansPaymentOptions && meansPaymentOptions.length === 1 ? (
+                {mappedMeansPaymentOptions && mappedMeansPaymentOptions.length === 1 ? (
                   <Textfield
-                    label={dataInputs.labelPayment}
+                    label={dataInputsEnum.labelPayment.i18n[lang]}
                     name="payment"
                     id="payment"
                     size="compact"
                     value={getOptionLabel(
-                      meansPaymentOptions,
+                      mappedMeansPaymentOptions,
                       formik.values.payment
                     )}
                     disabled
@@ -294,12 +315,12 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                   />
                 ) : (
                   <Select
-                    label={dataInputs.labelPayment}
+                    label={dataInputsEnum.labelPayment.i18n[lang]}
                     name="payment"
                     id="payment"
                     size="compact"
-                    placeholder={dataInputs.palaceHolderSelect}
-                    options={meansPaymentOptions}
+                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
+                    options={mappedMeansPaymentOptions}
                     onBlur={formik.handleBlur}
                     onChange={(name, value) =>
                       formik.setFieldValue(name, value)
@@ -310,7 +331,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 )}
 
                 <Textfield
-                  label={dataInputs.labelId}
+                  label={dataInputsEnum.labelId.i18n[lang]}
                   name="idUser"
                   id="idUser"
                   iconBefore={
@@ -320,7 +341,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputs.palaceHolderId}
+                  placeholder={dataInputsEnum.palaceHolderId.i18n[lang]}
                   value={formik.values.idUser}
                   size="compact"
                   onBlur={formik.handleBlur}
@@ -329,7 +350,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 />
 
                 <Textfield
-                  label={dataInputs.labelFeePaid}
+                  label={dataInputsEnum.labelFeePaid.i18n[lang]}
                   name="feePaid"
                   id="feePaid"
                   iconBefore={
@@ -339,7 +360,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputs.palaceHolderFeePaid}
+                  placeholder={dataInputsEnum.palaceHolderFeePaid.i18n[lang]}
                   value={formik.values.feePaid}
                   size="compact"
                   onBlur={formik.handleBlur}
@@ -349,7 +370,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                 />
 
                 <Textfield
-                  label={dataInputs.labelterm}
+                  label={dataInputsEnum.labelterm.i18n[lang]}
                   name="term"
                   id="term"
                   iconBefore={
@@ -359,7 +380,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
                       size="20px"
                     />
                   }
-                  placeholder={dataInputs.palaceHolderterm}
+                  placeholder={dataInputsEnum.palaceHolderterm.i18n[lang]}
                   value={formik.values.term}
                   size="compact"
                   onBlur={formik.handleBlur}

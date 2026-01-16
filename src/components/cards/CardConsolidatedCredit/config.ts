@@ -1,13 +1,48 @@
 import { EPaymentOptionType } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
 import { paymentOptionValues } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
 
-export const dataConsolidatedCredit = {
-    expiredValue: "Valor vencido",
-    nextDueDate: "Próximo vencimiento",
-    fullPayment:"Pago total",
-    arrears: "En mora",
-    regularPayroll: "Nómina regular mensual"
-}
+export const dataConsolidatedCreditEnum = {
+  expiredValue: {
+    code: "DataConsolidatedCredit_expiredValue",
+    description: "Label for expired value",
+    i18n: {
+      en: "Expired Value",
+      es: "Valor vencido",
+    },
+  },
+  nextDueDate: {
+    code: "DataConsolidatedCredit_nextDueDate",
+    description: "Label for next due date",
+    i18n: {
+      en: "Next Due Date",
+      es: "Próximo vencimiento",
+    },
+  },
+  fullPayment: {
+    code: "DataConsolidatedCredit_fullPayment",
+    description: "Label for full payment",
+    i18n: {
+      en: "Full Payment",
+      es: "Pago total",
+    },
+  },
+  arrears: {
+    code: "DataConsolidatedCredit_arrears",
+    description: "Label for arrears status",
+    i18n: {
+      en: "In Arrears",
+      es: "En mora",
+    },
+  },
+  regularPayroll: {
+    code: "DataConsolidatedCredit_regularPayroll",
+    description: "Label for regular monthly payroll",
+    i18n: {
+      en: "Regular Monthly Payroll",
+      es: "Nómina regular mensual",
+    },
+  },
+};
 
 interface IApplyPayOption {
   id: string;

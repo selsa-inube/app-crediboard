@@ -1,32 +1,66 @@
-export const configButtons = {
+export const configButtonsEnum = {
   buttons: {
     buttonReject: {
-      label: "Rechazar",
+      label: {
+        code: "Button_reject",
+        description: "Reject",
+        i18n: {
+          en: "Reject",
+          es: "Rechazar",
+        },
+      },
     },
     buttonCancel: {
-      label: "Anular",
+      label: {
+        code: "Button_cancel",
+        description: "Cancel",
+        i18n: {
+          en: "Cancel",
+          es: "Anular",
+        },
+      },
     },
     buttonPrint: {
-      label: "Imprimir",
+      label: {
+        code: "Button_print",
+        description: "Print",
+        i18n: {
+          en: "Print",
+          es: "Imprimir",
+        },
+      },
     },
   },
   buttonsOutlined: {
     buttonAttach: {
-      label: "Adjuntar",
+      label: {
+        code: "Button_attach",
+        description: "Attach",
+        i18n: {
+          en: "Attach",
+          es: "Adjuntar",
+        },
+      },
     },
     buttonViewAttachments: {
-      label: "Ver Adjuntos",
+      label: {
+        code: "Button_view_attachments",
+        description: "View attachments",
+        i18n: {
+          en: "View attachments",
+          es: "Ver Adjuntos",
+        },
+      },
     },
     buttonWarranty: {
-      label: "Garantías ofrecidas",
+      label: {
+        code: "Button_warranty",
+        description: "Offered guarantees",
+        i18n: {
+          en: "Offered guarantees",
+          es: "Garantías ofrecidas",
+        },
+      },
     },
   },
-};
-
-export const titlesModal = {
-  title: "Información",
-  subTitle: "¿Porque está deshabilitado?",
-  description:
-    "No cuentas con los privilegios necesarios para ejecutar esta acción.",
-  textButtonNext: "Entendido",
 };

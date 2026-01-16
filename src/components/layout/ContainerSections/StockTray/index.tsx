@@ -7,7 +7,7 @@ import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
 
-import { configButtons } from "../config";
+import { configButtonsEnum } from "../config";
 import { StyledHorizontalDivider, StyledPrint } from "./styled";
 
 interface IActionButtons {
@@ -38,13 +38,14 @@ interface IActionButtons {
 
 interface IStockTrayProps {
   navigation: () => void;
+  lang: "es" | "en";
   eventData?: ICrediboardData;
   isMobile?: boolean;
   actionButtons?: IActionButtons;
 }
 
 export const StockTray = (props: IStockTrayProps) => {
-  const { navigation, isMobile, actionButtons } = props;
+  const { navigation, isMobile, actionButtons, lang } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInfo = () => {
@@ -106,7 +107,7 @@ export const StockTray = (props: IStockTrayProps) => {
                   disabled={canReject}
                   onClick={actionButtons?.buttons?.buttonReject?.OnClick}
                 >
-                  {configButtons.buttons.buttonReject.label}
+                  {configButtonsEnum.buttons.buttonReject.label.i18n[lang]}
                 </Button>
                 {canReject && (
                   <Icon
@@ -124,7 +125,7 @@ export const StockTray = (props: IStockTrayProps) => {
                   disabled={canCancel}
                   onClick={actionButtons?.buttons?.buttonCancel.OnClick}
                 >
-                  {configButtons.buttons.buttonCancel.label}
+                  {configButtonsEnum.buttons.buttonCancel.label.i18n[lang]}
                 </Button>
                 {canCancel && (
                   <Icon
@@ -141,7 +142,7 @@ export const StockTray = (props: IStockTrayProps) => {
                   spacing="compact"
                   onClick={actionButtons?.buttons.buttonPrint.OnClick}
                 >
-                  {configButtons.buttons.buttonPrint.label}
+                  {configButtonsEnum.buttons.buttonPrint.label.i18n[lang]}
                 </Button>
               </Stack>
             </Stack>
@@ -154,7 +155,7 @@ export const StockTray = (props: IStockTrayProps) => {
                   disabled={editCreditApplication}
                   onClick={actionButtons?.buttonsOutlined?.buttonAttach.OnClick}
                 >
-                  {configButtons.buttonsOutlined.buttonAttach.label}
+                  {configButtonsEnum.buttonsOutlined.buttonAttach.label.i18n[lang]}
                 </Button>
                 {editCreditApplication && (
                   <Icon
@@ -174,7 +175,7 @@ export const StockTray = (props: IStockTrayProps) => {
                     actionButtons?.buttonsOutlined.buttonViewAttachments.OnClick
                   }
                 >
-                  {configButtons.buttonsOutlined.buttonViewAttachments.label}
+                  {configButtonsEnum.buttonsOutlined.buttonViewAttachments.label.i18n[lang]}
                 </Button>
               </Stack>
               <StyledHorizontalDivider />
@@ -186,7 +187,7 @@ export const StockTray = (props: IStockTrayProps) => {
                     actionButtons?.buttonsOutlined.buttonWarranty.OnClick
                   }
                 >
-                  {configButtons.buttonsOutlined.buttonWarranty.label}
+                  {configButtonsEnum.buttonsOutlined.buttonWarranty.label.i18n[lang]}
                 </Button>
               </Stack>
             </Stack>

@@ -5,7 +5,7 @@ export const incomeModalConfig = {
   error: {
     title: "Error cargando datos",
     message:
-      "No se pudieron cargar los datos. Por favor, intente nuevamente más tarde.",
+      "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
   },
   incomeSources: {
     label: "Total fuentes de ingreso reportadas",

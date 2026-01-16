@@ -5,15 +5,17 @@ import { useState } from "react";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
+import { EnumType } from "@hooks/useEnum";
 
-import { dataNewCard } from "./config";
+import { dataNewCardEnum } from "./config";
 import { StyledCreditProductCard, StyledPrint } from "../styles";
 
 interface INewCreditProductCardProps {
   onClick: () => void;
+  lang: EnumType;
 }
 export function NewCreditProductCard(props: INewCreditProductCardProps) {
-  const { onClick } = props;
+  const { onClick, lang = "es"} = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
@@ -35,7 +37,7 @@ export function NewCreditProductCard(props: INewCreditProductCardProps) {
         <Stack direction="column" alignItems="center" margin="auto">
           <Icon icon={<MdOutlineAdd />} appearance="gray" size="45px" />
           <Text type="body" size="large" appearance="gray">
-            {dataNewCard.add}
+            {dataNewCardEnum.add.i18n[lang]}
           </Text>
         </Stack>
       </StyledCreditProductCard>

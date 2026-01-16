@@ -12,29 +12,34 @@ import { getPayrollDiscountAuthorizationsById } from "@services/creditRequest/qu
 import { getPromissoryNotesById } from "@services/creditRequest/query/promissory_notes";
 import {
   ICreditRequest,
-  IPayrollDiscountAuthorization,
-  IPromissoryNotes,
 } from "@services/creditRequest/query/types";
 import { AppContext } from "@context/AppContext";
+import { useEnum } from "@hooks/useEnum";
+import { IPayrollDiscountAuthorization } from "@services/creditRequest/query/types";
+import { IPromissoryNotes } from "@services/creditRequest/query/types";
 
 import {
   appearanceTag,
   getTableBoardActionMobile,
   getTableBoardActions,
-  titlesFinanacialReporting,
   infoItems,
   getActionsMobileIcon,
+  getTitlesFinancialReporting,
+  titlesFinancialReportingEnum,
 } from "./config";
-import { errorObserver, errorMessages } from "../config";
+import { errorObserver, errorMessagesEnum } from "../config";
 
 interface IPromissoryNotesProps {
   id: string;
   isMobile: boolean;
 }
 
+type DocumentEntry = IPayrollDiscountAuthorization | IPromissoryNotes;
+
 export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   const { id, isMobile } = props;
   const { addFlag } = useFlag();
+  const { lang } = useEnum();
 
   const [creditRequets, setCreditRequests] = useState<ICreditRequest | null>(
     null
@@ -97,51 +102,74 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
           ),
         ]);
 
-      const processResult = (
-        result: PromiseSettledResult<
-          IPayrollDiscountAuthorization[] | IPromissoryNotes[]
-        >,
-        observerId: string,
+ const processResult = (
+        result: PromiseSettledResult<IPayrollDiscountAuthorization[] | IPromissoryNotes[]>,
         sourceType: "payroll" | "promissory_note"
-      ) =>
-        result.status === "fulfilled"
-          ? result.value.map((entry) => ({
-              id: entry.payrollDiscountAuthorizationId,
-              "No. de Obligación": entry.obligationCode,
-              "No. de Documento": entry.documentCode,
-              Tipo: sourceType === "payroll" ? "Libranza" : "Pagaré",
+      ) => {
+        if (result.status === "fulfilled") {
+
+          const entries = result.value as DocumentEntry[];
+
+          return entries.map((entry) => {
+            let currentId = "";
+            
+            if ("payrollDiscountAuthorizationId" in entry) {
+              currentId = entry.payrollDiscountAuthorizationId;
+            } else if ("promissoryNoteId" in entry) {
+              currentId = (entry as IPromissoryNotes).promissory_note_id;
+            }
+
+            return {
+              id: currentId,
+              [titlesFinancialReportingEnum.obligationCode.id]: entry.obligationCode,
+              [titlesFinancialReportingEnum.documentCode.id]: entry.documentCode,
+              [titlesFinancialReportingEnum.type.id]:
+                // eslint-disable-next-line no-nested-ternary
+                sourceType === "payroll"
+                  ? lang === "es"
+                    ? "Libranza"
+                    : "Payroll"
+                  : lang === "es"
+                  ? "Pagaré"
+                  : "Promissory Note",
               tag: (
                 <Tag
                   label={entry.documentState}
                   appearance={appearanceTag(entry.documentState)}
                 />
               ),
-            }))
-          : (errorObserver.notify({
-              id: observerId,
-              message: result.reason.message,
-            }),
-            []);
+            };
+          });
+        } 
+        
+        errorObserver.notify({
+          id: sourceType === "payroll" ? "PayrollDiscount" : "PromissoryNotes",
+          message: typeof result.reason === 'string' ? result.reason : (result.reason as Error).message,
+        });
+        return [];
+      };
 
       const combinedData = [
-        ...processResult(payrollDiscountResult, "PayrollDiscount", "payroll"),
-        ...processResult(
-          promissoryNotesResult,
-          "PromissoryNotes",
-          "promissory_note"
-        ),
+        ...processResult(payrollDiscountResult, "payroll"),
+        ...processResult(promissoryNotesResult, "promissory_note"),
       ];
 
-      if (!combinedData.length)
-        throw new Error("No se encontraron datos en la base de datos");
+      if (combinedData.length === 0) {
+        throw new Error("NoData");
+      }
 
       setDataPromissoryNotes(combinedData);
     } catch (error) {
+   if ((error as Error).message === "NoData") {
+      setErrorMessage(errorMessagesEnum.promissoryNotes.description.i18n[lang]);
+    } else {
       setErrorMessage((error as Error).message);
-      setShowRetry(true);
+    }
+    setShowRetry(true);
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, creditRequets]);
 
   useEffect(() => {
@@ -156,7 +184,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
 
   return (
     <Fieldset
-      title={errorMessages.PromissoryNotes.titleCard}
+      title={errorMessagesEnum.promissoryNotes.titleCard.i18n[lang]}
       heightFieldset="100%"
       hasTable
       hasError={!creditRequets ? true : false}
@@ -165,22 +193,22 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       {!creditRequets || showRetry ? (
         <UnfoundData
           image={ItemNotFound}
-          title={errorMessages.PromissoryNotes.title}
+          title={errorMessagesEnum.promissoryNotes.title.i18n[lang]}
           description={
-            errorMessages.PromissoryNotes.description || errorMessage
+            errorMessagesEnum.promissoryNotes.description.i18n[lang] || errorMessage
           }
-          buttonDescription={errorMessages.PromissoryNotes.button}
+          buttonDescription={errorMessagesEnum.promissoryNotes.button.i18n[lang]}
           onRetry={handleRetry}
         />
       ) : (
         <Stack direction="column" height={!isMobile ? "100%" : "auto"}>
           <TableBoard
             id="promissoryNotes"
-            titles={titlesFinanacialReporting}
+            titles={getTitlesFinancialReporting(lang)}
             entries={dataPromissoryNotes}
-            actions={getTableBoardActions(() => setShowModal(true))}
+            actions={getTableBoardActions(() => setShowModal(true), lang)}
             actionMobile={getTableBoardActionMobile(() => setShowModal(true))}
-            actionMobileIcon={getActionsMobileIcon()}
+            actionMobileIcon={getActionsMobileIcon(lang)}
             loading={loading}
             appearanceTable={{
               widthTd: isMobile ? "23%" : undefined,

@@ -6,17 +6,18 @@ import { CardGray } from "@components/cards/CardGray";
 import { Fieldset } from "@components/data/Fieldset";
 import { IMortgages } from "@services/creditRequest/query/types";
 
-import { dataMortgage } from "./config";
+import { dataMortgageEnum } from "./config";
 
 interface IMortgage {
   isMobile: boolean;
   initialValues: IMortgages[];
   onRetry: () => Promise<void>;
   isLoadingMortgage: boolean;
+  lang: "es" | "en";
 }
 
 export function Mortgage(props: IMortgage) {
-  const { isMobile, initialValues, onRetry, isLoadingMortgage } = props;
+  const { isMobile, initialValues, onRetry, isLoadingMortgage, lang } = props;
 
   const data = initialValues[0];
 
@@ -32,7 +33,7 @@ export function Mortgage(props: IMortgage) {
         {data ? (
           <>
             <Text type="label" weight="bold" size="large">
-              {dataMortgage.title}
+              {dataMortgageEnum.title.i18n[lang]}
             </Text>
             <Divider dashed />
             <Grid
@@ -41,24 +42,24 @@ export function Mortgage(props: IMortgage) {
               gap="20px"
             >
               <CardGray
-                label={dataMortgage.property}
+                label={dataMortgageEnum.property.i18n[lang]}
                 placeHolder={data.propertyType}
               />
               <CardGray
-                label={dataMortgage.state}
+                label={dataMortgageEnum.state.i18n[lang]}
                 placeHolder={data.propertyState}
               />
               <CardGray
-                label={dataMortgage.years}
+                label={dataMortgageEnum.years.i18n[lang]}
                 placeHolder={data.propertyAge}
               />
               <CardGray
-                label={dataMortgage.value}
+                label={dataMortgageEnum.value.i18n[lang]}
                 placeHolder={`$ ${data.propertyPrice}`}
               />
             </Grid>
             <CardGray
-              label={dataMortgage.description}
+              label={dataMortgageEnum.description.i18n[lang]}
               placeHolder={data.descriptionUse}
             />
           </>
@@ -66,9 +67,9 @@ export function Mortgage(props: IMortgage) {
           <Stack margin="auto">
             <ItemNotFound
               image={userNotFound}
-              title={dataMortgage.noBorrowersTitle}
-              description={dataMortgage.noBorrowersDescription}
-              buttonDescription={dataMortgage.retry}
+              title={dataMortgageEnum.noBorrowersTitle.i18n[lang]}
+              description={dataMortgageEnum.noBorrowersDescription.i18n[lang]}
+              buttonDescription={dataMortgageEnum.retry.i18n[lang]}
               onRetry={isLoadingMortgage ? undefined : onRetry}
             />
           </Stack>

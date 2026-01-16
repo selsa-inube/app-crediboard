@@ -1,9 +1,12 @@
+import { useMemo } from "react";
+
 import { TableBoard } from "@components/data/TableBoard";
 import { Accordion, type IAccordionProps } from "@components/data/Accordion";
 import {
-  entriesCommercialManagement,
-  titlesCommercialManagement,
+  getEntriesCommercialManagement,
+  getTitlesCommercialManagement,
 } from "@config/pages/board/outlet/financialReporting/configCommercialManagement";
+import { useEnum } from "@hooks/useEnum";
 
 interface IDataCommercialManagement {
   dataAccordeon: IAccordionProps[];
@@ -13,12 +16,23 @@ interface IDataCommercialManagement {
 
 export const DataCommercialManagement = (props: IDataCommercialManagement) => {
   const { dataAccordeon, dataRef, isOpen = false } = props;
+  const { lang } = useEnum();
+
+   const titles = useMemo(
+    () => getTitlesCommercialManagement(lang),
+    [lang]
+  );
+  
+  const entries = useMemo(
+    () => getEntriesCommercialManagement(lang),
+    [lang]
+  );
   return (
     <div ref={dataRef}>
       <TableBoard
         id="commercialManagement"
-        titles={titlesCommercialManagement}
-        entries={entriesCommercialManagement}
+        titles={titles}
+        entries={entries}
         appearanceTable={{ title: "dark", borderTable: true, widthTd: "180px" }}
       />
       {dataAccordeon.map((accordeon) => (

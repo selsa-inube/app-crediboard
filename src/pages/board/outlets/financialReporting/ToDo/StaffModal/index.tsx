@@ -12,15 +12,16 @@ import {
 import { getCommercialManagerAndAnalyst } from "@services/staff/commercialManagerAndAnalyst";
 
 import { AppContext } from "@context/AppContext";
-import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
+import { textFlagsUsersEnum } from "@config/pages/staffModal/addFlag";
 import { BaseModal } from "@components/modals/baseModal";
 import { IToDo } from "@services/creditRequest/query/types";
 import { ICommercialManagerAndAnalyst } from "@services/staff/types";
 import { ICreditRequests } from "@services/creditRequest/command/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { useEnum } from "@hooks/useEnum";
 
 import { changeUsersByCreditRequest } from "./utils";
-import { txtFlags, errorMessages } from "../config";
+import { txtFlagsEnum, errorMessages } from "../config";
 
 export interface StaffModalProps {
   commercialManager: string;
@@ -70,6 +71,7 @@ export function StaffModal(props: StaffModalProps) {
     analyst: "",
   });
   const isMobile = useMediaQuery("(max-width: 700px)");
+  const { lang } = useEnum();
 
   const [showModal, setShowModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
@@ -132,8 +134,8 @@ export function StaffModal(props: StaffModalProps) {
         setAnalystList(analysts);
       } catch (error) {
         addFlag({
-          title: txtFlags.titleDanger,
-          description: txtFlags.descriptionDanger,
+          title: txtFlagsEnum.titleDanger.i18n[lang],
+          description: txtFlagsEnum.descriptionDanger.i18n[lang],
           appearance: "danger",
           duration: 5000,
         });
@@ -233,8 +235,8 @@ export function StaffModal(props: StaffModalProps) {
       }
 
       addFlag({
-        title: textFlagsUsers.titleSuccess,
-        description: textFlagsUsers.descriptionSuccess,
+        title: textFlagsUsersEnum.titleSuccess.i18n[lang],
+        description: textFlagsUsersEnum.descriptionSuccess.i18n[lang],
         appearance: "success",
         duration: 5000,
       });

@@ -23,17 +23,18 @@ import { IExtraordinaryInstallments } from "@services/creditLimit/getMaximumCred
 import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimitCard/types";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { CardGray } from "@components/cards/CardGray";
+import { useEnum } from "@hooks/useEnum";
 
 import { BaseModal } from "../baseModal";
 import {
-  dataTabs,
-  headers,
-  paymentCapacityData,
+  dataTabsEnum,
+  headersEnum,
+  paymentCapacityDataEnum,
   getMaxValueText
 } from "./config";
 import { StyledTable } from "./styles";
 import { ISourcesOfIncomeState } from "./types";
-import { detailsExtraordinaryInstallments } from "./config";
+import { detailsExtraordinaryInstallmentsEnum } from "./config";
 
 interface IPaymentCapacityModalProps {
   isMobile: boolean;
@@ -61,6 +62,8 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
     businessUnitPublicCode,
     businessManagerCode,
   } = props;
+  const { lang } = useEnum();
+
   const [currentTab, setCurrentTab] = useState("ordinary");
   const [selectedDetail, setSelectedDetail] = useState<IExtraordinaryInstallments | null>(null);
   const [maximumCreditLimitData, setMaximumCreditLimitData] =
@@ -71,12 +74,22 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
       maximumCreditLimitData?.extraordinaryInstallments &&
       maximumCreditLimitData.extraordinaryInstallments.length > 0;
 
-    if (hasExtraordinary) {
-      return dataTabs;
-    }
+    const allTabs = Object.values(dataTabsEnum).map((tab) => ({
+      id: tab.id,
+      label: tab.i18n[lang],
+    }));
 
-    return dataTabs.filter((tab) => tab.id !== "extraordinary");
-  }, [maximumCreditLimitData]);
+    return hasExtraordinary
+      ? allTabs
+      : allTabs.filter((tab) => tab.id === dataTabsEnum.ordinary.id);
+  }, [maximumCreditLimitData, lang]);
+
+  const tableHeaders = useMemo(() => {
+    return Object.values(headersEnum).map((header) => ({
+      key: header.key,
+      label: header.i18n[lang],
+    }));
+  }, [lang]);
 
   const onChange = (tabId: string) => {
     setCurrentTab(tabId);
@@ -161,10 +174,10 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
           >
             <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
             <Text size="large" weight="bold" appearance="danger">
-              {paymentCapacityData.errorLoadingData}
+              {paymentCapacityDataEnum.errorLoadingData.i18n[lang]}
             </Text>
             <Text size="small" appearance="dark" textAlign="center">
-              {paymentCapacityData.errorNoData}
+              {paymentCapacityDataEnum.errorNoData.i18n[lang]}
             </Text>
           </Stack>
         </Fieldset>
@@ -193,7 +206,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                 <Stack direction="column" gap="16px" >
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" weight="bold">
-                      {paymentCapacityData.incomeSources}
+                      {paymentCapacityDataEnum.incomeSources.i18n[lang]}
                     </Text>
                     <Stack alignItems="center" gap="4px">
                       <Text appearance="success">$</Text>
@@ -212,7 +225,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                   </Stack>
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" appearance="gray">
-                      {paymentCapacityData.subsistenceReserve}
+                      {paymentCapacityDataEnum.subsistenceReserve.i18n[lang]}
                     </Text>
                     <Stack alignItems="center" gap="4px">
                       <Text appearance="success">$</Text>
@@ -232,7 +245,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                   <Divider dashed />
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" weight="bold">
-                      {paymentCapacityData.newPromises}
+                      {paymentCapacityDataEnum.newPromises.i18n[lang]}
                     </Text>
                     <Stack alignItems="center" gap="4px">
                       <Text appearance="success">$</Text>
@@ -250,17 +263,15 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                   </Stack>
                   <Stack justifyContent="space-between">
                     <Text type="body" size="medium" appearance="gray">
-                      {paymentCapacityData.getLineOfCredit(
-                        maximumCreditLimitData?.lineOfCreditAbbreviatedName ||
-                        "",
-                      )}
+                      {
+                      paymentCapacityDataEnum.lineOfCredit.i18n[lang] + " " + maximumCreditLimitData?.lineOfCreditAbbreviatedName}
                     </Text>
                     <Stack alignItems="center" gap="4px">
                       {loading ? (
                         <SkeletonLine width="70px" animated={true} />
                       ) : (
                         <Text type="body" size="small">
-                          {maximumCreditLimitData?.maxTerm + paymentCapacityData.months}
+                          {maximumCreditLimitData?.maxTerm + paymentCapacityDataEnum.months.i18n[lang]}
                         </Text>
                       )}
                     </Stack>
@@ -270,6 +281,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                     {getMaxValueText(
                       maximumCreditLimitData?.maxAmount || 0,
                       maximumCreditLimitData?.maxTerm || 0,
+                      lang,
                     )}
                   </Text>
                   <Stack direction="column" alignItems="center" margin="0 0 8px 0">
@@ -290,7 +302,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                           )}
                         </Text>
                         <Text type="body" size="small" appearance="gray">
-                          {paymentCapacityData.maxValueDescription}
+                          {paymentCapacityDataEnum.maxValueDescription.i18n[lang]}
                         </Text>
                       </>
                     )}
@@ -303,12 +315,10 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                     <Table tableLayout="auto">
                       <Thead>
                         <Tr>
-                          {headers
-                            .filter((header) => (isMobile ? header.mobile : header.key !== "details"))
+                          {tableHeaders
+                            .filter(h => !isMobile || h.key === "concept" || h.key === "details")
                             .map((header) => (
-                              <Th key={header.key} align="center">
-                                {header.label}
-                              </Th>
+                              <Th key={header.key} align="center">{header.label}</Th>
                             ))}
                         </Tr>
                       </Thead>
@@ -360,7 +370,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                           <Tr>
                             <Td colSpan={isMobile ? 2 : 3} align="center">
                               <Text type="body" size="small" appearance="gray">
-                                {paymentCapacityData.noExtraordinaryInstallmentsAvailable}
+                                {paymentCapacityDataEnum.noExtraordinaryInstallmentsAvailable.i18n[lang]}
                               </Text>
                             </Td>
                           </Tr>
@@ -381,7 +391,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                   spacing="narrow"
                 />
                 <Text margin="0px 5px" size="small">
-                  {paymentCapacityData.maxAmountExtraordinary}
+                  {paymentCapacityDataEnum.maxAmountExtraordinary.i18n[lang]}
                 </Text>
               </Stack>
               <Stack direction="column" alignItems="center" gap="4px">
@@ -398,7 +408,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
                       {currencyFormat(totalExtraordinary, true)}
                     </Text>
                     <Text type="body" size="small" appearance="gray">
-                      {paymentCapacityData.maxTotal}
+                      {paymentCapacityDataEnum.maxTotal.i18n[lang]}
                     </Text>
                   </>
                 )}
@@ -411,8 +421,8 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
 
     {selectedDetail && (
       <BaseModal
-        title={detailsExtraordinaryInstallments.title}
-        nextButton={detailsExtraordinaryInstallments.close}
+        title={detailsExtraordinaryInstallmentsEnum.title.i18n[lang]}
+        nextButton={detailsExtraordinaryInstallmentsEnum.close.i18n[lang]}
         handleNext={handleCloseDetail}
         handleClose={handleCloseDetail}
         width="335px"
@@ -423,12 +433,12 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
           gap="16px"
         >
           <CardGray
-            label={detailsExtraordinaryInstallments.date}
+            label={detailsExtraordinaryInstallmentsEnum.date.i18n[lang]}
             placeHolder={currencyFormat(Number(selectedDetail.installmentAmount) || 0, true)}
             height="52px"
           />
           <CardGray
-            label={detailsExtraordinaryInstallments.value}
+            label={detailsExtraordinaryInstallmentsEnum.value.i18n[lang]}
             placeHolder={formatPrimaryDate(new Date(selectedDetail.installmentDate))}
             height="52px"
           />

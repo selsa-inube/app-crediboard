@@ -1,4 +1,5 @@
 import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
+import { EnumType } from "@hooks/useEnum";
 
 import { CreditProductCardUI } from "./interface";
 
@@ -13,6 +14,7 @@ interface CreditProductCardProps {
   onEdit: () => void;
   onDelete: () => void;
   availableEditCreditRequest: boolean;
+  lang: EnumType;
 }
 
 function CreditProductCard(props: CreditProductCardProps) {
@@ -26,7 +28,8 @@ function CreditProductCard(props: CreditProductCardProps) {
     schedule,
     onEdit,
     onDelete,
-    availableEditCreditRequest
+    availableEditCreditRequest,
+    lang
   } = props;
 
   return (
@@ -41,6 +44,7 @@ function CreditProductCard(props: CreditProductCardProps) {
       onEdit={onEdit}
       onDelete={onDelete}
       availableEditCreditRequest={availableEditCreditRequest}
+      lang={lang}
     />
   );
 }

@@ -19,10 +19,11 @@ import {
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { IProspect } from "@services/prospect/types";
+import { EnumType } from "@hooks/useEnum";
 
 import {
-  disbursementGeneral,
-  disbursemenOptionAccount,
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum,
 } from "../config";
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
@@ -36,6 +37,7 @@ interface IDisbursementWithCheckEntityProps {
   businessUnitPublicCode: string;
   isAmountReadOnly: boolean;
   businessManagerCode: string;
+  lang: EnumType;
   customerData?: ICustomerData;
   onFormValid: (isValid: boolean) => void;
   handleOnChange: (values: IDisbursementGeneral) => void;
@@ -56,6 +58,7 @@ export function DisbursementWithCheckEntity(
     customerData,
     getTotalAmount,
     prospectData,
+    lang
   } = props;
 
   const {
@@ -81,8 +84,8 @@ export function DisbursementWithCheckEntity(
             iconBefore={
               <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
             }
-            label={disbursementGeneral.label}
-            placeholder={disbursementGeneral.place}
+            label={disbursementGeneralEnum.labelTurn.i18n[lang]}
+            placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
             size="compact"
             value={validateCurrencyField(
               "amount",
@@ -101,7 +104,7 @@ export function DisbursementWithCheckEntity(
               isInvalidAmount ? "invalid" : undefined
             }
             readOnly={isAmountReadOnly}
-            message={`${disbursemenOptionAccount.valueTurnFail}${currencyFormat(initialValues.amount, false)}`}
+            message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[lang]}${currencyFormat(initialValues.amount, false)}`}
             fullwidth
           />
         </Stack>
@@ -116,14 +119,14 @@ export function DisbursementWithCheckEntity(
             disabled={isDisabled}
           />
           <Text type="label" size="medium">
-            {disbursementGeneral.labelCheck}
+            {disbursementGeneralEnum.labelCheck.i18n[lang]}
           </Text>
         </Stack>
       </Stack>
       <Divider dashed />
       <Stack direction="column" gap="16px">
         <Text type="label" size="medium">
-          {disbursementGeneral.labelToggle}
+          {disbursementGeneralEnum.labelToggle.i18n[lang]}
         </Text>
       </Stack>
       <Stack direction="row" gap="16px">
@@ -144,8 +147,8 @@ export function DisbursementWithCheckEntity(
           }
         >
           {(formik.values[optionNameForm]?.toggle ?? true)
-            ? disbursementGeneral.optionToggleYes
-            : disbursementGeneral.optionToggleNo}
+            ? disbursementGeneralEnum.optionToggleYes.i18n[lang]
+            : disbursementGeneralEnum.optionToggleNo.i18n[lang]}
         </Text>
       </Stack>
       <Divider dashed />
@@ -168,8 +171,8 @@ export function DisbursementWithCheckEntity(
         <Textarea
           id={"description"}
           name={`${optionNameForm}.description`}
-          label={disbursemenOptionAccount.observation}
-          placeholder={disbursemenOptionAccount.placeObservation}
+          label={disbursemenOptionAccountEnum.observation.i18n[lang]}
+          placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
           value={formik.values[optionNameForm]?.description || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}

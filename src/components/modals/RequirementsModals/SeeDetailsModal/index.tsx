@@ -13,9 +13,10 @@ import {
 
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { validationMessages } from "@validations/validationMessages";
+import { useEnum } from "@hooks/useEnum";
 
 import { StyledModal, StyledTextarea, StyledContainerClose } from "./styles";
-import { dataSeeDetails } from "./config";
+import { dataSeeDetailsEnum } from "./config";
 
 export interface SeeDetailsModalProps {
   date: Date;
@@ -32,6 +33,7 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
     onCloseModal,
   } = props;
 
+  const { lang } = useEnum();
   const isMobile = useMediaQuery("(max-width: 700px)");
   const node = document.getElementById(portalId ?? "portal");
   if (!node) {
@@ -47,11 +49,11 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
       <StyledModal $smallScreen={isMobile}>
         <Stack alignItems="center" justifyContent="space-between">
           <Text type="headline" size="small">
-            {dataSeeDetails.more}
+            {dataSeeDetailsEnum.more.i18n[lang]}
           </Text>
           <StyledContainerClose onClick={onCloseModal}>
             <Stack alignItems="center" gap="8px">
-              <Text>{dataSeeDetails.close}</Text>
+              <Text>{dataSeeDetailsEnum.close.i18n[lang]}</Text>
               <Icon
                 icon={<MdClear />}
                 size="24px"
@@ -81,7 +83,7 @@ export function SeeDetailsModal(props: SeeDetailsModalProps) {
           </StyledTextarea>
         </Stack>
         <Stack justifyContent="flex-end" margin="16px 0">
-          <Button onClick={onCloseModal}>{dataSeeDetails.close}</Button>
+          <Button onClick={onCloseModal}>{dataSeeDetailsEnum.close.i18n[lang]}</Button>
         </Stack>
       </StyledModal>
     </Blanket>,

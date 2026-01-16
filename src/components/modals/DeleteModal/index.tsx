@@ -1,8 +1,9 @@
 import { Text, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
+import { useEnum } from "@hooks/useEnum";
 
-import { DeleteData } from "./config";
+import { DeleteDataEnum } from "./config";
 
 export interface IDeleteModalProps {
   TextDelete: string;
@@ -16,12 +17,13 @@ export function DeleteModal(props: IDeleteModalProps) {
   const { handleClose, handleDelete = () => {}, TextDelete, isSendingData } = props;
 
   const isMobile = useMediaQuery("(max-width:880px)");
+  const { lang } = useEnum();
 
   return (
     <BaseModal
-      title={DeleteData.title}
-      nextButton={DeleteData.delate}
-      backButton={DeleteData.cancel}
+      title={DeleteDataEnum.title.i18n[lang]}
+      nextButton={DeleteDataEnum.delate.i18n[lang]}
+      backButton={DeleteDataEnum.cancel.i18n[lang]}
       handleNext={handleDelete}
       handleClose={handleClose}
       initialDivider={false}

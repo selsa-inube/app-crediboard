@@ -19,10 +19,11 @@ import { validationMessages } from "@validations/validationMessages";
 import { SelectedFilters } from "@components/cards/SelectedFilters/index.tsx";
 import { Filter } from "@components/cards/SelectedFilters/interface.ts";
 import { IFilterFormValues } from "@pages/board/outlets/boardlayout/index.tsx";
+import { useEnum } from "@hooks/useEnum";
 
 import { StyledModal, StyledContainerClose } from "./styles.ts";
 import { FormValues } from "./types.ts";
-import { dataFiltersRequest } from "./config.ts";
+import { dataFiltersRequestEnum } from "./config.ts";
 
 export interface SelectedFilter extends IOption {
   count: number;
@@ -56,6 +57,8 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
   const portalNode = document.getElementById(portalId);
 
   const [loading, setLoading] = useState(false);
+
+  const { lang } = useEnum();
 
   const validationSchema = Yup.object({
     assignment: Yup.string().required(validationMessages.required),
@@ -109,11 +112,11 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
           margin="0px 0px 10px 0px"
         >
           <Text type="headline" size="small">
-            {dataFiltersRequest.filter}
+            {dataFiltersRequestEnum.filter.i18n[lang]}
           </Text>
           <StyledContainerClose onClick={onCloseModal}>
             <Stack alignItems="center" gap="8px">
-              <Text>{dataFiltersRequest.close}</Text>
+              <Text>{dataFiltersRequestEnum.close.i18n[lang]}</Text>
               <Icon
                 icon={<MdClear />}
                 size="24px"
@@ -135,6 +138,7 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
               <SelectedFilters
                 filters={selectedFilters}
                 onRemove={onRemoveFilter}
+                lang={lang}
               />
             </Stack>
             <Divider dashed />
@@ -177,10 +181,10 @@ export function FilterRequestModal(props: FilterRequestModalProps) {
                 appearance="gray"
                 variant="outlined"
               >
-                {dataFiltersRequest.cancel}
+                {dataFiltersRequestEnum.cancel.i18n[lang]}
               </Button>
               <Button onClick={handleSubmit} loading={loading}>
-                {dataFiltersRequest.filter}
+                {dataFiltersRequestEnum.filter.i18n[lang]}
               </Button>
             </Stack>
           </Stack>

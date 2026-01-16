@@ -11,8 +11,9 @@ import { getUnconveredPortfolio } from "@services/creditProfiles/GetUnconveredPo
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { IUncoveredPortfolio } from "@services/creditProfiles/types";
 import { ICreditRequest } from "@services/creditRequest/query/types";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataOpenWallet } from "./config";
+import { dataOpenWalletEnum } from "./config";
 
 interface OpenWalletProps {
   overdraftFactor?: number;
@@ -35,6 +36,8 @@ export function OpenWallet(props: OpenWalletProps) {
     retryDelay = 2000,
     setLoading,
   } = props;
+
+  const { lang } = useEnum();
 
   const [data, setData] = useState<IUncoveredPortfolio | null>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -73,7 +76,7 @@ export function OpenWallet(props: OpenWalletProps) {
         }, retryDelay);
       } else {
         setShowErrorModal(true);
-        setMessageError(dataOpenWallet.modalError);
+        setMessageError(dataOpenWalletEnum.modalError.i18n[lang]);
         setIsInitialLoad(false);
       }
     } finally {
@@ -98,16 +101,16 @@ export function OpenWallet(props: OpenWalletProps) {
 
   return (
     <CardInfoContainer
-      title={dataOpenWallet.title}
+      title={dataOpenWalletEnum.title.i18n[lang]}
       icon={<MdOutlineRequestQuote />}
       isMobile={isMobile}
     >
       {!data ? (
         <ItemNotFound
           image={userNotFound}
-          title={dataOpenWallet.itemNotFound.title}
-          description={dataOpenWallet.itemNotFound.description}
-          buttonDescription={dataOpenWallet.itemNotFound.buttonDescription}
+          title={dataOpenWalletEnum.itemNotFound.title.i18n[lang]}
+          description={dataOpenWalletEnum.itemNotFound.description.i18n[lang]}
+          buttonDescription={dataOpenWalletEnum.itemNotFound.buttonDescription.i18n[lang]}
           route="#"
           onRetry={handleRetry}
         />
@@ -116,7 +119,7 @@ export function OpenWallet(props: OpenWalletProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "110px" : "150px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWallet.labels.overdraftFactor}
+                {dataOpenWalletEnum.labels.overdraftFactor.i18n[lang]}
               </Text>
             </Stack>
             <Stack alignItems="center" gap="8px">
@@ -128,7 +131,7 @@ export function OpenWallet(props: OpenWalletProps) {
                 {Math.round(data.reciprocityRatio)}
               </Text>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWallet.labels.overdraftFactorSuffix}
+                {dataOpenWalletEnum.labels.overdraftFactorSuffix.i18n[lang]}
               </Text>
             </Stack>
           </Stack>
@@ -137,7 +140,7 @@ export function OpenWallet(props: OpenWalletProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "110px" : "150px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWallet.labels.valueDiscovered}
+                {dataOpenWalletEnum.labels.valueDiscovered.i18n[lang]}
               </Text>
             </Stack>
             <Text
@@ -153,7 +156,7 @@ export function OpenWallet(props: OpenWalletProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "120px" : "150px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWallet.labels.reciprocity}
+                {dataOpenWalletEnum.labels.reciprocity.i18n[lang]}
               </Text>
             </Stack>
             <Stack alignItems="center" gap="8px">
@@ -165,7 +168,7 @@ export function OpenWallet(props: OpenWalletProps) {
                 {Math.round(data.reciprocityRatio)}
               </Text>
               <Text size={isMobile ? "small" : "medium"}>
-                {dataOpenWallet.labels.reciprocitySuffix}
+                {dataOpenWalletEnum.labels.reciprocitySuffix.i18n[lang]}
               </Text>
             </Stack>
           </Stack>

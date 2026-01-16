@@ -9,7 +9,7 @@ const props: Partial<ArgTypes<CreditProductCardProps>> = {
   },
   paymentMethod: {
     control: "text",
-    description: "Payment method associated with the credit product.",
+    description: "Payment channel associated with the credit product.",
   },
   loanAmount: {
     control: "number",
@@ -26,7 +26,7 @@ const props: Partial<ArgTypes<CreditProductCardProps>> = {
   },
   periodicFee: {
     control: "number",
-    description: "Periodic fee including both principal and interest.",
+    description: "Periodic loan amount including both principal and interest.",
   },
   schedule: {
     control: "text",

@@ -1,8 +1,10 @@
 import { Icon, Stack, Text } from "@inubekit/inubekit";
 import { MdClear } from "react-icons/md";
 
+import { useEnum } from "@hooks/useEnum";
+
 import { BaseModal } from "../baseModal";
-import { errorModalConfig } from "./config";
+import { errorModalConfigEnum } from "./config";
 
 interface IErrorModalProps {
   isMobile?: boolean;
@@ -13,10 +15,12 @@ interface IErrorModalProps {
 export function ErrorModal(props: IErrorModalProps) {
   const { isMobile, message, handleClose } = props;
 
+  const { lang } = useEnum();
+
   return (
     <BaseModal
-      title={errorModalConfig.title}
-      nextButton={errorModalConfig.understood}
+      title={errorModalConfigEnum.title.i18n[lang]}
+      nextButton={errorModalConfigEnum.understood.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
       width={isMobile ? "300px" : "450px"}
@@ -31,7 +35,7 @@ export function ErrorModal(props: IErrorModalProps) {
           size="68px"
         />
         <Text type="body" size="large" weight="bold">
-          {errorModalConfig.excuses}
+          {errorModalConfigEnum.excuses.i18n[lang]}
         </Text>
         <Text type="body" size="large" appearance="gray">
           {message}

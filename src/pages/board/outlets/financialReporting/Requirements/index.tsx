@@ -23,19 +23,20 @@ import {
   IPackagesOfRequirementsById,
   IPatchOfRequirements,
 } from "@services/requirementsPackages/types";
+import { useEnum } from "@hooks/useEnum";
 
 import {
   infoItems,
   maperDataRequirements,
   maperEntries,
-  dataButton,
-  textFlagsRequirements,
-  dataAddRequirement,
+  getDataButton,
+  textFlagsRequirementsEnum,
+  dataAddRequirementEnum,
   getActionsMobileIcon,
   questionToBeAskedInModalText,
 } from "./config";
 import { DocumentItem, MappedRequirements, RequirementType } from "./types";
-import { errorMessages } from "../config";
+import { errorMessagesEnum } from "../config";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 interface IRequirementsData {
@@ -63,6 +64,8 @@ export const Requirements = (props: IRequirementsProps) => {
     businessManagerCode,
     creditRequestCode,
   } = props;
+  const { lang } = useEnum();
+
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -113,7 +116,7 @@ export const Requirements = (props: IRequirementsProps) => {
     IPackagesOfRequirementsById[]
   >([]);
   const [justificationRequirement, setJustificationRequirement] = useState(
-    dataAddRequirement.descriptionJustification
+    dataAddRequirementEnum.descriptionJustification.i18n[lang]
   );
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
   const { addFlag } = useFlag();
@@ -267,8 +270,8 @@ export const Requirements = (props: IRequirementsProps) => {
         setApprovalDocumentValues(documentVals);
         setApprovalHumanValues(humanVals);
 
-        const processedEntries = maperEntries(mapped);
-        const processedRequirements = maperDataRequirements(processedEntries);
+        const processedEntries = maperEntries(mapped, lang);
+        const processedRequirements = maperDataRequirements(processedEntries, lang);
         setDataRequirements(processedRequirements);
       } catch (error) {
         console.error("Error fetching requirements:", error);
@@ -381,7 +384,7 @@ export const Requirements = (props: IRequirementsProps) => {
           code + err?.message + (err?.data?.description || "");
 
         addFlag({
-          title: textFlagsRequirements.titleError,
+          title: textFlagsRequirementsEnum.titleError.i18n[lang],
           description,
           appearance: "danger",
           duration: 5000,
@@ -522,8 +525,8 @@ export const Requirements = (props: IRequirementsProps) => {
         });
       });
 
-      const processedEntries = maperEntries(mapped);
-      const processedRequirements = maperDataRequirements(processedEntries);
+      const processedEntries = maperEntries(mapped, lang);
+      const processedRequirements = maperDataRequirements(processedEntries, lang);
       setDataRequirements(processedRequirements);
     } catch (error) {
       console.error("Error refreshing requirements:", error);
@@ -534,8 +537,9 @@ export const Requirements = (props: IRequirementsProps) => {
   return (
     <>
       <Fieldset
-        title={errorMessages.Requirements.titleCard}
-        activeButton={dataButton(
+        title={errorMessagesEnum.requirements.titleCard.i18n[lang]}
+        activeButton={getDataButton(
+          lang,
           () => setShowAddRequirementModal(true),
           () => setShowAddSystemValidationModal(true)
         )}
@@ -548,9 +552,9 @@ export const Requirements = (props: IRequirementsProps) => {
         {hasEntriesRequirements.length === 0 ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessages.Requirements.title}
-            description={errorMessages.Requirements.description}
-            buttonDescription={errorMessages.Requirements.button}
+            title={errorMessagesEnum.requirements.title.i18n[lang]}
+            description={errorMessagesEnum.requirements.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.requirements.button.i18n[lang]}
             onRetry={() => setError(false)}
           />
         ) : (
@@ -745,8 +749,8 @@ export const Requirements = (props: IRequirementsProps) => {
         )}
       {showAddRequirementModal && (
         <AddRequirement
-          title={dataAddRequirement.title}
-          buttonText={dataAddRequirement.add}
+          title={dataAddRequirementEnum.title.i18n[lang]}
+          buttonText={dataAddRequirementEnum.add.i18n[lang]}
           optionsRequirement={AddRequirementMock}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}
@@ -761,8 +765,8 @@ export const Requirements = (props: IRequirementsProps) => {
       )}
       {showAddSystemValidationModal && (
         <AddSystemValidation
-          title={dataAddRequirement.title}
-          buttonText={dataAddRequirement.add}
+          title={dataAddRequirementEnum.title.i18n[lang]}
+          buttonText={dataAddRequirementEnum.add.i18n[lang]}
           optionsRequirement={AddRequirementMockSistemValidations}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}
