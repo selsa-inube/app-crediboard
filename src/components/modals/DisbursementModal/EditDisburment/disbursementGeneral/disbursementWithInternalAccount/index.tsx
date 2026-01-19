@@ -145,6 +145,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
       }
     }
     fetchAccounts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIdentification, businessUnitPublicCode, businessManagerCode, formik.values[optionNameForm]?.toggle]);
 
   useEffect(() => {
@@ -153,6 +154,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
         formik.setFieldValue(`${optionNameForm}.accountNumber`, accountOptions[0].value);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountOptions, isLoadingAccounts, optionNameForm]);
 
   return (

@@ -158,6 +158,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     };
 
     fetchDisbursementData();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, prospectData, viewMode]);
 
   const sortedModes = useMemo(() => {
@@ -279,7 +280,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
 
           if (dataFiltered.toggle || dataFiltered.toggle === undefined) {
             const dataClient = await searchAllCustomerCatalog(identificationNumber, businessUnitPublicCode, businessManagerCode);
-            if (dataClient != null) {
+            if (dataClient !== null) {
               rawData = {
                 ...dataFiltered,
                 disbursementAmount: Number(dataFiltered.amount),

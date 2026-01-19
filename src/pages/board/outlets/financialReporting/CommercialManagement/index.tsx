@@ -208,6 +208,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     if (creditRequestCode) {
       fetchCreditRequest();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
     creditRequestCode,
