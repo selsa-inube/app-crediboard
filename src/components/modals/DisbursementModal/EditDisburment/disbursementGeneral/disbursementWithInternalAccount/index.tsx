@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { 
-  Stack, 
-  Text, 
-  Divider, 
-  Toggle, 
-  Checkbox, 
-  Textarea, 
-  Select, 
-  Textfield, 
-  inube, 
-  SkeletonLine 
+import {
+  Stack,
+  Text,
+  Divider,
+  Toggle,
+  Checkbox,
+  Textarea,
+  Select,
+  Textfield,
+  inube,
+  SkeletonLine
 } from "@inubekit/inubekit";
 import { FormikValues } from "formik";
 
@@ -74,6 +74,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
       const hasYupErrors = stepErrors && Object.keys(stepErrors).length > 0;
       const currentValues = formik.values[optionNameForm] || {};
       const isFormVisible = !currentValues.toggle;
+      const isThirdParty = currentValues.toggle === false;
 
       let failsBusinessRule = false;
       if (isFormVisible && customerData?.publicCode) {
@@ -81,13 +82,34 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
           failsBusinessRule = true;
         }
       }
-      const isValid = !hasYupErrors && !failsBusinessRule;
+
+      let isGeneralInfoIncomplete = false;
+
+      if (isThirdParty) {
+        const requiredFields = [
+          "documentType", "identification", "name",
+          "lastName", "birthdate", "sex", "phone", "mail", "city"
+        ];
+        isGeneralInfoIncomplete = requiredFields.some((field) => {
+          const value = currentValues[field];
+          return !value || String(value).trim() === "";
+        });
+      }
+
+      const isAccountMissing = !currentValues.accountNumber || String(currentValues.accountNumber).trim() === "";
+
+      const isValid =
+        !hasYupErrors &&
+        !failsBusinessRule &&
+        (!isThirdParty || !isGeneralInfoIncomplete) &&
+        !isAccountMissing;
 
       if (lastValidState.current !== isValid) {
         lastValidState.current = isValid;
         onFormValid(isValid);
       }
     };
+
     const timer = setTimeout(checkValidity, 200);
     return () => clearTimeout(timer);
   }, [formik.errors, formik.values, optionNameForm, customerData, onFormValid]);
@@ -98,7 +120,9 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
       setAccountOptions([]);
       try {
         const response = await searchAllCardSavingProducts(
-          currentIdentification,
+          formik.values[optionNameForm].identification
+            ? formik.values[optionNameForm].identification
+            : formik.values[optionNameForm].payeeIdentificationNumber,
           businessUnitPublicCode,
           businessManagerCode,
         );
@@ -123,42 +147,25 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
     fetchAccounts();
   }, [currentIdentification, businessUnitPublicCode, businessManagerCode, formik.values[optionNameForm]?.toggle]);
 
-  const previousIdentificationRef = useRef<string>();
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!previousIdentificationRef.current) {
-        previousIdentificationRef.current = currentIdentification;
-        return;
-      }
-      if (previousIdentificationRef.current !== currentIdentification) {
-        formik.setFieldValue(`${optionNameForm}.accountNumber`, "");
-        previousIdentificationRef.current = currentIdentification;
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [currentIdentification, formik, optionNameForm]);
-
-  const currentAccount = formik.values[optionNameForm]?.accountNumber;
   useEffect(() => {
     if (accountOptions.length === 1) {
-      const onlyOption = accountOptions[0].value;
-      if (currentAccount !== onlyOption) {
-        formik.setFieldValue(`${optionNameForm}.accountNumber`, onlyOption);
+      if (accountOptions[0].value) {
+        formik.setFieldValue(`${optionNameForm}.accountNumber`, accountOptions[0].value);
       }
     }
-  }, [accountOptions, currentAccount, optionNameForm, formik]);
+  }, [accountOptions, isLoadingAccounts, optionNameForm]);
 
   return (
     <Stack direction="column" padding={isMobile ? "4px 10px" : "10px 16px"} gap="16px" justifyContent="center">
       <Stack direction="column" gap="20px">
         <Stack>
           <Textfield
-            id="amount"
+            id={`${optionNameForm}.amount`}
             name={`amount`}
             label={disbursementGeneral.label}
             placeholder={disbursementGeneral.place}
             size="compact"
-            value={validateCurrencyField("amount", formik, false, optionNameForm)}
+            value={validateCurrencyField(`amount`, formik, false, optionNameForm)}
             onChange={(event) => handleChangeWithCurrency(formik, event, optionNameForm)}
             onBlur={() => {
               formik.setFieldTouched(`${optionNameForm}.amount`, true);
@@ -224,7 +231,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
             {accountOptions.length > 1 ? (
               <Select
                 id={`${optionNameForm}.accountNumber`}
-                name={`${optionNameForm}.accountNumber`}
+                name={`accountNumber`}
                 label={disbursemenOptionAccount.labelAccount}
                 placeholder={disbursemenOptionAccount.placeOption}
                 size="compact"

@@ -48,6 +48,7 @@ export interface IPersonData {
   phone: string;
   mail: string;
   city: string;
+  accountNumber?: string;
 }
 
 export interface IInternalAccount extends IPersonData {

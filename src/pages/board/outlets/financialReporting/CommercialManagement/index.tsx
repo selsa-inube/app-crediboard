@@ -19,7 +19,6 @@ import {
   Divider,
   useMediaQuery,
   Button,
-  useFlag,
   SkeletonLine
 } from "@inubekit/inubekit";
 import {
@@ -27,7 +26,6 @@ import {
   IModeOfDisbursement,
 } from "@services/creditRequest/query/types";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
-import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
   capitalizeFirstLetter,
@@ -87,6 +85,8 @@ interface ComercialManagementProps {
   generateAndSharePdf: () => void;
   creditRequestCode: string;
   errorGetProspects: boolean;
+  setErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   isPrint?: boolean;
   hideContactIcons?: boolean;
   requestValue?: IPaymentChannel[];
@@ -105,7 +105,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     sentData,
     setSentData,
     setRequestValue,
-    errorGetProspects
+    errorGetProspects,
+    setErrorModal,
+    setErrorMessage
   } = props;
 
   const [showMenu, setShowMenu] = useState(false);
@@ -146,7 +148,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   });
 
   const navigation = useNavigate();
-  const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width: 720px)");
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -162,7 +163,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   useEffect(() => {
-    console.log("prospectData: ", prospectData);
     setLocalProspectData(prospectData);
     if (prospectData !== undefined) {
       setLoading(false);
@@ -190,7 +190,18 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
         );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        console.error(error);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setErrorMessage(description);
+        setErrorModal(true);
       }
     };
 
@@ -238,13 +249,18 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
         setDisbursementData(organizedData);
       } catch (error) {
-        console.error(error);
-        addFlag({
-          title: textFlagsUsers.titleWarning,
-          description: textFlagsUsers.descriptionWarning,
-          appearance: "danger",
-          duration: 5000,
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setErrorMessage(description);
+        setErrorModal(true);
       } finally {
         if (prospectData !== undefined) {
           setLoading(false);
@@ -845,7 +861,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <StyledContainerDiverProspect>
                 {collapse && <Stack>{isMobile && <Divider />}</Stack>}
               </StyledContainerDiverProspect>
-               {collapse && (
+              {collapse && (
                 <CreditProspect
                   key={refreshKey}
                   borrowersProspect={borrowersProspect}
@@ -880,7 +896,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     setRefreshKey((prev) => prev + 1);
                   }}
                 />
-              )} 
+              )}
             </Stack>
             {currentModal === "creditLimit" && (
               <CreditLimitModal
@@ -970,6 +986,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
                 creditRequestCode={creditRequestCode}
+                setErrorMessage={setErrorMessage}
+                setErrorModal={setErrorModal}
               />
             )}
             {infoModal && (

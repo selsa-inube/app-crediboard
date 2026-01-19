@@ -76,11 +76,11 @@ export function DisbursementWithCheckEntity(
       <Stack direction="column" gap="20px">
         <Stack width={isMobile ? "100%" : "498px"}>
           <Textfield
-            id="amount"
-            name="amount"
             iconBefore={
               <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
             }
+            id={`${optionNameForm}.amount`}
+            name="amount"
             label={disbursementGeneral.label}
             placeholder={disbursementGeneral.place}
             size="compact"

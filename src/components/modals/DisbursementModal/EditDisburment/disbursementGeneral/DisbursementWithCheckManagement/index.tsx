@@ -79,7 +79,7 @@ export function DisbursementWithCheckManagement(
             iconBefore={
               <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
             }
-            id="amount"
+            id={`${optionNameForm}.amount`}
             name="amount"
             label={disbursementGeneral.label}
             placeholder={disbursementGeneral.place}

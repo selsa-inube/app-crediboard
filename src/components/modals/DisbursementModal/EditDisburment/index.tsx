@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
+/* import { useFlag } from "@inubekit/inubekit"; */
 
 import { IProspect } from "@services/prospect/types";
 import { searchAllModesOfDisbursementTypes } from "@services/lineOfCredit/getSearchAllModesOfDisbursementTypes";
@@ -21,6 +22,7 @@ import {
   DataToTabIdMap
 } from "./utils";
 import { DisbursementModal } from "..";
+/* import { flagSucessDisbursementEdited } from "./config"; */
 
 export interface IDisbursementFlowManagerProps {
   isMobile: boolean;
@@ -41,6 +43,8 @@ export interface IDisbursementFlowManagerProps {
   businessManagerCode: string;
   prospectSummaryData: IProspectSummaryById | undefined;
   creditRequestCode: string;
+  setErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
@@ -56,6 +60,8 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     businessManagerCode,
     prospectSummaryData,
     creditRequestCode,
+    setErrorModal,
+    setErrorMessage
   } = props;
 
   const [modesOfDisbursement, setModesOfDisbursement] = useState<string[]>([]);
@@ -70,6 +76,8 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     mapModesToFormikInitialValues(initialDisbursementData)
   );
   const [loadingDisbursementData, setLoadingDisbursementData] = useState<boolean>(false);
+
+  /* const { addFlag } = useFlag(); */
 
   useEffect(() => {
     const newData = mapModesToFormikInitialValues(initialDisbursementData);
@@ -130,6 +138,19 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
           setModesOfDisbursement([]);
         }
       } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setErrorMessage(description);
+        setErrorModal(true);
+
         setModesOfDisbursement([]);
       } finally {
         setInternalLoading(false);
@@ -236,7 +257,6 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
 
   const handleSave = async (data: IDisbursementGeneral) => {
     try {
-      console.log(data);
       const disbursementMethods: (keyof Omit<IDisbursementGeneral, "amount">)[] = [
         "Internal_account",
         "External_account",
@@ -245,17 +265,20 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
         "Cash",
       ];
 
+      const foundCreditRequestId = Object.values(initialDisbursementData)
+        .find((item) => item && item.creditRequestId)?.creditRequestId;
+
       disbursementMethods.forEach(async (method) => {
         const dataFiltered = data[method];
 
         if (dataFiltered && typeof dataFiltered === "object" && Object.keys(dataFiltered).length > 0) {
-          console.log(".......", await searchAllCustomerCatalog(identificationNumber, businessUnitPublicCode, businessManagerCode));
+
           setLoadingDisbursementData(true);
+
           let rawData = {};
-          console.log("dataFiltered.toggle ", dataFiltered.toggle);
-          if (dataFiltered.toggle) {
+
+          if (dataFiltered.toggle || dataFiltered.toggle === undefined) {
             const dataClient = await searchAllCustomerCatalog(identificationNumber, businessUnitPublicCode, businessManagerCode);
-            console.log("dataClient ", dataClient);
             if (dataClient != null) {
               rawData = {
                 ...dataFiltered,
@@ -266,9 +289,12 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
                 payeeIdentificationType: dataClient.generalAttributeClientNaturalPersons[0].typeIdentification || "",
                 payeeName: dataClient.generalAttributeClientNaturalPersons[0].firstNames || "",
                 payeePhoneNumber: dataClient.generalAttributeClientNaturalPersons[0].cellPhoneContact || "",
-                payeeSurname: dataClient.generalAttributeClientNaturalPersons[0].lastNames  || "",
+                payeeSurname: dataClient.generalAttributeClientNaturalPersons[0].lastNames || "",
                 payeeBiologicalSex: dataClient.generalAttributeClientNaturalPersons[0].gender === "F-Femenino" ? "F" : "M",
-
+                modeOfDisbursementType: method,
+                payeeCityOfResidence: dataClient.generalAttributeClientNaturalPersons[0].cityNameExpeditionIdentification || "",
+                payeeBirthday: dataClient.generalAttributeClientNaturalPersons[0].dateBirth || "",
+                creditRequestId: foundCreditRequestId || "",
               }
             }
 
@@ -284,16 +310,36 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
               payeePhoneNumber: dataFiltered.phone || "",
               payeeSurname: dataFiltered.lastName || "",
               payeeBiologicalSex: dataFiltered.sex === "F-Femenino" ? "F" : "M",
-
+              accountNumber: dataFiltered.accountNumber || "",
             }
           }
-          console.log("...rawData....", rawData);
+
           await getClientPortfolioObligationsById(businessUnitPublicCode, businessManagerCode, rawData);
+
+          handleClose();
+          setLoadingDisbursementData(false);
+
+/*           addFlag({
+            title: flagSucessDisbursementEdited.flagSucessDisbursementEdited.i18n[language],
+            description: textFlagsUsers.descriptionWarning,
+            appearance: "danger",
+            duration: 5000,
+          }) */
         }
       });
-    } finally {
-      handleClose();
-      setLoadingDisbursementData(false);
+    } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setErrorMessage(description);
+      setErrorModal(true);
     }
   }
 

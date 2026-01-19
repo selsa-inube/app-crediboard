@@ -168,7 +168,6 @@ export const CardCommercialManagement = (
           id
         );
         if (result) {
-          console.log("summary data: ", result);
           setProspectSummaryData(result);
         }
       } catch (error) {

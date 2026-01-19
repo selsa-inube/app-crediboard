@@ -82,17 +82,17 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
         <Stack direction="column" gap="20px">
           <Stack width={isMobile ? "100%" : "498px"}>
             <Textfield
-              id="amount"
+              id={`${optionNameForm}.amount`}
               name="amount"
               label={disbursementGeneral.label}
               placeholder={disbursementGeneral.place}
               iconBefore={<MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />}
               size="compact"
-              value={validateCurrencyField("amount", formik, false, optionNameForm)}
+              value={validateCurrencyField(`amount`, formik, false, optionNameForm)}
               onChange={(event) => handleChangeWithCurrency(formik, event, optionNameForm)}
               onBlur={() => {
-                formik.setFieldTouched(`${optionNameForm}.amount`, true);
-                formik.handleBlur(`amount`);
+              formik.setFieldTouched(`${optionNameForm}.amount`, true);
+              formik.handleBlur(`amount`);
               }}
               status={isInvalidAmount ? "invalid" : undefined}
               readOnly={isAmountReadOnly}

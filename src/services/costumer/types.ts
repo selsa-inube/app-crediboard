@@ -79,4 +79,6 @@ export interface IGeneralAttributeClientNaturalPersons {
   workday: string;
   workplace: string;
   zone: string;
+  cityNameExpeditionIdentification?: string;
+  accountNumber?: string;
 }

@@ -8,7 +8,7 @@ import { IInternalAccount, IExternalAccount, IPersonData } from "@components/mod
 export const getClientPortfolioObligationsById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  payload: IExternalAccount | IInternalAccount | IPersonData
+  payload: IExternalAccount | IInternalAccount | IPersonData | {},
 ) => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;

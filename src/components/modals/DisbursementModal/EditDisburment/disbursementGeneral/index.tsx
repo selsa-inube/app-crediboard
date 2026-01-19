@@ -92,9 +92,9 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
       const disbursementData = formik.values[key];
 
       const amount =
-        disbursementData &&
-          typeof disbursementData === "object" &&
-          "amount" in disbursementData
+        disbursementData
+          && typeof disbursementData === "object"
+          && "amount" in disbursementData
           ? disbursementData.amount || 0
           : 0;
       return total + Number(amount);
@@ -155,13 +155,13 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
   const isAmountReadOnly = validTabs.length === 1;
 
   const isFormInvalid = useMemo(() => {
-  const hasFormikErrors = Object.keys(formik.errors).length > 0;
+    const hasFormikErrors = Object.keys(formik.errors).length > 0;
 
-  const totalAmount = getTotalAmount();
-  const isAmountIncorrect = totalAmount !== initialValues.amount;
+    const totalAmount = getTotalAmount();
+    const isAmountIncorrect = totalAmount !== initialValues.amount;
 
-  return hasFormikErrors || isAmountIncorrect;
-}, [formik.errors, getTotalAmount, initialValues.amount]);
+    return hasFormikErrors || isAmountIncorrect;
+  }, [formik.errors, getTotalAmount, initialValues.amount]);
 
   return (
     <BaseModal
