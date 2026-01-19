@@ -4,7 +4,7 @@ import {
   createRoutesFromElements,
   Route,
   RouterProvider,
-  Navigate,      
+  Navigate,
   useLocation,
 } from "react-router-dom";
 
@@ -24,6 +24,7 @@ function LogOut() {
   sessionStorage.clear();
   const { logout } = useIAuth();
   useEffect(() => {
+    localStorage.removeItem("businessUnitSigla");
     logout();
   }, [logout]);
   return null;
@@ -32,7 +33,6 @@ function LogOut() {
 function FirstPage() {
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const location = useLocation();
-
   if (businessUnitSigla.length > 0) {
     return <BoardRoutes />;
   }
@@ -50,20 +50,26 @@ function FirstPage() {
     return <BoardRoutes />;
   }
 
-  const isLoginPath = location.pathname === "/" || location.pathname.startsWith("/login");
+  const isLoginPath =
+    location.pathname === "/" || location.pathname.startsWith("/login");
 
   if (!isLoginPath) {
     const currentPath = encodeURIComponent(location.pathname + location.search);
     const userId = eventData?.user?.userAccount || "user";
 
-    return <Navigate to={`/login/${userId}/clients?returnTo=${currentPath}`} replace />;
+    return (
+      <Navigate
+        to={`/login/${userId}/clients?returnTo=${currentPath}`}
+        replace
+      />
+    );
   }
 
   if (location.pathname === "/") {
-     return <Login />;
+    return <Login />;
   }
 
-  return null; 
+  return null;
 }
 
 const router = createBrowserRouter(
@@ -80,17 +86,18 @@ const router = createBrowserRouter(
     </>
   )
 );
+
 function App() {
   return (
     <AuthProvider>
-      <EnumProvider>
-        <AppContextProvider>
+      <AppContextProvider>
+        <EnumProvider>
           <FlagProvider>
             <GlobalStyles />
             <RouterProvider router={router} />
           </FlagProvider>
-        </AppContextProvider>
-      </EnumProvider>
+        </EnumProvider>
+      </AppContextProvider>
     </AuthProvider>
   );
 }
