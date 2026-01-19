@@ -10,7 +10,7 @@ import { getGuaranteesSummary } from "@services/creditRequest/query/guaranteesSu
 import { IGuaranteesSummary } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 
-import { dataGuaranteesEnum } from "./config";
+import { dataGuaranteesEnum, guaranteesLabelsEnum } from "./config";
 
 interface GuaranteesProps {
   businessUnitPublicCode: string;
@@ -68,16 +68,16 @@ export function Guarantees(props: GuaranteesProps) {
 
   return (
     <CardInfoContainer
-      title="Garantías"
+      title={guaranteesLabelsEnum.title.i18n[lang]}
       icon={<PiSealCheckBold />}
       isMobile={isMobile}
     >
       {!guaranteesSummary ? (
         <ItemNotFound
           image={userNotFound}
-          title="Datos no encontrados"
-          description="No pudimos obtener los datos solicitados."
-          buttonDescription="Reintentar"
+          title={guaranteesLabelsEnum.notFound.title.i18n[lang]}
+          description={guaranteesLabelsEnum.notFound.description.i18n[lang]}
+          buttonDescription={guaranteesLabelsEnum.notFound.retry.i18n[lang]}
           route="#"
           onRetry={handleRetry}
         />

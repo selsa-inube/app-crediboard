@@ -197,7 +197,7 @@ function AppPage() {
           justifyContent="center"
           alignItems="center"
         >
-          <LoadingAppUI />
+          <LoadingAppUI lang={lang} />
         </Grid>
       </StyledAppPage>
     );

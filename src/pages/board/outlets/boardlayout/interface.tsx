@@ -49,6 +49,7 @@ import {
   dataInformationSearchModalEnum,
   TBoardColumn,
 } from "./config/board";
+import { keywordLabel } from "./config";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -417,7 +418,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 <Textfield
                   id="SearchCardsDesktop"
                   name="SearchCardsDesktop"
-                  placeholder="Palabra clave"
+                  placeholder={keywordLabel.i18n[lang]}
                   size="compact"
                   iconAfter={<MdSearch />}
                   value={searchRequestValue}

@@ -40,7 +40,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   const titles = useMemo(() => {
     return Object.values(titlesPostingvouchersEnum).map((title) => ({
       id: title.id,
-      titleName: title.i18n[lang as "en" | "es"],
+      titleName: title.i18n[lang],
       priority: title.priority,
     }));
   }, [lang]);

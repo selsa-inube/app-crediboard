@@ -1,17 +1,58 @@
-
-export const feedback = {
+export const feedbackLabels = {
   fetchDataObligationPayment: {
-    title: "Error al cargar obligaciones",
-    description: "No se pudieron cargar las obligaciones de pago",
+    title: {
+      code: "Feedback_fetch_obligations_title",
+      description: "Error title when obligations fail to load",
+      i18n: {
+        en: "Error loading obligations",
+        es: "Error al cargar obligaciones",
+      },
+    },
+    description: {
+      code: "Feedback_fetch_obligations_description",
+      description: "Error description when obligations fail to load",
+      i18n: {
+        en: "Payment obligations could not be loaded",
+        es: "No se pudieron cargar las obligaciones de pago",
+      },
+    },
   },
   handleSaveChanges: {
     success: {
-      title: "Cambios guardados",
-      description: "Los créditos consolidados se actualizaron correctamente",
+      title: {
+        code: "Feedback_save_changes_success_title",
+        description: "Success title when changes are saved",
+        i18n: {
+          en: "Changes saved",
+          es: "Cambios guardados",
+        },
+      },
+      description: {
+        code: "Feedback_save_changes_success_description",
+        description: "Success description for consolidated credits update",
+        i18n: {
+          en: "Consolidated credits were successfully updated",
+          es: "Los créditos consolidados se actualizaron correctamente",
+        },
+      },
     },
     error: {
-      title: "Error al guardar cambios",
-      description: "No se pudieron actualizar los créditos consolidados",
+      title: {
+        code: "Feedback_save_changes_error_title",
+        description: "Error title when saving changes fails",
+        i18n: {
+          en: "Error saving changes",
+          es: "Error al guardar cambios",
+        },
+      },
+      description: {
+        code: "Feedback_save_changes_error_description",
+        description: "Error description when consolidated credits update fails",
+        i18n: {
+          en: "Consolidated credits could not be updated",
+          es: "No se pudieron actualizar los créditos consolidados",
+        },
+      },
     },
   },
 };

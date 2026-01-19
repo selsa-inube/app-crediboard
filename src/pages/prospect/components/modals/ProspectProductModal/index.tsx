@@ -30,6 +30,7 @@ import { validateIncrement } from "@services/prospect/validateIncrement";
 import { IValidateIncrementRequest } from "@services/prospect/validateIncrement/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
+import { useEnum } from "@hooks/useEnum";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -38,14 +39,14 @@ import {
   rateTypeOptions,
   paymentCycleMap,
   interestRateTypeMap,
-  modalTexts,
+  editProductModalLabels,
   defaultPaymentOptions,
   repaymentStructureMap,
-  validationMessages,
+  validationMessagesEnum,
   REPAYMENT_STRUCTURES_WITH_INCREMENT,
-  fieldLabels,
-  fieldPlaceholders,
-  errorMessages,
+  fieldLabelsEnum,
+  fieldPlaceholdersEnum,
+  errorMessagesEnum,
 } from "./config";
 
 interface EditProductModalProps {
@@ -98,6 +99,7 @@ function EditProductModal(props: EditProductModalProps) {
     onProspectUpdate,
     creditProductCode,
   } = props;
+  const { lang } = useEnum();
 
   const [showIncrementField, setShowIncrementField] = useState<boolean>(false);
   const [incrementType, setIncrementType] = useState<
@@ -126,27 +128,27 @@ function EditProductModal(props: EditProductModalProps) {
   const [loanTermError, setLoanTermError] = useState<string>("");
   const [amortizationTypesList, setAmortizationTypesList] = useState<
     SelectOption[]
-  >( [
-  {
-    id: "1",
-    value: "cuota_integral_fija",
-    label: "Cuota integral fija"
-  },
-  {
-    id: "2",
-    value: "abonos_fijos_capital",
-    label: "Abonos fijos a capital"
-  },
-  {
-    id: "3",
-    value: "Pagos valor de incremento",
-    label: "Pagos valor de incremento"
-  },
-  {
-    id: "4",
-    value: "Pagos con porcentaje de incremento",
-    label: "Pagos con porcentaje de incremento"
-  }
+  >([
+    {
+      id: "1",
+      value: "cuota_integral_fija",
+      label: "Cuota integral fija"
+    },
+    {
+      id: "2",
+      value: "abonos_fijos_capital",
+      label: "Abonos fijos a capital"
+    },
+    {
+      id: "3",
+      value: "Pagos valor de incremento",
+      label: "Pagos valor de incremento"
+    },
+    {
+      id: "4",
+      value: "Pagos con porcentaje de incremento",
+      label: "Pagos con porcentaje de incremento"
+    }
   ]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
@@ -168,7 +170,7 @@ function EditProductModal(props: EditProductModalProps) {
         );
 
         if (!response) {
-          throw new Error(modalTexts.messages.errors.loadPaymentOptions);
+          throw new Error(editProductModalLabels.validationMessages.genericFetchError.i18n[lang]);
         }
 
         setPaymentMethodsList(response.paymentMethods);
@@ -193,7 +195,7 @@ function EditProductModal(props: EditProductModalProps) {
     };
 
     loadPaymentOptions();
-  }, [businessUnitPublicCode, businessManagerCode, initialValues.creditLine]);
+  }, [businessUnitPublicCode, businessManagerCode, initialValues.creditLine, lang]);
 
   useEffect(() => {
     const loadAmortizationTypes = async () => {
@@ -385,25 +387,30 @@ function EditProductModal(props: EditProductModalProps) {
           const { from, to } = decision.value;
 
           if (amount < from || amount > to) {
-            setLoanAmountError(
-              modalTexts.messages.errors.loanAmountRange(amount, from, to)
-            );
+            const message = editProductModalLabels.validationMessages.loanAmountRange.i18n[lang]
+              .replace("{amount}", amount.toLocaleString())
+              .replace("{from}", from.toLocaleString())
+              .replace("{to}", to.toLocaleString());
+
+            setLoanAmountError(message);
           }
         } else if (typeof decision.value === "string") {
           const maxAmount = Number(decision.value);
 
           if (!isNaN(maxAmount) && amount > maxAmount) {
-            setLoanAmountError(
-              modalTexts.messages.errors.loanAmountMax(amount, maxAmount)
-            );
+            const message = editProductModalLabels.validationMessages.loanAmountMax.i18n[lang]
+              .replace("{amount}", amount.toLocaleString())
+              .replace("{max}", maxAmount.toLocaleString());
+
+            setLoanAmountError(message);
           }
         }
       } else {
-        setLoanAmountError(modalTexts.messages.errors.loanAmountValidation);
+        setLoanAmountError(editProductModalLabels.validationMessages.genericFetchError.i18n[lang]);
       }
     } catch (error) {
       console.error("Error validando monto del crédito:", error);
-      setLoanAmountError(modalTexts.messages.errors.loanAmountGeneric);
+      setLoanAmountError(editProductModalLabels.validationMessages.genericFetchError.i18n[lang]);
     }
   };
 
@@ -440,27 +447,33 @@ function EditProductModal(props: EditProductModalProps) {
           const { from, to } = decision.value;
 
           if (term < from || term > to) {
-            setLoanTermError(
-              modalTexts.messages.errors.loanTermRange(term, from, to)
-            );
+            const message = validationMessagesEnum.loanTermOutOfRange.i18n[lang]
+              .replace("{min}", from.toLocaleString())
+              .replace("{max}", to.toLocaleString())
+              .replace("{term}", term.toLocaleString());
+
+            setLoanTermError(message);
           }
         } else if (typeof decision.value === "string") {
           const rangeParts = decision.value.split("-");
           if (rangeParts.length === 2) {
             const [min, max] = rangeParts.map(Number);
             if (!isNaN(min) && !isNaN(max) && (term < min || term > max)) {
-              setLoanTermError(
-                modalTexts.messages.errors.loanTermRange(term, min, max)
-              );
+              const message = validationMessagesEnum.loanTermOutOfRange.i18n[lang]
+                .replace("{min}", min.toLocaleString())
+                .replace("{max}", max.toLocaleString())
+                .replace("{term}", term.toLocaleString());
+
+              setLoanTermError(message);
             }
           }
         }
       } else {
-        setLoanTermError(modalTexts.messages.errors.loanTermValidation);
+        setLoanTermError(validationMessagesEnum.loanTermValidationFailed.i18n[lang]);
       }
     } catch (error) {
       console.error("Error validando plazo:", error);
-      setLoanTermError(modalTexts.messages.errors.loanTermGeneric);
+      setLoanTermError(validationMessagesEnum.loanTermValidationFailed.i18n[lang]);
     }
   };
 
@@ -479,17 +492,16 @@ function EditProductModal(props: EditProductModalProps) {
       const periodicInterestRateMax = response?.periodicInterestRateMax || 2;
 
       if (rate <= periodicInterestRateMin || rate >= periodicInterestRateMax) {
-        setInterestRateError(
-          modalTexts.messages.errors.interestRateRange(
-            rate,
-            periodicInterestRateMin,
-            periodicInterestRateMax
-          )
-        );
+        const message = validationMessagesEnum.interestRateOutOfRange.i18n[lang]
+          .replace("{min}", periodicInterestRateMin.toLocaleString())
+          .replace("{max}", periodicInterestRateMax.toLocaleString())
+          .replace("{rate}", rate.toLocaleString());
+
+        setInterestRateError(message);
       }
     } catch (error) {
       console.error("Error validando tasa de interés:", error);
-      setInterestRateError(modalTexts.messages.errors.interestRateValidation);
+      setInterestRateError(validationMessagesEnum.interestRateValidationError.i18n[lang]);
     }
   };
 
@@ -569,7 +581,7 @@ function EditProductModal(props: EditProductModalProps) {
       onCloseModal();
     } catch (error) {
       setIsUsingServices(false);
-      setErrorMessage(errorMessages.updateCreditProduct.description);
+      setErrorMessage(errorMessagesEnum.updateCreditProduct.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -616,7 +628,7 @@ function EditProductModal(props: EditProductModalProps) {
       const numericValue = Number(value.replace(/[^0-9.]/g, ""));
 
       if (isNaN(numericValue) || numericValue <= 0) {
-        setIncrementError(validationMessages.incrementMustBePositive);
+        setIncrementError(editProductModalLabels.validationMessages.incrementMustBePositive.i18n[lang]);
         return;
       }
 
@@ -637,25 +649,23 @@ function EditProductModal(props: EditProductModalProps) {
 
       if (!response.isValid) {
         if (incrementType === "value") {
-          setIncrementError(
-            validationMessages.incrementValueRange(
-              response.minValue,
-              response.maxValue
-            )
-          );
+          const message = editProductModalLabels.validationMessages.incrementValueRange.i18n[lang]
+            .replace("{min}", response.minValue.toLocaleString())
+            .replace("{max}", response.maxValue.toLocaleString());
+
+          setIncrementError(message);
         } else {
-          setIncrementError(
-            validationMessages.incrementPercentageRange(
-              response.minValue,
-              response.maxValue
-            )
-          );
+          const message = editProductModalLabels.validationMessages.incrementPercentageRange.i18n[lang]
+            .replace("{min}", response.minValue.toLocaleString())
+            .replace("{max}", response.maxValue.toLocaleString());
+
+          setIncrementError(message);
         }
       } else {
         setIncrementError("");
       }
     } catch (error) {
-      setIncrementError(validationMessages.incrementValidationError);
+      setIncrementError(validationMessagesEnum.incrementValidationError.i18n[lang]);
     } finally {
       setIsValidatingIncrement(false);
     }
@@ -705,7 +715,7 @@ function EditProductModal(props: EditProductModalProps) {
                 type="headline"
               />
             }
-            backButton={modalTexts.buttons.cancel}
+            backButton={editProductModalLabels.buttons.cancel.i18n[lang]}
             nextButton={confirmButtonText}
             handleNext={formik.submitForm}
             handleBack={onCloseModal}
@@ -735,10 +745,10 @@ function EditProductModal(props: EditProductModalProps) {
                 margin="0px 0px 30px 0"
               >
                 <Textfield
-                  label={modalTexts.labels.creditAmount}
+                  label={fieldLabelsEnum.creditAmount.i18n[lang]}
                   name="creditAmount"
                   id="creditAmount"
-                  placeholder={modalTexts.placeholders.creditAmount}
+                  placeholder={fieldPlaceholdersEnum.creditAmount.i18n[lang]}
                   value={validateCurrencyField(
                     "creditAmount",
                     formik,
@@ -762,11 +772,11 @@ function EditProductModal(props: EditProductModalProps) {
                   disabled={isCreditAmountDisabled()}
                 />
                 <Select
-                  label={modalTexts.labels.paymentMethod}
+                  label={fieldLabelsEnum.paymentMethod.i18n[lang]}
                   name="paymentMethod"
                   id="paymentMethod"
                   size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
+                  placeholder={fieldLabelsEnum.paymentMethod.i18n[lang]}
                   options={paymentMethodsList}
                   onBlur={formik.handleBlur}
                   onChange={(name, value) =>
@@ -780,11 +790,11 @@ function EditProductModal(props: EditProductModalProps) {
                   disabled={true}
                 />
                 <Select
-                  label={modalTexts.labels.paymentCycle}
+                  label={fieldLabelsEnum.paymentCycle.i18n[lang]}
                   name="paymentCycle"
                   id="paymentCycle"
                   size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
+                  placeholder={fieldLabelsEnum.paymentCycle.i18n[lang]}
                   options={paymentCyclesList}
                   onBlur={formik.handleBlur}
                   onChange={(name, value) =>
@@ -798,11 +808,11 @@ function EditProductModal(props: EditProductModalProps) {
                   disabled={true}
                 />
                 <Select
-                  label={modalTexts.labels.firstPaymentCycle}
+                  label={fieldLabelsEnum.firstPaymentCycle.i18n[lang]}
                   name="firstPaymentCycle"
                   id="firstPaymentCycle"
                   size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
+                  placeholder={fieldLabelsEnum.firstPaymentCycle.i18n[lang]}
                   options={firstPaymentCyclesList}
                   onBlur={formik.handleBlur}
                   onChange={(name, value) =>
@@ -813,11 +823,11 @@ function EditProductModal(props: EditProductModalProps) {
                   disabled={true}
                 />
                 <Select
-                  label={modalTexts.labels.termInMonths}
+                  label={fieldLabelsEnum.termInMonths.i18n[lang]}
                   name="termInMonths"
                   id="termInMonths"
                   size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
+                  placeholder={fieldLabelsEnum.termInMonths.i18n[lang]}
                   options={termInMonthsOptions}
                   onBlur={formik.handleBlur}
                   onChange={(name, value) =>
@@ -830,11 +840,11 @@ function EditProductModal(props: EditProductModalProps) {
                   disabled={isTermInMonthsDisabled()}
                 />
                 <Select
-                  label={modalTexts.labels.amortizationType}
+                  label={fieldLabelsEnum.amortizationType.i18n[lang]}
                   name="amortizationType"
                   id="amortizationType"
                   size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
+                  placeholder={fieldLabelsEnum.amortizationType.i18n[lang]}
                   options={amortizationTypesList}
                   onBlur={formik.handleBlur}
                   onChange={(name, value) =>
@@ -848,22 +858,22 @@ function EditProductModal(props: EditProductModalProps) {
                   <Textfield
                     label={
                       incrementType === "value"
-                        ? fieldLabels.incrementValue
-                        : fieldLabels.incrementPercentage
+                        ? fieldLabelsEnum.incrementValue.i18n[lang]
+                        : fieldLabelsEnum.incrementPercentage.i18n[lang]
                     }
                     name="incrementValue"
                     id="incrementValue"
                     placeholder={
                       incrementType === "value"
-                        ? fieldPlaceholders.incrementValue
-                        : fieldPlaceholders.incrementPercentage
+                        ? fieldPlaceholdersEnum.incrementValue.i18n[lang]
+                        : fieldPlaceholdersEnum.incrementPercentage.i18n[lang]
                     }
                     value={incrementValue}
                     status={incrementValuesStatus}
                     message={
                       incrementError ||
                       (isValidatingIncrement
-                        ? validationMessages.incrementValidating
+                        ? validationMessagesEnum.incrementValidating.i18n[lang]
                         : "")
                     }
                     iconBefore={
@@ -902,10 +912,10 @@ function EditProductModal(props: EditProductModalProps) {
                   />
                 )}
                 <Textfield
-                  label={modalTexts.labels.interestRate}
+                  label={fieldLabelsEnum.interestRate.i18n[lang]}
                   name="interestRate"
                   id="interestRate"
-                  placeholder={modalTexts.placeholders.interestRate}
+                  placeholder={fieldPlaceholdersEnum.interestRate.i18n[lang]}
                   value={formik.values.interestRate}
                   iconAfter={
                     <Icon
@@ -926,11 +936,11 @@ function EditProductModal(props: EditProductModalProps) {
                   status={interestRateError ? "invalid" : undefined}
                 />
                 <Select
-                  label={modalTexts.labels.rateType}
+                  label={fieldLabelsEnum.rateType.i18n[lang]}
                   name="rateType"
                   id="rateType"
                   size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
+                  placeholder={editProductModalLabels.placeholders.selectOption.i18n[lang]}
                   options={rateTypesList}
                   onBlur={formik.handleBlur}
                   onChange={(name, value) =>

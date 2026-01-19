@@ -10,8 +10,9 @@ import { ICreditRiskScoreResponse } from "@services/creditProfiles/types";
 import { getCreditRiskScoreById } from "@services/creditProfiles/GetCreditRiskScoreById";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ICreditRequest } from "@services/creditRequest/query/types";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataRiskScoring } from "./config";
+import { dataRiskScoringEnum } from "./config";
 
 interface RiskScoringProps {
   businessUnitPublicCode: string;
@@ -23,6 +24,7 @@ interface RiskScoringProps {
 export function RiskScoring(props: RiskScoringProps) {
   const { businessUnitPublicCode, businessManagerCode, requests, isMobile } =
     props;
+  const { lang } = useEnum();
 
   const [data, setData] = useState<ICreditRiskScoreResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,7 +59,7 @@ export function RiskScoring(props: RiskScoringProps) {
       setData(response);
     } catch {
       setShowErrorModal(true);
-      setMessageError(dataRiskScoring.modalError);
+      setMessageError(dataRiskScoringEnum.modalError.i18n[lang]);
     } finally {
       setLoading(false);
     }
@@ -76,7 +78,7 @@ export function RiskScoring(props: RiskScoringProps) {
         setData(response);
       } catch {
         setShowErrorModal(true);
-        setMessageError(dataRiskScoring.modalError);
+        setMessageError(dataRiskScoringEnum.modalError.i18n[lang]);
       } finally {
         setLoading(false);
       }
@@ -84,6 +86,7 @@ export function RiskScoring(props: RiskScoringProps) {
 
     fetchData();
   }, [
+    lang,
     businessUnitPublicCode,
     requests.clientIdentificationNumber,
     businessManagerCode,
@@ -91,7 +94,7 @@ export function RiskScoring(props: RiskScoringProps) {
 
   return (
     <CardInfoContainer
-      title="Scoring de riesgo"
+      title={dataRiskScoringEnum.score.i18n[lang]}
       icon={<MdQueryStats />}
       isMobile={isMobile}
     >
@@ -99,9 +102,9 @@ export function RiskScoring(props: RiskScoringProps) {
         {!data ? (
           <ItemNotFound
             image={userNotFound}
-            title={dataRiskScoring.noData}
-            description={dataRiskScoring.noDataDescription}
-            buttonDescription={dataRiskScoring.retryButton}
+            title={dataRiskScoringEnum.noData.i18n[lang]}
+            description={dataRiskScoringEnum.noDataDescription.i18n[lang]}
+            buttonDescription={dataRiskScoringEnum.retryButton.i18n[lang]}
             onRetry={handleRetry}
           />
         ) : (
@@ -112,7 +115,7 @@ export function RiskScoring(props: RiskScoringProps) {
                   <SkeletonLine animated width="100%" />
                 ) : (
                   <Text size={isMobile ? "small" : "medium"}>
-                    {dataRiskScoring.totalScore}
+                    {dataRiskScoringEnum.totalScore.i18n[lang]}
                   </Text>
                 )}
               </Stack>
@@ -132,7 +135,7 @@ export function RiskScoring(props: RiskScoringProps) {
                   <SkeletonLine animated width="80px" />
                 ) : (
                   <Text size={isMobile ? "small" : "medium"}>
-                    {`${dataRiskScoring.min} ${data.minCreditRiskScore}`}
+                    {`${dataRiskScoringEnum.min.i18n[lang]} ${data.minCreditRiskScore}`}
                   </Text>
                 )}
               </Stack>

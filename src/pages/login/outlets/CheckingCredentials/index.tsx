@@ -3,6 +3,7 @@ import { useCallback, useContext, useEffect } from "react";
 
 import { AppContext } from "@context/AppContext";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
+import { useEnum } from "@hooks/useEnum";
 
 import { CheckingCredentialsUI } from "./interface";
 
@@ -11,7 +12,9 @@ function CheckingCredentials({
 }: {
   businessUnits: IBusinessUnitsPortalStaff[];
 }) {
+  const { lang } = useEnum();
   const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
   const { eventData, setBusinessUnitSigla } = useContext(AppContext);
 
@@ -57,7 +60,7 @@ function CheckingCredentials({
     return () => clearTimeout(timer);
   }, [checkCredentials]);
 
-  return <CheckingCredentialsUI />;
+  return <CheckingCredentialsUI lang={lang} />;
 }
 
 export { CheckingCredentials };

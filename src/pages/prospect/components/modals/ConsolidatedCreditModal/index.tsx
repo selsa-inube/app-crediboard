@@ -25,8 +25,9 @@ import { updateConsolidatedCredits } from "@services/prospect/updateConsolidated
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 
+
 import { ScrollableContainer } from "./styles";
-import { ModalConfigEnum, feedback } from "./config";
+import { feedbackEnum, ModalConfigEnum } from "./config";
 
 export interface ConsolidatedCreditsProps {
   handleClose: () => void;
@@ -131,7 +132,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       const description = code + err?.message + (err?.data?.description || "");
 
-      setErrorMessage(`${feedback.fetchDataObligationPayment.description} ${description}`);
+      setErrorMessage(`${feedbackEnum.fetchDataObligationPayment.i18n[lang]} ${description}`);
       setErrorModal(true);
     }
   };
@@ -339,14 +340,14 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       handleClose();
 
       addFlag({
-        title: feedback.handleSaveChanges.success.title,
-        description: feedback.handleSaveChanges.success.description,
+        title: feedbackEnum.handleSaveChanges.success.i18n[lang],
+        description: feedbackEnum.handleSaveChanges.success.i18n[lang],
         appearance: "success",
         duration: 4000,
       });
     } catch (error) {
       setConsolidatedCredits([]);
-      setErrorMessage(feedback.handleSaveChanges.error.description);
+      setErrorMessage(feedbackEnum.handleSaveChanges.error.i18n[lang]);
       setErrorModal(true);
     }
   };

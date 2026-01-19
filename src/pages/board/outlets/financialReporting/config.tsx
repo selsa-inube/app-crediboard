@@ -495,3 +495,115 @@ export const editCreditApplicationLabelsEnum = {
     },
   },
 };
+
+export const financialReportingLabelsEnum = {
+  attachments: {
+    titleList: {
+      code: "FinancialReporting_attachments_titleList",
+      description: "Title for the attach documents modal",
+      i18n: { en: "Attach", es: "Adjuntar" },
+    },
+    titleView: {
+      code: "FinancialReporting_attachments_titleView",
+      description: "Title for viewing attached documents",
+      i18n: { en: "View Attachments", es: "Ver Adjuntos" },
+    },
+    saveButton: {
+      code: "FinancialReporting_attachments_saveButton",
+      description: "Label for save button in attachments",
+      i18n: { en: "Save", es: "Guardar" },
+    },
+    closeButton: {
+      code: "FinancialReporting_attachments_closeButton",
+      description: "Label for close button in attachments",
+      i18n: { en: "Close", es: "Cerrar" },
+    },
+  },
+  rejectModal: {
+    title: {
+      code: "FinancialReporting_reject_title",
+      description: "Title for the rejection modal",
+      i18n: { en: "Reject", es: "Rechazar" },
+    },
+    button: {
+      code: "FinancialReporting_reject_button",
+      description: "Confirm button for rejection",
+      i18n: { en: "Confirm", es: "Confirmar" },
+    },
+    label: {
+      code: "FinancialReporting_reject_label",
+      description: "Input label for rejection reason",
+      i18n: { en: "Reason for rejection", es: "Motivo del Rechazo." },
+    },
+    placeholder: {
+      code: "FinancialReporting_reject_placeholder",
+      description: "Input placeholder for rejection reason",
+      i18n: { en: "Describe the reason for rejection.", es: "Describe el motivo del Rechazo." },
+    },
+  },
+  cancelModal: {
+    title: {
+      code: "FinancialReporting_cancel_title",
+      description: "Title for the annulment modal",
+      i18n: { en: "Annul", es: "Anular" },
+    },
+    button: {
+      code: "FinancialReporting_cancel_button",
+      description: "Confirm button for annulment",
+      i18n: { en: "Confirm", es: "Confirmar" },
+    },
+    label: {
+      code: "FinancialReporting_cancel_label",
+      description: "Input label for annulment reason",
+      i18n: { en: "Reason for annulment", es: "Motivo de la anulación." },
+    },
+    placeholder: {
+      code: "FinancialReporting_cancel_placeholder",
+      description: "Input placeholder for annulment reason",
+      i18n: { en: "Describe the reason for annulment.", es: "Describe el motivo de la anulación." },
+    },
+  },
+};
+
+export const errorMessagesAttachEnum = {
+  searchProspect: {
+    code: "Error_search_prospect",
+    description: "Error when fetching prospects fails",
+    i18n: {
+      en: "Error fetching prospects",
+      es: "Error al obtener los prospectos",
+    },
+  },
+  share: {
+    code: "Error_share_pdf",
+    description: "Error when sharing or generating the PDF",
+    i18n: {
+      en: "Error generating or sharing the PDF",
+      es: "Error al generar o compartir el PDF",
+    },
+    spinner: {
+      code: "Status_generating_pdf",
+      description: "Text shown while generating PDF",
+      i18n: {
+        en: "Generating PDF...",
+        es: "Generando PDF...",
+      },
+    },
+  },
+  lateRejection: {
+    code: "Error_late_rejection",
+    description: "Error during the late rejection process",
+    i18n: {
+      en: "Could not reject the credit request.",
+      es: "No se pudo rechazar la solicitud de crédito.",
+    },
+  },
+  unreadErrors: {
+    code: "Error_unread_errors",
+    description: "Error when fetching unread notifications or service errors",
+    i18n: {
+      en: "Error fetching unread errors.",
+      es: "Error al obtener los errores no leídos.",
+    },
+  },
+};

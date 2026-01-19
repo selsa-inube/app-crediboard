@@ -198,23 +198,6 @@ export const paymentConfiguration = {
   },
 };
 
-
-/* export const dataAmount = {
-  availableQuota: "Cupo disponible sin garantía.",
-  expectToReceive: "Valor que el cliente espera recibir.",
-  amountRequested: "Valor que el cliente espera recibir.",
-  currentObligations: "¿Quiere abonar a otras obligaciones vigentes?",
-  ordinaryPayment: "Medio de atención plan de pago ordinario",
-  Periodicity: "Ciclo de pago",
-  Requested: "(Requerido)",
-  paymentDate: "Fecha primer pago",
-  selectOption: "Selecciona una opción",
-  creditText: "Cupo disponible sin garantía por línea de crédito",
-  day15: "día-15",
-  day30: "día-30",
-  placeholderValue: "",
-}; */
-
 export const paymentConfigurationEnum = {
   paymentMethod: {
     label: {

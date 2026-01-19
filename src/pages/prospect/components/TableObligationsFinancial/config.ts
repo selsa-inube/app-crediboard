@@ -25,7 +25,7 @@ export const headers: {
   { label: "Acciones", key: "actions", action: true },
 ];
 
-export const dataReport = {
+/* export const dataReport = {
   title: "Obligaciones financieras",
   description: "Camilo Alberto Rincon Jaramillo",
   addObligations: "Agregar obligaciones",
@@ -44,7 +44,7 @@ export const dataReport = {
   cancel: "Cancelar",
   errorIncome: "Error al restablecer las fuentes de ingresos",
   add: "Agregar",
-};
+}; */
 
 export const dataReportEnum = {
   title: {

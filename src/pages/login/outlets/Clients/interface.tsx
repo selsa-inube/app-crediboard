@@ -9,7 +9,9 @@ import {
 
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 import { RadioBusinessUnit } from "@components/RadioBusinessUnit";
+import { EnumType } from "@hooks/useEnum";
 
+import { businessUnitsLabels } from "./config";
 import { IBusinessUnitstate } from "./types";
 import {
   StyledBusinessUnits,
@@ -31,14 +33,21 @@ interface BusinessUnitsUIProps {
     search: string
   ) => IBusinessUnitsPortalStaff[];
   handleSubmit: () => void;
+  lang: EnumType;
 }
 
-function NoResultsMessage({ search }: { search: string }) {
+interface INoResultsMessageProps {
+  search: string;
+  lang: EnumType;
+}
+
+function NoResultsMessage(props: INoResultsMessageProps) {
+  const { search, lang } = props;
   return (
     <StyledNoResults>
-      <Text size="medium">No se encontraron resultados para "{search}".</Text>
+      <Text size="medium">{businessUnitsLabels.noResultsFound.i18n[lang].replace("{search}", search)}</Text>
       <Text size="medium">
-        Por favor, intenta modificando los parámetros de búsqueda.
+        {businessUnitsLabels.noResultsSuggestion.i18n[lang]}
       </Text>
     </StyledNoResults>
   );
@@ -52,23 +61,24 @@ function BusinessUnitsUI({
   filterBusinessUnits,
   handleBussinessUnitChange,
   handleSubmit,
+  lang
 }: BusinessUnitsUIProps) {
   const isMobile = useMediaQuery("(max-width: 532px)");
   return (
     <StyledBusinessUnits $isMobile={isMobile}>
       <Stack direction="column">
         <Text type="title" as="h2" textAlign="center">
-          Unidad de Negocios
+          {businessUnitsLabels.title.i18n[lang]}
         </Text>
         <Text size="medium" textAlign="center">
-          Selecciona Una Unidad de Negocio
+          {businessUnitsLabels.subTitle.i18n[lang]}
         </Text>
       </Stack>
       <form>
         <Stack direction="column" alignItems="center" gap="16px">
           {businessUnits.length > 10 && (
             <Searchfield
-              placeholder="Buscar..."
+              placeholder={businessUnitsLabels.searchPlaceholder.i18n[lang]}
               type="search"
               name="searchBusinessUnits"
               id="searchBusinessUnits"
@@ -78,7 +88,7 @@ function BusinessUnitsUI({
             />
           )}
           {filterBusinessUnits(businessUnits, search).length === 0 && (
-            <NoResultsMessage search={search} />
+            <NoResultsMessage search={search} lang={lang} />
           )}
           <StyledBusinessUnitsList
             $scroll={businessUnits.length > 5}
@@ -113,7 +123,7 @@ function BusinessUnitsUI({
             disabled={businessUnit.value}
             onClick={handleSubmit}
           >
-            Continuar
+            {businessUnitsLabels.continueButton.i18n[lang]}
           </Button>
         </Stack>
       </form>

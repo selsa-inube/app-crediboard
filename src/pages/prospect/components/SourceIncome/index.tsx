@@ -18,7 +18,7 @@ import {
 } from "@utils/formatData/currency";
 import { BaseModal } from "@components/modals/baseModal";
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
-import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
+import { dataReportEnum } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { RestoreIncomeInformationByBorrowerId } from "@services/creditRequest/command/restoreIncome";
 import { useEnum } from "@hooks/useEnum";
 
@@ -152,7 +152,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
       }
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataReport.errorIncome);
+      setMessageError(dataReportEnum.errorIncome.i18n[lang]);
     } finally {
       setIsOpenModal(false);
     }
@@ -282,7 +282,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
                   }
                   }
                 >
-                  {dataReport.edit}
+                  {dataReportEnum.edit.i18n[lang]}
                 </Button>
               )}
             </Stack>

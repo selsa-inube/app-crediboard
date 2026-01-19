@@ -52,6 +52,7 @@ import {
   optionButtons,
   labelsAndValuesShareEnum,
   errorMessagesEnum,
+  financialReportingLabelsEnum
 } from "./config";
 import {
   StyledMarginPrint,
@@ -527,7 +528,6 @@ export const FinancialReporting = () => {
                   </Stack>
                   <Stack direction="column">
                     <BlockPdfSection className="pdf-block">
-                      {/* MODIFICADO: Pasar updateManagement como prop */}
                       <Management
                         id={creditRequestCode!}
                         isMobile={isMobile}
@@ -565,10 +565,10 @@ export const FinancialReporting = () => {
               </Stack>
               {showAttachments && (
                 <ListModal
-                  title="Adjuntar"
+                  title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
                   handleClose={handleAttachmentsClose}
                   optionButtons={optionButtons}
-                  buttonLabel="Guardar"
+                  buttonLabel={financialReportingLabelsEnum.attachments.saveButton.i18n[lang]}
                   id={data.creditRequestId!}
                   isViewing={false}
                   uploadedFiles={uploadedFiles}
@@ -577,9 +577,9 @@ export const FinancialReporting = () => {
               )}
               {attachDocuments && (
                 <ListModal
-                  title="Ver Adjuntos"
+                  title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
                   handleClose={() => setAttachDocuments(false)}
-                  buttonLabel="Cerrar"
+                  buttonLabel={financialReportingLabelsEnum.attachments.closeButton.i18n[lang]}
                   id={data.creditRequestId!}
                   isViewing={true}
                   dataDocument={document}
@@ -589,10 +589,10 @@ export const FinancialReporting = () => {
           </ContainerSections>
           {showRejectModal && (
             <TextAreaModal
-              title="Rechazar"
-              buttonText="Confirmar"
-              inputLabel="Motivo del Rechazo."
-              inputPlaceholder="Describe el motivo del Rechazo."
+              title={financialReportingLabelsEnum.rejectModal.title.i18n[lang]}
+              buttonText={financialReportingLabelsEnum.rejectModal.button.i18n[lang]}
+              inputLabel={financialReportingLabelsEnum.rejectModal.label.i18n[lang]}
+              inputPlaceholder={financialReportingLabelsEnum.rejectModal.placeholder.i18n[lang]}
               onCloseModal={() => setShowRejectModal(false)}
               handleNext={() => {
                 handleSubmit();
@@ -614,10 +614,10 @@ export const FinancialReporting = () => {
           )}
           {showCancelModal && (
             <TextAreaModal
-              title="Anular"
-              buttonText="Confirmar"
-              inputLabel="Motivo de la anulación."
-              inputPlaceholder="Describe el motivo de la anulación."
+              title={financialReportingLabelsEnum.cancelModal.title.i18n[lang]}
+              buttonText={financialReportingLabelsEnum.cancelModal.button.i18n[lang]}
+              inputLabel={financialReportingLabelsEnum.cancelModal.label.i18n[lang]}
+              inputPlaceholder={financialReportingLabelsEnum.cancelModal.placeholder.i18n[lang]}
               onCloseModal={() => setShowCancelModal(false)}
               handleNext={() => {
                 handleDeleteCreditRequest();

@@ -353,7 +353,7 @@ export const ListModal = (props: IListModalProps) => {
           </Text>
           <StyledContainerClose onClick={() => handleClose(false)}>
             <Stack alignItems="center" gap="8px">
-              <Text>Cerrar</Text>
+              <Text>{listModalDataEnum.close.i18n[lang]}</Text>
               <Icon
                 icon={<MdClear />}
                 size="24px"

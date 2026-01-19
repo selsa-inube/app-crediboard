@@ -80,7 +80,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   } = props;
 
   const { businessUnitSigla } = useContext(AppContext);
-
+ 
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 

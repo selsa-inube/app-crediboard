@@ -38,6 +38,7 @@ import {
   txtLabelsEnum,
   txtTaskQueryEnum,
   titlesModalEnum,
+  txtOthersOptionsEnum
 } from "./config";
 import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
@@ -393,7 +394,7 @@ function ToDo(props: ToDoProps) {
                     key="decision-input-single"
                     id="toDo"
                     name="decision"
-                    label="Decisión"
+                    label={txtOthersOptionsEnum.txtDecision.i18n[lang]}
                     value={taskDecisions[0]?.label || ""}
                     size="compact"
                     disabled
@@ -404,7 +405,7 @@ function ToDo(props: ToDoProps) {
                     key="decision-select-multiple"
                     id="toDo"
                     name="decision"
-                    label="Decisión"
+                    label={txtOthersOptionsEnum.txtDecision.i18n[lang]}
                     value={decisionValue.decision}
                     placeholder="Selecciona una opción"
                     size="compact"

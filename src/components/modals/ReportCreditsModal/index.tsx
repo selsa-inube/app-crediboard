@@ -12,7 +12,7 @@ import {
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { dataReport } from "@pages/prospect/components/TableObligationsFinancial/config";
+import { dataReportEnum } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { TableFinancialObligations } from "@pages/prospect/components/TableObligationsFinancial";
 import { IProspect, IBorrower } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
@@ -265,8 +265,8 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   return (
     <>
       <BaseModal
-        title={dataReport.title}
-        nextButton={dataReport.close}
+        title={dataReportEnum.title.i18n[lang]}
+        nextButton={dataReportEnum.close.i18n[lang]}
         handleNext={handleClose}
         handleClose={handleClose}
         width={!isMobile ? "1050px" : "320px"}
@@ -361,7 +361,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                       }
                     >
                       <Button
-                        children={dataReport.addObligations}
+                        children={dataReportEnum.addObligations.i18n[lang]}
                         iconBefore={<MdAdd />}
                         fullwidth={isMobile}
                         disabled={editCreditApplication || availableEditCreditRequest}
@@ -388,25 +388,25 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
             <Stack gap="16px" justifyContent="center">
               {isOpenModal && (
                 <BaseModal
-                  title={dataReport.restore}
-                  nextButton={dataReport.restore}
-                  backButton={dataReport.cancel}
+                  title={dataReportEnum.restore.i18n[lang]}
+                  nextButton={dataReportEnum.restore.i18n[lang]}
+                  backButton={dataReportEnum.cancel.i18n[lang]}
                   handleNext={handleRestore}
                   handleClose={() => setIsOpenModal(false)}
                   width={!isMobile ? "600px" : "290px"}
                 >
-                  <Text>{dataReport.descriptionModal}</Text>
+                  <Text>{dataReportEnum.descriptionModal.i18n[lang]}</Text>
                 </BaseModal>
               )}
               {openModal && (
                 <FinancialObligationModal
-                  title={dataReport.addObligations}
+                  title={dataReportEnum.addObligations.i18n[lang]}
                   onCloseModal={handleCloseModal}
                   onConfirm={(values) =>
                     handleSaveNewObligation(values as IFinancialObligation)
                   }
                   initialValues={initialValues}
-                  confirmButtonText={dataReport.add}
+                  confirmButtonText={dataReportEnum.add.i18n[lang]}
                 />
               )}
             </Stack>

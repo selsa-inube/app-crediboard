@@ -11,6 +11,9 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { getCreditRepayamentBehavior } from "@services/creditProfiles/getCreditRepayamentBehavior";
 import { ICreditRepayamentBehavior } from "@services/creditProfiles/types";
 import { ICreditRequest } from "@services/creditRequest/query/types";
+import { useEnum } from "@hooks/useEnum";
+
+import { creditBehaviorLabelsEnum } from "./config";
 
 interface CreditBehaviorProps {
   businessUnitPublicCode: string;
@@ -20,6 +23,8 @@ interface CreditBehaviorProps {
 
 export function CreditBehavior(props: CreditBehaviorProps) {
   const { isMobile, businessUnitPublicCode, requests } = props;
+
+  const { lang } = useEnum();
 
   const [dataBehavior, setDataBehavior] = useState<ICreditRepayamentBehavior>();
 
@@ -52,16 +57,16 @@ export function CreditBehavior(props: CreditBehaviorProps) {
 
   return (
     <CardInfoContainer
-      title="Comportamiento crediticio"
+      title={creditBehaviorLabelsEnum.title.i18n[lang]}
       icon={<MdTrendingUp />}
       isMobile={isMobile}
     >
       {dataBehavior === undefined ? (
         <ItemNotFound
           image={userNotFound}
-          title="Datos no encontrados"
-          description="No pudimos obtener los datos solicitados."
-          buttonDescription="Reintentar"
+          title={creditBehaviorLabelsEnum.notFound.title.i18n[lang]}
+          description={creditBehaviorLabelsEnum.notFound.description.i18n[lang]}
+          buttonDescription={creditBehaviorLabelsEnum.notFound.retryButton.i18n[lang]}
           route="#"
           onRetry={handleRetry}
         />
@@ -70,7 +75,7 @@ export function CreditBehavior(props: CreditBehaviorProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "120px" : "170px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                Score central de riesgo
+                {creditBehaviorLabelsEnum.fields.riskScore.i18n[lang]}
               </Text>
             </Stack>
             <Stack alignItems="center" gap="8px">
@@ -90,7 +95,7 @@ export function CreditBehavior(props: CreditBehaviorProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "120px" : "170px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                Número de moras internas
+                {creditBehaviorLabelsEnum.fields.internalDelinquencies.i18n[lang]}
               </Text>
             </Stack>
             <Stack>
@@ -107,7 +112,7 @@ export function CreditBehavior(props: CreditBehaviorProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "120px" : "170px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                Máximo de número de cuotas en mora
+                {creditBehaviorLabelsEnum.fields.maxOverdue.i18n[lang]}
               </Text>
             </Stack>
             <Stack>
