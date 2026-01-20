@@ -8,7 +8,7 @@ import { ICreditRequest } from "@services/creditRequest/query/types";
 import { getCreditRequestPinned } from "@services/creditRequest/query/isPinned";
 import { getCreditRequestInProgress } from "@services/creditRequest/query/getCreditRequestInProgress";
 import { patchChangeAnchorToCreditRequest } from "@services/creditRequest/command/anchorCreditRequest";
-
+import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 import { AppContext } from "@context/AppContext";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ErrorModal } from "@components/modals/ErrorModal";
@@ -19,7 +19,7 @@ import { BoardLayoutUI } from "./interface";
 import { selectCheckOptions } from "./config/select";
 import { IBoardData } from "./types";
 import { errorMessages } from "./config";
-import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
+
 
 export interface IFilterFormValues {
   assignment: string;

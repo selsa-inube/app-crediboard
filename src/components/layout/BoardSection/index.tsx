@@ -17,7 +17,7 @@ import { patchChangeTracesToReadById } from "@services/creditRequest/command/pat
 import { AppContext } from "@context/AppContext";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { getCanUnpin } from "@utils/configRules/permissions";
-
+import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 
 import {
@@ -27,7 +27,6 @@ import {
 } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
 import { configOption, infoModal, messagesError } from "./config";
-import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -42,7 +41,7 @@ interface BoardSectionProps {
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
-    isPinned: string
+    isPinned: string,
   ) => void;
   handleLoadMoreData: () => void;
   dragIcon?: React.ReactElement;
@@ -145,12 +144,12 @@ function BoardSection(props: BoardSectionProps) {
 
   const isRequestPinned = (
     creditRequestId: string | undefined,
-    pinnedRequests: ICreditRequestPinned[]
+    pinnedRequests: ICreditRequestPinned[],
   ) =>
     pinnedRequests.some(
       (pinnedRequest) =>
         pinnedRequest.creditRequestId === creditRequestId &&
-        pinnedRequest.isPinned === "Y"
+        pinnedRequest.isPinned === "Y",
     );
 
   const handleCardClick = async (creditRequestId: string | undefined) => {
@@ -160,7 +159,7 @@ function BoardSection(props: BoardSectionProps) {
       await patchChangeTracesToReadById(
         creditRequestId,
         businessUnitPublicCode,
-        businessManagerCode
+        businessManagerCode,
       );
     } catch (error) {
       setErrorMessage(messagesError.changeTracesToReadById.description);
@@ -173,7 +172,7 @@ function BoardSection(props: BoardSectionProps) {
 
     try {
       const response = await getPositionsAuthorizedToRemoveAnchorsPlacedByOther(
-        businessUnitPublicCode
+        businessUnitPublicCode,
       );
 
       if (response?.positionsAuthorized) {
@@ -188,7 +187,7 @@ function BoardSection(props: BoardSectionProps) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       const hasUnread = sectionInformation.some(
-        (request) => request.unreadNovelties === undefined
+        (request) => request.unreadNovelties === undefined,
       );
       if (!flagMessage.current && hasUnread) {
         flagMessage.current = true;
@@ -299,7 +298,7 @@ function BoardSection(props: BoardSectionProps) {
                 path={`extended-card/${request.creditRequestCode}`}
                 isPinned={isRequestPinned(
                   request.creditRequestId,
-                  pinnedRequests
+                  pinnedRequests,
                 )}
                 hasMessage={request.unreadNovelties === "Y"}
                 onPinChange={() => {
@@ -309,7 +308,7 @@ function BoardSection(props: BoardSectionProps) {
                       request.userWhoPinnnedId || "",
                       isRequestPinned(request.creditRequestId, pinnedRequests)
                         ? "N"
-                        : "Y"
+                        : "Y",
                     );
                   }
                 }}
@@ -320,7 +319,7 @@ function BoardSection(props: BoardSectionProps) {
                   {
                     PositionsAuthorizedToRemoveAnchorsPlacedByOther:
                       positionsAuthorized,
-                  }
+                  },
                 )}
                 onCardClick={() => handleCardClick(request.creditRequestId)}
                 errorLoadingPins={errorLoadingPins}

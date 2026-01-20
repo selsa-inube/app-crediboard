@@ -3,10 +3,11 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+
 import { IPositionsAuthorizedToRemoveAnchorsPlacedByOthers } from "../types";
 
 export const getPositionsAuthorizedToRemoveAnchorsPlacedByOther = async (
-  businessUnitPublicCode: string
+  businessUnitPublicCode: string,
 ): Promise<IPositionsAuthorizedToRemoveAnchorsPlacedByOthers | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,7 +28,7 @@ export const getPositionsAuthorizedToRemoveAnchorsPlacedByOther = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -56,7 +57,7 @@ export const getPositionsAuthorizedToRemoveAnchorsPlacedByOther = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener el monto máximo."
+          "Todos los intentos fallaron. No se pudieron obtener los anclajes.",
         );
       }
     }
