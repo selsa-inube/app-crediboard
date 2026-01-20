@@ -16,7 +16,6 @@ import {
   ICreditProduct,
   IProspectSummaryById,
 } from "@services/prospect/types";
-import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { DeductibleExpensesModal } from "@pages/prospect/components/modals/DeductibleExpensesModal";
 import { getAllDeductibleExpensesById } from "@services/creditRequest/query/deductibleExpenses";
 import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
@@ -26,6 +25,8 @@ import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { RemoveCreditProduct } from "@services/creditRequest/command/removeCreditProduct";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { paymentCycleMap } from "@pages/prospect/components/modals/ProspectProductModal/config";
+import { capitalizeFirstLetter } from "@utils/formatData/text";
 
 import { StyledCardsCredit, StyledPrint, StylePrintCardSummary, StyledPrintCardProspect } from "./styles";
 import { SummaryProspectCredit, tittleOptions } from "./config/config";
@@ -168,7 +169,6 @@ export const CardCommercialManagement = (
           id
         );
         if (result) {
-          console.log("summary data: ", result);
           setProspectSummaryData(result);
         }
       } catch (error) {
@@ -237,7 +237,14 @@ export const CardCommercialManagement = (
                 periodicFee={
                   entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
                 }
-                schedule={entry.schedule as Schedule}
+                schedule={
+                  entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentFrequency
+                  || capitalizeFirstLetter(
+                    entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentFrequency ||
+                    paymentCycleMap[entry.installmentFrequency as string] ||
+                    ""
+                  )
+                  || ""}
                 availableEditCreditRequest={availableEditCreditRequest}
                 onEdit={
                   editCreditApplication
@@ -311,12 +318,13 @@ export const CardCommercialManagement = (
               paymentMethod:
                 selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
                   ?.paymentChannelAbbreviatedName || "",
-              paymentCycle: selectedProduct.schedule || "",
+              paymentCycle: selectedProduct.ordinaryInstallmentsForPrincipal?.[0]?.installmentFrequency || "",
               firstPaymentCycle: "",
               termInMonths: selectedProduct.loanTerm || 0,
               amortizationType: "",
               interestRate: selectedProduct.interestRate || 0,
               rateType: "",
+              installmentAmount: selectedProduct.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount || 0,
             }}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}

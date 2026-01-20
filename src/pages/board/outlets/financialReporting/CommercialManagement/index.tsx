@@ -162,7 +162,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
   useEffect(() => {
-    console.log("prospectData: ", prospectData);
     setLocalProspectData(prospectData);
     if (prospectData !== undefined) {
       setLoading(false);
