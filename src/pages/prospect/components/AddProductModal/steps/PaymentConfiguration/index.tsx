@@ -7,7 +7,6 @@ import { paymentConfiguration, IPaymentConfigurationMain } from "../config";
 
 export function PaymentConfiguration(props: IPaymentConfigurationMain) {
   const { paymentConfig, onChange, onFormValid } = props;
-  console.log("PaymentConfiguration render ", paymentConfig);
   const flatChannels = useMemo(() => {
     return (
       paymentConfig.paymentChannelData?.flatMap(
