@@ -1,4 +1,4 @@
-import { IEnumerator } from "./types";
+import { IEnumerator } from "../types";
 
 const mapEnumeratorsEntity = (
   data: Record<string, string | number | object>

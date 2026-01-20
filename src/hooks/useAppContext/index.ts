@@ -8,7 +8,7 @@ import {
 } from "@context/AppContext/utils";
 import { ICrediboardData } from "@context/AppContext/types";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
-import { getEnumerators } from "@services/enumerators";
+import { getEnumerators } from "@services/enumerators/getEnum";
 import { getStaff } from "@services/staff/staffs";
 import { decrypt } from "@utils/encrypt/encrypt";
 import { getSearchUseCaseForStaff } from "@services/staffs/SearchUseCaseForStaff";

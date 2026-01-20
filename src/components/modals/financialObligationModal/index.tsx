@@ -1,8 +1,8 @@
-import { Formik, FormikValues, FormikProps } from "formik";
+import { FormikValues, useFormik } from "formik";
 import localforage from "localforage";
 import * as Yup from "yup";
 import { MdOutlineAttachMoney, MdOutlineTag } from "react-icons/md";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Icon,
@@ -19,6 +19,7 @@ import {
   validateCurrencyField,
 } from "@utils/formatData/currency";
 import { useEnum } from "@hooks/useEnum";
+import { SearchAllBank } from "@services/bank/SearchAllBank";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -28,6 +29,8 @@ import {
   dataInputsEnum,
 } from "./config";
 import { TruncatedText } from "../TruncatedTextModal";
+import { IOptionsSelect } from "../RequirementsModals/types";
+import { ErrorModal } from "../ErrorModal";
 
 interface FinancialObligationModalProps {
   onCloseModal: () => void;
@@ -39,45 +42,21 @@ interface FinancialObligationModalProps {
   iconAfter?: React.JSX.Element;
 }
 
-interface SelectOption {
-  id?: string;
-  value?: string;
-  label?: string;
-}
-
 function FinancialObligationModal(props: FinancialObligationModalProps) {
   const {
     onCloseModal,
     onConfirm,
     title,
     confirmButtonText,
-    initialValues,
     iconBefore,
     iconAfter,
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 880px)");
-  const isInitialMount = useRef(true);
-  const formikRef = useRef<FormikProps<FormikValues> | null>(null);
-  const { lang } = useEnum();
-
-  const mappedObligationTypeOptions = obligationTypeOptionsEnum.map((opt) => ({
-    id: opt.id,
-    value: opt.value,
-    label: opt.i18n[lang],
-  }));
-
-  const mappedEntityOptions = entityOptionsEnum.map((opt) => ({
-    id: opt.id,
-    value: opt.value,
-    label: opt.i18n[lang],
-  }));
-
-  const mappedMeansPaymentOptions = meansPaymentOptionsEnum.map((opt) => ({
-    id: opt.id,
-    value: opt.value,
-    label: opt.i18n[lang],
-  }));
+  const { lang, enums } = useEnum();
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [banks, setBanks] = useState<IOptionsSelect[]>([]);
 
   const validationSchema = Yup.object({
     type: Yup.string().required(""),
@@ -95,10 +74,30 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
     idUser: Yup.number().required(""),
   });
 
+  const formik = useFormik({
+    initialValues: {
+      type: "",
+      entity: "",
+      fee: "",
+      balance: "",
+      payment: "",
+      idUser: "",
+      feePaid: "",
+      term: "",
+    },
+    validationSchema,
+    validateOnMount: true,
+    onSubmit: async (values, helpers) => {
+      await handleFormSubmit(values);
+      helpers.setSubmitting(false);
+      onCloseModal();
+    },
+  });
+
   const handleFormSubmit = async (values: FormikValues) => {
     const storedData =
       (await localforage.getItem<ITableFinancialObligationsProps[]>(
-        "financial_obligation"
+        "financial_obligation",
       )) || [];
 
     const updatedValues = {
@@ -110,7 +109,7 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
       const updatedData = storedData.map((item) =>
         item.creditRequestCode === values.id
           ? { ...item, ...updatedValues }
-          : item
+          : item,
       );
       await localforage.setItem("financial_obligation", updatedData);
     } else {
@@ -126,274 +125,253 @@ function FinancialObligationModal(props: FinancialObligationModalProps) {
     onConfirm(updatedValues);
   };
 
-  const getOptionLabel = (options: SelectOption[], value: string) => {
-    const option = options?.find(
-      (opt) => opt.id === value || opt.value === value
+  const paymentTypeOptions = useMemo(() => {
+    return (
+      enums?.PaymentType?.map((item) => ({
+        id: item.code,
+        label: item.i18n[lang],
+        value: item.code,
+      })) || []
     );
-    return option?.label || option?.value || value;
-  };
+  }, [enums, lang]);
+
+  const obligationsTypeOptions = useMemo(() => {
+    return (
+      enums?.ObligationType?.map((item) => ({
+        id: item.code,
+        label: item.i18n[lang],
+        value: item.code,
+      })) || []
+    );
+  }, [enums, lang]);
+
   useEffect(() => {
-    if (!isInitialMount.current || !formikRef.current) return;
-
-    const formik = formikRef.current;
-
-    if (mappedObligationTypeOptions && mappedObligationTypeOptions.length === 1) {
-      const singleOption = mappedObligationTypeOptions[0];
-      const optionValue = singleOption.id || singleOption.value;
-      if (!formik.values.type && optionValue) {
-        formik.setFieldValue("type", optionValue);
+    const fetchBanks = async () => {
+      try {
+        const response = await SearchAllBank();
+        const formattedBanks = response.map((bank) => ({
+          id: bank.bankId,
+          label: bank.bankName,
+          value: bank.bankName,
+        }));
+        setBanks(formattedBanks);
+      } catch (error) {
+        setShowErrorModal(true);
+        setMessageError(dataInputsEnum.errorBanks.i18n[lang]);
       }
-    }
+    };
 
-    if (mappedEntityOptions && mappedEntityOptions.length === 1) {
-      const singleOption = mappedEntityOptions[0];
-      const optionValue = singleOption.id || singleOption.value;
-      if (!formik.values.entity && optionValue) {
-        formik.setFieldValue("entity", optionValue);
-      }
-    }
+    fetchBanks();
+  }, [lang]);
 
-    if (meansPaymentOptionsEnum && meansPaymentOptionsEnum.length === 1) {
-      const singleOption = meansPaymentOptionsEnum[0];
-      const optionValue = singleOption.id || singleOption.value;
-      if (!formik.values.payment && optionValue) {
-        formik.setFieldValue("payment", optionValue);
-      }
+  useEffect(() => {
+    if (obligationsTypeOptions.length === 1) {
+      formik.setFieldValue("type", obligationsTypeOptions[0].value);
     }
+  }, [obligationsTypeOptions, formik]);
 
-    isInitialMount.current = false;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => {
+    if (paymentTypeOptions.length === 1) {
+      formik.setFieldValue("payment", paymentTypeOptions[0].value);
+    }
+  }, [paymentTypeOptions, formik]);
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={async (values, formikHelpers) => {
-        await handleFormSubmit(values);
-        formikHelpers.setSubmitting(false);
-        onCloseModal();
-      }}
+    <BaseModal
+      title={
+        <TruncatedText
+          text={title}
+          maxLength={25}
+          size="small"
+          type="headline"
+        />
+      }
+      nextButton={confirmButtonText}
+      backButton={dataInputsEnum.cancel.i18n[lang]}
+      handleNext={formik.submitForm}
+      handleBack={onCloseModal}
+      disabledNext={!formik.dirty || !formik.isValid}
+      iconAfterNext={iconAfter}
+      iconBeforeNext={iconBefore}
+      width={isMobile ? "300px" : "650px"}
+      finalDivider={true}
     >
-      {(formik) => {
-        formikRef.current = formik;
+      <ScrollableContainer $smallScreen={isMobile}>
+        <Grid
+          templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
+          autoRows="auto"
+          gap="20px"
+          width={isMobile ? "280px" : "100%"}
+        >
+          {obligationTypeOptionsEnum.length === 1 ? (
+            <Textfield
+              label={dataInputsEnum.labelType.i18n[lang]}
+              name="type"
+              id="type"
+              size="compact"
+              value={obligationTypeOptionsEnum[0]?.i18n[lang] || ""}
+              disabled
+              fullwidth
+            />
+          ) : (
+            <Select
+              label={dataInputsEnum.labelType.i18n[lang]}
+              name="type"
+              id="type"
+              size="compact"
+              placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
+              options={banks}
+              onBlur={formik.handleBlur}
+              onChange={(name, value) => formik.setFieldValue(name, value)}
+              value={formik.values.type}
+              fullwidth
+            />
+          )}
 
-        return (
-          <BaseModal
-            title={
-              <TruncatedText
-                text={title}
-                maxLength={25}
-                size="small"
-                type="headline"
+          {entityOptionsEnum.length === 1 ? (
+            <Textfield
+              label={dataInputsEnum.labelEntity.i18n[lang]}
+              name="entity"
+              id="entity"
+              size="compact"
+              value={entityOptionsEnum[0]?.i18n[lang] || ""}
+              disabled
+              fullwidth
+            />
+          ) : (
+            <Select
+              label={dataInputsEnum.labelEntity.i18n[lang]}
+              name="entity"
+              id="entity"
+              size="compact"
+              placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
+              options={banks}
+              onBlur={formik.handleBlur}
+              onChange={(name, value) => formik.setFieldValue(name, value)}
+              value={formik.values.entity}
+              fullwidth
+            />
+          )}
+
+          <Textfield
+            label={dataInputsEnum.labelFee.i18n[lang]}
+            name="fee"
+            id="fee"
+            iconBefore={
+              <Icon
+                icon={<MdOutlineAttachMoney />}
+                appearance="dark"
+                size="20px"
               />
             }
-            nextButton={confirmButtonText}
-            backButton={dataInputsEnum.cancel.i18n[lang]}
-            handleNext={formik.submitForm}
-            handleBack={onCloseModal}
-            disabledNext={!formik.dirty || !formik.isValid}
-            iconAfterNext={iconAfter}
-            iconBeforeNext={iconBefore}
-            width={isMobile ? "300px" : "650px"}
-            finalDivider={true}
-          >
-            <ScrollableContainer $smallScreen={isMobile}>
-              <Grid
-                templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
-                autoRows="auto"
-                gap="20px"
-                width={isMobile ? "280px" : "100%"}
-              >
-                {mappedObligationTypeOptions && mappedObligationTypeOptions.length === 1 ? (
-                  <Textfield
-                    label={dataInputsEnum.labelType.i18n[lang]}
-                    name="type"
-                    id="type"
-                    size="compact"
-                    value={getOptionLabel(
-                      mappedObligationTypeOptions,
-                      formik.values.type
-                    )}
-                    disabled
-                    fullwidth
-                  />
-                ) : (
-                  <Select
-                    label={dataInputsEnum.labelType.i18n[lang]}
-                    name="type"
-                    id="type"
-                    size="compact"
-                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
-                    options={mappedObligationTypeOptions}
-                    onBlur={formik.handleBlur}
-                    onChange={(name, value) =>
-                      formik.setFieldValue(name, value)
-                    }
-                    value={formik.values.type}
-                    fullwidth
-                  />
-                )}
+            placeholder={dataInputsEnum.palaceHolderFee.i18n[lang]}
+            value={validateCurrencyField("fee", formik, false, "")}
+            size="compact"
+            onBlur={formik.handleBlur}
+            onChange={(e) => handleChangeWithCurrency(formik, e)}
+            fullwidth
+          />
 
-                {mappedEntityOptions && mappedEntityOptions.length === 1 ? (
-                  <Textfield
-                    label={dataInputsEnum.labelEntity.i18n[lang]}
-                    name="entity"
-                    id="entity"
-                    size="compact"
-                    value={getOptionLabel(mappedEntityOptions, formik.values.entity)}
-                    disabled
-                    fullwidth
-                  />
-                ) : (
-                  <Select
-                    label={dataInputsEnum.labelEntity.i18n[lang]}
-                    name="entity"
-                    id="entity"
-                    size="compact"
-                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
-                    options={mappedEntityOptions}
-                    onBlur={formik.handleBlur}
-                    onChange={(name, value) =>
-                      formik.setFieldValue(name, value)
-                    }
-                    value={formik.values.entity}
-                    fullwidth
-                  />
-                )}
+          <Textfield
+            label={dataInputsEnum.labelBalance.i18n[lang]}
+            name="balance"
+            id="balance"
+            iconBefore={
+              <Icon
+                icon={<MdOutlineAttachMoney />}
+                appearance="dark"
+                size="20px"
+              />
+            }
+            placeholder={dataInputsEnum.palaceHolderBalance.i18n[lang]}
+            value={validateCurrencyField("balance", formik, false, "")}
+            size="compact"
+            onBlur={formik.handleBlur}
+            onChange={(e) => handleChangeWithCurrency(formik, e)}
+            fullwidth
+          />
 
-                <Textfield
-                  label={dataInputsEnum.labelFee.i18n[lang]}
-                  name="fee"
-                  id="fee"
-                  iconBefore={
-                    <Icon
-                      icon={<MdOutlineAttachMoney />}
-                      appearance="dark"
-                      size="20px"
-                    />
-                  }
-                  placeholder={dataInputsEnum.palaceHolderFee.i18n[lang]}
-                  value={validateCurrencyField("fee", formik, false, "")}
-                  size="compact"
-                  onBlur={formik.handleBlur}
-                  onChange={(e) => handleChangeWithCurrency(formik, e)}
-                  fullwidth
-                />
+          {meansPaymentOptionsEnum.length === 1 ? (
+            <Textfield
+              label={dataInputsEnum.labelPayment.i18n[lang]}
+              name="payment"
+              id="payment"
+              size="compact"
+              value={meansPaymentOptionsEnum[0]?.i18n[lang] || ""}
+              disabled
+              fullwidth
+            />
+          ) : (
+            <Select
+              label={dataInputsEnum.labelPayment.i18n[lang]}
+              name="payment"
+              id="payment"
+              size="compact"
+              placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
+              options={paymentTypeOptions}
+              onBlur={formik.handleBlur}
+              onChange={(name, value) => formik.setFieldValue(name, value)}
+              value={formik.values.payment}
+              fullwidth
+            />
+          )}
 
-                <Textfield
-                  label={dataInputsEnum.labelBalance.i18n[lang]}
-                  name="balance"
-                  id="balance"
-                  iconBefore={
-                    <Icon
-                      icon={<MdOutlineAttachMoney />}
-                      appearance="dark"
-                      size="20px"
-                    />
-                  }
-                  placeholder={dataInputsEnum.palaceHolderBalance.i18n[lang]}
-                  value={validateCurrencyField("balance", formik, false, "")}
-                  size="compact"
-                  onBlur={formik.handleBlur}
-                  onChange={(e) => handleChangeWithCurrency(formik, e)}
-                  fullwidth
-                />
+          <Textfield
+            label={dataInputsEnum.labelId.i18n[lang]}
+            name="idUser"
+            id="idUser"
+            iconBefore={
+              <Icon icon={<MdOutlineTag />} appearance="dark" size="20px" />
+            }
+            placeholder={dataInputsEnum.palaceHolderId.i18n[lang]}
+            value={formik.values.idUser}
+            size="compact"
+            onBlur={formik.handleBlur}
+            onChange={(e) => handleChangeWithCurrency(formik, e)}
+            fullwidth
+          />
 
-                {mappedMeansPaymentOptions && mappedMeansPaymentOptions.length === 1 ? (
-                  <Textfield
-                    label={dataInputsEnum.labelPayment.i18n[lang]}
-                    name="payment"
-                    id="payment"
-                    size="compact"
-                    value={getOptionLabel(
-                      mappedMeansPaymentOptions,
-                      formik.values.payment
-                    )}
-                    disabled
-                    fullwidth
-                  />
-                ) : (
-                  <Select
-                    label={dataInputsEnum.labelPayment.i18n[lang]}
-                    name="payment"
-                    id="payment"
-                    size="compact"
-                    placeholder={dataInputsEnum.palaceHolderSelect.i18n[lang]}
-                    options={mappedMeansPaymentOptions}
-                    onBlur={formik.handleBlur}
-                    onChange={(name, value) =>
-                      formik.setFieldValue(name, value)
-                    }
-                    value={formik.values.payment}
-                    fullwidth
-                  />
-                )}
+          <Textfield
+            label={dataInputsEnum.labelFeePaid.i18n[lang]}
+            name="feePaid"
+            id="feePaid"
+            iconBefore={
+              <Icon icon={<MdOutlineTag />} appearance="dark" size="20px" />
+            }
+            placeholder={dataInputsEnum.palaceHolderFeePaid.i18n[lang]}
+            value={formik.values.feePaid}
+            size="compact"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="number"
+            fullwidth
+          />
 
-                <Textfield
-                  label={dataInputsEnum.labelId.i18n[lang]}
-                  name="idUser"
-                  id="idUser"
-                  iconBefore={
-                    <Icon
-                      icon={<MdOutlineTag />}
-                      appearance="dark"
-                      size="20px"
-                    />
-                  }
-                  placeholder={dataInputsEnum.palaceHolderId.i18n[lang]}
-                  value={formik.values.idUser}
-                  size="compact"
-                  onBlur={formik.handleBlur}
-                  onChange={(e) => handleChangeWithCurrency(formik, e)}
-                  fullwidth
-                />
-
-                <Textfield
-                  label={dataInputsEnum.labelFeePaid.i18n[lang]}
-                  name="feePaid"
-                  id="feePaid"
-                  iconBefore={
-                    <Icon
-                      icon={<MdOutlineTag />}
-                      appearance="dark"
-                      size="20px"
-                    />
-                  }
-                  placeholder={dataInputsEnum.palaceHolderFeePaid.i18n[lang]}
-                  value={formik.values.feePaid}
-                  size="compact"
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  type="number"
-                  fullwidth
-                />
-
-                <Textfield
-                  label={dataInputsEnum.labelterm.i18n[lang]}
-                  name="term"
-                  id="term"
-                  iconBefore={
-                    <Icon
-                      icon={<MdOutlineTag />}
-                      appearance="dark"
-                      size="20px"
-                    />
-                  }
-                  placeholder={dataInputsEnum.palaceHolderterm.i18n[lang]}
-                  value={formik.values.term}
-                  size="compact"
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  type="number"
-                  fullwidth
-                />
-              </Grid>
-            </ScrollableContainer>
-          </BaseModal>
-        );
-      }}
-    </Formik>
+          <Textfield
+            label={dataInputsEnum.labelterm.i18n[lang]}
+            name="term"
+            id="term"
+            iconBefore={
+              <Icon icon={<MdOutlineTag />} appearance="dark" size="20px" />
+            }
+            placeholder={dataInputsEnum.palaceHolderterm.i18n[lang]}
+            value={formik.values.term}
+            size="compact"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="number"
+            fullwidth
+          />
+        </Grid>
+        {showErrorModal && (
+          <ErrorModal
+            handleClose={() => setShowErrorModal(false)}
+            isMobile={isMobile}
+            message={messageError}
+          />
+        )}
+      </ScrollableContainer>
+    </BaseModal>
   );
 }
 

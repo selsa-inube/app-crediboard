@@ -4,7 +4,7 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IEnumerator } from "./types";
+import { IEnumerator } from "../types";
 import { mapEnumeratorsEntities } from "./mappers";
 
 export const getEnumerators = async (
@@ -30,7 +30,7 @@ export const getEnumerators = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/enumerators/Role`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -57,7 +57,7 @@ export const getEnumerators = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta."
+          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta.",
         );
       }
     }
