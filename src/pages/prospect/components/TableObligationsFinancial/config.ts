@@ -25,27 +25,6 @@ export const headers: {
   { label: "Acciones", key: "actions", action: true },
 ];
 
-/* export const dataReport = {
-  title: "Obligaciones financieras",
-  description: "Camilo Alberto Rincon Jaramillo",
-  addObligations: "Agregar obligaciones",
-  noData: "No existen obligaciones financieras",
-  descriptionTotalFee: "Cuota total.",
-  descriptionTotalBalance: "Saldo total.",
-  close: "Cerrar",
-  restore: "Restablecer",
-  descriptionModal:
-    "¿Realmente desea restablecer los valores a su estado inicial?",
-  save: "Guardar",
-  edit: "Editar",
-  deletion: "Eliminación",
-  delete: "Eliminar",
-  content: "¿Realmente desea eliminar esta obligación?",
-  cancel: "Cancelar",
-  errorIncome: "Error al restablecer las fuentes de ingresos",
-  add: "Agregar",
-}; */
-
 export const dataReportEnum = {
   title: {
     code: "DataReport_title",
