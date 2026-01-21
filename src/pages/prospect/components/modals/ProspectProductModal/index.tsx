@@ -49,7 +49,7 @@ import {
   fieldLabels,
   fieldPlaceholders,
   errorMessages,
-  simulationFormLabels
+  simulationFormLabels,
 } from "./config";
 
 interface EditProductModalProps {
@@ -121,7 +121,7 @@ function EditProductModal(props: EditProductModalProps) {
     IPaymentMethod[]
   >([]);
   const [paymentCyclesList, setPaymentCyclesList] = useState<IPaymentCycle[]>(
-    []
+    [],
   );
   const [firstPaymentCyclesList, setFirstPaymentCyclesList] = useState<
     IFirstPaymentCycle[]
@@ -134,23 +134,23 @@ function EditProductModal(props: EditProductModalProps) {
     {
       id: "1",
       value: "cuota_integral_fija",
-      label: "Cuota integral fija"
+      label: "Cuota integral fija",
     },
     {
       id: "2",
       value: "abonos_fijos_capital",
-      label: "Abonos fijos a capital"
+      label: "Abonos fijos a capital",
     },
     {
       id: "3",
       value: "Pagos valor de incremento",
-      label: "Pagos valor de incremento"
+      label: "Pagos valor de incremento",
     },
     {
       id: "4",
       value: "Pagos con porcentaje de incremento",
-      label: "Pagos con porcentaje de incremento"
-    }
+      label: "Pagos con porcentaje de incremento",
+    },
   ]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
@@ -168,7 +168,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await getPaymentMethods(
           businessUnitPublicCode,
           businessManagerCode,
-          clientIdentificationNumber
+          clientIdentificationNumber,
         );
 
         if (!response) {
@@ -187,7 +187,7 @@ function EditProductModal(props: EditProductModalProps) {
           (cycle) => ({
             ...cycle,
             label: paymentCycleMap[cycle.value] || cycle.label,
-          })
+          }),
         );
         setFirstPaymentCyclesList(mappedFirstPaymentCycles);
         firstPaymentCyclesList;
@@ -219,7 +219,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await postBusinessUnitRules(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -268,7 +268,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await postBusinessUnitRules(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -310,7 +310,7 @@ function EditProductModal(props: EditProductModalProps) {
     formik: FormikProps<FormikValues>,
     fieldName: string,
     name: string,
-    value: string
+    value: string,
   ) => {
     formik.setFieldValue(name, value);
 
@@ -337,7 +337,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleTextChange = (
     formik: FormikProps<FormikValues>,
     fieldName: string,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     formik.handleChange(event);
 
@@ -381,7 +381,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await postBusinessUnitRules(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -394,7 +394,7 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (amount < from || amount > to) {
             setLoanAmountError(
-              modalTexts.messages.errors.loanAmountRange(amount, from, to)
+              modalTexts.messages.errors.loanAmountRange(amount, from, to),
             );
           }
         } else if (typeof decision.value === "string") {
@@ -402,7 +402,7 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (!isNaN(maxAmount) && amount > maxAmount) {
             setLoanAmountError(
-              modalTexts.messages.errors.loanAmountMax(amount, maxAmount)
+              modalTexts.messages.errors.loanAmountMax(amount, maxAmount),
             );
           }
         }
@@ -417,7 +417,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const validateLoanTerm = async (
     term: number,
-    loanAmount: number
+    loanAmount: number,
   ): Promise<void> => {
     try {
       setLoanTermError("");
@@ -436,7 +436,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await postBusinessUnitRules(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -449,7 +449,7 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (term < from || term > to) {
             setLoanTermError(
-              modalTexts.messages.errors.loanTermRange(term, from, to)
+              modalTexts.messages.errors.loanTermRange(term, from, to),
             );
           }
         } else if (typeof decision.value === "string") {
@@ -458,7 +458,7 @@ function EditProductModal(props: EditProductModalProps) {
             const [min, max] = rangeParts.map(Number);
             if (!isNaN(min) && !isNaN(max) && (term < min || term > max)) {
               setLoanTermError(
-                modalTexts.messages.errors.loanTermRange(term, min, max)
+                modalTexts.messages.errors.loanTermRange(term, min, max),
               );
             }
           }
@@ -480,7 +480,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessUnitPublicCode,
         businessManagerCode,
         initialValues.creditLine,
-        clientIdentificationNumber
+        clientIdentificationNumber,
       );
 
       const periodicInterestRateMin = response?.periodicInterestRateMin || 0;
@@ -491,8 +491,8 @@ function EditProductModal(props: EditProductModalProps) {
           modalTexts.messages.errors.interestRateRange(
             rate,
             periodicInterestRateMin,
-            periodicInterestRateMax
-          )
+            periodicInterestRateMax,
+          ),
         );
       }
     } catch (error) {
@@ -503,7 +503,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const handleCurrencyChange = (
     formik: FormikProps<FormikValues>,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     handleChangeWithCurrency(formik, event);
 
@@ -560,9 +560,9 @@ function EditProductModal(props: EditProductModalProps) {
       const updatedProspect = await updateCreditProduct(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
-      
+
       if (!updatedProspect) {
         throw new Error(errorMessages.updateCreditProduct.description);
       }
@@ -596,7 +596,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleAmortizationTypeChange = (
     formik: FormikProps<FormikValues>,
     name: string,
-    value: string
+    value: string,
   ) => {
     formik.setFieldValue(name, value);
 
@@ -622,7 +622,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const validateIncrementValue = async (
     value: string,
-    formik: FormikProps<FormikValues>
+    formik: FormikProps<FormikValues>,
   ): Promise<void> => {
     if (!incrementType || !value) {
       setIncrementError("");
@@ -651,7 +651,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await validateIncrement(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       if (!response.isValid) {
@@ -659,15 +659,15 @@ function EditProductModal(props: EditProductModalProps) {
           setIncrementError(
             validationMessages.incrementValueRange(
               response.minValue,
-              response.maxValue
-            )
+              response.maxValue,
+            ),
           );
         } else {
           setIncrementError(
             validationMessages.incrementPercentageRange(
               response.minValue,
-              response.maxValue
-            )
+              response.maxValue,
+            ),
           );
         }
       } else {
@@ -715,7 +715,7 @@ function EditProductModal(props: EditProductModalProps) {
         validationSchema={validationSchema}
         onSubmit={(
           values: FormikValues,
-          formikHelpers: FormikHelpers<FormikValues>
+          formikHelpers: FormikHelpers<FormikValues>,
         ) => {
           handleConfirm(values);
           formikHelpers.setSubmitting(false);
@@ -769,7 +769,7 @@ function EditProductModal(props: EditProductModalProps) {
                     "creditAmount",
                     formik,
                     false,
-                    ""
+                    "",
                   )}
                   status={loanAmountError ? "invalid" : undefined}
                   message={loanAmountError}
@@ -789,22 +789,17 @@ function EditProductModal(props: EditProductModalProps) {
                 />
                 <CardGray
                   label={modalTexts.labels.paymentMethod}
-                  placeHolder={
-                    capitalizeFirstLetter(
-                      formik.values.paymentMethod.charAt(0).toUpperCase() +
-                      formik.values.paymentMethod.slice(1)
-                    )
-                  }
-
+                  placeHolder={capitalizeFirstLetter(
+                    formik.values.paymentMethod.charAt(0).toUpperCase() +
+                      formik.values.paymentMethod.slice(1),
+                  )}
                 />
                 <CardGray
                   label={modalTexts.labels.paymentCycle}
-                  placeHolder={
-                    capitalizeFirstLetter(
-                      paymentCycleMap[formik.values.paymentCycle] ||
+                  placeHolder={capitalizeFirstLetter(
+                    paymentCycleMap[formik.values.paymentCycle] ||
                       formik.values.paymentCycle,
-                    )
-                  }
+                  )}
                 />
                 <Select
                   label={modalTexts.labels.termInMonths}

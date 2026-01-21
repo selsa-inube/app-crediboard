@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 
 import { Stack, Divider, useMediaQuery, useFlag } from "@inubekit/inubekit";
-import {
-  MdOutlineRemoveRedEye,
-} from "react-icons/md";
+import { MdOutlineRemoveRedEye } from "react-icons/md";
 
 import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
@@ -28,7 +26,12 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 import { paymentCycleMap } from "@pages/prospect/components/modals/ProspectProductModal/config";
 import { capitalizeFirstLetter } from "@utils/formatData/text";
 
-import { StyledCardsCredit, StyledPrint, StylePrintCardSummary, StyledPrintCardProspect } from "./styles";
+import {
+  StyledCardsCredit,
+  StyledPrint,
+  StylePrintCardSummary,
+  StyledPrintCardProspect,
+} from "./styles";
 import { SummaryProspectCredit, tittleOptions } from "./config/config";
 
 interface CardCommercialManagementProps {
@@ -45,7 +48,7 @@ interface CardCommercialManagementProps {
 }
 
 export const CardCommercialManagement = (
-  props: CardCommercialManagementProps
+  props: CardCommercialManagementProps,
 ) => {
   const {
     dataRef,
@@ -58,7 +61,7 @@ export const CardCommercialManagement = (
     availableEditCreditRequest,
   } = props;
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
-    []
+    [],
   );
 
   const { addFlag } = useFlag();
@@ -69,7 +72,7 @@ export const CardCommercialManagement = (
   const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ICreditProduct | null>(
-    null
+    null,
   );
   const currentModal = modalHistory[modalHistory.length - 1];
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -109,22 +112,26 @@ export const CardCommercialManagement = (
     if (!prospectData || !prospectProducts.length) return;
     try {
       setIsSendingData(true);
-      const updatedProspect = await RemoveCreditProduct(businessUnitPublicCode, eventData.user.identificationDocumentNumber || "", {
-        creditProductCode: selectedProductId,
-        creditRequestCode: id,
-      });
+      const updatedProspect = await RemoveCreditProduct(
+        businessUnitPublicCode,
+        eventData.user.identificationDocumentNumber || "",
+        {
+          creditProductCode: selectedProductId,
+          creditRequestCode: id,
+        },
+      );
       setProspectProducts((prev) =>
         prev.filter(
-          (product) => product.creditProductCode !== selectedProductId
-        )
+          (product) => product.creditProductCode !== selectedProductId,
+        ),
       );
 
       const normalizedProspect = {
         ...updatedProspect,
-        creditProducts: updatedProspect!.creditProducts?.map(product => ({
+        creditProducts: updatedProspect!.creditProducts?.map((product) => ({
           ...product,
           schedule: product.schedule || product.installmentFrequency,
-        }))
+        })),
       };
 
       if (onProspectUpdate && updatedProspect) {
@@ -152,7 +159,6 @@ export const CardCommercialManagement = (
       setShowErrorModal(true);
       setMessageError(tittleOptions.errorDeleteProduct || description);
       setIsSendingData(false);
-
     }
   };
 
@@ -166,7 +172,7 @@ export const CardCommercialManagement = (
         const result = await getSearchProspectSummaryById(
           businessUnitPublicCode,
           businessManagerCode,
-          id
+          id,
         );
         if (result) {
           setProspectSummaryData(result);
@@ -194,7 +200,7 @@ export const CardCommercialManagement = (
         const data = await getAllDeductibleExpensesById(
           businessUnitPublicCode,
           businessManagerCode,
-          id
+          id,
         );
         setDeductibleExpenses(data);
       } catch (error) {
@@ -238,21 +244,27 @@ export const CardCommercialManagement = (
                   entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
                 }
                 schedule={
-                  entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentFrequency
-                  || capitalizeFirstLetter(
-                    entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentFrequency ||
-                    paymentCycleMap[entry.installmentFrequency as string] ||
-                    ""
-                  )
-                  || ""}
+                  entry.ordinaryInstallmentsForPrincipal?.[0]
+                    ?.installmentFrequency ||
+                  capitalizeFirstLetter(
+                    entry.ordinaryInstallmentsForPrincipal?.[0]
+                      ?.installmentFrequency ||
+                      paymentCycleMap[entry.installmentFrequency as string] ||
+                      "",
+                  ) ||
+                  ""
+                }
                 availableEditCreditRequest={availableEditCreditRequest}
                 onEdit={
                   editCreditApplication
                     ? handleInfo
                     : () => {
-                      setSelectedProduct(entry);
-                      setModalHistory((prev) => [...prev, "editProductModal"]);
-                    }
+                        setSelectedProduct(entry);
+                        setModalHistory((prev) => [
+                          ...prev,
+                          "editProductModal",
+                        ]);
+                      }
                 }
                 onDelete={
                   editCreditApplication
@@ -261,13 +273,11 @@ export const CardCommercialManagement = (
                 }
               />
             ))}
-            {
-              !availableEditCreditRequest && (
-                <StyledPrint>
-                  <NewCreditProductCard onClick={onClick} />
-                </StyledPrint>
-              )
-            }
+            {!availableEditCreditRequest && (
+              <StyledPrint>
+                <NewCreditProductCard onClick={onClick} />
+              </StyledPrint>
+            )}
           </Stack>
         </StyledCardsCredit>
         <div style={{ pageBreakInside: "avoid" }}>
@@ -285,9 +295,13 @@ export const CardCommercialManagement = (
                   items={entry.item.map((item) => ({
                     ...item,
                     amount: String(prospectSummaryData?.[item.id] ?? 0),
-                    icon: item.id === "totalConsolidatedAmount" && availableEditCreditRequest
-                      ? <MdOutlineRemoveRedEye />
-                      : item.icon,
+                    icon:
+                      item.id === "totalConsolidatedAmount" &&
+                      availableEditCreditRequest ? (
+                        <MdOutlineRemoveRedEye />
+                      ) : (
+                        item.icon
+                      ),
                   }))}
                   showIcon={entry.iconEdit}
                   isMobile={isMobile}
@@ -318,13 +332,17 @@ export const CardCommercialManagement = (
               paymentMethod:
                 selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
                   ?.paymentChannelAbbreviatedName || "",
-              paymentCycle: selectedProduct.ordinaryInstallmentsForPrincipal?.[0]?.installmentFrequency || "",
+              paymentCycle:
+                selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
+                  ?.installmentFrequency || "",
               firstPaymentCycle: "",
               termInMonths: selectedProduct.loanTerm || 0,
               amortizationType: "",
               interestRate: selectedProduct.interestRate || 0,
               rateType: "",
-              installmentAmount: selectedProduct.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount || 0,
+              installmentAmount:
+                selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
+                  ?.installmentAmount || 0,
             }}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
@@ -333,7 +351,6 @@ export const CardCommercialManagement = (
             creditProductCode={selectedProduct?.creditProductCode || ""}
             prospectId={prospectData?.prospectId || ""}
             onProspectUpdate={(updatedProspect) => {
-
               if (updatedProspect?.creditProducts) {
                 setProspectProducts(updatedProspect.creditProducts);
               }
@@ -344,7 +361,6 @@ export const CardCommercialManagement = (
 
               setModalHistory((prev) => prev.slice(0, -1));
             }}
-
           />
         )}
 
@@ -358,7 +374,7 @@ export const CardCommercialManagement = (
             businessManagerCode={businessManagerCode}
             consolidatedCredits={consolidatedCredits}
             setConsolidatedCredits={setConsolidatedCredits}
-            onProspectUpdated={() => { }}
+            onProspectUpdated={() => {}}
             clientIdentificationNumber={clientIdentificationNumber}
             creditRequestCode={id || ""}
           />
@@ -376,7 +392,11 @@ export const CardCommercialManagement = (
             onClose={handleInfoModalClose}
             title={privilegeCrediboard.title}
             subtitle={privilegeCrediboard.subtitle}
-            description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
+            description={
+              availableEditCreditRequest
+                ? optionsDisableStage.description
+                : privilegeCrediboard.description
+            }
             nextButtonText={privilegeCrediboard.nextButtonText}
             isMobile={isMobile}
           />

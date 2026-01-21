@@ -25,10 +25,9 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
     }));
   }, [flatChannels]);
 
-
   const selectedChannel = useMemo(() => {
     return flatChannels.find(
-      (ch) => ch.abbreviatedName === paymentConfig.paymentMethod,
+      (channel) => channel.abbreviatedName === paymentConfig.paymentMethod,
     );
   }, [flatChannels, paymentConfig.paymentMethod]);
 
@@ -136,7 +135,6 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
   const hasOnlyOnePaymentMethod = paymentMethodOptions.length === 1;
   const hasOnlyOnePaymentCycle = paymentCycleOptions.length === 1;
   const hasOnlyOneFirstPaymentDate = firstPaymentDateOptions.length === 1;
-
 
   return (
     <PaymentConfigurationUI
