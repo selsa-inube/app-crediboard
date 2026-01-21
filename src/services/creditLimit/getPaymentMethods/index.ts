@@ -8,7 +8,7 @@ import { IPaymentMethodsResponse } from "./types";
 export const getPaymentMethods = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  lineOfCredit?: string,
+  clientIdentificationNumber: string,
 ): Promise<IPaymentMethodsResponse | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -26,9 +26,9 @@ export const getPaymentMethods = async (
         },
         signal: controller.signal,
       };
-      lineOfCredit;
+     
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/portfolio-obligations/`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/portfolio-obligations/${clientIdentificationNumber}`,
         options,
       );
 

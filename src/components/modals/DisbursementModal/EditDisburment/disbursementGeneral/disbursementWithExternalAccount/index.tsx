@@ -1,13 +1,28 @@
 import { useEffect, useState } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { Stack, Text, Divider, Toggle, Select, Textfield, Textarea, Input, Checkbox, inube } from "@inubekit/inubekit";
+import {
+  Stack,
+  Text,
+  Divider,
+  Toggle,
+  Select,
+  Textfield,
+  Textarea,
+  Input,
+  Checkbox,
+  inube,
+} from "@inubekit/inubekit";
 import { FormikValues } from "formik";
 
 import { typeAccount } from "@mocks/filing-application/disbursement-general/disbursementgeneral.mock";
-import { currencyFormat, handleChangeWithCurrency, validateCurrencyField } from "@utils/formatData/currency";
+import {
+  currencyFormat,
+  handleChangeWithCurrency,
+  validateCurrencyField,
+} from "@utils/formatData/currency";
 import { IOptionsSelect } from "@components/modals/RequirementsModals/types";
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
-import { SearchAllBank } from "@services/bank/SearchAllBank"; 
+import { SearchAllBank } from "@services/bank/SearchAllBank";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { IProspect } from "@services/prospect/types";
@@ -32,19 +47,23 @@ interface IDisbursementWithExternalAccountProps {
   customerData?: ICustomerData;
 }
 
-export function DisbursementWithExternalAccount(props: IDisbursementWithExternalAccountProps) {
-  const { isMobile, initialValues, formik, optionNameForm, isAmountReadOnly } = props;
+export function DisbursementWithExternalAccount(
+  props: IDisbursementWithExternalAccountProps,
+) {
+  const { isMobile, initialValues, formik, optionNameForm, isAmountReadOnly } =
+    props;
 
   const {
     isAutoCompleted,
     isDisabled,
     handleCheckboxChange,
     handleToggleChange,
-    isInvalidAmount
+    isInvalidAmount,
   } = useDisbursementForm(props);
 
   const [banks, setBanks] = useState<IOptionsSelect[]>([]);
-  const [alreadyShowMessageErrorBank, setAlreadyShowMessageErrorBank] = useState(false);
+  const [alreadyShowMessageErrorBank, setAlreadyShowMessageErrorBank] =
+    useState(false);
   const [modalError, setModalError] = useState(false);
 
   useEffect(() => {
@@ -72,24 +91,43 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
 
   useEffect(() => {
     if (typeAccount.length === 1) {
-      formik.setFieldValue(`${optionNameForm}.accountType`, typeAccount[0].value);
+      formik.setFieldValue(
+        `${optionNameForm}.accountType`,
+        typeAccount[0].value,
+      );
     }
   }, [formik, optionNameForm]);
 
   return (
     <>
-      <Stack direction="column" padding={isMobile ? "4px 10px" : "10px 16px"} gap="16px" justifyContent="center">
+      <Stack
+        direction="column"
+        padding={isMobile ? "4px 10px" : "10px 16px"}
+        gap="16px"
+        justifyContent="center"
+      >
         <Stack direction="column" gap="20px">
           <Stack width={isMobile ? "100%" : "498px"}>
             <Textfield
-              id="amount"
+              id={`${optionNameForm}.amount`}
               name="amount"
               label={disbursementGeneral.label}
               placeholder={disbursementGeneral.place}
-              iconBefore={<MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />}
+              iconBefore={
+                <MdOutlineAttachMoney
+                  color={inube.palette.neutralAlpha.N900A}
+                />
+              }
               size="compact"
-              value={validateCurrencyField("amount", formik, false, optionNameForm)}
-              onChange={(event) => handleChangeWithCurrency(formik, event, optionNameForm)}
+              value={validateCurrencyField(
+                `amount`,
+                formik,
+                false,
+                optionNameForm,
+              )}
+              onChange={(event) =>
+                handleChangeWithCurrency(formik, event, optionNameForm)
+              }
               onBlur={() => {
                 formik.setFieldTouched(`${optionNameForm}.amount`, true);
                 formik.handleBlur(`amount`);
@@ -109,12 +147,16 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
               onChange={handleCheckboxChange}
               disabled={isDisabled}
             />
-            <Text type="label" size="medium">{disbursementGeneral.labelCheck}</Text>
+            <Text type="label" size="medium">
+              {disbursementGeneral.labelCheck}
+            </Text>
           </Stack>
         </Stack>
         <Divider dashed />
         <Stack direction="column" gap="16px">
-          <Text type="label" size="medium">{disbursementGeneral.labelToggle}</Text>
+          <Text type="label" size="medium">
+            {disbursementGeneral.labelToggle}
+          </Text>
         </Stack>
         <Stack direction="row" gap="16px">
           <Toggle
@@ -124,8 +166,16 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
             onChange={handleToggleChange}
             size="large"
           />
-          <Text appearance={(formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"}>
-            {(formik.values[optionNameForm]?.toggle ?? true) ? disbursementGeneral.optionToggleYes : disbursementGeneral.optionToggleNo}
+          <Text
+            appearance={
+              (formik.values[optionNameForm]?.toggle ?? true)
+                ? "success"
+                : "danger"
+            }
+          >
+            {(formik.values[optionNameForm]?.toggle ?? true)
+              ? disbursementGeneral.optionToggleYes
+              : disbursementGeneral.optionToggleNo}
           </Text>
         </Stack>
         <Divider dashed />
@@ -166,10 +216,17 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
               size="compact"
               options={banks}
               onBlur={formik.handleBlur}
-              onChange={(_, value) => formik.setFieldValue(`${optionNameForm}.bank`, value)}
+              onChange={(_, value) =>
+                formik.setFieldValue(`${optionNameForm}.bank`, value)
+              }
               value={formik.values[optionNameForm]?.bank || ""}
               invalid={alreadyShowMessageErrorBank && banks.length === 0}
-              message={(alreadyShowMessageErrorBank && banks.length === 0 && disbursemenOptionAccount.errorBanks) || ""}
+              message={
+                (alreadyShowMessageErrorBank &&
+                  banks.length === 0 &&
+                  disbursemenOptionAccount.errorBanks) ||
+                ""
+              }
               fullwidth
             />
           )}
@@ -213,12 +270,17 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
           />
         </Stack>
         <Textarea
-          id={"description"}
-          name={`${optionNameForm}.description`}
+          id={"observation"}
+          name={`${optionNameForm}.observation`}
           label={disbursemenOptionAccount.observation}
           placeholder={disbursemenOptionAccount.placeObservation}
-          value={formik.values[optionNameForm]?.description || ""}
-          onChange={formik.handleChange}
+          value={formik.values[optionNameForm]?.observation || ""}
+          onChange={(event) => {
+            const value = event.target.value;
+            if (value.length <= 100) {
+              formik.handleChange(event);
+            }
+          }}
           onBlur={formik.handleBlur}
           fullwidth
         />

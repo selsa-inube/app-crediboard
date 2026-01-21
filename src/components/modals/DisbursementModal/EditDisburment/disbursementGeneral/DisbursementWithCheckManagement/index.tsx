@@ -20,10 +20,7 @@ import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { IProspect } from "@services/prospect/types";
 
-import {
-  disbursementGeneral,
-  disbursemenOptionAccount,
-} from "../config";
+import { disbursementGeneral, disbursemenOptionAccount } from "../config";
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
 
@@ -63,7 +60,7 @@ export function DisbursementWithCheckManagement(
     isDisabled,
     handleCheckboxChange,
     handleToggleChange,
-    isInvalidAmount
+    isInvalidAmount,
   } = useDisbursementForm(props);
 
   return (
@@ -79,7 +76,7 @@ export function DisbursementWithCheckManagement(
             iconBefore={
               <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
             }
-            id="amount"
+            id={`${optionNameForm}.amount`}
             name="amount"
             label={disbursementGeneral.label}
             placeholder={disbursementGeneral.place}
@@ -97,9 +94,7 @@ export function DisbursementWithCheckManagement(
               formik.setFieldTouched(`${optionNameForm}.amount`, true);
               formik.handleBlur(`amount`);
             }}
-            status={
-              isInvalidAmount ? "invalid" : undefined
-            }
+            status={isInvalidAmount ? "invalid" : undefined}
             readOnly={isAmountReadOnly}
             message={`${disbursemenOptionAccount.valueTurnFail}${currencyFormat(initialValues.amount, false)}`}
             fullwidth
@@ -140,7 +135,9 @@ export function DisbursementWithCheckManagement(
         />
         <Text
           appearance={
-            (formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"
+            (formik.values[optionNameForm]?.toggle ?? true)
+              ? "success"
+              : "danger"
           }
         >
           {(formik.values[optionNameForm]?.toggle ?? true)
@@ -166,12 +163,17 @@ export function DisbursementWithCheckManagement(
       )}
       <Stack direction="row" gap="16px">
         <Textarea
-          id={"description"}
-          name={`${optionNameForm}.description`}
+          id={"observation"}
+          name={`${optionNameForm}.observation`}
           label={disbursemenOptionAccount.observation}
           placeholder={disbursemenOptionAccount.placeObservation}
-          value={formik.values[optionNameForm]?.description || ""}
-          onChange={formik.handleChange}
+          value={formik.values[optionNameForm]?.observation || ""}
+          onChange={(event) => {
+            const value = event.target.value;
+            if (value.length <= 100) {
+              formik.handleChange(event);
+            }
+          }}
           onBlur={formik.handleBlur}
           fullwidth
         />

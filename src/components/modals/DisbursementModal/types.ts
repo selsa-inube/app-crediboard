@@ -34,7 +34,7 @@ export interface IDisbursementGeneral {
   Cash: IPersonData;
 }
 
-interface IPersonData {
+export interface IPersonData {
   amount: number;
   check: boolean;
   toggle: boolean;
@@ -48,13 +48,14 @@ interface IPersonData {
   phone: string;
   mail: string;
   city: string;
+  accountNumber?: string;
 }
 
-interface IInternalAccount extends IPersonData {
+export interface IInternalAccount extends IPersonData {
   accountNumber: string;
 }
 
-interface IExternalAccount extends IPersonData {
+export interface IExternalAccount extends IPersonData {
   bank: string;
   accountType: string;
   accountNumber: string;

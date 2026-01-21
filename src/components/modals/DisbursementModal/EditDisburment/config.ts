@@ -82,3 +82,22 @@ export const initialValuesForm: IDisbursementGeneral = {
     city: "",
   },
 }
+
+export const flagSucessDisbursementEdited = {
+  flagSucessDisbursementEdited: {
+    code: "flagSucessDisbursementEdited",
+    description: "Label for successful disbursement edit notification",
+    i18n: {
+      en: "Disbursement edited",
+      es: "Desembolso editado",
+    },
+  },
+  flagSucessDisbursementEditedDescription: {
+    code: "flagSucessDisbursementEditedDescription",
+    description: "Description for successful disbursement edit notification",
+    i18n: {
+      en: "The disbursement has been successfully edited.",
+      es: "El desembolso ha sido editado exitosamente.",
+    },
+  }
+}

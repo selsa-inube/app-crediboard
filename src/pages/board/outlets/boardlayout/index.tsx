@@ -8,11 +8,9 @@ import { ICreditRequest } from "@services/creditRequest/query/types";
 import { getCreditRequestPinned } from "@services/creditRequest/query/isPinned";
 import { getCreditRequestInProgress } from "@services/creditRequest/query/getCreditRequestInProgress";
 import { patchChangeAnchorToCreditRequest } from "@services/creditRequest/command/anchorCreditRequest";
+import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 import { AppContext } from "@context/AppContext";
 import { Filter } from "@components/cards/SelectedFilters/interface";
-import { ruleConfig } from "@utils/configRules/configRules";
-import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ErrorPage } from "@components/layout/ErrorPage";
 
@@ -21,6 +19,7 @@ import { BoardLayoutUI } from "./interface";
 import { selectCheckOptions } from "./config/select";
 import { IBoardData } from "./types";
 import { errorMessages } from "./config";
+
 
 export interface IFilterFormValues {
   assignment: string;
@@ -74,13 +73,14 @@ function BoardLayout() {
 
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-  const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
+  const [positionsAuthorized, setPositionsAuthorized] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterValues, setFilterValues] = useState<IFilterFormValues>({
     assignment: "",
     status: "",
   });
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const boardColumns = getBoardColumns(activeOptions, filters.boardOrientation);
 
   const fetchBoardData = async (
@@ -155,6 +155,23 @@ function BoardLayout() {
     }
   };
 
+  const fetchPositionsAuthorized = useCallback(async () => {
+    if (!businessUnitPublicCode) return;
+
+    try {
+      const response = await getPositionsAuthorizedToRemoveAnchorsPlacedByOther(
+        businessUnitPublicCode
+      );
+
+      if (response?.positionsAuthorized) {
+        setPositionsAuthorized(response.positionsAuthorized);
+      }
+    } catch (error) {
+      setShowErrorModal(true);
+      setMessageError(errorMessages.changeAnchorToCreditRequest.description);
+    }
+  }, [businessUnitPublicCode]);
+
   useEffect(() => {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 1)
       return;
@@ -163,7 +180,7 @@ function BoardLayout() {
     }
     fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
     setCurrentPage(1);
-    fetchValidationRulesData();
+    fetchPositionsAuthorized();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, userAccount]);
 
@@ -333,41 +350,6 @@ function BoardLayout() {
     }
   };
 
-  const fetchValidationRulesData = useCallback(async () => {
-    const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
-    await Promise.all(
-      rulesValidate.map(async (ruleName) => {
-        const rule = ruleConfig[ruleName]?.({});
-        if (!rule) return;
-
-        try {
-          const values = await evaluateRule(
-            rule,
-            postBusinessUnitRules,
-            "value",
-            businessUnitPublicCode,
-            businessManagerCode
-          );
-
-          const extractedValues = Array.isArray(values)
-            ? values
-                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-                .filter((val): val is string => val !== "")
-            : [];
-
-          setValueRule((prev) => {
-            const current = prev[ruleName] || [];
-            const merged = [...current, ...extractedValues];
-            const unique = Array.from(new Set(merged));
-            return { ...prev, [ruleName]: unique };
-          });
-        } catch (error: unknown) {
-          console.error(`Error evaluando ${ruleName} para este usuario.`);
-        }
-      })
-    );
-  }, [businessUnitPublicCode, businessManagerCode]);
-
   const handlePinRequest = async (
     creditRequestId: string | undefined,
     userWhoPinnnedId: string,
@@ -376,10 +358,7 @@ function BoardLayout() {
     try {
       const isOwner = userWhoPinnnedId === staffId;
       const isUnpin = isPinned === "N";
-      const isAuthorizedByRule =
-        valueRule["PositionsAuthorizedToRemoveAnchorsPlacedByOther"]?.includes(
-          missionName
-        );
+      const isAuthorizedByRule = positionsAuthorized.includes(missionName);
 
       if (isOwner || (isUnpin && isAuthorizedByRule) || isPinned === "Y") {
         setBoardData((prevState) => ({
@@ -794,6 +773,15 @@ function BoardLayout() {
           handleClose={() => {
             setErrorModal(false);
           }}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>
