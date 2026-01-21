@@ -15,6 +15,7 @@ export const ScrollableContainer = styled.div<IStyledModal>`
   z-index: 1;
   position: relative;
   overflow-y: auto;
+  height: 520px;
 
   &::-webkit-scrollbar {
     width: 8px;
