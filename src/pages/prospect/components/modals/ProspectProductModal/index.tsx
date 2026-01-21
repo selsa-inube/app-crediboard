@@ -30,6 +30,9 @@ import { validateIncrement } from "@services/prospect/validateIncrement";
 import { IValidateIncrementRequest } from "@services/prospect/validateIncrement/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
+import { validateCurrencyFieldTruncate } from "@utils/formatData/currency";
+import { CardGray } from "@components/cards/CardGray";
+import { capitalizeFirstLetter } from "@utils/formatData/text";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -46,6 +49,7 @@ import {
   fieldLabels,
   fieldPlaceholders,
   errorMessages,
+  simulationFormLabels,
 } from "./config";
 
 interface EditProductModalProps {
@@ -117,7 +121,7 @@ function EditProductModal(props: EditProductModalProps) {
     IPaymentMethod[]
   >([]);
   const [paymentCyclesList, setPaymentCyclesList] = useState<IPaymentCycle[]>(
-    []
+    [],
   );
   const [firstPaymentCyclesList, setFirstPaymentCyclesList] = useState<
     IFirstPaymentCycle[]
@@ -126,27 +130,27 @@ function EditProductModal(props: EditProductModalProps) {
   const [loanTermError, setLoanTermError] = useState<string>("");
   const [amortizationTypesList, setAmortizationTypesList] = useState<
     SelectOption[]
-  >( [
-  {
-    id: "1",
-    value: "cuota_integral_fija",
-    label: "Cuota integral fija"
-  },
-  {
-    id: "2",
-    value: "abonos_fijos_capital",
-    label: "Abonos fijos a capital"
-  },
-  {
-    id: "3",
-    value: "Pagos valor de incremento",
-    label: "Pagos valor de incremento"
-  },
-  {
-    id: "4",
-    value: "Pagos con porcentaje de incremento",
-    label: "Pagos con porcentaje de incremento"
-  }
+  >([
+    {
+      id: "1",
+      value: "cuota_integral_fija",
+      label: "Cuota integral fija",
+    },
+    {
+      id: "2",
+      value: "abonos_fijos_capital",
+      label: "Abonos fijos a capital",
+    },
+    {
+      id: "3",
+      value: "Pagos valor de incremento",
+      label: "Pagos valor de incremento",
+    },
+    {
+      id: "4",
+      value: "Pagos con porcentaje de incremento",
+      label: "Pagos con porcentaje de incremento",
+    },
   ]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
@@ -164,7 +168,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await getPaymentMethods(
           businessUnitPublicCode,
           businessManagerCode,
-          initialValues.creditLine
+          clientIdentificationNumber,
         );
 
         if (!response) {
@@ -177,22 +181,26 @@ function EditProductModal(props: EditProductModalProps) {
           label: paymentCycleMap[cycle.value] || cycle.label,
         }));
         setPaymentCyclesList(mappedPaymentCycles);
+        paymentCyclesList;
 
         const mappedFirstPaymentCycles = response.firstPaymentCycles.map(
           (cycle) => ({
             ...cycle,
             label: paymentCycleMap[cycle.value] || cycle.label,
-          })
+          }),
         );
         setFirstPaymentCyclesList(mappedFirstPaymentCycles);
+        firstPaymentCyclesList;
       } catch (error) {
         setPaymentMethodsList(defaultPaymentOptions);
+        paymentMethodsList;
         setPaymentCyclesList(defaultPaymentOptions);
         setFirstPaymentCyclesList(defaultPaymentOptions);
       }
     };
 
     loadPaymentOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, initialValues.creditLine]);
 
   useEffect(() => {
@@ -211,7 +219,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await postBusinessUnitRules(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -260,7 +268,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await postBusinessUnitRules(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -302,7 +310,7 @@ function EditProductModal(props: EditProductModalProps) {
     formik: FormikProps<FormikValues>,
     fieldName: string,
     name: string,
-    value: string
+    value: string,
   ) => {
     formik.setFieldValue(name, value);
 
@@ -329,7 +337,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleTextChange = (
     formik: FormikProps<FormikValues>,
     fieldName: string,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     formik.handleChange(event);
 
@@ -373,7 +381,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await postBusinessUnitRules(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -386,7 +394,7 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (amount < from || amount > to) {
             setLoanAmountError(
-              modalTexts.messages.errors.loanAmountRange(amount, from, to)
+              modalTexts.messages.errors.loanAmountRange(amount, from, to),
             );
           }
         } else if (typeof decision.value === "string") {
@@ -394,7 +402,7 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (!isNaN(maxAmount) && amount > maxAmount) {
             setLoanAmountError(
-              modalTexts.messages.errors.loanAmountMax(amount, maxAmount)
+              modalTexts.messages.errors.loanAmountMax(amount, maxAmount),
             );
           }
         }
@@ -409,7 +417,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const validateLoanTerm = async (
     term: number,
-    loanAmount: number
+    loanAmount: number,
   ): Promise<void> => {
     try {
       setLoanTermError("");
@@ -428,7 +436,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await postBusinessUnitRules(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -441,7 +449,7 @@ function EditProductModal(props: EditProductModalProps) {
 
           if (term < from || term > to) {
             setLoanTermError(
-              modalTexts.messages.errors.loanTermRange(term, from, to)
+              modalTexts.messages.errors.loanTermRange(term, from, to),
             );
           }
         } else if (typeof decision.value === "string") {
@@ -450,7 +458,7 @@ function EditProductModal(props: EditProductModalProps) {
             const [min, max] = rangeParts.map(Number);
             if (!isNaN(min) && !isNaN(max) && (term < min || term > max)) {
               setLoanTermError(
-                modalTexts.messages.errors.loanTermRange(term, min, max)
+                modalTexts.messages.errors.loanTermRange(term, min, max),
               );
             }
           }
@@ -472,7 +480,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessUnitPublicCode,
         businessManagerCode,
         initialValues.creditLine,
-        clientIdentificationNumber
+        clientIdentificationNumber,
       );
 
       const periodicInterestRateMin = response?.periodicInterestRateMin || 0;
@@ -483,8 +491,8 @@ function EditProductModal(props: EditProductModalProps) {
           modalTexts.messages.errors.interestRateRange(
             rate,
             periodicInterestRateMin,
-            periodicInterestRateMax
-          )
+            periodicInterestRateMax,
+          ),
         );
       }
     } catch (error) {
@@ -495,7 +503,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const handleCurrencyChange = (
     formik: FormikProps<FormikValues>,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     handleChangeWithCurrency(formik, event);
 
@@ -552,9 +560,12 @@ function EditProductModal(props: EditProductModalProps) {
       const updatedProspect = await updateCreditProduct(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
+      if (!updatedProspect) {
+        throw new Error(errorMessages.updateCreditProduct.description);
+      }
       const normalizedProspect = {
         ...updatedProspect,
         creditProducts: updatedProspect!.creditProducts?.map((product) => ({
@@ -568,8 +579,16 @@ function EditProductModal(props: EditProductModalProps) {
       setIsUsingServices(false);
       onCloseModal();
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description = code + err?.message + (err?.data?.description || "");
+
       setIsUsingServices(false);
-      setErrorMessage(errorMessages.updateCreditProduct.description);
+      setErrorMessage(description);
       setErrorModal(true);
     }
   };
@@ -577,7 +596,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleAmortizationTypeChange = (
     formik: FormikProps<FormikValues>,
     name: string,
-    value: string
+    value: string,
   ) => {
     formik.setFieldValue(name, value);
 
@@ -603,7 +622,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const validateIncrementValue = async (
     value: string,
-    formik: FormikProps<FormikValues>
+    formik: FormikProps<FormikValues>,
   ): Promise<void> => {
     if (!incrementType || !value) {
       setIncrementError("");
@@ -632,7 +651,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await validateIncrement(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       if (!response.isValid) {
@@ -640,15 +659,15 @@ function EditProductModal(props: EditProductModalProps) {
           setIncrementError(
             validationMessages.incrementValueRange(
               response.minValue,
-              response.maxValue
-            )
+              response.maxValue,
+            ),
           );
         } else {
           setIncrementError(
             validationMessages.incrementPercentageRange(
               response.minValue,
-              response.maxValue
-            )
+              response.maxValue,
+            ),
           );
         }
       } else {
@@ -659,6 +678,13 @@ function EditProductModal(props: EditProductModalProps) {
     } finally {
       setIsValidatingIncrement(false);
     }
+  };
+
+  const handleInstallmentChange = (
+    formik: FormikProps<FormikValues>,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    handleChangeWithCurrency(formik, event);
   };
 
   const validationSchema = Yup.object({
@@ -689,7 +715,7 @@ function EditProductModal(props: EditProductModalProps) {
         validationSchema={validationSchema}
         onSubmit={(
           values: FormikValues,
-          formikHelpers: FormikHelpers<FormikValues>
+          formikHelpers: FormikHelpers<FormikValues>,
         ) => {
           handleConfirm(values);
           formikHelpers.setSubmitting(false);
@@ -743,7 +769,7 @@ function EditProductModal(props: EditProductModalProps) {
                     "creditAmount",
                     formik,
                     false,
-                    ""
+                    "",
                   )}
                   status={loanAmountError ? "invalid" : undefined}
                   message={loanAmountError}
@@ -761,56 +787,19 @@ function EditProductModal(props: EditProductModalProps) {
                   fullwidth
                   disabled={isCreditAmountDisabled()}
                 />
-                <Select
+                <CardGray
                   label={modalTexts.labels.paymentMethod}
-                  name="paymentMethod"
-                  id="paymentMethod"
-                  size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
-                  options={paymentMethodsList}
-                  onBlur={formik.handleBlur}
-                  onChange={(name, value) =>
-                    handleSelectChange(formik, "paymentMethod", name, value)
-                  }
-                  value={
+                  placeHolder={capitalizeFirstLetter(
                     formik.values.paymentMethod.charAt(0).toUpperCase() +
-                    formik.values.paymentMethod.slice(1)
-                  }
-                  fullwidth
-                  disabled={true}
+                      formik.values.paymentMethod.slice(1),
+                  )}
                 />
-                <Select
+                <CardGray
                   label={modalTexts.labels.paymentCycle}
-                  name="paymentCycle"
-                  id="paymentCycle"
-                  size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
-                  options={paymentCyclesList}
-                  onBlur={formik.handleBlur}
-                  onChange={(name, value) =>
-                    handleSelectChange(formik, "paymentCycle", name, value)
-                  }
-                  value={
+                  placeHolder={capitalizeFirstLetter(
                     paymentCycleMap[formik.values.paymentCycle] ||
-                    formik.values.paymentCycle
-                  }
-                  fullwidth
-                  disabled={true}
-                />
-                <Select
-                  label={modalTexts.labels.firstPaymentCycle}
-                  name="firstPaymentCycle"
-                  id="firstPaymentCycle"
-                  size="compact"
-                  placeholder={modalTexts.placeholders.selectOption}
-                  options={firstPaymentCyclesList}
-                  onBlur={formik.handleBlur}
-                  onChange={(name, value) =>
-                    handleSelectChange(formik, "firstPaymentCycle", name, value)
-                  }
-                  value={formik.values.firstPaymentCycle}
-                  fullwidth
-                  disabled={true}
+                      formik.values.paymentCycle,
+                  )}
                 />
                 <Select
                   label={modalTexts.labels.termInMonths}
@@ -906,7 +895,7 @@ function EditProductModal(props: EditProductModalProps) {
                   name="interestRate"
                   id="interestRate"
                   placeholder={modalTexts.placeholders.interestRate}
-                  value={formik.values.interestRate}
+                  value={formik.values.interestRate.toFixed(4)}
                   iconAfter={
                     <Icon
                       icon={<MdPercent />}
@@ -940,6 +929,33 @@ function EditProductModal(props: EditProductModalProps) {
                   value={formik.values.rateType}
                   fullwidth
                   disabled={isLoadingRateTypes}
+                />
+                <Textfield
+                  label={simulationFormLabels.installmentAmountLabel.i18n["es"]}
+                  name="installmentAmount"
+                  id="installmentAmount"
+                  placeholder={
+                    simulationFormLabels.installmentAmountPlaceholder.i18n["es"]
+                  }
+                  value={validateCurrencyFieldTruncate(
+                    "installmentAmount",
+                    formik,
+                    false,
+                    "",
+                  )}
+                  iconBefore={
+                    <Icon
+                      icon={<MdAttachMoney />}
+                      appearance="success"
+                      size="18px"
+                      spacing="narrow"
+                    />
+                  }
+                  type="text"
+                  size="compact"
+                  onBlur={formik.handleBlur}
+                  onChange={(event) => handleInstallmentChange(formik, event)}
+                  fullwidth
                 />
               </Stack>
             </ScrollableContainer>

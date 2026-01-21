@@ -1,5 +1,3 @@
-import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
-
 import { CreditProductCardUI } from "./interface";
 
 interface CreditProductCardProps {
@@ -9,7 +7,7 @@ interface CreditProductCardProps {
   interestRate: number;
   termMonths: number;
   periodicFee: number;
-  schedule: Schedule;
+  schedule: string;
   onEdit: () => void;
   onDelete: () => void;
   availableEditCreditRequest: boolean;
