@@ -42,7 +42,7 @@ export function CardBorrower(props: ICardBorrowerProps) {
     isMobile = false,
     lang,
   } = props;
-  
+
   return (
     <StyledContainer $showIcons={showIcons} $isMobile={isMobile}>
       <Stack direction="column" padding="10px 16px" gap="12px">

@@ -1,20 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { 
-  Stack, 
-  Text, 
-  Divider, 
-  Toggle, 
-  Checkbox, 
-  Textarea, 
-  Select, 
-  Textfield, 
-  inube, 
-  SkeletonLine 
+import {
+  Stack,
+  Text,
+  Divider,
+  Toggle,
+  Checkbox,
+  Textarea,
+  Select,
+  Textfield,
+  inube,
+  SkeletonLine,
 } from "@inubekit/inubekit";
 import { FormikValues } from "formik";
 
-import { currencyFormat, handleChangeWithCurrency, validateCurrencyField } from "@utils/formatData/currency";
+import {
+  currencyFormat,
+  handleChangeWithCurrency,
+  validateCurrencyField,
+} from "@utils/formatData/currency";
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { searchAllCardSavingProducts } from "@services/bank/cardSavingProducts/SearchAllCardSavingProducts";
@@ -23,7 +27,10 @@ import { CardGray } from "@components/cards/CardGray";
 import { EnumType } from "@hooks/useEnum";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
-import { disbursementGeneralEnum, disbursemenOptionAccountEnum } from "../config";
+import {
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum,
+} from "../config";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
 
 interface IDisbursementWithInternalAccountProps {
@@ -44,7 +51,9 @@ interface IDisbursementWithInternalAccountProps {
   customerData?: ICustomerData;
 }
 
-export function DisbursementWithInternalAccount(props: IDisbursementWithInternalAccountProps) {
+export function DisbursementWithInternalAccount(
+  props: IDisbursementWithInternalAccountProps,
+) {
   const {
     isMobile,
     formik,
@@ -55,7 +64,7 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
     prospectSummaryData,
     isAmountReadOnly,
     customerData,
-    lang
+    lang,
   } = props;
 
   const {
@@ -64,11 +73,13 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
     isDisabled,
     handleCheckboxChange,
     handleToggleChange,
-    isInvalidAmount
+    isInvalidAmount,
   } = useDisbursementForm({ ...props, skipValidation: true });
 
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
-  const [accountOptions, setAccountOptions] = useState<{ id: string; label: string; value: string }[]>([]);
+  const [accountOptions, setAccountOptions] = useState<
+    { id: string; label: string; value: string }[]
+  >([]);
   const lastValidState = useRef<boolean | null>(null);
 
   useEffect(() => {
@@ -80,7 +91,10 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
 
       let failsBusinessRule = false;
       if (isFormVisible && customerData?.publicCode) {
-        if (String(currentValues.identification) === String(customerData.publicCode)) {
+        if (
+          String(currentValues.identification) ===
+          String(customerData.publicCode)
+        ) {
           failsBusinessRule = true;
         }
       }
@@ -105,7 +119,10 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
           businessUnitPublicCode,
           businessManagerCode,
         );
-        const uniqueMap = new Map<string, { id: string; label: string; value: string }>();
+        const uniqueMap = new Map<
+          string,
+          { id: string; label: string; value: string }
+        >();
         response.forEach((account) => {
           const key = `${account.productDescription}-${account.savingProductCode}`;
           if (!uniqueMap.has(key)) {
@@ -152,7 +169,12 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
   }, [accountOptions, currentAccount, optionNameForm, formik]);
 
   return (
-    <Stack direction="column" padding={isMobile ? "4px 10px" : "10px 16px"} gap="16px" justifyContent="center">
+    <Stack
+      direction="column"
+      padding={isMobile ? "4px 10px" : "10px 16px"}
+      gap="16px"
+      justifyContent="center"
+    >
       <Stack direction="column" gap="20px">
         <Stack>
           <Textfield
@@ -161,15 +183,24 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
             label={disbursementGeneralEnum.labelTurn.i18n[lang]}
             placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
             size="compact"
-            value={validateCurrencyField("amount", formik, false, optionNameForm)}
-            onChange={(event) => handleChangeWithCurrency(formik, event, optionNameForm)}
+            value={validateCurrencyField(
+              "amount",
+              formik,
+              false,
+              optionNameForm,
+            )}
+            onChange={(event) =>
+              handleChangeWithCurrency(formik, event, optionNameForm)
+            }
             onBlur={() => {
               formik.setFieldTouched(`${optionNameForm}.amount`, true);
               formik.handleBlur(`amount`);
             }}
             status={isInvalidAmount ? "invalid" : undefined}
             readOnly={isAmountReadOnly}
-            iconBefore={<MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />}
+            iconBefore={
+              <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
+            }
             message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[lang]}${currencyFormat(prospectSummaryData?.netAmountToDisburse ?? 0)}`}
             fullwidth
           />
@@ -183,12 +214,16 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
             onChange={handleCheckboxChange}
             disabled={isDisabled}
           />
-          <Text type="label" size="medium">{disbursementGeneralEnum.labelCheck.i18n[lang]}</Text>
+          <Text type="label" size="medium">
+            {disbursementGeneralEnum.labelCheck.i18n[lang]}
+          </Text>
         </Stack>
       </Stack>
       <Divider dashed />
       <Stack direction="column" gap="16px">
-        <Text type="label" size="medium">{disbursementGeneralEnum.labelToggle.i18n[lang]}</Text>
+        <Text type="label" size="medium">
+          {disbursementGeneralEnum.labelToggle.i18n[lang]}
+        </Text>
       </Stack>
       <Stack direction="row" gap="16px">
         <Toggle
@@ -198,8 +233,16 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
           onChange={handleToggleChange}
           size="large"
         />
-        <Text appearance={(formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"}>
-          {(formik.values[optionNameForm]?.toggle ?? true) ? disbursementGeneralEnum.optionToggleYes.i18n[lang] : disbursementGeneralEnum.optionToggleNo.i18n[lang]}
+        <Text
+          appearance={
+            (formik.values[optionNameForm]?.toggle ?? true)
+              ? "success"
+              : "danger"
+          }
+        >
+          {(formik.values[optionNameForm]?.toggle ?? true)
+            ? disbursementGeneralEnum.optionToggleYes.i18n[lang]
+            : disbursementGeneralEnum.optionToggleNo.i18n[lang]}
         </Text>
       </Stack>
       <Divider dashed />
@@ -229,7 +272,9 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
                 id={`${optionNameForm}.accountNumber`}
                 name={`${optionNameForm}.accountNumber`}
                 label={disbursemenOptionAccountEnum.labelAccount.i18n[lang]}
-                placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
+                placeholder={
+                  disbursemenOptionAccountEnum.placeOption.i18n[lang]
+                }
                 size="compact"
                 options={accountOptions}
                 onBlur={formik.handleBlur}
@@ -256,7 +301,9 @@ export function DisbursementWithInternalAccount(props: IDisbursementWithInternal
         label={disbursemenOptionAccountEnum.observation.i18n[lang]}
         placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
         value={formik.values[optionNameForm]?.description || ""}
-        onChange={(e) => formik.setFieldValue(`${optionNameForm}.description`, e.target.value)}
+        onChange={(e) =>
+          formik.setFieldValue(`${optionNameForm}.description`, e.target.value)
+        }
         onBlur={formik.handleBlur}
         fullwidth
       />

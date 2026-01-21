@@ -359,4 +359,4 @@ export const modalTitlesEnum = {
       es: "Guardar",
     },
   },
-}
+};

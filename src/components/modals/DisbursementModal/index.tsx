@@ -33,7 +33,7 @@ export interface IDisbursementModalProps {
 }
 
 export function DisbursementModal(
-  props: IDisbursementModalProps
+  props: IDisbursementModalProps,
 ): JSX.Element | null {
   const {
     handleClose,
@@ -73,7 +73,6 @@ export function DisbursementModal(
       ...tab,
       label: tab.label.i18n[lang],
     }));
-
 
   useEffect(() => {
     if (
@@ -137,8 +136,18 @@ export function DisbursementModal(
             >
               {Array.from({ length: 7 }).map((_, index) => (
                 <Fragment key={`skeleton-${index}-disbursement`}>
-                  <SkeletonLine key={`skeleton-one${index}-disbursement`} width="280px" height="40px" animated />
-                  <SkeletonLine key={`skeleton-two${index}-disbursement`} width="280px" height="40px" animated />
+                  <SkeletonLine
+                    key={`skeleton-one${index}-disbursement`}
+                    width="280px"
+                    height="40px"
+                    animated
+                  />
+                  <SkeletonLine
+                    key={`skeleton-two${index}-disbursement`}
+                    width="280px"
+                    height="40px"
+                    animated
+                  />
                 </Fragment>
               ))}
             </Grid>
@@ -162,10 +171,18 @@ export function DisbursementModal(
         {!loading && !error ? (
           <>
             {currentTab === "Internal" && (
-              <DisbursementInternal isMobile={isMobile} data={data.internal} lang={lang} />
+              <DisbursementInternal
+                isMobile={isMobile}
+                data={data.internal}
+                lang={lang}
+              />
             )}
             {currentTab === "External" && (
-              <DisbursementExternal isMobile={isMobile} data={data.external} lang={lang} />
+              <DisbursementExternal
+                isMobile={isMobile}
+                data={data.external}
+                lang={lang}
+              />
             )}
             {currentTab === "CheckEntity" && (
               <DisbursementCheckEntity
@@ -182,7 +199,11 @@ export function DisbursementModal(
               />
             )}
             {currentTab === "Cash" && (
-              <DisbursementCash isMobile={isMobile} data={data.cash} lang={lang} />
+              <DisbursementCash
+                isMobile={isMobile}
+                data={data.cash}
+                lang={lang}
+              />
             )}
           </>
         ) : (
