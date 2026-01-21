@@ -277,7 +277,7 @@ export function DisbursementWithExternalAccount(
           value={formik.values[optionNameForm]?.observation || ""}
           onChange={(event) => {
             const value = event.target.value;
-            if (value.length <= 200) {
+            if (value.length <= 100) {
               formik.handleChange(event);
             }
           }}
