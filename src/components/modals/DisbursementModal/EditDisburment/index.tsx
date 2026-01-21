@@ -5,6 +5,8 @@ import { searchAllModesOfDisbursementTypes } from "@services/lineOfCredit/getSea
 import { IProspectSummaryById } from "@services/prospect/types";
 import { getSearchProspectSummaryById } from "@services/creditRequest/query/ProspectSummaryById";
 import { IModeOfDisbursement } from "@services/creditRequest/query/types";
+import { getClientPortfolioObligationsById } from "@services/creditRequest/updateModeOfDisbursement";
+import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 
 import { disbursemenTabs } from "./disbursementGeneral/config";
 import { DisbursementGeneral } from "./disbursementGeneral";
@@ -14,10 +16,7 @@ import {
   FormAccountType,
   DisbursementAccountKeys,
 } from "../types";
-import {
-  mapModesToFormikInitialValues,
-  DataToTabIdMap
-} from "./utils";
+import { mapModesToFormikInitialValues, DataToTabIdMap } from "./utils";
 import { DisbursementModal } from "..";
 
 export interface IDisbursementFlowManagerProps {
@@ -39,6 +38,8 @@ export interface IDisbursementFlowManagerProps {
   businessManagerCode: string;
   prospectSummaryData: IProspectSummaryById | undefined;
   creditRequestCode: string;
+  setErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
@@ -54,20 +55,27 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     businessManagerCode,
     prospectSummaryData,
     creditRequestCode,
+    setErrorModal,
+    setErrorMessage,
   } = props;
 
   const [modesOfDisbursement, setModesOfDisbursement] = useState<string[]>([]);
-  const [initialValues, setInitialValues] = useState<IDisbursementGeneral>(mapModesToFormikInitialValues(initialDisbursementData));
-  const [viewMode, setViewMode] = useState<'view' | 'edit'>('view');
+  const [initialValues, setInitialValues] = useState<IDisbursementGeneral>(
+    mapModesToFormikInitialValues(initialDisbursementData),
+  );
+  const [viewMode, setViewMode] = useState<"view" | "edit">("view");
   const [currentTab, setCurrentTab] = useState<string>("");
   const [internalLoading, setInternalLoading] = useState(true);
-  const [editableFormData, setEditableFormData] = useState<IDisbursementGeneral>(() =>
-    mapModesToFormikInitialValues(initialDisbursementData)
-  );
-  const [formInitialSnapshot, setFormInitialSnapshot] = useState<IDisbursementGeneral>(() =>
-    mapModesToFormikInitialValues(initialDisbursementData)
-  );
-  const [loadingDisbursementData, setLoadingDisbursementData] = useState<boolean>(false);
+  const [editableFormData, setEditableFormData] =
+    useState<IDisbursementGeneral>(() =>
+      mapModesToFormikInitialValues(initialDisbursementData),
+    );
+  const [formInitialSnapshot, setFormInitialSnapshot] =
+    useState<IDisbursementGeneral>(() =>
+      mapModesToFormikInitialValues(initialDisbursementData),
+    );
+  const [loadingDisbursementData, setLoadingDisbursementData] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const newData = mapModesToFormikInitialValues(initialDisbursementData);
@@ -76,7 +84,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
   }, [initialDisbursementData]);
 
   const handleOpenEdit = useCallback(() => {
-    setViewMode('edit');
+    setViewMode("edit");
   }, []);
 
   const validation = initialValues;
@@ -86,17 +94,29 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
       try {
         setInternalLoading(false);
 
-        const data = await getSearchProspectSummaryById(businessUnitPublicCode, businessManagerCode, creditRequestCode);
-        setInitialValues({ ...initialValues, amount: data.netAmountToDisburse });
+        const data = await getSearchProspectSummaryById(
+          businessUnitPublicCode,
+          businessManagerCode,
+          creditRequestCode,
+        );
+        setInitialValues({
+          ...initialValues,
+          amount: data.netAmountToDisburse,
+        });
       } finally {
         validation;
         setInternalLoading(false);
       }
-    }
+    };
 
     getAmountDisbursement();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prospectData, businessUnitPublicCode, businessManagerCode, creditRequestCode]);
+  }, [
+    prospectData,
+    businessUnitPublicCode,
+    businessManagerCode,
+    creditRequestCode,
+  ]);
 
   useEffect(() => {
     const fetchDisbursementData = async () => {
@@ -128,6 +148,19 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
           setModesOfDisbursement([]);
         }
       } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setErrorMessage(description);
+        setErrorModal(true);
+
         setModesOfDisbursement([]);
       } finally {
         setInternalLoading(false);
@@ -135,6 +168,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     };
 
     fetchDisbursementData();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, prospectData, viewMode]);
 
   const sortedModes = useMemo(() => {
@@ -160,19 +194,32 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
 
       if (Number(tabData.amount) > 0) return true;
 
-      return Object.values(tabData).some(value => value !== null && value !== undefined && value !== "" && value !== 0 && value !== false);
+      return Object.values(tabData).some(
+        (value) =>
+          value !== null &&
+          value !== undefined &&
+          value !== "" &&
+          value !== 0 &&
+          value !== false,
+      );
     };
 
     const allTabs = Object.values(disbursemenTabs);
 
     return allTabs.filter((tab) => {
       switch (tab.id) {
-        case "Internal": return hasValidData(editableFormData.Internal_account);
-        case "External": return hasValidData(editableFormData.External_account);
-        case "CheckEntity": return hasValidData(editableFormData.Certified_check);
-        case "CheckManagement": return hasValidData(editableFormData.Business_check);
-        case "Cash": return hasValidData(editableFormData.Cash);
-        default: return false;
+        case "Internal":
+          return hasValidData(editableFormData.Internal_account);
+        case "External":
+          return hasValidData(editableFormData.External_account);
+        case "CheckEntity":
+          return hasValidData(editableFormData.Certified_check);
+        case "CheckManagement":
+          return hasValidData(editableFormData.Business_check);
+        case "Cash":
+          return hasValidData(editableFormData.Cash);
+        default:
+          return false;
       }
     });
   }, [editableFormData]);
@@ -196,7 +243,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
 
   const mapToDisplayData = (
     formData: FormAccountType,
-    defaultData: dataTabsDisbursement
+    defaultData: dataTabsDisbursement,
   ): dataTabsDisbursement => {
     if (!formData || !Object.keys(formData).length) return defaultData;
 
@@ -219,68 +266,190 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
       accountNumber: "",
     };
 
-    if ('bank' in formData) {
-      mappedData.accountBankName = (formData as IDisbursementGeneral['External_account']).bank || "";
+    if ("bank" in formData) {
+      mappedData.accountBankName =
+        (formData as IDisbursementGeneral["External_account"]).bank || "";
     }
-    if ('accountType' in formData) {
-      mappedData.accountType = (formData as IDisbursementGeneral['External_account']).accountType || "";
+    if ("accountType" in formData) {
+      mappedData.accountType =
+        (formData as IDisbursementGeneral["External_account"]).accountType ||
+        "";
     }
-    if ('accountNumber' in formData) {
-      mappedData.accountNumber = (formData as IDisbursementGeneral['Internal_account']).accountNumber || "";
+    if ("accountNumber" in formData) {
+      mappedData.accountNumber =
+        (formData as IDisbursementGeneral["Internal_account"]).accountNumber ||
+        "";
     }
 
     return mappedData;
   };
 
-  const handleSave = () => {
+  const handleSave = async (data: IDisbursementGeneral) => {
     try {
-      setLoadingDisbursementData(true);
-    } finally {
-      handleClose();
-      setLoadingDisbursementData(false);
+      const disbursementMethods: (keyof Omit<
+        IDisbursementGeneral,
+        "amount"
+      >)[] = [
+        "Internal_account",
+        "External_account",
+        "Certified_check",
+        "Business_check",
+        "Cash",
+      ];
+
+      const foundCreditRequestId = Object.values(initialDisbursementData).find(
+        (item) => item && item.creditRequestId,
+      )?.creditRequestId;
+
+      disbursementMethods.forEach(async (method) => {
+        const dataFiltered = data[method];
+
+        if (
+          dataFiltered &&
+          typeof dataFiltered === "object" &&
+          Object.keys(dataFiltered).length > 0
+        ) {
+          setLoadingDisbursementData(true);
+
+          let rawData = {};
+
+          if (dataFiltered.toggle || dataFiltered.toggle === undefined) {
+            const dataClient = await searchAllCustomerCatalog(
+              identificationNumber,
+              businessUnitPublicCode,
+              businessManagerCode,
+            );
+            if (dataClient !== null) {
+              rawData = {
+                ...dataFiltered,
+                disbursementAmount: Number(dataFiltered.amount),
+                isInTheNameOfBorrower: dataFiltered.toggle ? "Y" : "N",
+                payeeEmail:
+                  dataClient.generalAttributeClientNaturalPersons[0]
+                    .emailContact || "",
+                payeeIdentificationNumber: identificationNumber || "",
+                payeeIdentificationType:
+                  dataClient.generalAttributeClientNaturalPersons[0]
+                    .typeIdentification || "",
+                payeeName:
+                  dataClient.generalAttributeClientNaturalPersons[0]
+                    .firstNames || "",
+                payeePhoneNumber:
+                  dataClient.generalAttributeClientNaturalPersons[0]
+                    .cellPhoneContact || "",
+                payeeSurname:
+                  dataClient.generalAttributeClientNaturalPersons[0]
+                    .lastNames || "",
+                payeeBiologicalSex:
+                  dataClient.generalAttributeClientNaturalPersons[0].gender ===
+                  "F-Femenino"
+                    ? "F"
+                    : "M",
+                modeOfDisbursementType: method,
+                payeeCityOfResidence:
+                  dataClient.generalAttributeClientNaturalPersons[0]
+                    .cityNameExpeditionIdentification || "",
+                payeeBirthday:
+                  dataClient.generalAttributeClientNaturalPersons[0]
+                    .dateBirth || "",
+                creditRequestId: foundCreditRequestId || "",
+              };
+            }
+          } else {
+            rawData = {
+              ...dataFiltered,
+              disbursementAmount: Number(dataFiltered.amount),
+              isInTheNameOfBorrower: dataFiltered.toggle ? "Y" : "N",
+              payeeEmail: dataFiltered.mail || "",
+              payeeIdentificationNumber: dataFiltered.identification || "",
+              payeeIdentificationType: dataFiltered.documentType || "",
+              payeeName: dataFiltered.name || "",
+              payeePhoneNumber: dataFiltered.phone || "",
+              payeeSurname: dataFiltered.lastName || "",
+              payeeBiologicalSex: dataFiltered.sex === "F-Femenino" ? "F" : "M",
+              accountNumber: dataFiltered.accountNumber || "",
+            };
+          }
+
+          await getClientPortfolioObligationsById(
+            businessUnitPublicCode,
+            businessManagerCode,
+            rawData,
+          );
+
+          handleClose();
+          setLoadingDisbursementData(false);
+        }
+      });
+    } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setErrorMessage(description);
+      setErrorModal(true);
     }
-  }
+  };
 
   const areAllPropertiesNull = (data: object): boolean => {
     if (!data) return true;
     return Object.values(data).every((value) => value === null);
   };
 
-  const isLoading = parentLoading || internalLoading || areAllPropertiesNull(initialDisbursementData);
+  const isLoading =
+    parentLoading ||
+    internalLoading ||
+    areAllPropertiesNull(initialDisbursementData);
 
-  return (
-    viewMode === 'edit' ? (
-      <DisbursementGeneral
-        isMobile={isMobile}
-        initialValues={formInitialSnapshot}
-        handleOnChange={setInitialValues}
-        isSelected={currentTab}
-        onFormValid={() => { }}
-        handleTabChange={setCurrentTab}
-        prospectData={prospectData}
-        identificationNumber={identificationNumber}
-        prospectSummaryData={prospectSummaryData}
-        modesOfDisbursement={sortedModes}
-        handleClose={handleClose}
-        handleSave={handleSave}
-        isLoading={loadingDisbursementData}
-      />
-    ) : (
-      <DisbursementModal
-        isMobile={isMobile}
-        handleClose={handleClose}
-        loading={isLoading}
-        data={{
-          internal: mapToDisplayData(editableFormData.Internal_account, dataDefault),
-          external: mapToDisplayData(editableFormData.External_account, dataDefault),
-          CheckEntity: mapToDisplayData(editableFormData.Certified_check, dataDefault),
-          checkManagementData: mapToDisplayData(editableFormData.Business_check, dataDefault),
-          cash: mapToDisplayData(editableFormData.Cash, dataDefault),
-        }}
-        handleOpenEdit={handleOpenEdit}
-        currentTab={currentTab}
-        setCurrentTab={setCurrentTab}
-      />
-    )
+  return viewMode === "edit" ? (
+    <DisbursementGeneral
+      isMobile={isMobile}
+      initialValues={formInitialSnapshot}
+      handleOnChange={setInitialValues}
+      isSelected={currentTab}
+      onFormValid={() => {}}
+      handleTabChange={setCurrentTab}
+      prospectData={prospectData}
+      identificationNumber={identificationNumber}
+      prospectSummaryData={prospectSummaryData}
+      modesOfDisbursement={sortedModes}
+      handleClose={handleClose}
+      handleSave={handleSave}
+      isLoading={loadingDisbursementData}
+    />
+  ) : (
+    <DisbursementModal
+      isMobile={isMobile}
+      handleClose={handleClose}
+      loading={isLoading}
+      data={{
+        internal: mapToDisplayData(
+          editableFormData.Internal_account,
+          dataDefault,
+        ),
+        external: mapToDisplayData(
+          editableFormData.External_account,
+          dataDefault,
+        ),
+        CheckEntity: mapToDisplayData(
+          editableFormData.Certified_check,
+          dataDefault,
+        ),
+        checkManagementData: mapToDisplayData(
+          editableFormData.Business_check,
+          dataDefault,
+        ),
+        cash: mapToDisplayData(editableFormData.Cash, dataDefault),
+      }}
+      handleOpenEdit={handleOpenEdit}
+      currentTab={currentTab}
+      setCurrentTab={setCurrentTab}
+    />
   );
 }

@@ -73,9 +73,8 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
     useEffect(() => {
         const currentAmount = Number(formik.values[optionNameForm]?.amount || 0);
         const totalCalc = getTotalAmount();
-
         if (formik.values[optionNameForm]?.check) {
-            if (currentAmount + totalCalc - currentAmount !== initialValues.amount) {
+            if ((currentAmount + totalCalc) - currentAmount !== initialValues.amount) {
                 formik.setFieldValue(`${optionNameForm}.check`, false);
             }
         }

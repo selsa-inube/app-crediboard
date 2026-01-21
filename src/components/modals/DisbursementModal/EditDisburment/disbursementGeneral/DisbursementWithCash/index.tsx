@@ -20,11 +20,7 @@ import {
 } from "@utils/formatData/currency";
 import { IProspect } from "@services/prospect/types";
 
-
-import {
-  disbursementGeneral,
-  disbursemenOptionAccount
-} from "../config";
+import { disbursementGeneral, disbursemenOptionAccount } from "../config";
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
 
@@ -62,7 +58,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
     isDisabled,
     handleCheckboxChange,
     handleToggleChange,
-    isInvalidAmount
+    isInvalidAmount,
   } = useDisbursementForm(props);
 
   return (
@@ -75,7 +71,10 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
       <Stack direction="column" gap="20px">
         <Stack width={isMobile ? "100%" : "498px"}>
           <Textfield
-            id="amount"
+            iconBefore={
+              <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
+            }
+            id={`${optionNameForm}.amount`}
             name="amount"
             label={disbursementGeneral.label}
             placeholder={disbursementGeneral.place}
@@ -93,12 +92,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
               formik.setFieldTouched(`${optionNameForm}.amount`, true);
               formik.handleBlur(`amount`);
             }}
-            iconBefore={
-              <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
-            }
-            status={
-              isInvalidAmount ? "invalid" : undefined
-            }
+            status={isInvalidAmount ? "invalid" : undefined}
             readOnly={isAmountReadOnly}
             message={`${disbursemenOptionAccount.valueTurnFail}${currencyFormat(initialValues.amount, false)}`}
             fullwidth
@@ -139,7 +133,9 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
         />
         <Text
           appearance={
-            (formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"
+            (formik.values[optionNameForm]?.toggle ?? true)
+              ? "success"
+              : "danger"
           }
         >
           {(formik.values[optionNameForm]?.toggle ?? true)
@@ -165,12 +161,17 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
       )}
       <Stack direction="row" gap="16px">
         <Textarea
-          id={"description"}
-          name={`${optionNameForm}.description`}
+          id={"observation"}
+          name={`${optionNameForm}.observation`}
           label={disbursemenOptionAccount.observation}
           placeholder={disbursemenOptionAccount.placeObservation}
-          value={formik.values[optionNameForm]?.description || ""}
-          onChange={formik.handleChange}
+          value={formik.values[optionNameForm]?.observation || ""}
+          onChange={(event) => {
+            const value = event.target.value;
+            if (value.length <= 100) {
+              formik.handleChange(event);
+            }
+          }}
           onBlur={formik.handleBlur}
           fullwidth
         />

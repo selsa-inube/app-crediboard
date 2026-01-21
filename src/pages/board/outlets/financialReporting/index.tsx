@@ -476,6 +476,8 @@ export const FinancialReporting = () => {
                         setRequestValue={setRequestValue}
                         requestValue={requestValue}
                         errorGetProspects={errorGetProspects}
+                        setErrorModal={setErrorModal}
+                        setErrorMessage={setErrorMessage}
                       />
                     </BlockPdfSection>
                   </Stack>
