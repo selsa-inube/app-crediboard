@@ -315,9 +315,12 @@ export function DisbursementWithInternalAccount(
         label={disbursemenOptionAccount.observation}
         placeholder={disbursemenOptionAccount.placeObservation}
         value={formik.values[optionNameForm]?.observation || ""}
-        onChange={(e) =>
-          formik.setFieldValue(`${optionNameForm}.observation`, e.target.value)
-        }
+        onChange={(event) => {
+          const value = event.target.value;
+          if (value.length <= 200) {
+            formik.handleChange(event);
+          }
+        }}
         onBlur={formik.handleBlur}
         fullwidth
       />

@@ -20,11 +20,7 @@ import {
 } from "@utils/formatData/currency";
 import { IProspect } from "@services/prospect/types";
 
-
-import {
-  disbursementGeneral,
-  disbursemenOptionAccount
-} from "../config";
+import { disbursementGeneral, disbursemenOptionAccount } from "../config";
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
 
@@ -62,7 +58,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
     isDisabled,
     handleCheckboxChange,
     handleToggleChange,
-    isInvalidAmount
+    isInvalidAmount,
   } = useDisbursementForm(props);
 
   return (
@@ -96,9 +92,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
               formik.setFieldTouched(`${optionNameForm}.amount`, true);
               formik.handleBlur(`amount`);
             }}
-            status={
-              isInvalidAmount ? "invalid" : undefined
-            }
+            status={isInvalidAmount ? "invalid" : undefined}
             readOnly={isAmountReadOnly}
             message={`${disbursemenOptionAccount.valueTurnFail}${currencyFormat(initialValues.amount, false)}`}
             fullwidth
@@ -139,7 +133,9 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
         />
         <Text
           appearance={
-            (formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"
+            (formik.values[optionNameForm]?.toggle ?? true)
+              ? "success"
+              : "danger"
           }
         >
           {(formik.values[optionNameForm]?.toggle ?? true)
@@ -170,7 +166,12 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
           label={disbursemenOptionAccount.observation}
           placeholder={disbursemenOptionAccount.placeObservation}
           value={formik.values[optionNameForm]?.observation || ""}
-          onChange={formik.handleChange}
+          onChange={(event) => {
+            const value = event.target.value;
+            if (value.length <= 200) {
+              formik.handleChange(event);
+            }
+          }}
           onBlur={formik.handleBlur}
           fullwidth
         />
