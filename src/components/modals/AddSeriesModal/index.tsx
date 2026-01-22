@@ -78,7 +78,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     creditRequestCode,
   } = props;
 
-  const { businessUnitSigla, eventData } = useContext(AppContext);
+  const { businessUnitSigla } = useContext(AppContext);
 
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -87,8 +87,6 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
-
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
 
   const formik = useFormik({
     initialValues: {
@@ -105,10 +103,10 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
   const getOptionLabel = (
     options: { id?: string; value?: string; label?: string }[],
-    value: string
+    value: string,
   ) => {
     const option = options?.find(
-      (opt) => opt.id === value || opt.value === value
+      (opt) => opt.id === value || opt.value === value,
     );
     return option?.label || option?.value || value;
   };
@@ -217,13 +215,12 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   };
 
   const handleExtraordinaryInstallment = async (
-    extraordinaryInstallments: IExtraordinaryInstallments
+    extraordinaryInstallments: IExtraordinaryInstallments,
   ) => {
     try {
       await updateExtraordinaryInstallment(
         businessUnitPublicCode,
-        businessManagerCode,
-        extraordinaryInstallments
+        extraordinaryInstallments,
       );
 
       setSentData?.(extraordinaryInstallments);
@@ -239,8 +236,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         code + (err?.message || "") + (err?.data?.description || "");
 
       setErrorMessage(
-        `${errorMessages.saveExtraordinaryInstallments.description} ${description}`
-      )
+        `${errorMessages.saveExtraordinaryInstallments.description} ${description}`,
+      );
       setErrorModal(true);
     }
   };
@@ -302,7 +299,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
               label={dataAddSeriesModal.labelPaymentMethod}
               value={getOptionLabel(
                 paymentMethodOptionsMock,
-                formik.values.paymentChannelAbbreviatedName
+                formik.values.paymentChannelAbbreviatedName,
               )}
               disabled
               size="wide"
@@ -332,7 +329,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             onChange={(e) => {
               handleChangeWithCurrency(
                 { setFieldValue: formik.setFieldValue },
-                e
+                e,
               );
             }}
             value={formik.values.value}
@@ -345,13 +342,15 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             id="installmentAmount"
             label={dataAddSeriesModal.labelValue}
             placeholder={dataAddSeriesModal.placeHolderValue}
-            iconBefore={<MdOutlineAttachMoney color={inube.palette.green.G400} />}
+            iconBefore={
+              <MdOutlineAttachMoney color={inube.palette.green.G400} />
+            }
             onChange={(e) =>
               handleInstallmentAmountChange("installmentAmount", e.target.value)
             }
             value={
               installmentState?.installmentAmount &&
-                installmentState.installmentAmount > 0
+              installmentState.installmentAmount > 0
                 ? currencyFormat(installmentState.installmentAmount, false)
                 : ""
             }
@@ -366,7 +365,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
               label={dataAddSeriesModal.labelFrequency}
               value={getOptionLabel(
                 frequencyOptionsMock,
-                formik.values.frequency
+                formik.values.frequency,
               )}
               disabled
               size="wide"
@@ -393,7 +392,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
               label={dataAddSeriesModal.labelDate}
               value={getOptionLabel(
                 paymentDateOptionsMock,
-                formik.values.installmentDate
+                formik.values.installmentDate,
               )}
               disabled
               size="wide"
@@ -416,17 +415,15 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           )}
         </Stack>
       </BaseModal>
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

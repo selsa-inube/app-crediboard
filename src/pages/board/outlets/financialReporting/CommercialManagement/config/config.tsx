@@ -436,3 +436,15 @@ export const tittleOptions = {
   successDeleteTitle: "Producto eliminado",
   errorDeleteProduct: "No se pudo eliminar el producto",
 };
+
+export const initialDisbursementState = {
+  internal: null,
+  external: null,
+  checkEntity: null,
+  checkManagement: null,
+  cash: null,
+};
+
+export const infoErrorProspect = {
+  description: "No se pudo obtener los datos del prospecto relacionado",
+};

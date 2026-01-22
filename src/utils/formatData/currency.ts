@@ -2,6 +2,7 @@ import { IProperty } from "@pages/prospect/components/TableObligationsFinancial/
 import { FormikValues } from "formik";
 
 const currencyFormat = (price: number, withCurrencySymbol = true): string => {
+
   if (price === 0) {
     if (withCurrencySymbol) return "$ 0";
     return "0";
@@ -11,7 +12,7 @@ const currencyFormat = (price: number, withCurrencySymbol = true): string => {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,
-  }).format(price);
+  }).format(Math.trunc(price));
 
   return withCurrencySymbol ? value : value.replace(/\$/g, "");
 };
@@ -36,6 +37,21 @@ const validateCurrencyField = (
   const value = optionNameForm
     ? formik.values[optionNameForm]?.[fieldName]
     : formik.values[fieldName];
+
+  return typeof value === "number"
+    ? currencyFormat(value, withCurrencySymbol)
+    : value;
+};
+
+export const validateCurrencyFieldTruncate = (
+  fieldName: string,
+  formik: FormikValues,
+  withCurrencySymbol = true,
+  optionNameForm: string | undefined,
+) => {
+  const value = optionNameForm
+    ? Math.trunc(formik.values[optionNameForm]?.[fieldName])
+    : Math.trunc(formik.values[fieldName]);
 
   return typeof value === "number"
     ? currencyFormat(value, withCurrencySymbol)

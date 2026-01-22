@@ -55,7 +55,7 @@ export const Fieldset = (props: IFieldsetProps) => {
     isClickable = false,
     selectedState = false,
     hasError = false,
-    borderColor = "normal",
+    borderColor = "none",
     alignContent,
   } = props;
 

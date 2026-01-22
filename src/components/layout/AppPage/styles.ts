@@ -12,8 +12,8 @@ interface IStyledLogo {
 }
 
 export const StyledAppPage = styled.div`
-  display: inherit;
-  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
 `;
 
 export const StyledCardsContainer = styled.div`
@@ -32,13 +32,14 @@ export const StyledUserImage = styled.img`
 `;
 
 export const StyledContainer = styled.div`
-  display: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow: hidden;
 `;
 
 export const StyledMain = styled.main`
-  display: flex;
-  flex-direction: column;
+  flex: 1;
   overflow-y: auto;
 `;
 
@@ -100,12 +101,19 @@ export const StyledCollapse = styled.div`
   z-index: 3;
 `;
 export const StyledFooter = styled.footer`
-  margin-top: auto;
-  display: flex;
   justify-content: center;
-  padding: 6px 4px;
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N10 || inube.palette.neutral.N10};
+
+  & > a {
+    height: 40px;
+    justify-content: end;
+    padding-right: 16px;
+  }
+
+  & > a > img {
+    max-height: 32px;
+  }
 `;
 
 export const StyledPrint = styled.div`

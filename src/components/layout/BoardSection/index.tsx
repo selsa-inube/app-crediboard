@@ -17,9 +17,7 @@ import { patchChangeTracesToReadById } from "@services/creditRequest/command/pat
 import { AppContext } from "@context/AppContext";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { getCanUnpin } from "@utils/configRules/permissions";
-import { ruleConfig } from "@utils/configRules/configRules";
-import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
+import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 
 import {
@@ -43,7 +41,7 @@ interface BoardSectionProps {
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
-    isPinned: string
+    isPinned: string,
   ) => void;
   handleLoadMoreData: () => void;
   dragIcon?: React.ReactElement;
@@ -75,9 +73,11 @@ function BoardSection(props: BoardSectionProps) {
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
     useMediaQueries(["(max-width: 1024px)", "(max-width: 595px)"]);
   const [collapse, setCollapse] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [currentOrientation, setCurrentOrientation] =
     useState<SectionOrientation>(orientation);
-  const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
+  const [positionsAuthorized, setPositionsAuthorized] = useState<string[]>([]);
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -144,12 +144,12 @@ function BoardSection(props: BoardSectionProps) {
 
   const isRequestPinned = (
     creditRequestId: string | undefined,
-    pinnedRequests: ICreditRequestPinned[]
+    pinnedRequests: ICreditRequestPinned[],
   ) =>
     pinnedRequests.some(
       (pinnedRequest) =>
         pinnedRequest.creditRequestId === creditRequestId &&
-        pinnedRequest.isPinned === "Y"
+        pinnedRequest.isPinned === "Y",
     );
 
   const handleCardClick = async (creditRequestId: string | undefined) => {
@@ -159,7 +159,7 @@ function BoardSection(props: BoardSectionProps) {
       await patchChangeTracesToReadById(
         creditRequestId,
         businessUnitPublicCode,
-        businessManagerCode
+        businessManagerCode,
       );
     } catch (error) {
       setErrorMessage(messagesError.changeTracesToReadById.description);
@@ -167,45 +167,27 @@ function BoardSection(props: BoardSectionProps) {
     }
   };
 
-  const fetchValidationRulesData = useCallback(async () => {
-    const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
+  const fetchPositionsAuthorized = useCallback(async () => {
+    if (!businessUnitPublicCode) return;
 
-    await Promise.all(
-      rulesValidate.map(async (ruleName) => {
-        const rule = ruleConfig[ruleName]?.({});
-        if (!rule) return;
+    try {
+      const response = await getPositionsAuthorizedToRemoveAnchorsPlacedByOther(
+        businessUnitPublicCode,
+      );
 
-        try {
-          const values = await evaluateRule(
-            rule,
-            postBusinessUnitRules,
-            "value",
-            businessUnitPublicCode,
-            businessManagerCode
-          );
-
-          const extractedValues = Array.isArray(values)
-            ? values
-                .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-                .filter((val): val is string => val !== "")
-            : [];
-
-          setValueRule((prev) => {
-            const merged = [...(prev[ruleName] || []), ...extractedValues];
-            const unique = Array.from(new Set(merged));
-            return { ...prev, [ruleName]: unique };
-          });
-        } catch {
-          console.error(`Error evaluando ${ruleName} para este usuario.`);
-        }
-      })
-    );
-  }, [businessUnitPublicCode, businessManagerCode]);
+      if (response?.positionsAuthorized) {
+        setPositionsAuthorized(response.positionsAuthorized);
+      }
+    } catch (error) {
+      setShowErrorModal(true);
+      setMessageError(messagesError.changeTracesToReadById.description);
+    }
+  }, [businessUnitPublicCode]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       const hasUnread = sectionInformation.some(
-        (request) => request.unreadNovelties === undefined
+        (request) => request.unreadNovelties === undefined,
       );
       if (!flagMessage.current && hasUnread) {
         flagMessage.current = true;
@@ -215,14 +197,16 @@ function BoardSection(props: BoardSectionProps) {
   }, [sectionInformation]);
 
   useEffect(() => {
-    if (businessUnitPublicCode) fetchValidationRulesData();
-  }, [businessUnitPublicCode, fetchValidationRulesData]);
+    if (businessUnitPublicCode) {
+      fetchPositionsAuthorized();
+    }
+  }, [businessUnitPublicCode, fetchPositionsAuthorized]);
 
   const getTaskLabel = (code: string): string => {
     const task = taskPrs.find((t) => t.Code === code);
     return task ? `${task.Value}` : code;
   };
-  
+
   return (
     <StyledBoardSection
       ref={sectionRef}
@@ -314,7 +298,7 @@ function BoardSection(props: BoardSectionProps) {
                 path={`extended-card/${request.creditRequestCode}`}
                 isPinned={isRequestPinned(
                   request.creditRequestId,
-                  pinnedRequests
+                  pinnedRequests,
                 )}
                 hasMessage={request.unreadNovelties === "Y"}
                 onPinChange={() => {
@@ -324,7 +308,7 @@ function BoardSection(props: BoardSectionProps) {
                       request.userWhoPinnnedId || "",
                       isRequestPinned(request.creditRequestId, pinnedRequests)
                         ? "N"
-                        : "Y"
+                        : "Y",
                     );
                   }
                 }}
@@ -332,7 +316,10 @@ function BoardSection(props: BoardSectionProps) {
                   staffId,
                   request.userWhoPinnnedId || "",
                   missionName || "",
-                  valueRule
+                  {
+                    PositionsAuthorizedToRemoveAnchorsPlacedByOther:
+                      positionsAuthorized,
+                  },
                 )}
                 onCardClick={() => handleCardClick(request.creditRequestId)}
                 errorLoadingPins={errorLoadingPins}
@@ -371,6 +358,15 @@ function BoardSection(props: BoardSectionProps) {
           handleClose={() => {
             setErrorModal(false);
           }}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
       {isInfoModalOpen && (

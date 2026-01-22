@@ -13,6 +13,9 @@ export interface IAccountingVouchers {
   payrollDiscountAuthorizationCode?: string;
   promissoryNoteCode?: string;
 }
+export interface IPositionsAuthorizedToRemoveAnchorsPlacedByOthers {
+  positionsAuthorized: string[];
+}
 
 export interface IApprovals {
   approverName: string;
@@ -279,4 +282,10 @@ export interface IDecisionsToDo {
   id: number | string;
   label: string;
   value: string;
+}
+
+export interface IGuaranteesSummary {
+  activeGuarantees: string[];
+  offeredGuarantees: string[];
+  requiredGuarantees: string[];
 }

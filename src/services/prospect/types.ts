@@ -83,6 +83,7 @@ export interface ICreditProduct {
   installmentFrequency?: string;
   referenceIndexForVariableInterestRate?: string;
   fixedPoints?: number;
+  modeOfDisbursement?: string[]; 
 }
 
 export interface IOutlay {
@@ -113,7 +114,7 @@ export interface IProspect {
 }
 
 export interface IProspectSummaryById {
-  [key: string]: number;
+  [key: string]: number | string;
   requestedAmount: number;
   deductibleExpenses: number;
   netAmountToDisburse: number;

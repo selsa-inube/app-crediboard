@@ -9,6 +9,7 @@ import {
   MdOutlineShare,
   MdOutlineVideocam,
   MdOutlinePayments,
+  MdOutlineInfo,
 } from "react-icons/md";
 
 import {
@@ -18,22 +19,20 @@ import {
   Divider,
   useMediaQuery,
   Button,
-  useFlag,
+  SkeletonLine,
 } from "@inubekit/inubekit";
 import {
   ICreditRequest,
   IModeOfDisbursement,
 } from "@services/creditRequest/query/types";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
-import { textFlagsUsers } from "@config/pages/staffModal/addFlag";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import {
-  truncateTextToMaxLength,
   capitalizeFirstLetter,
   capitalizeFirstLetterEachWord,
 } from "@utils/formatData/text";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
-import { DisbursementModal } from "@components/modals/DisbursementModal";
+import { DisbursementFlowManager } from "@components/modals/DisbursementModal/EditDisburment";
 import { Fieldset } from "@components/data/Fieldset";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { formatPrimaryDate } from "@utils/formatData/date";
@@ -55,18 +54,26 @@ import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
 import { boardColumns } from "@config/pages/board/board";
+import { IProspectSummaryById } from "@services/prospect/types";
+import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { TBoardColumn } from "../../boardlayout/config/board";
 import { titlesModal } from "../ToDo/config";
 import { errorMessages } from "../config";
-import { incomeOptions, menuOptions, tittleOptions } from "./config/config";
+import {
+  incomeOptions,
+  menuOptions,
+  tittleOptions,
+  initialDisbursementState,
+  infoErrorProspect,
+} from "./config/config";
 import {
   StyledCollapseIcon,
   StyledFieldset,
   StyledContainerIcon,
   StyledVerticalDivider,
   StyledPrint,
-  StyledContainerDiverProspect
+  StyledContainerDiverProspect,
 } from "./styles";
 
 interface ComercialManagementProps {
@@ -83,6 +90,9 @@ interface ComercialManagementProps {
   >;
   generateAndSharePdf: () => void;
   creditRequestCode: string;
+  errorGetProspects: boolean;
+  setErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   isPrint?: boolean;
   hideContactIcons?: boolean;
   requestValue?: IPaymentChannel[];
@@ -101,31 +111,34 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     sentData,
     setSentData,
     setRequestValue,
+    errorGetProspects,
+    setErrorModal,
+    setErrorMessage,
   } = props;
 
   const [showMenu, setShowMenu] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
-    []
+    [],
   );
   const [localProspectData, setLocalProspectData] =
     useState<IProspect>(prospectData);
-  const [internal, setInternal] = useState<IModeOfDisbursement | null>(null);
-  const [external, setExternal] = useState<IModeOfDisbursement | null>(null);
-  const [checkEntity, setCheckEntity] = useState<IModeOfDisbursement | null>(
-    null
-  );
-  const [checkManagement, setCheckManagement] =
-    useState<IModeOfDisbursement | null>(null);
-  const [cash, setCash] = useState<IModeOfDisbursement | null>(null);
+  const [disbursementData, setDisbursementData] = useState<{
+    internal: IModeOfDisbursement | null;
+    external: IModeOfDisbursement | null;
+    checkEntity: IModeOfDisbursement | null;
+    checkManagement: IModeOfDisbursement | null;
+    cash: IModeOfDisbursement | null;
+  }>(initialDisbursementState);
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [dataProspect, setDataProspect] = useState<IProspect[]>([]);
   const [incomeData, setIncomeData] = useState<Record<string, IIncomeSources>>(
-    {}
+    {},
   );
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [error, setError] = useState(false);
 
   const [form, setForm] = useState({
     borrower: "",
@@ -141,7 +154,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   });
 
   const navigation = useNavigate();
-  const { addFlag } = useFlag();
   const isMobile = useMediaQuery("(max-width: 720px)");
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -158,6 +170,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
   useEffect(() => {
     setLocalProspectData(prospectData);
+    if (prospectData !== undefined) {
+      setLoading(false);
+    }
   }, [prospectData]);
 
   const handleOpenModal = (modalName: string) => {
@@ -177,17 +192,29 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
           businessUnitPublicCode,
           businessManagerCode,
           creditRequestCode,
-          userAccount
+          userAccount,
         );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        console.error(error);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setErrorMessage(description);
+        setErrorModal(true);
       }
     };
 
     if (creditRequestCode) {
       fetchCreditRequest();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
     creditRequestCode,
@@ -199,46 +226,58 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     if (requests?.creditRequestId) {
       setLoading(true);
       try {
-        const disbursement = await getModeOfDisbursement(
+        const response = await getModeOfDisbursement(
           businessUnitPublicCode,
           businessManagerCode,
-          requests.creditRequestId
+          requests.creditRequestId,
         );
 
-        const internalData =
-          disbursement.find(
-            (item) => item.modeOfDisbursementType === "Internal_account"
-          ) || null;
-        const externalData =
-          disbursement.find(
-            (item) => item.modeOfDisbursementType === "External_account"
-          ) || null;
-        const checkEntityData =
-          disbursement.find(
-            (item) => item.modeOfDisbursementType === "Certified_check"
-          ) || null;
-        const checkManagementData =
-          disbursement.find(
-            (item) => item.modeOfDisbursementType === "Business_check"
-          ) || null;
-        const cashData =
-          disbursement.find((item) => item.modeOfDisbursementType === "Cash") ||
-          null;
-        setInternal(internalData);
-        setExternal(externalData);
-        setCheckEntity(checkEntityData);
-        setCheckManagement(checkManagementData);
-        setCash(cashData);
+        const typeMapping: Record<
+          string,
+          keyof typeof initialDisbursementState
+        > = {
+          Internal_account: "internal",
+          External_account: "external",
+          Certified_check: "checkEntity",
+          Business_check: "checkManagement",
+          Cash: "cash",
+        };
+
+        const organizedData = response.reduce<{
+          internal: IModeOfDisbursement | null;
+          external: IModeOfDisbursement | null;
+          checkEntity: IModeOfDisbursement | null;
+          checkManagement: IModeOfDisbursement | null;
+          cash: IModeOfDisbursement | null;
+        }>(
+          (acc, item) => {
+            const key = typeMapping[item.modeOfDisbursementType];
+            if (key) {
+              acc[key] = item;
+            }
+            return acc;
+          },
+          { ...initialDisbursementState },
+        );
+
+        setDisbursementData(organizedData);
       } catch (error) {
-        console.error(error);
-        addFlag({
-          title: textFlagsUsers.titleWarning,
-          description: textFlagsUsers.descriptionWarning,
-          appearance: "danger",
-          duration: 5000,
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setErrorMessage(description);
+        setErrorModal(true);
       } finally {
-        setLoading(false);
+        if (prospectData !== undefined) {
+          setLoading(false);
+        }
       }
     }
   };
@@ -312,7 +351,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       "FinancialIncome",
                       "name",
                       "surname",
-                    ].includes(prop.propertyName)
+                    ].includes(prop.propertyName),
                 ),
                 {
                   propertyName: "PeriodicSalary",
@@ -382,7 +421,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
   const handleChangeIncome = (_name: string, value: string) => {
     const index = borrowersProspect?.borrowers?.findIndex(
-      (borrower) => borrower.borrowerName === value
+      (borrower) => borrower.borrowerName === value,
     );
     setSelectedIndex(index ?? 0);
   };
@@ -402,53 +441,53 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
             surname:
               getPropertyValue(
                 selectedBorrower.borrowerProperties,
-                "surname"
+                "surname",
               ) || "",
             Leases: parseFloat(
               getPropertyValue(selectedBorrower.borrowerProperties, "Leases") ||
-              "0"
+                "0",
             ),
             Dividends: parseFloat(
               getPropertyValue(
                 selectedBorrower.borrowerProperties,
-                "Dividends"
-              ) || "0"
+                "Dividends",
+              ) || "0",
             ),
             FinancialIncome: parseFloat(
               getPropertyValue(
                 selectedBorrower.borrowerProperties,
-                "FinancialIncome"
-              ) || "0"
+                "FinancialIncome",
+              ) || "0",
             ),
             PeriodicSalary: parseFloat(
               getPropertyValue(
                 selectedBorrower.borrowerProperties,
-                "PeriodicSalary"
-              ) || "0"
+                "PeriodicSalary",
+              ) || "0",
             ),
             OtherNonSalaryEmoluments: parseFloat(
               getPropertyValue(
                 selectedBorrower.borrowerProperties,
-                "OtherNonSalaryEmoluments"
-              ) || "0"
+                "OtherNonSalaryEmoluments",
+              ) || "0",
             ),
             PensionAllowances: parseFloat(
               getPropertyValue(
                 selectedBorrower.borrowerProperties,
-                "PensionAllowances"
-              ) || "0"
+                "PensionAllowances",
+              ) || "0",
             ),
             PersonalBusinessUtilities: parseFloat(
               getPropertyValue(
                 selectedBorrower.borrowerProperties,
-                "PersonalBusinessUtilities"
-              ) || "0"
+                "PersonalBusinessUtilities",
+              ) || "0",
             ),
             ProfessionalFees: parseFloat(
               getPropertyValue(
                 selectedBorrower.borrowerProperties,
-                "ProfessionalFees"
-              ) || "0"
+                "ProfessionalFees",
+              ) || "0",
             ),
             edited: false,
           },
@@ -466,21 +505,54 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     moneyDestination: dataProspect?.[0]?.moneyDestinationAbbreviatedName || "",
     primaryIncomeType:
       borrower?.borrowerProperties?.find(
-        (property) => property.propertyName === "PeriodicSalary"
+        (property) => property.propertyName === "PeriodicSalary",
       )?.propertyValue || "",
   };
 
-  const availableEditCreditRequest = !(data.stage === "GESTION_COMERCIAL" || data.stage === "VERIFICACION_APROBACION");
+  const availableEditCreditRequest = !(
+    data.stage === "GESTION_COMERCIAL" ||
+    data.stage === "VERIFICACION_APROBACION"
+  );
 
-  let normalizedStageTitle: TBoardColumn[] | string = boardColumns.filter((item) => {
-    return item.id === data.stage;
-  }) as TBoardColumn[];
+  let normalizedStageTitle: TBoardColumn[] | string = boardColumns.filter(
+    (item) => {
+      return item.id === data.stage;
+    },
+  ) as TBoardColumn[];
 
   if (normalizedStageTitle[0]) {
     normalizedStageTitle = normalizedStageTitle[0].value;
   } else {
     normalizedStageTitle = "";
   }
+
+  let prospectSummaryData: IProspectSummaryById = {
+    id: "",
+    netAmountToDisburse: data.loanAmount,
+    requestedAmount: 0,
+    deductibleExpenses: 0,
+    totalRegularInstallments: 0,
+    totalConsolidatedAmount: 0,
+  };
+
+  if (prospectData) {
+    prospectSummaryData = {
+      id: prospectData.prospectId,
+      netAmountToDisburse: data.loanAmount,
+      requestedAmount: 0,
+      deductibleExpenses: 0,
+      totalRegularInstallments: 0,
+      totalConsolidatedAmount: 0,
+    };
+  }
+
+  const modesOfDisbursement = [
+    ...new Set(
+      prospectProducts?.flatMap(
+        (product) => product.modeOfDisbursement || [],
+      ) || [],
+    ),
+  ];
 
   return (
     <>
@@ -517,31 +589,33 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                         padding={`0px 0px 0px 8px`}
                       >
                         {formatPrimaryDate(
-                          new Date(data.creditRequestDateOfCreation)
+                          new Date(data.creditRequestDateOfCreation),
                         )}
                       </Text>
                     </Stack>
                   </Stack>
                   {isMobile && (
                     <Stack margin="4px 0px">
-                      <Text type="title" size={!isMobile ? "large" : "medium"}>
-                        {data.clientName &&
-                          capitalizeFirstLetterEachWord(
-                            truncateTextToMaxLength(data.clientName)
-                          )}
-                      </Text>
+                      <TruncatedText
+                        text={data.clientName}
+                        maxLength={50}
+                        type="title"
+                        size={!isMobile ? "large" : "medium"}
+                        transformFn={capitalizeFirstLetterEachWord}
+                      />
                     </Stack>
                   )}
                   <Stack gap={!isMobile ? "4px" : "4px"}>
                     <Text type="title" size="small" appearance="gray">
                       {tittleOptions.titleDestination}
                     </Text>
-                    <Text type="title" size="small">
-                      {data.clientName &&
-                        capitalizeFirstLetter(
-                          truncateTextToMaxLength(data.moneyDestinationAbreviatedName, 60)
-                        )}
-                    </Text>
+                    <TruncatedText
+                      text={data.moneyDestinationAbreviatedName}
+                      maxLength={60}
+                      type="title"
+                      size="small"
+                      transformFn={capitalizeFirstLetter}
+                    />
                   </Stack>
                   <Stack gap="4px">
                     <Text type="title" size="small" appearance="gray">
@@ -557,12 +631,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
                 {!isMobile && (
                   <Stack gap="36px">
-                    <Text type="title">
-                      {data.clientName &&
-                        capitalizeFirstLetterEachWord(
-                          truncateTextToMaxLength(data.clientName)
-                        )}
-                    </Text>
+                    <TruncatedText
+                      text={data.clientName}
+                      maxLength={60}
+                      type="title"
+                      transformFn={capitalizeFirstLetterEachWord}
+                    />
                   </Stack>
                 )}
                 <Stack gap="2px">
@@ -578,17 +652,35 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             {tittleOptions.titleProfile}
                           </Button>
                           <Stack gap="2px" alignItems="center">
-                            <Button
-                              type="button"
-                              spacing="compact"
-                              variant="outlined"
-                              onClick={() => {
-                                handleDisbursement();
-                                handleOpenModal("disbursementModal");
-                              }}
-                            >
-                              {tittleOptions.titleDisbursement}
-                            </Button>
+                            {loading && !errorGetProspects ? (
+                              <SkeletonLine
+                                width="210px"
+                                height="31px"
+                                animated
+                              />
+                            ) : (
+                              <Button
+                                type="button"
+                                spacing="compact"
+                                variant="outlined"
+                                onClick={() => {
+                                  handleDisbursement();
+                                  handleOpenModal("disbursementModal");
+                                }}
+                                disabled={errorGetProspects}
+                              >
+                                {tittleOptions.titleDisbursement}
+                              </Button>
+                            )}
+                            {errorGetProspects && (
+                              <Icon
+                                icon={<MdOutlineInfo />}
+                                appearance="primary"
+                                size="16px"
+                                cursorHover
+                                onClick={() => setInfoModal(true)}
+                              />
+                            )}
                           </Stack>
                         </Stack>
                       </StyledPrint>
@@ -686,38 +778,38 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 <>
                   {isMobile && (
                     <StyledPrint>
-                    <Stack padding="10px 0px" width="100%">
-                      <Button
-                        type="button"
-                        appearance="primary"
-                        spacing="compact"
-                        fullwidth
-                        iconBefore={
-                          <Icon
-                            icon={<MdOutlineAdd />}
-                            appearance="light"
-                            size="18px"
-                            spacing="narrow"
-                          />
-                        }
-                        disabled={availableEditCreditRequest}
-                        onClick={() => handleOpenModal("editProductModal")}
-                      >
-                        {tittleOptions.titleAddProduct}
-                      </Button>
-                    </Stack>
+                      <Stack padding="10px 0px" width="100%">
+                        <Button
+                          type="button"
+                          appearance="primary"
+                          spacing="compact"
+                          fullwidth
+                          iconBefore={
+                            <Icon
+                              icon={<MdOutlineAdd />}
+                              appearance="light"
+                              size="18px"
+                              spacing="narrow"
+                            />
+                          }
+                          disabled={availableEditCreditRequest}
+                          onClick={() => handleOpenModal("editProductModal")}
+                        >
+                          {tittleOptions.titleAddProduct}
+                        </Button>
+                      </Stack>
                     </StyledPrint>
                   )}
                 </>
               )}
               {collapse && (
                 <>
-                <StyledPrint>
-                  {isMobile && (
-                    <Stack padding="0px 0px 10px">
-                      {prospectProducts?.some(
-                        (product) => product.extraordinaryInstallments
-                      ) && (
+                  <StyledPrint>
+                    {isMobile && (
+                      <Stack padding="0px 0px 10px">
+                        {prospectProducts?.some(
+                          (product) => product.extraordinaryInstallments,
+                        ) && (
                           <Button
                             type="button"
                             appearance="primary"
@@ -737,8 +829,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                             {tittleOptions.titleExtraPayments}
                           </Button>
                         )}
-                    </Stack>
-                  )}
+                      </Stack>
+                    )}
                   </StyledPrint>
                 </>
               )}
@@ -746,42 +838,43 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 <>
                   {isMobile && (
                     <StyledPrint>
-                    <Stack justifyContent="end">
-                      <StyledContainerIcon>
-                        <Icon
-                          icon={<MdOutlinePictureAsPdf />}
-                          appearance="primary"
-                          size="24px"
-                          disabled={isPrint}
-                          cursorHover
-                          onClick={print}
-                        />
-                        <Icon
-                          icon={<MdOutlineShare />}
-                          appearance="primary"
-                          size="24px"
-                          cursorHover
-                          onClick={async () => await generateAndSharePdf()}
-                        />
-                        <Icon
-                          icon={<MdOutlineMoreVert />}
-                          appearance="primary"
-                          size="24px"
-                          cursorHover
-                          onClick={() => setShowMenu(!showMenu)}
-                        />
-                        {showMenu && (
-                          <MenuProspect
-                            options={menuOptions(
-                              handleOpenModal,
-                              prospectProducts?.some(
-                                (product) => product.extraordinaryInstallments
-                              )
-                            )}
+                      <Stack justifyContent="end">
+                        <StyledContainerIcon>
+                          <Icon
+                            icon={<MdOutlinePictureAsPdf />}
+                            appearance="primary"
+                            size="24px"
+                            disabled={isPrint}
+                            cursorHover
+                            onClick={print}
                           />
-                        )}
-                      </StyledContainerIcon>
-                    </Stack>
+                          <Icon
+                            icon={<MdOutlineShare />}
+                            appearance="primary"
+                            size="24px"
+                            cursorHover
+                            onClick={async () => await generateAndSharePdf()}
+                          />
+                          <Icon
+                            icon={<MdOutlineMoreVert />}
+                            appearance="primary"
+                            size="24px"
+                            cursorHover
+                            onClick={() => setShowMenu(!showMenu)}
+                          />
+                          {showMenu && (
+                            <MenuProspect
+                              options={menuOptions(
+                                handleOpenModal,
+                                prospectProducts?.some(
+                                  (product) =>
+                                    product.extraordinaryInstallments,
+                                ),
+                              )}
+                            />
+                          )}
+                        </StyledContainerIcon>
+                      </Stack>
                     </StyledPrint>
                   )}
                 </>
@@ -830,11 +923,19 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               <CreditLimitModal
                 isMobile={isMobile}
                 handleClose={handleCloseModal}
-                setRequestValue={() => { }}
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
-                dataMaximumCreditLimitService={dataMaximumCreditLimitService}
-                moneyDestination={prospectData.moneyDestinationAbbreviatedName}
+                dataMaximumCreditLimitService={{
+                  ...dataMaximumCreditLimitService,
+                  lineOfCreditAbbreviatedName: "creditLineTxt",
+                }}
+                setError={setError}
+                setLoading={setLoading}
+                error={error}
+                loading={loading}
+                incomeData={incomeData}
+                moneyDestination={data.moneyDestinationAbreviatedName}
+                setRequestValue={setRequestValue}
               />
             )}
             {currentModal === "IncomeModal" && (
@@ -891,18 +992,23 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
               />
             )}
             {currentModal === "disbursementModal" && (
-              <DisbursementModal
-                isMobile={isMobile}
+              <DisbursementFlowManager
+                dataDefault={dataDefault}
                 handleClose={handleCloseModal}
-                loading={loading}
-                data={{
-                  internal: internal || dataDefault,
-                  external: external || dataDefault,
-                  CheckEntity: checkEntity || dataDefault,
-                  checkManagementData: checkManagement || dataDefault,
-                  cash: cash || dataDefault,
-                }}
-                handleDisbursement={handleDisbursement}
+                identificationNumber={
+                  selectedBorrower?.borrowerIdentificationNumber || ""
+                }
+                initialDisbursementData={disbursementData}
+                isMobile={isMobile}
+                parentLoading={loading}
+                prospectSummaryData={prospectSummaryData}
+                modesOfDisbursement={modesOfDisbursement}
+                prospectData={prospectData}
+                businessUnitPublicCode={businessUnitPublicCode}
+                businessManagerCode={businessManagerCode}
+                creditRequestCode={creditRequestCode}
+                setErrorMessage={setErrorMessage}
+                setErrorModal={setErrorModal}
               />
             )}
             {infoModal && (
@@ -919,7 +1025,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                       {titlesModal.subTitle}
                     </Text>
                     <Text weight="normal" size="medium" appearance="gray">
-                      {titlesModal.description}
+                      {errorGetProspects
+                        ? infoErrorProspect.description
+                        : titlesModal.description}
                     </Text>
                   </Stack>
                 </BaseModal>

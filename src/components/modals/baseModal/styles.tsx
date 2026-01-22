@@ -4,6 +4,7 @@ import { inube } from "@inubekit/inubekit";
 interface IStyledContainer {
   $height?: string;
   $width?: string;
+  $margin?: string;
 }
 
 export const StyledContainerClose = styled.div`
@@ -16,4 +17,5 @@ export const StyledContainer = styled.div<IStyledContainer>`
   border-radius: 8px;
   height: ${({ $height }) => $height || "auto"};
   width: ${({ $width }) => $width || "auto"};
+  margin: ${({ $margin }) => $margin || "0"};
 `;

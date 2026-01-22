@@ -77,7 +77,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
       width={isMobile ? "290px" : "auto"}
     >
       {error ? (
-        <Stack direction="column" alignItems="center">
+        <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
             {dataReciprocity.error.title}
@@ -90,7 +90,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
         <Stack
           direction="column"
           gap="24px"
-          width={!isMobile ? "450px" : "287px"}
+          width={!isMobile ? "450px" : "auto"}
         >
           <Stack direction="column" justifyContent="space-between" gap="12px">
             <Stack justifyContent="space-between">
@@ -106,7 +106,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
                 ) : (
                   <Text type="body" size="medium">
                     {currencyFormat(
-                      dataMaximumCreditLimitReciprocity.permanentSavingsBalance,
+                      dataMaximumCreditLimitReciprocity.permanentSavingsBalance  || 0,
                       false,
                     )}
                   </Text>
@@ -124,7 +124,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
                   <Text type="body" size="medium">
                     x
                     {currencyFormat(
-                      dataMaximumCreditLimitReciprocity.allowedUsageCount,
+                      dataMaximumCreditLimitReciprocity.allowedUsageCount  || 0,
                       false,
                     )}
                   </Text>
@@ -147,7 +147,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
                 ) : (
                   <Text type="body" size="medium">
                     {currencyFormat(
-                      dataMaximumCreditLimitReciprocity.assignedCreditLimit,
+                      dataMaximumCreditLimitReciprocity.assignedCreditLimit || 0,
                       false,
                     )}
                   </Text>
@@ -167,7 +167,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
                 ) : (
                   <Text type="body" size="medium">
                     {currencyFormat(
-                      dataMaximumCreditLimitReciprocity.unsecuredPortfolioObligation,
+                      dataMaximumCreditLimitReciprocity.unsecuredPortfolioObligation || 0,
                       false,
                     )}
                   </Text>
@@ -178,14 +178,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
           <Divider />
           <Stack alignItems="center" direction="column" gap="8px">
             {loading ? (
-              <Text
-                appearance="primary"
-                weight="bold"
-                type="headline"
-                size="large"
-              >
-                {dataReciprocity.loading}
-              </Text>
+              <SkeletonLine width="250px" height="50px" animated/>
             ) : (
               <Text
                 appearance="primary"
@@ -195,7 +188,7 @@ export function ReciprocityModal(props: ReciprocityModalProps) {
               >
                 $
                 {currencyFormat(
-                  dataMaximumCreditLimitReciprocity.maxAmountAvailableByReciprocity,
+                  dataMaximumCreditLimitReciprocity.maxAmountAvailableByReciprocity  || 0,
                   false,
                 )}
               </Text>

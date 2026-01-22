@@ -202,7 +202,7 @@ function AppPage() {
 
   return (
     <StyledAppPage>
-      <Grid templateRows="auto 1fr" height="100vh" justifyContent="unset">
+      <Grid templateRows="auto auto 1fr" height="100vh" justifyContent="unset">
         <StyledPrint>
           <StyledHeaderContainer>
             <Header
@@ -216,6 +216,7 @@ function AppPage() {
               unreadNotificationsAmount={getNotificationsCount()}
             />
           </StyledHeaderContainer>
+
           <StyledCollapseIcon
             $collapse={collapse}
             onClick={() => setCollapse(!collapse)}
@@ -230,18 +231,19 @@ function AppPage() {
             />
           </StyledCollapseIcon>
         </StyledPrint>
+
         {collapse && (
           <StyledPrint>
-          <StyledCollapse ref={businessUnitChangeRef}>
-            <BusinessUnitChange
-              businessUnits={businessUnitsToTheStaff}
-              selectedClient={selectedClient}
-              onLogoClick={handleLogoClick}
-            />
-          </StyledCollapse>
+            <StyledCollapse ref={businessUnitChangeRef}>
+              <BusinessUnitChange
+                businessUnits={businessUnitsToTheStaff}
+                selectedClient={selectedClient}
+                onLogoClick={handleLogoClick}
+              />
+            </StyledCollapse>
           </StyledPrint>
         )}
-        
+
         <StyledContainer>
           {showUserMenu && (
             <StyledMenuContainer ref={userMenuRef}>
@@ -265,6 +267,7 @@ function AppPage() {
               />
             </StyledMenuContainer>
           )}
+
           {showLogoutModal && (
             <BaseModal
               title={"Novedades"}
@@ -276,11 +279,11 @@ function AppPage() {
               handleNext={() => setShowLogoutModal(false)}
             >
               <StyledCardsContainer>
-                {noveltiesData && noveltiesData.length > 0 ? (
+                {noveltiesData.length > 0 ? (
                   noveltiesData.map((novelty) => (
                     <CardNoveilties
                       key={novelty.creditRequestCode}
-                      userImage={""}
+                      userImage=""
                       userName={novelty.clientName}
                       dateTime={formatPrimaryDate(
                         new Date(novelty.executionDate),
@@ -308,20 +311,10 @@ function AppPage() {
                       alt={emptyNoveltiesConfig.image.alt}
                     />
                     <Stack gap="4px" direction="column">
-                      <Text
-                        type="body"
-                        size="large"
-                        appearance="gray"
-                        textAlign="center"
-                      >
+                      <Text size="large" appearance="gray" textAlign="center">
                         {emptyNoveltiesConfig.messages.primary}
                       </Text>
-                      <Text
-                        type="body"
-                        size="large"
-                        appearance="dark"
-                        textAlign="center"
-                      >
+                      <Text size="large" appearance="dark" textAlign="center">
                         {emptyNoveltiesConfig.messages.secondary}
                       </Text>
                     </Stack>
@@ -334,6 +327,7 @@ function AppPage() {
           <StyledMain>
             <Outlet />
           </StyledMain>
+
           <StyledFooter>
             {renderLogo(eventData.businessManager.urlBrand, true)}
           </StyledFooter>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdInfoOutline } from "react-icons/md";
 import { Stack, Icon, Text, Divider } from "@inubekit/inubekit";
 
@@ -7,7 +7,8 @@ import { CreditLimit } from "@components/modals/CreditLimit";
 import { ReciprocityModal } from "@components/modals/ReciprocityModal";
 import { ScoreModal } from "@components/modals/FrcModal";
 import { MaxLimitModal } from "@components/modals/MaxLimitModal";
-import { PayCapacityModal } from "@components/modals/payCapacityModal";
+import { PaymentCapacityModal } from "@components/modals/payCapacityModal";
+import { ISourcesOfIncomeState } from "@components/modals/payCapacityModal/types";
 
 import { StyledContainer } from "./styles";
 import { IdataMaximumCreditLimitService, IPaymentCapacityData } from "./types";
@@ -20,6 +21,9 @@ export interface CreditLimitProps {
   creditLineTxt: string;
   paymentCapacityData?: IPaymentCapacityData;
   isMobile: boolean;
+  setError: React.Dispatch<React.SetStateAction<boolean>>;
+  error: boolean;
+  incomeData: ISourcesOfIncomeState;
 }
 
 export function CreditLimitCard(props: CreditLimitProps) {
@@ -29,14 +33,23 @@ export function CreditLimitCard(props: CreditLimitProps) {
     dataMaximumCreditLimitService,
     creditLine,
     creditLineTxt,
-    paymentCapacityData,
     isMobile,
+    error,
+    setError,
+    incomeData
   } = props;
 
   const [creditModal, setCreditModal] = useState(false);
   const [loadingCredit, setLoadingCredit] = useState(false);
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [localIncomeData, setLocalIncomeData] = useState<ISourcesOfIncomeState | null>(null);
+
+    useEffect(() => {
+    if (incomeData) {
+      setLocalIncomeData(incomeData);
+    }
+  }, [incomeData]);
 
   const handleOpenModal = () => {
     setCreditModal(true);
@@ -118,11 +131,21 @@ export function CreditLimitCard(props: CreditLimitProps) {
         />
       )}
 
-      {openModal === "paymentCapacity" && paymentCapacityData && (
-        <PayCapacityModal
+      {openModal === "paymentCapacity" && (
+        <PaymentCapacityModal
           isMobile={isMobile}
           handleClose={() => setOpenModal(null)}
-          {...paymentCapacityData}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          dataMaximumCreditLimitService={{
+            ...dataMaximumCreditLimitService,
+            lineOfCreditAbbreviatedName: creditLineTxt,
+          }}
+          setError={setError}
+          setLoading={setLoading}
+          error={error}
+          loading={loading}
+          incomeData={localIncomeData as ISourcesOfIncomeState}
         />
       )}
 

@@ -288,10 +288,11 @@ export const CreditProfileInfo = () => {
             requests={requests}
           />
           <Guarantees
-            guaranteesRequired="Ninguna garantía real, o fianza o codeudor."
-            guaranteesOffered="Ninguna, casa Bogotá 200 mt2, o fianza o codeudor Pedro Pérez."
-            guaranteesCurrent="Ninguna, apartamento, en Bogotá 80 mt2, o vehículo Mazda 323."
             isMobile={isMobile}
+            businessUnitPublicCode={businessUnitPublicCode}
+            businessManagerCode={businessManagerCode}
+            creditRequestId={requests.creditRequestId!}
+            prospectCode={requests.creditRequestCode!}
           />
           <CreditBehavior
             isMobile={isMobile}

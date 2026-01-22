@@ -4,15 +4,13 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { IMaximumCreditLimit } from "./types";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-
-export const updateExtraordinaryInstallments = async (
-  extraordinaryInstallments: IExtraordinaryInstallments,
+const getMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit = async (
   businessUnitPublicCode: string,
-  businessManagerCode: string
-): Promise<IExtraordinaryInstallments | undefined> => {
+  businessManagerCode: string,
+  submitData: IMaximumCreditLimit,
+): Promise<IMaximumCreditLimit | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -20,29 +18,29 @@ export const updateExtraordinaryInstallments = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+
       const options: RequestInit = {
-        method: "PATCH",
+        method: "POST",
         headers: {
-          "X-Action": "SaveExtraordinaryInstallments",
+          "X-Action":
+            "GetMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)
-        ),
+        body: JSON.stringify(submitData),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-limits/`,
+        options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -65,9 +63,13 @@ export const updateExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo guardar los Pagos Extras."
+          "Todos los intentos fallaron. No se pudo evaluar las reglas de la unidad de negocio.",
         );
       }
     }
   }
+
+  return null;
 };
+
+export { getMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit };

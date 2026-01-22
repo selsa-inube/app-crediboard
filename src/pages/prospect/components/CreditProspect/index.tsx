@@ -17,7 +17,6 @@ import {
 import { FormikValues } from "formik";
 
 import { MenuProspect } from "@components/navigation/MenuProspect";
-import { PaymentCapacity } from "@components/modals/PaymentCapacityModal";
 import { ReciprocityModal } from "@components/modals/ReciprocityModal";
 import { ScoreModal } from "@components/modals/FrcModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
@@ -50,7 +49,6 @@ import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspect, errorMessage } from "./config";
 import { StyledPrint, StyledPrintCardProspect } from "./styles";
 import { IIncomeSources } from "./types";
-import { CreditLimitModal } from "../modals/CreditLimitModal";
 import { IncomeModal } from "../modals/IncomeModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
 import InfoModal from "../modals/InfoModal";
@@ -118,10 +116,8 @@ export function CreditProspect(props: ICreditProspectProps) {
     setOpenModal,
     currentModal,
     handleOpenModal,
-    handleCloseModal
+    handleCloseModal,
   } = props;
-
-  const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showShareModal, setShowShareModal] = useState(false);
 
   const [showEditApprovalModal, setShowEditApprovalModal] = useState(false);
@@ -142,7 +138,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   useEffect(() => {
     if (creditRequestCode) {
       const foundProspect = mockProspectCredit.find(
-        (prospect) => prospect.public_code === creditRequestCode
+        (prospect) => prospect.public_code === creditRequestCode,
       );
       if (foundProspect) {
         const mockCredit = foundProspect.consolidated_credit[0];
@@ -186,7 +182,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   };
 
   const handleApprovalObservationsChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setEditedApprovalObservations(event.target.value);
   };
@@ -203,7 +199,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       await updateProspect(
         businessUnitPublicCode,
         businessManagerCode,
-        updatedProspect
+        updatedProspect,
       );
 
       if (setDataProspect) {
@@ -214,8 +210,8 @@ export function CreditProspect(props: ICreditProspectProps) {
                   ...prospect,
                   clientManagerObservation: editedApprovalObservations,
                 }
-              : prospect
-          )
+              : prospect,
+          ),
         );
       }
 
@@ -257,7 +253,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       const updatedProspect = await addCreditProductService(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       const normalizedProspect = {
@@ -299,7 +295,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     moneyDestination: dataProspect?.moneyDestinationAbbreviatedName || "",
     primaryIncomeType:
       borrower?.borrowerProperties?.find(
-        (property) => property.propertyName === "PeriodicSalary"
+        (property) => property.propertyName === "PeriodicSalary",
       )?.propertyValue || "",
   };
 
@@ -350,7 +346,7 @@ export function CreditProspect(props: ICreditProspectProps) {
             {prospectData?.creditProducts?.some(
               (product) =>
                 Array.isArray(product.extraordinaryInstallments) &&
-                product.extraordinaryInstallments.length > 0
+                product.extraordinaryInstallments.length > 0,
             ) && (
               <Button
                 type="button"
@@ -399,8 +395,8 @@ export function CreditProspect(props: ICreditProspectProps) {
                   prospectData?.creditProducts?.some(
                     (product) =>
                       Array.isArray(product.extraordinaryInstallments) &&
-                      product.extraordinaryInstallments.length > 0
-                  ) || false
+                      product.extraordinaryInstallments.length > 0,
+                  ) || false,
                 )}
                 onMouseLeave={showMenu}
               />
@@ -425,38 +421,10 @@ export function CreditProspect(props: ICreditProspectProps) {
           />
         </Stack>
       </StyledPrintCardProspect>
-      {currentModal === "creditLimit" && (
-        <CreditLimitModal
-          handleClose={handleCloseModal}
-          isMobile={isMobile}
-          setRequestValue={setRequestValue || (() => {})}
-          requestValue={requestValue}
-          businessUnitPublicCode={businessUnitPublicCode}
-          businessManagerCode={businessManagerCode}
-          dataMaximumCreditLimitService={dataMaximumCreditLimitService}
-          moneyDestination={prospectData?.moneyDestinationAbbreviatedName || ""}
-        />
-      )}
-      {openModal === "paymentCapacity" && (
-        <PaymentCapacity
-          title="Cupo máx. capacidad de pago"
-          handleClose={() => {
-            if (setOpenModal)
-              setOpenModal(null)
-          }}
-          reportedIncomeSources={2000000}
-          reportedFinancialObligations={6789000}
-          subsistenceReserve={2000000}
-          availableForNewCommitments={5000000}
-          maxVacationTerm={12}
-          maxAmount={1000000}
-        />
-      )}
       {openModal === "reciprocityModal" && (
         <ReciprocityModal
           handleClose={() => {
-            if (setOpenModal)
-              setOpenModal(null)
+            if (setOpenModal) setOpenModal(null);
           }}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
@@ -468,8 +436,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       {openModal === "scoreModal" && (
         <ScoreModal
           handleClose={() => {
-            if (setOpenModal)
-              setOpenModal(null)
+            if (setOpenModal) setOpenModal(null);
           }}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
@@ -517,7 +484,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         <IncomeModal
           handleClose={() => {
             if (setOpenModal) {
-              setOpenModal(null)
+              setOpenModal(null);
             }
           }}
           initialValues={
@@ -585,7 +552,7 @@ export function CreditProspect(props: ICreditProspectProps) {
             handleClose={handleCloseModal}
             handleNext={() => {
               setEditedApprovalObservations(
-                dataProspect?.clientManagerObservation || ""
+                dataProspect?.clientManagerObservation || "",
               );
               setShowEditApprovalModal(true);
             }}
@@ -597,8 +564,8 @@ export function CreditProspect(props: ICreditProspectProps) {
                 apparencePlaceHolder="gray"
                 label={dataCreditProspect.approvalObservations}
                 placeHolder={
-                  dataProspect?.clientManagerObservation === ""
-                    ? dataCreditProspect.approvalObservations
+                  dataProspect?.clientManagerObservation
+                    ? dataProspect?.clientManagerObservation
                     : dataCreditProspect.approvalObservationsNotFound
                 }
               />
@@ -606,8 +573,8 @@ export function CreditProspect(props: ICreditProspectProps) {
                 apparencePlaceHolder="gray"
                 label={dataCreditProspect.clientsObservations}
                 placeHolder={
-                  dataProspect?.clientManagerObservation === ""
-                    ? dataCreditProspect.approvalObservations
+                  dataProspect?.clientComments
+                    ? dataProspect?.clientComments
                     : dataCreditProspect.clientsObservationsNotFound
                 }
               />
