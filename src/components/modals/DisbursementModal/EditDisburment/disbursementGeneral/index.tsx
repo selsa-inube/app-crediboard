@@ -33,7 +33,7 @@ interface IDisbursementGeneralProps {
   lang: EnumType;
   modesOfDisbursement: string[];
   handleClose: () => void;
-  handleSave: () => void;
+  handleSave: (values: IDisbursementGeneral) => void;
   isLoading?: boolean;
   selectedTab?: string;
   customerData?: ICustomerData;
@@ -55,14 +55,16 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
     handleSave,
     isLoading,
     prospectData,
-    lang
+    lang,
   } = props;
 
   const formik = useFormik({
     initialValues,
     validateOnMount: true,
     enableReinitialize: true,
-    onSubmit: () => { },
+    onSubmit: (values) => {
+      handleSave(values);
+    },
   });
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -94,8 +96,8 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
 
       const amount =
         disbursementData &&
-          typeof disbursementData === "object" &&
-          "amount" in disbursementData
+        typeof disbursementData === "object" &&
+        "amount" in disbursementData
           ? disbursementData.amount || 0
           : 0;
       return total + Number(amount);
@@ -111,8 +113,8 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
 
     const isExternalValid = formik.values.External_account?.amount
       ? formik.values.External_account.bank !== "" &&
-      formik.values.External_account.accountNumber !== "" &&
-      formik.values.External_account.accountType !== ""
+        formik.values.External_account.accountNumber !== "" &&
+        formik.values.External_account.accountType !== ""
       : true;
 
     const isAmountCorrect = totalAmount === initialValues.amount;
@@ -121,15 +123,15 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
     onFormValid(isValid);
   }, [formik.values, getTotalAmount, initialValues.amount, onFormValid]);
 
-const validTabs = useMemo(() => {
+  const validTabs = useMemo(() => {
     if (modesOfDisbursement.length === 0) return [];
-    
+
     const allTabsConfig = Object.values(disbursemenTabsEnum);
-    
+
     return modesOfDisbursement
       .map((modeId) => {
         const tabConfig = allTabsConfig.find((tab) => tab.id === modeId);
-        
+
         if (!tabConfig) return undefined;
 
         return {
@@ -158,7 +160,14 @@ const validTabs = useMemo(() => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validTabs, initialValues.amount, isSelected, handleTabChange, formik.setFieldValue, formik.values]);
+  }, [
+    validTabs,
+    initialValues.amount,
+    isSelected,
+    handleTabChange,
+    formik.setFieldValue,
+    formik.values,
+  ]);
 
   const handleManualTabChange = (tabId: string) => {
     userHasChangedTab.current = true;
@@ -167,14 +176,24 @@ const validTabs = useMemo(() => {
 
   const isAmountReadOnly = validTabs.length === 1;
 
+  const isFormInvalid = useMemo(() => {
+    const hasFormikErrors = Object.keys(formik.errors).length > 0;
+
+    const totalAmount = getTotalAmount();
+    const isAmountIncorrect = totalAmount !== initialValues.amount;
+
+    return hasFormikErrors || isAmountIncorrect;
+  }, [formik.errors, getTotalAmount, initialValues.amount]);
+
   return (
     <BaseModal
       title={modalTitlesEnum.title.i18n[lang]}
       nextButton={modalTitlesEnum.save.i18n[lang]}
       backButton={modalTitlesEnum.close.i18n[lang]}
+      disabledNext={isFormInvalid}
       handleClose={handleClose}
       handleBack={handleClose}
-      handleNext={handleSave}
+      handleNext={formik.handleSubmit}
       isSendingData={isLoading}
       width={isMobile ? "340px" : "682px"}
       height={isMobile ? "auto" : "800px"}
@@ -198,7 +217,9 @@ const validTabs = useMemo(() => {
             gap="20px"
           >
             <Stack direction="column" width="100%">
-              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.internal.id) &&
+              {validTabs.some(
+                (tab) => tab.id === disbursemenTabsEnum.internal.id,
+              ) &&
                 isSelected === disbursemenTabsEnum.internal.id && (
                   <DisbursementWithInternalAccount
                     isMobile={isMobile}
@@ -218,7 +239,9 @@ const validTabs = useMemo(() => {
                     lang={lang}
                   />
                 )}
-              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.external.id) &&
+              {validTabs.some(
+                (tab) => tab.id === disbursemenTabsEnum.external.id,
+              ) &&
                 isSelected === disbursemenTabsEnum.external.id && (
                   <DisbursementWithExternalAccount
                     isMobile={isMobile}
@@ -237,7 +260,9 @@ const validTabs = useMemo(() => {
                     lang={lang}
                   />
                 )}
-              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.check.id) &&
+              {validTabs.some(
+                (tab) => tab.id === disbursemenTabsEnum.check.id,
+              ) &&
                 isSelected === disbursemenTabsEnum.check.id && (
                   <DisbursementWithCheckEntity
                     isMobile={isMobile}
@@ -256,7 +281,9 @@ const validTabs = useMemo(() => {
                     lang={lang}
                   />
                 )}
-              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.management.id) &&
+              {validTabs.some(
+                (tab) => tab.id === disbursemenTabsEnum.management.id,
+              ) &&
                 isSelected === disbursemenTabsEnum.management.id && (
                   <DisbursementWithCheckManagement
                     isMobile={isMobile}
@@ -275,7 +302,9 @@ const validTabs = useMemo(() => {
                     lang={lang}
                   />
                 )}
-              {validTabs.some((tab) => tab.id === disbursemenTabsEnum.cash.id) &&
+              {validTabs.some(
+                (tab) => tab.id === disbursemenTabsEnum.cash.id,
+              ) &&
                 isSelected === disbursemenTabsEnum.cash.id && (
                   <DisbursementWithCash
                     isMobile={isMobile}

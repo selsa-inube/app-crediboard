@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 
 import { Stack, Divider, useMediaQuery, useFlag } from "@inubekit/inubekit";
-import {
-  MdOutlineRemoveRedEye,
-} from "react-icons/md";
+import { MdOutlineRemoveRedEye } from "react-icons/md";
 
 import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
@@ -16,7 +14,6 @@ import {
   ICreditProduct,
   IProspectSummaryById,
 } from "@services/prospect/types";
-import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { DeductibleExpensesModal } from "@pages/prospect/components/modals/DeductibleExpensesModal";
 import { getAllDeductibleExpensesById } from "@services/creditRequest/query/deductibleExpenses";
 import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
@@ -28,8 +25,16 @@ import { RemoveCreditProduct } from "@services/creditRequest/command/removeCredi
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 
-import { StyledCardsCredit, StyledPrint, StylePrintCardSummary, StyledPrintCardProspect } from "./styles";
 import { SummaryProspectCreditEnum, tittleOptionsEnum } from "./config/config";
+import { paymentCycleMap } from "@pages/prospect/components/modals/ProspectProductModal/config";
+import { capitalizeFirstLetter } from "@utils/formatData/text";
+
+import {
+  StyledCardsCredit,
+  StyledPrint,
+  StylePrintCardSummary,
+  StyledPrintCardProspect,
+} from "./styles";
 
 interface CardCommercialManagementProps {
   id: string;
@@ -45,7 +50,7 @@ interface CardCommercialManagementProps {
 }
 
 export const CardCommercialManagement = (
-  props: CardCommercialManagementProps
+  props: CardCommercialManagementProps,
 ) => {
   const {
     dataRef,
@@ -58,7 +63,7 @@ export const CardCommercialManagement = (
     availableEditCreditRequest,
   } = props;
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
-    []
+    [],
   );
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -68,7 +73,7 @@ export const CardCommercialManagement = (
   const [modalHistory, setModalHistory] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ICreditProduct | null>(
-    null
+    null,
   );
   const currentModal = modalHistory[modalHistory.length - 1];
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -110,22 +115,26 @@ export const CardCommercialManagement = (
     if (!prospectData || !prospectProducts.length) return;
     try {
       setIsSendingData(true);
-      const updatedProspect = await RemoveCreditProduct(businessUnitPublicCode, eventData.user.identificationDocumentNumber || "", {
-        creditProductCode: selectedProductId,
-        creditRequestCode: id,
-      });
+      const updatedProspect = await RemoveCreditProduct(
+        businessUnitPublicCode,
+        eventData.user.identificationDocumentNumber || "",
+        {
+          creditProductCode: selectedProductId,
+          creditRequestCode: id,
+        },
+      );
       setProspectProducts((prev) =>
         prev.filter(
-          (product) => product.creditProductCode !== selectedProductId
-        )
+          (product) => product.creditProductCode !== selectedProductId,
+        ),
       );
 
       const normalizedProspect = {
         ...updatedProspect,
-        creditProducts: updatedProspect!.creditProducts?.map(product => ({
+        creditProducts: updatedProspect!.creditProducts?.map((product) => ({
           ...product,
           schedule: product.schedule || product.installmentFrequency,
-        }))
+        })),
       };
 
       if (onProspectUpdate && updatedProspect) {
@@ -151,9 +160,10 @@ export const CardCommercialManagement = (
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       const description = code + err?.message + (err?.data?.description || "");
       setShowErrorModal(true);
-      setMessageError(tittleOptionsEnum.errorDeleteProduct.i18n[lang] || description);
+      setMessageError(
+        tittleOptionsEnum.errorDeleteProduct.i18n[lang] || description,
+      );
       setIsSendingData(false);
-
     }
   };
 
@@ -167,10 +177,9 @@ export const CardCommercialManagement = (
         const result = await getSearchProspectSummaryById(
           businessUnitPublicCode,
           businessManagerCode,
-          id
+          id,
         );
         if (result) {
-          console.log("summary data: ", result);
           setProspectSummaryData(result);
         }
       } catch (error) {
@@ -196,7 +205,7 @@ export const CardCommercialManagement = (
         const data = await getAllDeductibleExpensesById(
           businessUnitPublicCode,
           businessManagerCode,
-          id
+          id,
         );
         setDeductibleExpenses(data);
       } catch (error) {
@@ -239,15 +248,28 @@ export const CardCommercialManagement = (
                 periodicFee={
                   entry.ordinaryInstallmentsForPrincipal?.[0]?.installmentAmount
                 }
-                schedule={entry.schedule as Schedule}
+                schedule={
+                  entry.ordinaryInstallmentsForPrincipal?.[0]
+                    ?.installmentFrequency ||
+                  capitalizeFirstLetter(
+                    entry.ordinaryInstallmentsForPrincipal?.[0]
+                      ?.installmentFrequency ||
+                      paymentCycleMap[entry.installmentFrequency as string] ||
+                      "",
+                  ) ||
+                  ""
+                }
                 availableEditCreditRequest={availableEditCreditRequest}
                 onEdit={
                   editCreditApplication
                     ? handleInfo
                     : () => {
-                      setSelectedProduct(entry);
-                      setModalHistory((prev) => [...prev, "editProductModal"]);
-                    }
+                        setSelectedProduct(entry);
+                        setModalHistory((prev) => [
+                          ...prev,
+                          "editProductModal",
+                        ]);
+                      }
                 }
                 onDelete={
                   editCreditApplication
@@ -257,13 +279,11 @@ export const CardCommercialManagement = (
                 lang={lang}
               />
             ))}
-            {
-              !availableEditCreditRequest && (
-                <StyledPrint>
-                  <NewCreditProductCard onClick={onClick} lang={lang} />
-                </StyledPrint>
-              )
-            }
+            {!availableEditCreditRequest && (
+              <StyledPrint>
+                <NewCreditProductCard onClick={onClick} lang={lang} />
+              </StyledPrint>
+            )}
           </Stack>
         </StyledCardsCredit>
         <div style={{ pageBreakInside: "avoid" }}>
@@ -284,9 +304,12 @@ export const CardCommercialManagement = (
                     operation: item.operation,
                     miniIcon: item.miniIcon,
                     icon:
-                      item.id === "totalConsolidatedAmount" && availableEditCreditRequest
-                        ? <MdOutlineRemoveRedEye />
-                        : item.icon,
+                      item.id === "totalConsolidatedAmount" &&
+                      availableEditCreditRequest ? (
+                        <MdOutlineRemoveRedEye />
+                      ) : (
+                        item.icon
+                      ),
                     modal: item.modal,
                   }))}
                   showIcon={entry.iconEdit}
@@ -318,12 +341,17 @@ export const CardCommercialManagement = (
               paymentMethod:
                 selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
                   ?.paymentChannelAbbreviatedName || "",
-              paymentCycle: selectedProduct.schedule || "",
+              paymentCycle:
+                selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
+                  ?.installmentFrequency || "",
               firstPaymentCycle: "",
               termInMonths: selectedProduct.loanTerm || 0,
               amortizationType: "",
               interestRate: selectedProduct.interestRate || 0,
               rateType: "",
+              installmentAmount:
+                selectedProduct.ordinaryInstallmentsForPrincipal?.[0]
+                  ?.installmentAmount || 0,
             }}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
@@ -332,7 +360,6 @@ export const CardCommercialManagement = (
             creditProductCode={selectedProduct?.creditProductCode || ""}
             prospectId={prospectData?.prospectId || ""}
             onProspectUpdate={(updatedProspect) => {
-
               if (updatedProspect?.creditProducts) {
                 setProspectProducts(updatedProspect.creditProducts);
               }
@@ -343,7 +370,6 @@ export const CardCommercialManagement = (
 
               setModalHistory((prev) => prev.slice(0, -1));
             }}
-
           />
         )}
 
@@ -357,7 +383,7 @@ export const CardCommercialManagement = (
             businessManagerCode={businessManagerCode}
             consolidatedCredits={consolidatedCredits}
             setConsolidatedCredits={setConsolidatedCredits}
-            onProspectUpdated={() => { }}
+            onProspectUpdated={() => {}}
             clientIdentificationNumber={clientIdentificationNumber}
             creditRequestCode={id || ""}
           />
@@ -375,7 +401,11 @@ export const CardCommercialManagement = (
             onClose={handleInfoModalClose}
             title={privilegeCrediboard.title}
             subtitle={privilegeCrediboard.subtitle}
-            description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
+            description={
+              availableEditCreditRequest
+                ? optionsDisableStage.description
+                : privilegeCrediboard.description
+            }
             nextButtonText={privilegeCrediboard.nextButtonText}
             isMobile={isMobile}
           />

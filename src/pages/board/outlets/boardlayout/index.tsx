@@ -8,11 +8,9 @@ import { ICreditRequest } from "@services/creditRequest/query/types";
 import { getCreditRequestPinned } from "@services/creditRequest/query/isPinned";
 import { getCreditRequestInProgress } from "@services/creditRequest/query/getCreditRequestInProgress";
 import { patchChangeAnchorToCreditRequest } from "@services/creditRequest/command/anchorCreditRequest";
+import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 import { AppContext } from "@context/AppContext";
 import { Filter } from "@components/cards/SelectedFilters/interface";
-import { ruleConfig } from "@utils/configRules/configRules";
-import { evaluateRule } from "@utils/configRules/evaluateRules";
-import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { useEnum } from "@hooks/useEnum";
@@ -30,7 +28,7 @@ export interface IFilterFormValues {
 
 function BoardLayout() {
   const { lang } = useEnum();
-  const selectCheckOptions = selectCheckOptionsEnum.map(option => ({
+  const selectCheckOptions = selectCheckOptionsEnum.map((option) => ({
     id: option.id,
     label: option.i18n[lang],
     value: option.value,
@@ -57,7 +55,7 @@ function BoardLayout() {
   const [errorModal, setErrorModal] = useState(false);
   const [hasServerError, setHasServerError] = useState(false);
   const useDebounceSearch = Boolean(
-    eventData?.user?.identificationDocumentNumber
+    eventData?.user?.identificationDocumentNumber,
   );
   const searchAbortControllerRef = useRef<AbortController | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -83,13 +81,14 @@ function BoardLayout() {
 
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-  const [valueRule, setValueRule] = useState<Record<string, string[]>>({});
+  const [positionsAuthorized, setPositionsAuthorized] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterValues, setFilterValues] = useState<IFilterFormValues>({
     assignment: "",
     status: "",
   });
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const boardColumns = getBoardColumns(activeOptions, filters.boardOrientation);
 
   const fetchBoardData = async (
@@ -97,7 +96,7 @@ function BoardLayout() {
     businessManagerCode: string,
     page: number,
     searchParam?: { filter?: string; text?: string },
-    append: boolean = false
+    append: boolean = false,
   ) => {
     if (!userAccount) {
       return;
@@ -111,13 +110,13 @@ function BoardLayout() {
             businessManagerCode,
             page,
             userAccount,
-            searchParam
+            searchParam,
           ),
           page === 1
             ? getCreditRequestPinned(
-              businessUnitPublicCode,
-              businessManagerCode
-            )
+                businessUnitPublicCode,
+                businessManagerCode,
+              )
             : Promise.resolve([]),
         ]);
 
@@ -140,7 +139,7 @@ function BoardLayout() {
       } else if (boardRequestsResult.status === "rejected") {
         console.error(
           "Error al obtener solicitudes:",
-          boardRequestsResult.reason
+          boardRequestsResult.reason,
         );
         setHasServerError(true);
         return;
@@ -154,7 +153,7 @@ function BoardLayout() {
       } else if (requestsPinnedResult.status === "rejected" && page === 1) {
         console.error(
           "Error al obtener anclados:",
-          requestsPinnedResult.reason
+          requestsPinnedResult.reason,
         );
         setErrorLoadingPins(true);
       }
@@ -164,6 +163,23 @@ function BoardLayout() {
     }
   };
 
+  const fetchPositionsAuthorized = useCallback(async () => {
+    if (!businessUnitPublicCode) return;
+
+    try {
+      const response = await getPositionsAuthorizedToRemoveAnchorsPlacedByOther(
+        businessUnitPublicCode,
+      );
+
+      if (response?.positionsAuthorized) {
+        setPositionsAuthorized(response.positionsAuthorized);
+      }
+    } catch (error) {
+      setShowErrorModal(true);
+      setMessageError(errorMessagesEnum.changeAnchorToCreditRequest.i18n[lang]);
+    }
+  }, [businessUnitPublicCode, lang]);
+
   useEffect(() => {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 1)
       return;
@@ -172,7 +188,7 @@ function BoardLayout() {
     }
     fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
     setCurrentPage(1);
-    fetchValidationRulesData();
+    fetchPositionsAuthorized();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, userAccount]);
 
@@ -197,7 +213,7 @@ function BoardLayout() {
       businessManagerCode,
       nextPage,
       searchParam,
-      true
+      true,
     );
   };
 
@@ -235,7 +251,7 @@ function BoardLayout() {
     setCurrentPage(1);
 
     const hasCompletedFilter = activeFilteredValues.some(
-      (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+      (filter) => filter.value === "completedLessThan30DaysAgo=Y",
     );
 
     if (hasCompletedFilter) {
@@ -291,12 +307,12 @@ function BoardLayout() {
 
       if (newFilters.boardOrientation === "vertical") {
         const hasCompletedFilter = activeOptions.some(
-          (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+          (filter) => filter.value === "completedLessThan30DaysAgo=Y",
         );
 
         if (hasCompletedFilter) {
           const updatedActiveOptions = activeOptions.filter(
-            (option) => option.value !== "completedLessThan30DaysAgo=Y"
+            (option) => option.value !== "completedLessThan30DaysAgo=Y",
           );
 
           setActiveOptions(updatedActiveOptions);
@@ -342,53 +358,15 @@ function BoardLayout() {
     }
   };
 
-  const fetchValidationRulesData = useCallback(async () => {
-    const rulesValidate = ["PositionsAuthorizedToRemoveAnchorsPlacedByOther"];
-    await Promise.all(
-      rulesValidate.map(async (ruleName) => {
-        const rule = ruleConfig[ruleName]?.({});
-        if (!rule) return;
-
-        try {
-          const values = await evaluateRule(
-            rule,
-            postBusinessUnitRules,
-            "value",
-            businessUnitPublicCode,
-            businessManagerCode
-          );
-
-          const extractedValues = Array.isArray(values)
-            ? values
-              .map((v) => (typeof v === "string" ? v : (v?.value ?? "")))
-              .filter((val): val is string => val !== "")
-            : [];
-
-          setValueRule((prev) => {
-            const current = prev[ruleName] || [];
-            const merged = [...current, ...extractedValues];
-            const unique = Array.from(new Set(merged));
-            return { ...prev, [ruleName]: unique };
-          });
-        } catch (error: unknown) {
-          console.error(`Error evaluando ${ruleName} para este usuario.`);
-        }
-      })
-    );
-  }, [businessUnitPublicCode, businessManagerCode]);
-
   const handlePinRequest = async (
     creditRequestId: string | undefined,
     userWhoPinnnedId: string,
-    isPinned: string
+    isPinned: string,
   ) => {
     try {
       const isOwner = userWhoPinnnedId === staffId;
       const isUnpin = isPinned === "N";
-      const isAuthorizedByRule =
-        valueRule["PositionsAuthorizedToRemoveAnchorsPlacedByOther"]?.includes(
-          missionName
-        );
+      const isAuthorizedByRule = positionsAuthorized.includes(missionName);
 
       if (isOwner || (isUnpin && isAuthorizedByRule) || isPinned === "Y") {
         setBoardData((prevState) => ({
@@ -396,7 +374,7 @@ function BoardLayout() {
           requestsPinned: prevState.requestsPinned.map((card) =>
             card.creditRequestId === creditRequestId
               ? { ...card, isPinned }
-              : card
+              : card,
           ),
         }));
 
@@ -405,7 +383,7 @@ function BoardLayout() {
           businessManagerCode,
           eventData.user.identificationDocumentNumber || "",
           creditRequestId,
-          isPinned
+          isPinned,
         );
         await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
         setCurrentPage(1);
@@ -425,7 +403,7 @@ function BoardLayout() {
 
   const handleClearFilters = async (keepSearchValue = false) => {
     const hasCompletedFilter = activeOptions.some(
-      (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+      (filter) => filter.value === "completedLessThan30DaysAgo=Y",
     );
 
     setFilterValues({ assignment: "", status: "" });
@@ -464,14 +442,14 @@ function BoardLayout() {
 
   const handleRemoveFilter = async (filterIdToRemove: string) => {
     const updatedActiveOptions = activeOptions.filter(
-      (option) => option.id !== filterIdToRemove
+      (option) => option.id !== filterIdToRemove,
     );
 
     setActiveOptions(updatedActiveOptions);
     setCurrentPage(1);
 
     const removedFilter = activeOptions.find(
-      (option) => option.id === filterIdToRemove
+      (option) => option.id === filterIdToRemove,
     );
     const isRemovingCompletedFilter =
       removedFilter?.value === "completedLessThan30DaysAgo=Y";
@@ -496,7 +474,7 @@ function BoardLayout() {
           .split(",")
           .filter((id) => id.trim() !== "");
         const updatedAssignmentIds = assignmentIds.filter(
-          (id) => id !== filterIdToRemove
+          (id) => id !== filterIdToRemove,
         );
         newValues.assignment = updatedAssignmentIds.join(",");
       }
@@ -505,7 +483,7 @@ function BoardLayout() {
           .split(",")
           .filter((id) => id.trim() !== "");
         const updatedStatusIds = statusIds.filter(
-          (id) => id !== filterIdToRemove
+          (id) => id !== filterIdToRemove,
         );
         newValues.status = updatedStatusIds.join(",");
       }
@@ -533,7 +511,7 @@ function BoardLayout() {
   };
 
   const handleSearchRequestsValue = async (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const value = e.target.value;
     handleFiltersChange({ searchRequestValue: value });
@@ -593,14 +571,14 @@ function BoardLayout() {
                 businessManagerCode,
                 1,
                 userAccount,
-                { text: trimmedValue }
+                { text: trimmedValue },
               ),
               getCreditRequestInProgress(
                 businessUnitPublicCode,
                 businessManagerCode,
                 1,
                 userAccount,
-                { filter: currentFilters }
+                { filter: currentFilters },
               ),
             ]);
 
@@ -611,8 +589,8 @@ function BoardLayout() {
             const intersection = searchResults.filter((searchItem) =>
               filteredResults.some(
                 (filterItem) =>
-                  filterItem.creditRequestId === searchItem.creditRequestId
-              )
+                  filterItem.creditRequestId === searchItem.creditRequestId,
+              ),
             );
 
             setBoardData((prev) => ({
@@ -625,7 +603,7 @@ function BoardLayout() {
               businessManagerCode,
               1,
               userAccount,
-              { text: trimmedValue }
+              { text: trimmedValue },
             );
 
             if (abortController.signal.aborted) {
@@ -662,22 +640,22 @@ function BoardLayout() {
             businessManagerCode,
             1,
             userAccount,
-            { text: trimmedValue }
+            { text: trimmedValue },
           ),
           getCreditRequestInProgress(
             businessUnitPublicCode,
             businessManagerCode,
             1,
             userAccount,
-            { filter: currentFilters }
+            { filter: currentFilters },
           ),
         ]);
 
         const intersection = searchResults.filter((searchItem) =>
           filteredResults.some(
             (filterItem) =>
-              filterItem.creditRequestId === searchItem.creditRequestId
-          )
+              filterItem.creditRequestId === searchItem.creditRequestId,
+          ),
         );
 
         setBoardData((prev) => ({
@@ -723,7 +701,7 @@ function BoardLayout() {
       .map((r) => r.creditRequestId);
 
     return boardRequests.filter((request) =>
-      pinnedIds.includes(request.creditRequestId as string)
+      pinnedIds.includes(request.creditRequestId as string),
     );
   }
 
@@ -774,7 +752,7 @@ function BoardLayout() {
         handleRemoveFilter={handleRemoveFilter}
         isMenuOpen={isMenuOpen}
         selectOptions={[]}
-        handleSelectCheckChange={() => { }}
+        handleSelectCheckChange={() => {}}
         closeFilterModal={closeFilterModal}
         filterValues={filterValues}
         shouldCollapseAll={shouldCollapseAll}
@@ -806,6 +784,15 @@ function BoardLayout() {
           handleClose={() => {
             setErrorModal(false);
           }}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

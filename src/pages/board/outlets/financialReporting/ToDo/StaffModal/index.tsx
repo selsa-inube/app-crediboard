@@ -193,7 +193,7 @@ export function StaffModal(props: StaffModalProps) {
       justification: `Se realiza la asignación de un nuevo ${roleLabel}. Anterior: ${previousUserName || "N/A"}. Nuevo: ${user.staffName}`,
     };
   };
-  console.log(taskData);
+
   const handleCreditRequests = async () => {
     const managerRequest = buildCreditRequest(
       "CredicarAccountManager",

@@ -3,48 +3,50 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IAllDeductibleExpensesById } from "../../../prospect/types";
+import { IInternalAccount, IExternalAccount, IPersonData } from "@components/modals/DisbursementModal/types";
 
-const getAllDeductibleExpensesById = async (
+export const getClientPortfolioObligationsById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestCode: string
-): Promise<IAllDeductibleExpensesById[]> => {
+  payload: IExternalAccount | IInternalAccount | IPersonData | object,
+) => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-
       const options: RequestInit = {
-        method: "GET",
+        method: "PATCH",
         headers: {
-          "X-Action": "SearchAllDeductibleExpensesById",
+          "X-Action": "UpdateModeOfDisbursement",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
         },
+        body: JSON.stringify({
+          ...payload,
+          transactionOperation: "PartialUpdate",
+        }),
         signal: controller.signal,
       };
-      
+
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
-        options
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests/`,
+        options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay gastos descontables.");
+        return null;
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Error al obtener los gastos descontables.",
+          message: "Ha ocurrido un error: ",
           status: res.status,
           data,
         };
@@ -52,18 +54,19 @@ const getAllDeductibleExpensesById = async (
 
       return data;
     } catch (error) {
-      console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
+        if (typeof error === "object" && error !== null) {
+          throw {
+            ...(error as object),
+            message: (error as Error).message,
+          };
+        }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener los gastos descontables."
+          "Todos los intentos fallaron. No se pudo actualizar el modo de desembolso.",
         );
       }
     }
   }
 
-  throw new Error(
-    "No se pudo obtener los gastos descontables después de varios intentos."
-  );
+  return null;
 };
-
-export { getAllDeductibleExpensesById };

@@ -58,7 +58,7 @@ export function DisbursementWithCheckManagement(
     customerData,
     getTotalAmount,
     prospectData,
-    lang
+    lang,
   } = props;
 
   const {
@@ -66,7 +66,7 @@ export function DisbursementWithCheckManagement(
     isDisabled,
     handleCheckboxChange,
     handleToggleChange,
-    isInvalidAmount
+    isInvalidAmount,
   } = useDisbursementForm(props);
 
   return (
@@ -82,7 +82,7 @@ export function DisbursementWithCheckManagement(
             iconBefore={
               <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
             }
-            id="amount"
+            id={`${optionNameForm}.amount`}
             name="amount"
             label={disbursementGeneralEnum.labelTurn.i18n[lang]}
             placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
@@ -100,9 +100,7 @@ export function DisbursementWithCheckManagement(
               formik.setFieldTouched(`${optionNameForm}.amount`, true);
               formik.handleBlur(`amount`);
             }}
-            status={
-              isInvalidAmount ? "invalid" : undefined
-            }
+            status={isInvalidAmount ? "invalid" : undefined}
             readOnly={isAmountReadOnly}
             message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[lang]}${currencyFormat(initialValues.amount, false)}`}
             fullwidth
@@ -143,7 +141,9 @@ export function DisbursementWithCheckManagement(
         />
         <Text
           appearance={
-            (formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"
+            (formik.values[optionNameForm]?.toggle ?? true)
+              ? "success"
+              : "danger"
           }
         >
           {(formik.values[optionNameForm]?.toggle ?? true)
@@ -174,7 +174,12 @@ export function DisbursementWithCheckManagement(
           label={disbursemenOptionAccountEnum.observation.i18n[lang]}
           placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
           value={formik.values[optionNameForm]?.description || ""}
-          onChange={formik.handleChange}
+          onChange={(event) => {
+            const value = event.target.value;
+            if (value.length <= 100) {
+              formik.handleChange(event);
+            }
+          }}
           onBlur={formik.handleBlur}
           fullwidth
         />

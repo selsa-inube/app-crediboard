@@ -23,7 +23,7 @@ import { EnumType } from "@hooks/useEnum";
 
 import {
   disbursementGeneralEnum,
-  disbursemenOptionAccountEnum
+  disbursemenOptionAccountEnum,
 } from "../config";
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
@@ -56,7 +56,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
     customerData,
     getTotalAmount,
     prospectData,
-    lang
+    lang,
   } = props;
 
   const {
@@ -64,7 +64,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
     isDisabled,
     handleCheckboxChange,
     handleToggleChange,
-    isInvalidAmount
+    isInvalidAmount,
   } = useDisbursementForm(props);
 
   return (
@@ -77,7 +77,10 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
       <Stack direction="column" gap="20px">
         <Stack width={isMobile ? "100%" : "498px"}>
           <Textfield
-            id="amount"
+            iconBefore={
+              <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
+            }
+            id={`${optionNameForm}.amount`}
             name="amount"
             label={disbursementGeneralEnum.labelTurn.i18n[lang]}
             placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
@@ -95,12 +98,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
               formik.setFieldTouched(`${optionNameForm}.amount`, true);
               formik.handleBlur(`amount`);
             }}
-            iconBefore={
-              <MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />
-            }
-            status={
-              isInvalidAmount ? "invalid" : undefined
-            }
+            status={isInvalidAmount ? "invalid" : undefined}
             readOnly={isAmountReadOnly}
             message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[lang]}${currencyFormat(initialValues.amount, false)}`}
             fullwidth
@@ -141,7 +139,9 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
         />
         <Text
           appearance={
-            (formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"
+            (formik.values[optionNameForm]?.toggle ?? true)
+              ? "success"
+              : "danger"
           }
         >
           {(formik.values[optionNameForm]?.toggle ?? true)
@@ -172,7 +172,12 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
           label={disbursemenOptionAccountEnum.observation.i18n[lang]}
           placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
           value={formik.values[optionNameForm]?.description || ""}
-          onChange={formik.handleChange}
+          onChange={(event) => {
+            const value = event.target.value;
+            if (value.length <= 100) {
+              formik.handleChange(event);
+            }
+          }}
           onBlur={formik.handleBlur}
           fullwidth
         />

@@ -101,12 +101,19 @@ export const StyledCollapse = styled.div`
   z-index: 3;
 `;
 export const StyledFooter = styled.footer`
-  margin-top: auto;
-  display: flex;
   justify-content: center;
-  padding: 6px 4px;
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N10 || inube.palette.neutral.N10};
+
+  & > a {
+    height: 40px;
+    justify-content: end;
+    padding-right: 16px;
+  }
+
+  & > a > img {
+    max-height: 32px;
+  }
 `;
 
 export const StyledPrint = styled.div`

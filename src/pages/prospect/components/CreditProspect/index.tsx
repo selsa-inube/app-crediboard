@@ -117,7 +117,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     setOpenModal,
     currentModal,
     handleOpenModal,
-    handleCloseModal
+    handleCloseModal,
   } = props;
   const [showShareModal, setShowShareModal] = useState(false);
 
@@ -140,7 +140,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   useEffect(() => {
     if (creditRequestCode) {
       const foundProspect = mockProspectCredit.find(
-        (prospect) => prospect.public_code === creditRequestCode
+        (prospect) => prospect.public_code === creditRequestCode,
       );
       if (foundProspect) {
         const mockCredit = foundProspect.consolidated_credit[0];
@@ -184,7 +184,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   };
 
   const handleApprovalObservationsChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setEditedApprovalObservations(event.target.value);
   };
@@ -201,7 +201,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       await updateProspect(
         businessUnitPublicCode,
         businessManagerCode,
-        updatedProspect
+        updatedProspect,
       );
 
       if (setDataProspect) {
@@ -209,11 +209,11 @@ export function CreditProspect(props: ICreditProspectProps) {
           prevProspects.map((prospect) =>
             prospect.prospectId === prospectData.prospectId
               ? {
-                ...prospect,
-                clientManagerObservation: editedApprovalObservations,
-              }
-              : prospect
-          )
+                  ...prospect,
+                  clientManagerObservation: editedApprovalObservations,
+                }
+              : prospect,
+          ),
         );
       }
 
@@ -255,7 +255,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       const updatedProspect = await addCreditProductService(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       const normalizedProspect = {
@@ -297,7 +297,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     moneyDestination: dataProspect?.moneyDestinationAbbreviatedName || "",
     primaryIncomeType:
       borrower?.borrowerProperties?.find(
-        (property) => property.propertyName === "PeriodicSalary"
+        (property) => property.propertyName === "PeriodicSalary",
       )?.propertyValue || "",
   };
 
@@ -348,26 +348,26 @@ export function CreditProspect(props: ICreditProspectProps) {
             {prospectData?.creditProducts?.some(
               (product) =>
                 Array.isArray(product.extraordinaryInstallments) &&
-                product.extraordinaryInstallments.length > 0
+                product.extraordinaryInstallments.length > 0,
             ) && (
-                <Button
-                  type="button"
-                  appearance="primary"
-                  spacing="compact"
-                  variant="outlined"
-                  iconBefore={
-                    <Icon
-                      icon={<MdOutlinePayments />}
-                      appearance="primary"
-                      size="18px"
-                      spacing="narrow"
-                    />
-                  }
-                  onClick={() => handleOpenModal("extraPayments")}
-                >
-                  {dataCreditProspectEnum.extraPayment.i18n[lang]}
-                </Button>
-              )}
+              <Button
+                type="button"
+                appearance="primary"
+                spacing="compact"
+                variant="outlined"
+                iconBefore={
+                  <Icon
+                    icon={<MdOutlinePayments />}
+                    appearance="primary"
+                    size="18px"
+                    spacing="narrow"
+                  />
+                }
+                onClick={() => handleOpenModal("extraPayments")}
+              >
+                {dataCreditProspectEnum.extraPayment.i18n[lang]}
+              </Button>
+            )}
             <StyledVerticalDivider />
             <StyledContainerIcon>
               {showPrint && (
@@ -397,9 +397,9 @@ export function CreditProspect(props: ICreditProspectProps) {
                   prospectData?.creditProducts?.some(
                     (product) =>
                       Array.isArray(product.extraordinaryInstallments) &&
-                      product.extraordinaryInstallments.length > 0
+                      product.extraordinaryInstallments.length > 0,
                   ) || false,
-                  lang
+                  lang,
                 )}
                 onMouseLeave={showMenu}
               />
@@ -427,8 +427,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       {openModal === "reciprocityModal" && (
         <ReciprocityModal
           handleClose={() => {
-            if (setOpenModal)
-              setOpenModal(null)
+            if (setOpenModal) setOpenModal(null);
           }}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
@@ -440,8 +439,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       {openModal === "scoreModal" && (
         <ScoreModal
           handleClose={() => {
-            if (setOpenModal)
-              setOpenModal(null)
+            if (setOpenModal) setOpenModal(null);
           }}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
@@ -489,7 +487,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         <IncomeModal
           handleClose={() => {
             if (setOpenModal) {
-              setOpenModal(null)
+              setOpenModal(null);
             }
           }}
           initialValues={
@@ -557,7 +555,7 @@ export function CreditProspect(props: ICreditProspectProps) {
             handleClose={handleCloseModal}
             handleNext={() => {
               setEditedApprovalObservations(
-                dataProspect?.clientManagerObservation || ""
+                dataProspect?.clientManagerObservation || "",
               );
               setShowEditApprovalModal(true);
             }}
@@ -571,7 +569,9 @@ export function CreditProspect(props: ICreditProspectProps) {
                 placeHolder={
                   dataProspect?.clientManagerObservation === ""
                     ? dataCreditProspectEnum.approvalObservations.i18n[lang]
-                    : dataCreditProspectEnum.approvalObservationsNotFound.i18n[lang]
+                    : dataCreditProspectEnum.approvalObservationsNotFound.i18n[
+                        lang
+                      ]
                 }
               />
               <CardGray
@@ -580,7 +580,9 @@ export function CreditProspect(props: ICreditProspectProps) {
                 placeHolder={
                   dataProspect?.clientManagerObservation === ""
                     ? dataCreditProspectEnum.approvalObservations.i18n[lang]
-                    : dataCreditProspectEnum.clientsObservationsNotFound.i18n[lang]
+                    : dataCreditProspectEnum.clientsObservationsNotFound.i18n[
+                        lang
+                      ]
                 }
               />
             </Stack>

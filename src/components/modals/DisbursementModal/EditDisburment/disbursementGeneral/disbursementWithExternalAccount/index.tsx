@@ -1,20 +1,38 @@
 import { useEffect, useState } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { Stack, Text, Divider, Toggle, Select, Textfield, Textarea, Input, Checkbox, inube } from "@inubekit/inubekit";
+import {
+  Stack,
+  Text,
+  Divider,
+  Toggle,
+  Select,
+  Textfield,
+  Textarea,
+  Input,
+  Checkbox,
+  inube,
+} from "@inubekit/inubekit";
 import { FormikValues } from "formik";
 
 import { typeAccount } from "@mocks/filing-application/disbursement-general/disbursementgeneral.mock";
-import { currencyFormat, handleChangeWithCurrency, validateCurrencyField } from "@utils/formatData/currency";
+import {
+  currencyFormat,
+  handleChangeWithCurrency,
+  validateCurrencyField,
+} from "@utils/formatData/currency";
 import { IOptionsSelect } from "@components/modals/RequirementsModals/types";
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
-import { SearchAllBank } from "@services/bank/SearchAllBank"; 
+import { SearchAllBank } from "@services/bank/SearchAllBank";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { IProspect } from "@services/prospect/types";
 import { EnumType } from "@hooks/useEnum";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
-import { disbursementGeneralEnum, disbursemenOptionAccountEnum } from "../config";
+import {
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum,
+} from "../config";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
 
 interface IDisbursementWithExternalAccountProps {
@@ -34,19 +52,29 @@ interface IDisbursementWithExternalAccountProps {
   customerData?: ICustomerData;
 }
 
-export function DisbursementWithExternalAccount(props: IDisbursementWithExternalAccountProps) {
-  const { isMobile, initialValues, formik, optionNameForm, isAmountReadOnly, lang } = props;
+export function DisbursementWithExternalAccount(
+  props: IDisbursementWithExternalAccountProps,
+) {
+  const {
+    isMobile,
+    initialValues,
+    formik,
+    optionNameForm,
+    isAmountReadOnly,
+    lang,
+  } = props;
 
   const {
     isAutoCompleted,
     isDisabled,
     handleCheckboxChange,
     handleToggleChange,
-    isInvalidAmount
+    isInvalidAmount,
   } = useDisbursementForm(props);
 
   const [banks, setBanks] = useState<IOptionsSelect[]>([]);
-  const [alreadyShowMessageErrorBank, setAlreadyShowMessageErrorBank] = useState(false);
+  const [alreadyShowMessageErrorBank, setAlreadyShowMessageErrorBank] =
+    useState(false);
   const [modalError, setModalError] = useState(false);
 
   useEffect(() => {
@@ -74,24 +102,43 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
 
   useEffect(() => {
     if (typeAccount.length === 1) {
-      formik.setFieldValue(`${optionNameForm}.accountType`, typeAccount[0].value);
+      formik.setFieldValue(
+        `${optionNameForm}.accountType`,
+        typeAccount[0].value,
+      );
     }
   }, [formik, optionNameForm]);
 
   return (
     <>
-      <Stack direction="column" padding={isMobile ? "4px 10px" : "10px 16px"} gap="16px" justifyContent="center">
+      <Stack
+        direction="column"
+        padding={isMobile ? "4px 10px" : "10px 16px"}
+        gap="16px"
+        justifyContent="center"
+      >
         <Stack direction="column" gap="20px">
           <Stack width={isMobile ? "100%" : "498px"}>
             <Textfield
-              id="amount"
+              id={`${optionNameForm}.amount`}
               name="amount"
               label={disbursementGeneralEnum.labelCheck.i18n[lang]}
               placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
-              iconBefore={<MdOutlineAttachMoney color={inube.palette.neutralAlpha.N900A} />}
+              iconBefore={
+                <MdOutlineAttachMoney
+                  color={inube.palette.neutralAlpha.N900A}
+                />
+              }
               size="compact"
-              value={validateCurrencyField("amount", formik, false, optionNameForm)}
-              onChange={(event) => handleChangeWithCurrency(formik, event, optionNameForm)}
+              value={validateCurrencyField(
+                `amount`,
+                formik,
+                false,
+                optionNameForm,
+              )}
+              onChange={(event) =>
+                handleChangeWithCurrency(formik, event, optionNameForm)
+              }
               onBlur={() => {
                 formik.setFieldTouched(`${optionNameForm}.amount`, true);
                 formik.handleBlur(`amount`);
@@ -111,12 +158,16 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
               onChange={handleCheckboxChange}
               disabled={isDisabled}
             />
-            <Text type="label" size="medium">{disbursementGeneralEnum.labelCheck.i18n[lang]}</Text>
+            <Text type="label" size="medium">
+              {disbursementGeneralEnum.labelCheck.i18n[lang]}
+            </Text>
           </Stack>
         </Stack>
         <Divider dashed />
         <Stack direction="column" gap="16px">
-          <Text type="label" size="medium">{disbursementGeneralEnum.labelToggle.i18n[lang]}</Text>
+          <Text type="label" size="medium">
+            {disbursementGeneralEnum.labelToggle.i18n[lang]}
+          </Text>
         </Stack>
         <Stack direction="row" gap="16px">
           <Toggle
@@ -126,8 +177,16 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
             onChange={handleToggleChange}
             size="large"
           />
-          <Text appearance={(formik.values[optionNameForm]?.toggle ?? true) ? "success" : "danger"}>
-            {(formik.values[optionNameForm]?.toggle ?? true) ? disbursementGeneralEnum.optionToggleYes.i18n[lang] : disbursementGeneralEnum.optionToggleNo.i18n[lang]}
+          <Text
+            appearance={
+              (formik.values[optionNameForm]?.toggle ?? true)
+                ? "success"
+                : "danger"
+            }
+          >
+            {(formik.values[optionNameForm]?.toggle ?? true)
+              ? disbursementGeneralEnum.optionToggleYes.i18n[lang]
+              : disbursementGeneralEnum.optionToggleNo.i18n[lang]}
           </Text>
         </Stack>
         <Divider dashed />
@@ -168,10 +227,17 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
               size="compact"
               options={banks}
               onBlur={formik.handleBlur}
-              onChange={(_, value) => formik.setFieldValue(`${optionNameForm}.bank`, value)}
+              onChange={(_, value) =>
+                formik.setFieldValue(`${optionNameForm}.bank`, value)
+              }
               value={formik.values[optionNameForm]?.bank || ""}
               invalid={alreadyShowMessageErrorBank && banks.length === 0}
-              message={(alreadyShowMessageErrorBank && banks.length === 0 && disbursemenOptionAccountEnum.errorBanks.i18n[lang]) || ""}
+              message={
+                (alreadyShowMessageErrorBank &&
+                  banks.length === 0 &&
+                  disbursemenOptionAccountEnum.errorBanks.i18n[lang]) ||
+                ""
+              }
               fullwidth
             />
           )}
@@ -206,7 +272,9 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
             id={"accountNumber"}
             name={`${optionNameForm}.accountNumber`}
             label={disbursemenOptionAccountEnum.labelAccountNumber.i18n[lang]}
-            placeholder={disbursemenOptionAccountEnum.placeAccountNumber.i18n[lang]}
+            placeholder={
+              disbursemenOptionAccountEnum.placeAccountNumber.i18n[lang]
+            }
             value={formik.values[optionNameForm]?.accountNumber || ""}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -220,7 +288,12 @@ export function DisbursementWithExternalAccount(props: IDisbursementWithExternal
           label={disbursemenOptionAccountEnum.observation.i18n[lang]}
           placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
           value={formik.values[optionNameForm]?.description || ""}
-          onChange={formik.handleChange}
+          onChange={(event) => {
+            const value = event.target.value;
+            if (value.length <= 100) {
+              formik.handleChange(event);
+            }
+          }}
           onBlur={formik.handleBlur}
           fullwidth
         />

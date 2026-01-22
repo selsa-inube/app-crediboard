@@ -35,7 +35,10 @@ export const editProductModalLabels = {
     noPaymentOptions: {
       code: "Placeholder_noPaymentOptions",
       description: "Message when no payment options are available",
-      i18n: { en: "No payment options available", es: "No hay opciones de pago disponibles" },
+      i18n: {
+        en: "No payment options available",
+        es: "No hay opciones de pago disponibles",
+      },
     },
   },
   paymentCycleMap: {
@@ -50,23 +53,47 @@ export const editProductModalLabels = {
     FixedInterestRate: { en: "Fixed rate", es: "Tasa fija" },
   },
   repaymentStructureMap: {
-    FixedInstallment: { en: "Fixed integral installment", es: "Cuota integral fija" },
-    ConstantAmortization: { en: "Fixed capital payments", es: "Abonos fijos a capital" },
-    GeometricGradientRepayment: { en: "Geometric gradient", es: "Gradiente geométrico" },
-    ArithmeticGradientRepayment: { en: "Arithmetic gradient", es: "Gradiente aritmético" },
-    ValueIncrement: { en: "Increment value payments", es: "Pagos valor de incremento" },
-    PercentageIncrement: { en: "Increment percentage payments", es: "Pagos con porcentaje de incremento" },
+    FixedInstallment: {
+      en: "Fixed integral installment",
+      es: "Cuota integral fija",
+    },
+    ConstantAmortization: {
+      en: "Fixed capital payments",
+      es: "Abonos fijos a capital",
+    },
+    GeometricGradientRepayment: {
+      en: "Geometric gradient",
+      es: "Gradiente geométrico",
+    },
+    ArithmeticGradientRepayment: {
+      en: "Arithmetic gradient",
+      es: "Gradiente aritmético",
+    },
+    ValueIncrement: {
+      en: "Increment value payments",
+      es: "Pagos valor de incremento",
+    },
+    PercentageIncrement: {
+      en: "Increment percentage payments",
+      es: "Pagos con porcentaje de incremento",
+    },
   },
   validationMessages: {
     incrementRequired: {
       code: "Validation_incrementRequired",
       description: "Error when increment field is empty",
-      i18n: { en: "Increment value is required", es: "El valor de incremento es requerido" },
+      i18n: {
+        en: "Increment value is required",
+        es: "El valor de incremento es requerido",
+      },
     },
     incrementMustBePositive: {
       code: "Validation_incrementPositive",
       description: "Error when value is 0 or negative",
-      i18n: { en: "Value must be greater than 0", es: "El valor debe ser mayor a 0" },
+      i18n: {
+        en: "Value must be greater than 0",
+        es: "El valor debe ser mayor a 0",
+      },
     },
     incrementValidating: {
       code: "Validation_incrementPending",
@@ -76,17 +103,17 @@ export const editProductModalLabels = {
     incrementValueRange: {
       code: "Validation_incrementValueRange",
       description: "Error for out of range currency increment",
-      i18n: { 
-        en: "Value must be between ${min} and ${max}", 
-        es: "El valor debe estar entre ${min} y ${max}" 
+      i18n: {
+        en: "Value must be between ${min} and ${max}",
+        es: "El valor debe estar entre ${min} y ${max}",
       },
     },
     incrementPercentageRange: {
       code: "Validation_incrementPercentageRange",
       description: "Error for out of range percentage increment",
-      i18n: { 
-        en: "Percentage must be between {min}% and {max}%", 
-        es: "El porcentaje debe estar entre {min}% y {max}%" 
+      i18n: {
+        en: "Percentage must be between {min}% and {max}%",
+        es: "El porcentaje debe estar entre {min}% y {max}%",
       },
     },
     loanAmountRange: {
@@ -116,9 +143,12 @@ export const editProductModalLabels = {
     genericFetchError: {
       code: "Error_loadPaymentOptions",
       description: "Error when service fails to load payment methods",
-      i18n: { en: "Error loading payment options", es: "Error al cargar las opciones de pago" },
-    }
-  }
+      i18n: {
+        en: "Error loading payment options",
+        es: "Error al cargar las opciones de pago",
+      },
+    },
+  },
 };
 
 const creditLineOptions = [
@@ -277,25 +307,24 @@ const rateTypeOptions = [
 ];
 
 export const paymentCycleMap: Record<string, string> = {
-  "Weekly": "Cada 10 días",
-  "Biweekly": "Bisemanal",
-  "Semimonthly": "Quincenal",
-  "Monthly": "Mensual",
+  Weekly: "Cada 10 días",
+  Biweekly: "Bisemanal",
+  Semimonthly: "Quincenal",
+  Monthly: "Mensual",
 };
 
 export const interestRateTypeMap: Record<string, string> = {
-  "VariableInterestRate": "Tasa variable",
-  "FixedInterestRate": "Tasa fija",
+  VariableInterestRate: "Tasa variable",
+  FixedInterestRate: "Tasa fija",
 };
 
 export const VALIDATED_NUMBER_REGEX = /[^0-9]/g;
 
-
 export const repaymentStructureMap: Record<string, string> = {
-  "FixedInstallment": "Cuota integral fija",
-  "ConstantAmortization": "Abonos fijos a capital",
-  "GeometricGradientRepayment": "Gradiente geométrico",
-  "ArithmeticGradientRepayment": "Gradiente aritmético",
+  FixedInstallment: "Cuota integral fija",
+  ConstantAmortization: "Abonos fijos a capital",
+  GeometricGradientRepayment: "Gradiente geométrico",
+  ArithmeticGradientRepayment: "Gradiente aritmético",
 };
 
 export const defaultPaymentOptions = [
@@ -575,6 +604,69 @@ export const fieldPlaceholdersEnum = {
       en: "Enter the rate",
       es: "Ingrese la tasa",
     },
+  },
+};
+
+export const simulationFormLabels = {
+  cancelButton: {
+    code: "Cancel_button",
+    description: "Label for cancel button",
+    i18n: { en: "Cancel", es: "Cancelar" },
+  },
+  creditAmountPlaceholder: {
+    code: "Credit_amount_placeholder",
+    description: "Placeholder for requested amount",
+    i18n: { en: "Requested amount", es: "Monto solicitado" },
+  },
+  paymentMethod: {
+    code: "Payment_method_label",
+    description: "Label for payment method field",
+    i18n: { en: "Payment method", es: "Medio de pago" },
+  },
+  paymentCycle: {
+    code: "Payment_cycle_label",
+    description: "Label for payment cycle field",
+    i18n: { en: "Payment cycle", es: "Ciclo de pagos" },
+  },
+  termInMonthsLabel: {
+    code: "Term_months_label",
+    description: "Label for term in months select",
+    i18n: { en: "Term in months", es: "Plazo en meses" },
+  },
+  selectPlaceholder: {
+    code: "Select_option_placeholder",
+    description: "Placeholder for select inputs",
+    i18n: { en: "Select an option", es: "Selecciona una opción" },
+  },
+  amortizationTypeLabel: {
+    code: "Amortization_type_label",
+    description: "Label for amortization type select",
+    i18n: { en: "Amortization type", es: "Tipo de amortización" },
+  },
+  interestRateLabel: {
+    code: "Interest_rate_label",
+    description: "Label for interest rate field",
+    i18n: { en: "Interest rate", es: "Tasa de interés" },
+  },
+  interestRatePlaceholder: {
+    code: "Interest_rate_placeholder",
+    description: "Placeholder example for interest rate",
+    i18n: { en: "E.g.: 0.9", es: "Ej: 0.9" },
+  },
+  rateTypeLabel: {
+    code: "Rate_type_label",
+    description: "Label for rate type select",
+    i18n: { en: "Rate type", es: "Tipo de tasa" },
+  },
+  installmentAmountLabel: {
+    code: "Installment_amount_label",
+    description: "Label for installment amount field",
+    i18n: { en: "Installment amount", es: "Monto de la cuota" },
+  },
+  installmentAmountPlaceholder: {
+    code: "Installment_amount_placeholder",
+    description: "Placeholder example for installment amount",
+    i18n: { en: "E.g.: 500,000", es: "Ej: 500.0000" },
   },
 };
 

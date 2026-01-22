@@ -88,6 +88,7 @@ export function DisbursementWithInternalAccount(
       const hasYupErrors = stepErrors && Object.keys(stepErrors).length > 0;
       const currentValues = formik.values[optionNameForm] || {};
       const isFormVisible = !currentValues.toggle;
+      const isThirdParty = currentValues.toggle === false;
 
       let failsBusinessRule = false;
       if (isFormVisible && customerData?.publicCode) {
@@ -98,13 +99,43 @@ export function DisbursementWithInternalAccount(
           failsBusinessRule = true;
         }
       }
-      const isValid = !hasYupErrors && !failsBusinessRule;
+
+      let isGeneralInfoIncomplete = false;
+
+      if (isThirdParty) {
+        const requiredFields = [
+          "documentType",
+          "identification",
+          "name",
+          "lastName",
+          "birthdate",
+          "sex",
+          "phone",
+          "mail",
+          "city",
+        ];
+        isGeneralInfoIncomplete = requiredFields.some((field) => {
+          const value = currentValues[field];
+          return !value || String(value).trim() === "";
+        });
+      }
+
+      const isAccountMissing =
+        !currentValues.accountNumber ||
+        String(currentValues.accountNumber).trim() === "";
+
+      const isValid =
+        !hasYupErrors &&
+        !failsBusinessRule &&
+        (!isThirdParty || !isGeneralInfoIncomplete) &&
+        !isAccountMissing;
 
       if (lastValidState.current !== isValid) {
         lastValidState.current = isValid;
         onFormValid(isValid);
       }
     };
+
     const timer = setTimeout(checkValidity, 200);
     return () => clearTimeout(timer);
   }, [formik.errors, formik.values, optionNameForm, customerData, onFormValid]);
@@ -115,7 +146,9 @@ export function DisbursementWithInternalAccount(
       setAccountOptions([]);
       try {
         const response = await searchAllCardSavingProducts(
-          currentIdentification,
+          formik.values[optionNameForm].identification
+            ? formik.values[optionNameForm].identification
+            : formik.values[optionNameForm].payeeIdentificationNumber,
           businessUnitPublicCode,
           businessManagerCode,
         );
@@ -141,32 +174,22 @@ export function DisbursementWithInternalAccount(
       }
     }
     fetchAccounts();
-  }, [currentIdentification, businessUnitPublicCode, businessManagerCode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIdentification, formik.values[optionNameForm]?.toggle]);
 
-  const previousIdentificationRef = useRef<string>();
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!previousIdentificationRef.current) {
-        previousIdentificationRef.current = currentIdentification;
-        return;
-      }
-      if (previousIdentificationRef.current !== currentIdentification) {
-        formik.setFieldValue(`${optionNameForm}.accountNumber`, "");
-        previousIdentificationRef.current = currentIdentification;
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [currentIdentification, formik, optionNameForm]);
+  const { setFieldValue } = formik;
 
-  const currentAccount = formik.values[optionNameForm]?.accountNumber;
   useEffect(() => {
     if (accountOptions.length === 1) {
-      const onlyOption = accountOptions[0].value;
-      if (currentAccount !== onlyOption) {
-        formik.setFieldValue(`${optionNameForm}.accountNumber`, onlyOption);
+      if (accountOptions[0].value) {
+        formik.setFieldValue(
+          `${optionNameForm}.accountNumber`,
+          accountOptions[0].value,
+        );
       }
     }
-  }, [accountOptions, currentAccount, optionNameForm, formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountOptions, optionNameForm, setFieldValue]);
 
   return (
     <Stack
@@ -182,9 +205,8 @@ export function DisbursementWithInternalAccount(
             name="amount"
             label={disbursementGeneralEnum.labelTurn.i18n[lang]}
             placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
-            size="compact"
             value={validateCurrencyField(
-              "amount",
+              `amount`,
               formik,
               false,
               optionNameForm,
@@ -300,10 +322,12 @@ export function DisbursementWithInternalAccount(
         name={`${optionNameForm}.description`}
         label={disbursemenOptionAccountEnum.observation.i18n[lang]}
         placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
-        value={formik.values[optionNameForm]?.description || ""}
-        onChange={(e) =>
-          formik.setFieldValue(`${optionNameForm}.description`, e.target.value)
-        }
+        onChange={(event) => {
+          const value = event.target.value;
+          if (value.length <= 100) {
+            formik.handleChange(event);
+          }
+        }}
         onBlur={formik.handleBlur}
         fullwidth
       />

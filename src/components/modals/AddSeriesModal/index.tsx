@@ -80,7 +80,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   } = props;
 
   const { businessUnitSigla } = useContext(AppContext);
- 
+
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -105,10 +105,10 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
   const getOptionLabel = (
     options: { id?: string; value?: string; label?: string }[],
-    value: string
+    value: string,
   ) => {
     const option = options?.find(
-      (opt) => opt.id === value || opt.value === value
+      (opt) => opt.id === value || opt.value === value,
     );
     return option?.label || option?.value || value;
   };
@@ -217,12 +217,12 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   };
 
   const handleExtraordinaryInstallment = async (
-    extraordinaryInstallments: IExtraordinaryInstallments
+    extraordinaryInstallments: IExtraordinaryInstallments,
   ) => {
     try {
       await updateExtraordinaryInstallment(
         businessUnitPublicCode,
-        extraordinaryInstallments
+        extraordinaryInstallments,
       );
 
       setSentData?.(extraordinaryInstallments);
@@ -238,8 +238,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         code + (err?.message || "") + (err?.data?.description || "");
 
       setErrorMessage(
-        `${errorMessagesEnum.saveExtraordinaryInstallments.description.i18n[lang]} ${description}`
-      )
+        `${errorMessagesEnum.saveExtraordinaryInstallments.description.i18n[lang]} ${description}`,
+      );
       setErrorModal(true);
     }
   };
@@ -301,7 +301,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
               label={dataAddSeriesModalEnum.labelPaymentMethod.i18n[lang]}
               value={getOptionLabel(
                 paymentMethodOptionsMock,
-                formik.values.paymentChannelAbbreviatedName
+                formik.values.paymentChannelAbbreviatedName,
               )}
               disabled
               size="wide"
@@ -331,7 +331,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             onChange={(e) => {
               handleChangeWithCurrency(
                 { setFieldValue: formik.setFieldValue },
-                e
+                e,
               );
             }}
             value={formik.values.value}
@@ -344,13 +344,15 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             id="installmentAmount"
             label={dataAddSeriesModalEnum.labelValue.i18n[lang]}
             placeholder={dataAddSeriesModalEnum.placeHolderValue.i18n[lang]}
-            iconBefore={<MdOutlineAttachMoney color={inube.palette.green.G400} />}
+            iconBefore={
+              <MdOutlineAttachMoney color={inube.palette.green.G400} />
+            }
             onChange={(e) =>
               handleInstallmentAmountChange("installmentAmount", e.target.value)
             }
             value={
               installmentState?.installmentAmount &&
-                installmentState.installmentAmount > 0
+              installmentState.installmentAmount > 0
                 ? currencyFormat(installmentState.installmentAmount, false)
                 : ""
             }
@@ -365,7 +367,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
               label={dataAddSeriesModalEnum.labelFrequency.i18n[lang]}
               value={getOptionLabel(
                 frequencyOptionsMock,
-                formik.values.frequency
+                formik.values.frequency,
               )}
               disabled
               size="wide"
@@ -392,7 +394,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
               label={dataAddSeriesModalEnum.labelDate.i18n[lang]}
               value={getOptionLabel(
                 paymentDateOptionsMock,
-                formik.values.installmentDate
+                formik.values.installmentDate,
               )}
               disabled
               size="wide"
@@ -415,17 +417,15 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           )}
         </Stack>
       </BaseModal>
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

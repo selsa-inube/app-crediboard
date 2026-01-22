@@ -134,7 +134,7 @@ function AddProductModal(props: IAddProductModalProps) {
           ...prev,
           paymentConfiguration: {
             ...prev.paymentConfiguration,
-            paymentChannelData: response,
+            paymentChannelData: response as [],
           },
         }));
       } catch (error) {

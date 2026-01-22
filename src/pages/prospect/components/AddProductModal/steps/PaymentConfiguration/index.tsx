@@ -4,7 +4,7 @@ import { formatPrimaryDate } from "@utils/formatData/date";
 import { useEnum } from "@hooks/useEnum";
 
 import { PaymentConfigurationUI } from "./interface";
-import { IPaymentConfigurationMain, paymentConfigurationEnum, IResponsePaymentDatesChannel, IRegularCycle } from "../config";
+import { IPaymentConfigurationMain, paymentConfigurationEnum } from "../config";
 
 export function PaymentConfiguration(props: IPaymentConfigurationMain) {
   const { paymentConfig, onChange, onFormValid } = props;
@@ -14,72 +14,71 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
-  const allChannels = useMemo(() => {
-    if (!paymentConfig.paymentChannelData) return [];
 
-    return paymentConfig.paymentChannelData.flatMap((item) => {
-      const itemWithNest = item as IResponsePaymentDatesChannel & {
-        paymentChannels?: IResponsePaymentDatesChannel[];
-      };
-
-      if (
-        Array.isArray(itemWithNest.paymentChannels) &&
-        itemWithNest.paymentChannels.length > 0
-      ) {
-        return itemWithNest.paymentChannels;
-      }
-
-      return item;
-    });
+  const flatChannels = useMemo(() => {
+    return (
+      paymentConfig.paymentChannelData?.flatMap(
+        (item) => item.paymentChannels,
+      ) ?? []
+    );
   }, [paymentConfig.paymentChannelData]);
 
   const paymentMethodOptions = useMemo(() => {
-    return allChannels.map((channel: IResponsePaymentDatesChannel, index: number) => ({
-      id: `${channel.abbreviatedName}-${channel.paymentChannel}-${index}`,
+    const unique = new Map(flatChannels.map((ch) => [ch.abbreviatedName, ch]));
+
+    return Array.from(unique.values()).map((channel, index) => ({
+      id: `${channel.abbreviatedName}-${index}`,
       value: channel.abbreviatedName,
       label: channel.abbreviatedName,
     }));
-  }, [allChannels]);
+  }, [flatChannels]);
 
-  const selectedChannel = useMemo(
-    () =>
-      allChannels.find(
-        (channel: IResponsePaymentDatesChannel) => channel.abbreviatedName === paymentConfig.paymentMethod
-      ),
-    [allChannels, paymentConfig.paymentMethod]
-  );
+  const selectedChannel = useMemo(() => {
+    return flatChannels.find(
+      (channel) => channel.abbreviatedName === paymentConfig.paymentMethod,
+    );
+  }, [flatChannels, paymentConfig.paymentMethod]);
 
   const paymentCycleOptions = useMemo(() => {
-    return (
-      selectedChannel?.regularCycles?.map((cycle: IRegularCycle, index: number) => ({
-        id: `${cycle.cycleName}-${index}`,
-        value: cycle.cycleName,
-        label: cycle.cycleName,
-      })) || []
+    if (!selectedChannel) return [];
+
+    const unique = Array.from(
+      new Map(
+        selectedChannel.regularCycles.map((cycle) => [
+          cycle.cycleName,
+          cycle.cycleName,
+        ]),
+      ).values(),
     );
+
+    return unique.map((period, index) => ({
+      id: `${period}-${index}`,
+      value: period,
+      label: period,
+    }));
   }, [selectedChannel]);
 
-  const selectedCycle = useMemo(
-    () =>
-      selectedChannel?.regularCycles?.find(
-        (cycle: IRegularCycle) => cycle.cycleName === paymentConfig.paymentCycle
-      ),
-    [selectedChannel, paymentConfig.paymentCycle]
-  );
+  const selectedCycle = useMemo(() => {
+    return selectedChannel?.regularCycles.find(
+      (cycle) => cycle.cycleName === paymentConfig.paymentCycle,
+    );
+  }, [selectedChannel, paymentConfig.paymentCycle]);
 
   const firstPaymentDateOptions = useMemo(() => {
-    return (
-      selectedCycle?.detailOfPaymentDate?.map((date: string, index: number) => ({
+    if (!selectedCycle) return [];
+
+    return Array.from(new Set(selectedCycle.detailOfPaymentDate)).map(
+      (date, index) => ({
         id: `${date}-${index}`,
         value: date,
         label: formatPrimaryDate(new Date(date)),
-      })) || []
+      }),
     );
   }, [selectedCycle]);
 
   useEffect(() => {
-    const updates: Partial<typeof paymentConfig> = {};
     let shouldUpdate = false;
+    const updates: Partial<IPaymentConfigurationMain["paymentConfig"]> = {};
 
     if (paymentMethodOptions.length === 1) {
       const singleMethod = paymentMethodOptions[0].value;
@@ -155,14 +154,16 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
   const configUI = {
     paymentMethod: {
       label: paymentConfigurationEnum.paymentMethod.label.i18n[lang],
-      placeholder: paymentConfigurationEnum.paymentMethod.placeholder.i18n[lang],
+      placeholder:
+        paymentConfigurationEnum.paymentMethod.placeholder.i18n[lang],
     },
     paymentCycle: {
       label: paymentConfigurationEnum.paymentCycle.label.i18n[lang],
     },
     firstPaymentDate: {
       label: paymentConfigurationEnum.firstPaymentDate.label.i18n[lang],
-      placeholder: paymentConfigurationEnum.paymentMethod.placeholder.i18n[lang],
+      placeholder:
+        paymentConfigurationEnum.paymentMethod.placeholder.i18n[lang],
     },
   };
 

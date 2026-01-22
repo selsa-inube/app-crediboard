@@ -31,6 +31,9 @@ import { IValidateIncrementRequest } from "@services/prospect/validateIncrement/
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { useEnum } from "@hooks/useEnum";
+import { validateCurrencyFieldTruncate } from "@utils/formatData/currency";
+import { CardGray } from "@components/cards/CardGray";
+import { capitalizeFirstLetter } from "@utils/formatData/text";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -47,6 +50,7 @@ import {
   fieldLabelsEnum,
   fieldPlaceholdersEnum,
   errorMessagesEnum,
+  simulationFormLabels,
 } from "./config";
 
 interface EditProductModalProps {
@@ -119,7 +123,7 @@ function EditProductModal(props: EditProductModalProps) {
     IPaymentMethod[]
   >([]);
   const [paymentCyclesList, setPaymentCyclesList] = useState<IPaymentCycle[]>(
-    []
+    [],
   );
   const [firstPaymentCyclesList, setFirstPaymentCyclesList] = useState<
     IFirstPaymentCycle[]
@@ -132,23 +136,23 @@ function EditProductModal(props: EditProductModalProps) {
     {
       id: "1",
       value: "cuota_integral_fija",
-      label: "Cuota integral fija"
+      label: "Cuota integral fija",
     },
     {
       id: "2",
       value: "abonos_fijos_capital",
-      label: "Abonos fijos a capital"
+      label: "Abonos fijos a capital",
     },
     {
       id: "3",
       value: "Pagos valor de incremento",
-      label: "Pagos valor de incremento"
+      label: "Pagos valor de incremento",
     },
     {
       id: "4",
       value: "Pagos con porcentaje de incremento",
-      label: "Pagos con porcentaje de incremento"
-    }
+      label: "Pagos con porcentaje de incremento",
+    },
   ]);
   const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
     useState(false);
@@ -166,11 +170,15 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await getPaymentMethods(
           businessUnitPublicCode,
           businessManagerCode,
-          initialValues.creditLine
+          clientIdentificationNumber,
         );
 
         if (!response) {
-          throw new Error(editProductModalLabels.validationMessages.genericFetchError.i18n[lang]);
+          throw new Error(
+            editProductModalLabels.validationMessages.genericFetchError.i18n[
+              lang
+            ],
+          );
         }
 
         setPaymentMethodsList(response.paymentMethods);
@@ -179,23 +187,33 @@ function EditProductModal(props: EditProductModalProps) {
           label: paymentCycleMap[cycle.value] || cycle.label,
         }));
         setPaymentCyclesList(mappedPaymentCycles);
+        paymentCyclesList;
 
         const mappedFirstPaymentCycles = response.firstPaymentCycles.map(
           (cycle) => ({
             ...cycle,
             label: paymentCycleMap[cycle.value] || cycle.label,
-          })
+          }),
         );
         setFirstPaymentCyclesList(mappedFirstPaymentCycles);
+        firstPaymentCyclesList;
       } catch (error) {
         setPaymentMethodsList(defaultPaymentOptions);
+        paymentMethodsList;
         setPaymentCyclesList(defaultPaymentOptions);
         setFirstPaymentCyclesList(defaultPaymentOptions);
       }
     };
 
     loadPaymentOptions();
-  }, [businessUnitPublicCode, businessManagerCode, initialValues.creditLine, lang]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    businessUnitPublicCode,
+    businessManagerCode,
+    initialValues.creditLine,
+    lang,
+  ]);
 
   useEffect(() => {
     const loadAmortizationTypes = async () => {
@@ -213,7 +231,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await postBusinessUnitRules(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -262,7 +280,7 @@ function EditProductModal(props: EditProductModalProps) {
         const response = await postBusinessUnitRules(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -304,7 +322,7 @@ function EditProductModal(props: EditProductModalProps) {
     formik: FormikProps<FormikValues>,
     fieldName: string,
     name: string,
-    value: string
+    value: string,
   ) => {
     formik.setFieldValue(name, value);
 
@@ -331,7 +349,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleTextChange = (
     formik: FormikProps<FormikValues>,
     fieldName: string,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     formik.handleChange(event);
 
@@ -375,7 +393,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await postBusinessUnitRules(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -387,10 +405,13 @@ function EditProductModal(props: EditProductModalProps) {
           const { from, to } = decision.value;
 
           if (amount < from || amount > to) {
-            const message = editProductModalLabels.validationMessages.loanAmountRange.i18n[lang]
-              .replace("{amount}", amount.toLocaleString())
-              .replace("{from}", from.toLocaleString())
-              .replace("{to}", to.toLocaleString());
+            const message =
+              editProductModalLabels.validationMessages.loanAmountRange.i18n[
+                lang
+              ]
+                .replace("{amount}", amount.toLocaleString())
+                .replace("{from}", from.toLocaleString())
+                .replace("{to}", to.toLocaleString());
 
             setLoanAmountError(message);
           }
@@ -398,25 +419,32 @@ function EditProductModal(props: EditProductModalProps) {
           const maxAmount = Number(decision.value);
 
           if (!isNaN(maxAmount) && amount > maxAmount) {
-            const message = editProductModalLabels.validationMessages.loanAmountMax.i18n[lang]
-              .replace("{amount}", amount.toLocaleString())
-              .replace("{max}", maxAmount.toLocaleString());
+            const message =
+              editProductModalLabels.validationMessages.loanAmountMax.i18n[lang]
+                .replace("{amount}", amount.toLocaleString())
+                .replace("{max}", maxAmount.toLocaleString());
 
             setLoanAmountError(message);
           }
         }
       } else {
-        setLoanAmountError(editProductModalLabels.validationMessages.genericFetchError.i18n[lang]);
+        setLoanAmountError(
+          editProductModalLabels.validationMessages.genericFetchError.i18n[
+            lang
+          ],
+        );
       }
     } catch (error) {
       console.error("Error validando monto del crédito:", error);
-      setLoanAmountError(editProductModalLabels.validationMessages.genericFetchError.i18n[lang]);
+      setLoanAmountError(
+        editProductModalLabels.validationMessages.genericFetchError.i18n[lang],
+      );
     }
   };
 
   const validateLoanTerm = async (
     term: number,
-    loanAmount: number
+    loanAmount: number,
   ): Promise<void> => {
     try {
       setLoanTermError("");
@@ -435,7 +463,7 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await postBusinessUnitRules(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -459,7 +487,9 @@ function EditProductModal(props: EditProductModalProps) {
           if (rangeParts.length === 2) {
             const [min, max] = rangeParts.map(Number);
             if (!isNaN(min) && !isNaN(max) && (term < min || term > max)) {
-              const message = validationMessagesEnum.loanTermOutOfRange.i18n[lang]
+              const message = validationMessagesEnum.loanTermOutOfRange.i18n[
+                lang
+              ]
                 .replace("{min}", min.toLocaleString())
                 .replace("{max}", max.toLocaleString())
                 .replace("{term}", term.toLocaleString());
@@ -469,11 +499,15 @@ function EditProductModal(props: EditProductModalProps) {
           }
         }
       } else {
-        setLoanTermError(validationMessagesEnum.loanTermValidationFailed.i18n[lang]);
+        setLoanTermError(
+          validationMessagesEnum.loanTermValidationFailed.i18n[lang],
+        );
       }
     } catch (error) {
       console.error("Error validando plazo:", error);
-      setLoanTermError(validationMessagesEnum.loanTermValidationFailed.i18n[lang]);
+      setLoanTermError(
+        validationMessagesEnum.loanTermValidationFailed.i18n[lang],
+      );
     }
   };
 
@@ -485,7 +519,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessUnitPublicCode,
         businessManagerCode,
         initialValues.creditLine,
-        clientIdentificationNumber
+        clientIdentificationNumber,
       );
 
       const periodicInterestRateMin = response?.periodicInterestRateMin || 0;
@@ -501,13 +535,15 @@ function EditProductModal(props: EditProductModalProps) {
       }
     } catch (error) {
       console.error("Error validando tasa de interés:", error);
-      setInterestRateError(validationMessagesEnum.interestRateValidationError.i18n[lang]);
+      setInterestRateError(
+        validationMessagesEnum.interestRateValidationError.i18n[lang],
+      );
     }
   };
 
   const handleCurrencyChange = (
     formik: FormikProps<FormikValues>,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     handleChangeWithCurrency(formik, event);
 
@@ -564,9 +600,12 @@ function EditProductModal(props: EditProductModalProps) {
       const updatedProspect = await updateCreditProduct(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
+      if (!updatedProspect) {
+        throw new Error(errorMessagesEnum.updateCreditProduct.i18n[lang]);
+      }
       const normalizedProspect = {
         ...updatedProspect,
         creditProducts: updatedProspect!.creditProducts?.map((product) => ({
@@ -580,8 +619,16 @@ function EditProductModal(props: EditProductModalProps) {
       setIsUsingServices(false);
       onCloseModal();
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description = code + err?.message + (err?.data?.description || "");
+
       setIsUsingServices(false);
-      setErrorMessage(errorMessagesEnum.updateCreditProduct.i18n[lang]);
+      setErrorMessage(description);
       setErrorModal(true);
     }
   };
@@ -589,7 +636,7 @@ function EditProductModal(props: EditProductModalProps) {
   const handleAmortizationTypeChange = (
     formik: FormikProps<FormikValues>,
     name: string,
-    value: string
+    value: string,
   ) => {
     formik.setFieldValue(name, value);
 
@@ -615,7 +662,7 @@ function EditProductModal(props: EditProductModalProps) {
 
   const validateIncrementValue = async (
     value: string,
-    formik: FormikProps<FormikValues>
+    formik: FormikProps<FormikValues>,
   ): Promise<void> => {
     if (!incrementType || !value) {
       setIncrementError("");
@@ -628,7 +675,10 @@ function EditProductModal(props: EditProductModalProps) {
       const numericValue = Number(value.replace(/[^0-9.]/g, ""));
 
       if (isNaN(numericValue) || numericValue <= 0) {
-        setIncrementError(editProductModalLabels.validationMessages.incrementMustBePositive.i18n[lang]);
+        setIncrementError(
+          editProductModalLabels.validationMessages.incrementMustBePositive
+            .i18n[lang],
+        );
         return;
       }
 
@@ -644,20 +694,26 @@ function EditProductModal(props: EditProductModalProps) {
       const response = await validateIncrement(
         businessUnitPublicCode,
         businessManagerCode,
-        payload
+        payload,
       );
 
       if (!response.isValid) {
         if (incrementType === "value") {
-          const message = editProductModalLabels.validationMessages.incrementValueRange.i18n[lang]
-            .replace("{min}", response.minValue.toLocaleString())
-            .replace("{max}", response.maxValue.toLocaleString());
+          const message =
+            editProductModalLabels.validationMessages.incrementValueRange.i18n[
+              lang
+            ]
+              .replace("{min}", response.minValue.toLocaleString())
+              .replace("{max}", response.maxValue.toLocaleString());
 
           setIncrementError(message);
         } else {
-          const message = editProductModalLabels.validationMessages.incrementPercentageRange.i18n[lang]
-            .replace("{min}", response.minValue.toLocaleString())
-            .replace("{max}", response.maxValue.toLocaleString());
+          const message =
+            editProductModalLabels.validationMessages.incrementPercentageRange.i18n[
+              lang
+            ]
+              .replace("{min}", response.minValue.toLocaleString())
+              .replace("{max}", response.maxValue.toLocaleString());
 
           setIncrementError(message);
         }
@@ -665,10 +721,19 @@ function EditProductModal(props: EditProductModalProps) {
         setIncrementError("");
       }
     } catch (error) {
-      setIncrementError(validationMessagesEnum.incrementValidationError.i18n[lang]);
+      setIncrementError(
+        validationMessagesEnum.incrementValidationError.i18n[lang],
+      );
     } finally {
       setIsValidatingIncrement(false);
     }
+  };
+
+  const handleInstallmentChange = (
+    formik: FormikProps<FormikValues>,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    handleChangeWithCurrency(formik, event);
   };
 
   const validationSchema = Yup.object({
@@ -699,7 +764,7 @@ function EditProductModal(props: EditProductModalProps) {
         validationSchema={validationSchema}
         onSubmit={(
           values: FormikValues,
-          formikHelpers: FormikHelpers<FormikValues>
+          formikHelpers: FormikHelpers<FormikValues>,
         ) => {
           handleConfirm(values);
           formikHelpers.setSubmitting(false);
@@ -753,7 +818,7 @@ function EditProductModal(props: EditProductModalProps) {
                     "creditAmount",
                     formik,
                     false,
-                    ""
+                    "",
                   )}
                   status={loanAmountError ? "invalid" : undefined}
                   message={loanAmountError}
@@ -771,56 +836,19 @@ function EditProductModal(props: EditProductModalProps) {
                   fullwidth
                   disabled={isCreditAmountDisabled()}
                 />
-                <Select
+                <CardGray
                   label={fieldLabelsEnum.paymentMethod.i18n[lang]}
-                  name="paymentMethod"
-                  id="paymentMethod"
-                  size="compact"
-                  placeholder={fieldLabelsEnum.paymentMethod.i18n[lang]}
-                  options={paymentMethodsList}
-                  onBlur={formik.handleBlur}
-                  onChange={(name, value) =>
-                    handleSelectChange(formik, "paymentMethod", name, value)
-                  }
-                  value={
+                  placeHolder={capitalizeFirstLetter(
                     formik.values.paymentMethod.charAt(0).toUpperCase() +
-                    formik.values.paymentMethod.slice(1)
-                  }
-                  fullwidth
-                  disabled={true}
+                      formik.values.paymentMethod.slice(1),
+                  )}
                 />
-                <Select
+                <CardGray
                   label={fieldLabelsEnum.paymentCycle.i18n[lang]}
-                  name="paymentCycle"
-                  id="paymentCycle"
-                  size="compact"
-                  placeholder={fieldLabelsEnum.paymentCycle.i18n[lang]}
-                  options={paymentCyclesList}
-                  onBlur={formik.handleBlur}
-                  onChange={(name, value) =>
-                    handleSelectChange(formik, "paymentCycle", name, value)
-                  }
-                  value={
+                  placeHolder={capitalizeFirstLetter(
                     paymentCycleMap[formik.values.paymentCycle] ||
-                    formik.values.paymentCycle
-                  }
-                  fullwidth
-                  disabled={true}
-                />
-                <Select
-                  label={fieldLabelsEnum.firstPaymentCycle.i18n[lang]}
-                  name="firstPaymentCycle"
-                  id="firstPaymentCycle"
-                  size="compact"
-                  placeholder={fieldLabelsEnum.firstPaymentCycle.i18n[lang]}
-                  options={firstPaymentCyclesList}
-                  onBlur={formik.handleBlur}
-                  onChange={(name, value) =>
-                    handleSelectChange(formik, "firstPaymentCycle", name, value)
-                  }
-                  value={formik.values.firstPaymentCycle}
-                  fullwidth
-                  disabled={true}
+                      formik.values.paymentCycle,
+                  )}
                 />
                 <Select
                   label={fieldLabelsEnum.termInMonths.i18n[lang]}
@@ -916,7 +944,7 @@ function EditProductModal(props: EditProductModalProps) {
                   name="interestRate"
                   id="interestRate"
                   placeholder={fieldPlaceholdersEnum.interestRate.i18n[lang]}
-                  value={formik.values.interestRate}
+                  value={formik.values.interestRate.toFixed(4)}
                   iconAfter={
                     <Icon
                       icon={<MdPercent />}
@@ -940,7 +968,9 @@ function EditProductModal(props: EditProductModalProps) {
                   name="rateType"
                   id="rateType"
                   size="compact"
-                  placeholder={editProductModalLabels.placeholders.selectOption.i18n[lang]}
+                  placeholder={
+                    editProductModalLabels.placeholders.selectOption.i18n[lang]
+                  }
                   options={rateTypesList}
                   onBlur={formik.handleBlur}
                   onChange={(name, value) =>
@@ -950,6 +980,33 @@ function EditProductModal(props: EditProductModalProps) {
                   value={formik.values.rateType}
                   fullwidth
                   disabled={isLoadingRateTypes}
+                />
+                <Textfield
+                  label={simulationFormLabels.installmentAmountLabel.i18n["es"]}
+                  name="installmentAmount"
+                  id="installmentAmount"
+                  placeholder={
+                    simulationFormLabels.installmentAmountPlaceholder.i18n["es"]
+                  }
+                  value={validateCurrencyFieldTruncate(
+                    "installmentAmount",
+                    formik,
+                    false,
+                    "",
+                  )}
+                  iconBefore={
+                    <Icon
+                      icon={<MdAttachMoney />}
+                      appearance="success"
+                      size="18px"
+                      spacing="narrow"
+                    />
+                  }
+                  type="text"
+                  size="compact"
+                  onBlur={formik.handleBlur}
+                  onChange={(event) => handleInstallmentChange(formik, event)}
+                  fullwidth
                 />
               </Stack>
             </ScrollableContainer>
