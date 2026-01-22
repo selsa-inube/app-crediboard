@@ -11,10 +11,10 @@ export const dataConsolidatedCreditEnum = {
     },
   },
   nextDueDate: {
-    code: "DataConsolidatedCredit_nextDueDate",
-    description: "Label for next due date",
+    code: "DataConsolidatedCredit_nextInstallment",
+    description: "Label for Next installment",
     i18n: {
-      en: "Next Due Date",
+      en: "Next installment",
       es: "Próximo vencimiento",
     },
   },
@@ -30,7 +30,7 @@ export const dataConsolidatedCreditEnum = {
     code: "DataConsolidatedCredit_arrears",
     description: "Label for arrears status",
     i18n: {
-      en: "In Arrears",
+      en: "Delinquent",
       es: "En mora",
     },
   },

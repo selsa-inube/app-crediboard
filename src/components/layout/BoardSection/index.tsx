@@ -190,7 +190,7 @@ function BoardSection(props: BoardSectionProps) {
         messagesErrorEnum.changeTracesToReadById.description.i18n[lang],
       );
     }
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, lang]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
