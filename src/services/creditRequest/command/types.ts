@@ -12,8 +12,8 @@ export interface IDeleteCreditRequest {
 }
 
 export interface IMakeDecisionsCreditRequest {
+  concept: string;
   creditRequestId: string;
-  humanDecision: string;
   justification: string;
 }
 

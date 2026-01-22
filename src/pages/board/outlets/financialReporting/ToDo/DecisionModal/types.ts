@@ -9,8 +9,9 @@ interface IMakeDecisionsCreditRequestWithXAction {
 }
 
 interface IMakeDecisionsPayload {
+  concept: string;
   creditRequestId: string;
-  humanDecision: string;
+  humanDecision?: string;
   justification: string;
   nonCompliantDocuments?: string[];
   registerIndividualConcept?: boolean;

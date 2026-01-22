@@ -69,6 +69,7 @@ import { Postingvouchers } from "./Postingvouchers";
 import { IDocumentData, IErrorService, IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
 import { ComercialManagement } from "./CommercialManagement";
+import { IEntries } from "@components/data/TableBoard/types";
 
 interface IListdataProps {
   data: { id: string; name: string }[];
@@ -78,7 +79,7 @@ interface IListdataProps {
 
 const removeErrorByIdServices = (
   errorsList: IErrorService[],
-  errorId: string
+  errorId: string,
 ) => {
   return errorsList.filter((error) => error.id !== errorId);
 };
@@ -90,7 +91,7 @@ export const FinancialReporting = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const [sentData, setSentData] = useState<IExtraordinaryInstallments | null>(
-    null
+    null,
   );
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -111,7 +112,7 @@ export const FinancialReporting = () => {
   });
 
   const [updateManagement, setUpdateManagement] = useState(0);
-
+  const [approvalsEntries, setApprovalsEntries] = useState<IEntries[]>([]);
   const { creditRequestCode } = useParams();
   const { user } = useIAuth();
 
@@ -142,7 +143,7 @@ export const FinancialReporting = () => {
       businessUnitPublicCode,
       businessManagerCode,
       creditRequestCode!,
-      userAccount
+      userAccount,
     )
       .then((data) => {
         setData(data[0]);
@@ -165,7 +166,7 @@ export const FinancialReporting = () => {
         data.creditRequestId,
         user.id,
         businessUnitPublicCode,
-        businessManagerCode
+        businessManagerCode,
       );
 
       const dataToMap = Array.isArray(documents) ? documents : documents.value;
@@ -173,7 +174,7 @@ export const FinancialReporting = () => {
         (dataListDocument: IDocumentData) => ({
           id: dataListDocument.documentId,
           name: dataListDocument.fileName,
-        })
+        }),
       );
       setDocument(documentsUser);
       setAttachDocuments(true);
@@ -190,7 +191,7 @@ export const FinancialReporting = () => {
         const result = await getSearchProspectByCode(
           businessUnitPublicCode,
           businessManagerCode,
-          creditRequestCode
+          creditRequestCode,
         );
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
@@ -218,7 +219,7 @@ export const FinancialReporting = () => {
         dataCommercialManagementRef,
         labelsAndValuesShare.titleOnPdf,
         setErrorModal,
-        true
+        true,
       );
 
       if (pdfBlob) {
@@ -315,7 +316,7 @@ export const FinancialReporting = () => {
         businessUnitPublicCode,
         businessManagerCode,
         "RECHAZAR_SOLICITUD",
-        removalJustification
+        removalJustification,
       );
 
       addFlag({
@@ -344,7 +345,7 @@ export const FinancialReporting = () => {
           data?.creditRequestId ?? "",
           businessUnitPublicCode,
           businessManagerCode,
-          user?.id ?? ""
+          user?.id ?? "",
         );
       } finally {
         handleToggleModal();
@@ -364,7 +365,7 @@ export const FinancialReporting = () => {
         businessManagerCode,
         {
           creditRequestId: data.creditRequestId,
-        }
+        },
       );
 
       if (Array.isArray(unreadErrors)) {
@@ -396,7 +397,7 @@ export const FinancialReporting = () => {
     await deleteCreditRequest(
       businessUnitPublicCode,
       businessManagerCode,
-      creditRequests
+      creditRequests,
     )
       .then(() => {
         addFlag({
@@ -430,6 +431,7 @@ export const FinancialReporting = () => {
     setPdfState({ isGenerating: false, blob: null, showShareModal: false });
   };
 
+  console.log(approvalsEntries);
   return (
     <div ref={dataCommercialManagementRef}>
       <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
@@ -491,6 +493,7 @@ export const FinancialReporting = () => {
                         id={creditRequestCode!}
                         user={user!.nickname!}
                         setIdProspect={setIdProspect}
+                        approvalsEntries={approvalsEntries}
                       />
                     </Stack>
                   </BlockPdfSection>
@@ -503,6 +506,8 @@ export const FinancialReporting = () => {
                         user={creditRequestCode!}
                         isMobile={isMobile}
                         id={creditRequestCode!}
+                        approvalsEntries={approvalsEntries}
+                        setApprovalsEntries={setApprovalsEntries}
                       />
                     </BlockPdfSection>
                   </Stack>

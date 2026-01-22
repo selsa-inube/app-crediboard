@@ -1,5 +1,4 @@
 import { useState, useEffect, ChangeEvent, useContext, useMemo } from "react";
-import { useParams } from "react-router-dom";
 import { MdOutlineInfo } from "react-icons/md";
 import {
   Stack,
@@ -30,6 +29,7 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { BaseModal } from "@components/modals/baseModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
+import { IEntries } from "@components/data/TableBoard/types";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -52,12 +52,11 @@ interface ToDoProps {
   user: string;
   id: string;
   setIdProspect: (idProspect: string) => void;
+  approvalsEntries: IEntries[];
 }
 
 function ToDo(props: ToDoProps) {
-  const { icon, button, isMobile, id, setIdProspect } = props;
-
-  const { approverid } = useParams();
+  const { icon, button, isMobile, id, setIdProspect, approvalsEntries } = props;
   const { lang } = useEnums();
 
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
@@ -154,6 +153,33 @@ function ToDo(props: ToDoProps) {
     businessManagerCode,
     setIdProspect,
   ]);
+
+  // NUEVO: Cargar aprobadores
+  // useEffect(() => {
+  //   const fetchApprovalsData = async () => {
+  //     if (!requests?.creditRequestId) return;
+
+  //     try {
+  //       const data: IApprovals = await getApprovalsById(
+  //         businessUnitPublicCode,
+  //         businessManagerCode,
+  //         requests.creditRequestId,
+  //       );
+
+  //       if (data && Array.isArray(data) && data.length > 0) {
+  //         const entries: IEntries[] = entriesApprovals(data).map((entry) => ({
+  //           ...entry,
+  //           error: entry.concept === "Pendiente",
+  //         }));
+  //         setApprovalsEntries(entries);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching approvals:", error);
+  //     }
+  //   };
+
+  //   fetchApprovalsData();
+  // }, [businessUnitPublicCode, requests?.creditRequestId, businessManagerCode]);
 
   useEffect(() => {
     const fetchDecisions = async () => {
@@ -273,23 +299,37 @@ function ToDo(props: ToDoProps) {
     setIsModalOpen(false);
   };
 
-  const validationId = () => {
-    if (approverid === eventData.user.staff.staffId) {
-      return true;
-    } else {
+  // MODIFICADO: Nueva validación completa
+  const validationIsApprover = () => {
+    // PASO 1: Verificar que estamos en etapa de Verificación de Aprobación
+    if (requests?.stage !== "VERIFICACION_APROBACION") {
       return false;
     }
-  };
 
+    // PASO 2: Verificar que el usuario logueado esté en la tabla de aprobadores
+    const currentUserId = eventData?.user?.identificationDocumentNumber;
+    console.log(currentUserId);
+    const isUserInApprovals = approvalsEntries.some(
+      (approval) => approval.identificationNumber === currentUserId,
+    );
+
+    // Si está en aprobadores Y estamos en VERIFICACION_APROBACION,
+    // automáticamente se cumple que es un aprobador válido
+    return isUserInApprovals;
+  };
+  console.log(approvalsEntries);
+
+  // MODIFICADO: Usar validationIsApprover en lugar de validationId
   const data = {
     makeDecision: {
+      concept: selectedDecision?.code || "", // MODIFICADO: Ahora es dinámico
       creditRequestId: requests?.creditRequestId || "",
       humanDecision: selectedDecision?.code || "",
       justification: "",
     },
     businessUnit: businessUnitPublicCode,
     user: eventData.user.identificationDocumentNumber || "",
-    xAction: getXAction(selectedDecision?.code || "", validationId()),
+    xAction: getXAction(selectedDecision?.code || "", validationIsApprover()), // MODIFICADO: Nueva validación
     humanDecisionDescription: selectedDecision?.label || "",
   };
 
@@ -337,10 +377,25 @@ function ToDo(props: ToDoProps) {
       setSelectedDecision(taskDecisions[0]);
     }
   }, [hasSingleDecision, taskDecisions, decisionValue.decision]);
+
   const getToDoDescriptionTitle = (): string => {
     if (requests?.stage === "VERIFICACION_APROBACION") {
-      return eventData?.user?.userAccount || "";
+      // Verificar si el usuario logueado ES un aprobador
+      const currentUserId = eventData?.user?.identificationDocumentNumber;
+
+      const isUserApprover = approvalsEntries.some(
+        (approval) => approval.identificationNumber === currentUserId, // o el campo correcto
+      );
+
+      // SOLO mostrar el usuario logueado si ES un aprobador
+      if (isUserApprover) {
+        return eventData?.user?.userAccount || "";
+      }
+
+      // Si NO es aprobador, mostrar el analista o comercial (NO el usuario logueado)
+      return assignedStaff.analyst || assignedStaff.commercialManager || "";
     }
+
     if (taskRole === "CredicarAccountManager") {
       return assignedStaff.commercialManager;
     } else {

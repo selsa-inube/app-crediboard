@@ -86,7 +86,7 @@ export function DecisionModal(props: DecisionModalProps) {
     }
 
     selectedOptions = selectedOptions.map(
-      (option) => parseInt(`${option}`) - 1
+      (option) => parseInt(`${option}`) - 1,
     );
 
     return realNamesEnumNonCompliantDocuments(selectedOptions) as string[];
@@ -104,9 +104,9 @@ export function DecisionModal(props: DecisionModalProps) {
   const sendData = async (formValues: FormValues) => {
     try {
       const makeDecisionsPayload: IMakeDecisionsPayload = {
+        concept: data.makeDecision.concept,
         creditRequestId: data.makeDecision.creditRequestId,
-        humanDecision: data.makeDecision.humanDecision,
-        justification: formValues.textarea,
+        justification: formValues.textarea || "",
       };
 
       if (
@@ -126,7 +126,7 @@ export function DecisionModal(props: DecisionModalProps) {
         businessManagerCode,
         data.user,
         makeDecisionsPayload,
-        data.xAction
+        data.xAction,
       );
 
       if (response?.statusServices === 200) {
@@ -148,6 +148,7 @@ export function DecisionModal(props: DecisionModalProps) {
       onCloseModal?.();
     }
   };
+
   const initialValues: FormValues = {
     textarea: "",
     selectedOptions: "",
@@ -160,7 +161,7 @@ export function DecisionModal(props: DecisionModalProps) {
         validationSchema={validationSchema}
         onSubmit={(
           values: FormValues,
-          { setSubmitting }: FormikHelpers<FormValues>
+          { setSubmitting }: FormikHelpers<FormValues>,
         ) => {
           onSubmit?.(values);
           setSubmitting(false);
@@ -176,7 +177,7 @@ export function DecisionModal(props: DecisionModalProps) {
             handleBack={onSecondaryButtonClick}
             handleClose={onCloseModal}
             disabledNext={
-              data.makeDecision.humanDecision && values.textarea ? false : true
+              data.makeDecision.concept && values.textarea ? false : true
             }
             width={isMobile ? "290px" : "500px"}
           >
@@ -204,7 +205,7 @@ export function DecisionModal(props: DecisionModalProps) {
                   </Text>
                 </Stack>
               </StyledContainerTextField>
-              {data.makeDecision.humanDecision === "SOPORTES_INVALIDOS" && (
+              {data.makeDecision.concept === "SOPORTES_INVALIDOS" && (
                 <Stack margin="0 0 20px 0">
                   <Field name="selectedOptions">
                     {({ field, form }: FieldProps) => (
