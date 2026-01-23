@@ -13,13 +13,13 @@ import { AppContext } from "@context/AppContext";
 import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ErrorPage } from "@components/layout/ErrorPage";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataInformationModal, getBoardColumns } from "./config/board";
+import { dataInformationModalEnum, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
-import { selectCheckOptions } from "./config/select";
+import { selectCheckOptionsEnum } from "./config/select";
 import { IBoardData } from "./types";
-import { errorMessages } from "./config";
-
+import { errorMessagesEnum } from "./config";
 
 export interface IFilterFormValues {
   assignment: string;
@@ -27,6 +27,14 @@ export interface IFilterFormValues {
 }
 
 function BoardLayout() {
+  const { lang } = useEnum();
+  const selectCheckOptions = selectCheckOptionsEnum.map((option) => ({
+    id: option.id,
+    label: option.i18n[lang],
+    value: option.value,
+    checked: option.checked,
+  }));
+
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { businessUnitSigla, eventData, setEventData } = useContext(AppContext);
@@ -47,7 +55,7 @@ function BoardLayout() {
   const [errorModal, setErrorModal] = useState(false);
   const [hasServerError, setHasServerError] = useState(false);
   const useDebounceSearch = Boolean(
-    eventData?.user?.identificationDocumentNumber
+    eventData?.user?.identificationDocumentNumber,
   );
   const searchAbortControllerRef = useRef<AbortController | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -88,7 +96,7 @@ function BoardLayout() {
     businessManagerCode: string,
     page: number,
     searchParam?: { filter?: string; text?: string },
-    append: boolean = false
+    append: boolean = false,
   ) => {
     if (!userAccount) {
       return;
@@ -102,12 +110,12 @@ function BoardLayout() {
             businessManagerCode,
             page,
             userAccount,
-            searchParam
+            searchParam,
           ),
           page === 1
             ? getCreditRequestPinned(
                 businessUnitPublicCode,
-                businessManagerCode
+                businessManagerCode,
               )
             : Promise.resolve([]),
         ]);
@@ -131,7 +139,7 @@ function BoardLayout() {
       } else if (boardRequestsResult.status === "rejected") {
         console.error(
           "Error al obtener solicitudes:",
-          boardRequestsResult.reason
+          boardRequestsResult.reason,
         );
         setHasServerError(true);
         return;
@@ -145,7 +153,7 @@ function BoardLayout() {
       } else if (requestsPinnedResult.status === "rejected" && page === 1) {
         console.error(
           "Error al obtener anclados:",
-          requestsPinnedResult.reason
+          requestsPinnedResult.reason,
         );
         setErrorLoadingPins(true);
       }
@@ -160,7 +168,7 @@ function BoardLayout() {
 
     try {
       const response = await getPositionsAuthorizedToRemoveAnchorsPlacedByOther(
-        businessUnitPublicCode
+        businessUnitPublicCode,
       );
 
       if (response?.positionsAuthorized) {
@@ -168,9 +176,9 @@ function BoardLayout() {
       }
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(errorMessages.changeAnchorToCreditRequest.description);
+      setMessageError(errorMessagesEnum.changeAnchorToCreditRequest.i18n[lang]);
     }
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, lang]);
 
   useEffect(() => {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 1)
@@ -205,7 +213,7 @@ function BoardLayout() {
       businessManagerCode,
       nextPage,
       searchParam,
-      true
+      true,
     );
   };
 
@@ -243,7 +251,7 @@ function BoardLayout() {
     setCurrentPage(1);
 
     const hasCompletedFilter = activeFilteredValues.some(
-      (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+      (filter) => filter.value === "completedLessThan30DaysAgo=Y",
     );
 
     if (hasCompletedFilter) {
@@ -299,12 +307,12 @@ function BoardLayout() {
 
       if (newFilters.boardOrientation === "vertical") {
         const hasCompletedFilter = activeOptions.some(
-          (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+          (filter) => filter.value === "completedLessThan30DaysAgo=Y",
         );
 
         if (hasCompletedFilter) {
           const updatedActiveOptions = activeOptions.filter(
-            (option) => option.value !== "completedLessThan30DaysAgo=Y"
+            (option) => option.value !== "completedLessThan30DaysAgo=Y",
           );
 
           setActiveOptions(updatedActiveOptions);
@@ -353,7 +361,7 @@ function BoardLayout() {
   const handlePinRequest = async (
     creditRequestId: string | undefined,
     userWhoPinnnedId: string,
-    isPinned: string
+    isPinned: string,
   ) => {
     try {
       const isOwner = userWhoPinnnedId === staffId;
@@ -366,7 +374,7 @@ function BoardLayout() {
           requestsPinned: prevState.requestsPinned.map((card) =>
             card.creditRequestId === creditRequestId
               ? { ...card, isPinned }
-              : card
+              : card,
           ),
         }));
 
@@ -375,7 +383,7 @@ function BoardLayout() {
           businessManagerCode,
           eventData.user.identificationDocumentNumber || "",
           creditRequestId,
-          isPinned
+          isPinned,
         );
         await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
         setCurrentPage(1);
@@ -395,7 +403,7 @@ function BoardLayout() {
 
   const handleClearFilters = async (keepSearchValue = false) => {
     const hasCompletedFilter = activeOptions.some(
-      (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+      (filter) => filter.value === "completedLessThan30DaysAgo=Y",
     );
 
     setFilterValues({ assignment: "", status: "" });
@@ -434,14 +442,14 @@ function BoardLayout() {
 
   const handleRemoveFilter = async (filterIdToRemove: string) => {
     const updatedActiveOptions = activeOptions.filter(
-      (option) => option.id !== filterIdToRemove
+      (option) => option.id !== filterIdToRemove,
     );
 
     setActiveOptions(updatedActiveOptions);
     setCurrentPage(1);
 
     const removedFilter = activeOptions.find(
-      (option) => option.id === filterIdToRemove
+      (option) => option.id === filterIdToRemove,
     );
     const isRemovingCompletedFilter =
       removedFilter?.value === "completedLessThan30DaysAgo=Y";
@@ -466,7 +474,7 @@ function BoardLayout() {
           .split(",")
           .filter((id) => id.trim() !== "");
         const updatedAssignmentIds = assignmentIds.filter(
-          (id) => id !== filterIdToRemove
+          (id) => id !== filterIdToRemove,
         );
         newValues.assignment = updatedAssignmentIds.join(",");
       }
@@ -475,7 +483,7 @@ function BoardLayout() {
           .split(",")
           .filter((id) => id.trim() !== "");
         const updatedStatusIds = statusIds.filter(
-          (id) => id !== filterIdToRemove
+          (id) => id !== filterIdToRemove,
         );
         newValues.status = updatedStatusIds.join(",");
       }
@@ -503,7 +511,7 @@ function BoardLayout() {
   };
 
   const handleSearchRequestsValue = async (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const value = e.target.value;
     handleFiltersChange({ searchRequestValue: value });
@@ -563,14 +571,14 @@ function BoardLayout() {
                 businessManagerCode,
                 1,
                 userAccount,
-                { text: trimmedValue }
+                { text: trimmedValue },
               ),
               getCreditRequestInProgress(
                 businessUnitPublicCode,
                 businessManagerCode,
                 1,
                 userAccount,
-                { filter: currentFilters }
+                { filter: currentFilters },
               ),
             ]);
 
@@ -581,8 +589,8 @@ function BoardLayout() {
             const intersection = searchResults.filter((searchItem) =>
               filteredResults.some(
                 (filterItem) =>
-                  filterItem.creditRequestId === searchItem.creditRequestId
-              )
+                  filterItem.creditRequestId === searchItem.creditRequestId,
+              ),
             );
 
             setBoardData((prev) => ({
@@ -595,7 +603,7 @@ function BoardLayout() {
               businessManagerCode,
               1,
               userAccount,
-              { text: trimmedValue }
+              { text: trimmedValue },
             );
 
             if (abortController.signal.aborted) {
@@ -632,22 +640,22 @@ function BoardLayout() {
             businessManagerCode,
             1,
             userAccount,
-            { text: trimmedValue }
+            { text: trimmedValue },
           ),
           getCreditRequestInProgress(
             businessUnitPublicCode,
             businessManagerCode,
             1,
             userAccount,
-            { filter: currentFilters }
+            { filter: currentFilters },
           ),
         ]);
 
         const intersection = searchResults.filter((searchItem) =>
           filteredResults.some(
             (filterItem) =>
-              filterItem.creditRequestId === searchItem.creditRequestId
-          )
+              filterItem.creditRequestId === searchItem.creditRequestId,
+          ),
         );
 
         setBoardData((prev) => ({
@@ -693,7 +701,7 @@ function BoardLayout() {
       .map((r) => r.creditRequestId);
 
     return boardRequests.filter((request) =>
-      pinnedIds.includes(request.creditRequestId as string)
+      pinnedIds.includes(request.creditRequestId as string),
     );
   }
 
@@ -752,8 +760,8 @@ function BoardLayout() {
       />
       {isOpenModal && (
         <BaseModal
-          title={dataInformationModal.tilte}
-          nextButton={dataInformationModal.button}
+          title={dataInformationModalEnum.tilte.i18n[lang]}
+          nextButton={dataInformationModalEnum.button.i18n[lang]}
           handleNext={() => setIsOpenModal(false)}
           handleClose={() => setIsOpenModal(false)}
           width={isMobile ? "290px" : "403px"}
@@ -761,7 +769,7 @@ function BoardLayout() {
           <Stack direction="column" alignItems="center" gap="16px">
             <Icon icon={<MdInfoOutline />} size="68px" appearance="primary" />
             <Text type="body" size="medium" appearance="gray">
-              {dataInformationModal.description}
+              {dataInformationModalEnum.description.i18n[lang]}
             </Text>
           </Stack>
         </BaseModal>
@@ -769,7 +777,10 @@ function BoardLayout() {
       {errorModal && (
         <ErrorModal
           isMobile={isMobile}
-          message={errorMessages.changeAnchorToCreditRequest.description}
+          message={
+            errorMessagesEnum.changeAnchorToCreditRequest.i18n[lang]
+            /* errorMessages.changeAnchorToCreditRequest.description */
+          }
           handleClose={() => {
             setErrorModal(false);
           }}

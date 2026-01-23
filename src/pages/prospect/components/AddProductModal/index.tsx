@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import * as Yup from "yup";
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { getLinesOfCreditByMoneyDestination } from "@services/prospect/getLinesOfCreditByMoneyDestination";
 import { GetSearchAllPaymentChannels } from "@services/prospect/searchAllPaymentChannelsByIdentificationNumber/SearchAllPaymentChannelsByIdentificationNumber";
+import { useEnum } from "@hooks/useEnum";
 
 import { ILinesOfCreditByMoneyDestination } from "./types";
 import { AddProductModalUI } from "./interface";
@@ -11,9 +12,11 @@ import {
   IAddProductModalProps,
   TCreditLineTerms,
   IFormValues,
-  stepsAddProduct,
-  errorMessages,
+  stepsAddProductEnum,
+  errorMessagesEnum,
   extractBorrowerIncomeData,
+  titleButtonTextAssistedEnum,
+  StepDetails
 } from "./config";
 
 function AddProductModal(props: IAddProductModalProps) {
@@ -34,13 +37,12 @@ function AddProductModal(props: IAddProductModalProps) {
     isSendingData
   } = props;
 
-
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [creditLineTerms, setCreditLineTerms] = useState<TCreditLineTerms>({});
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(
-    stepsAddProduct.creditLineSelection.id,
+    stepsAddProductEnum.creditLineSelection.id,
   );
   const [isCurrentFormValid, setIsCurrentFormValid] = useState(false);
   const [formData, setFormData] = useState<IFormValues>({
@@ -59,9 +61,11 @@ function AddProductModal(props: IAddProductModalProps) {
     selectedProducts: [],
   });
 
+  const { lang } = useEnum();
+
   useEffect(() => {
-      (async () => {
-        try{
+    (async () => {
+      try {
         setLoading(true);
         const lineOfCreditValues = await getLinesOfCreditByMoneyDestination(
           businessUnitPublicCode,
@@ -91,15 +95,16 @@ function AddProductModal(props: IAddProductModalProps) {
         setLoading(false);
         setCreditLineTerms(result);
       } catch (error) {
-        setErrorMessage(errorMessages.linesOfCredit);
+        setErrorMessage(errorMessagesEnum.linesOfCredit.i18n[lang]);
         setErrorModal(true);
         setLoading(false);
       }
-      })();
-  },[businessUnitPublicCode, moneyDestination, identificationDocumentNumber, businessManagerCode]);
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, moneyDestination, identificationDocumentNumber, businessManagerCode]);
 
   useEffect(() => {
-    if (currentStep !== stepsAddProduct.paymentConfiguration.id) return;
+    if (currentStep !== stepsAddProductEnum.paymentConfiguration.id) return;
     const loadPaymentOptions = async () => {
       if (!formData.creditLine) return;
 
@@ -122,7 +127,7 @@ function AddProductModal(props: IAddProductModalProps) {
         );
 
         if (!response || response.length === 0) {
-          throw new Error(errorMessages.getPaymentMethods);
+          throw new Error(errorMessagesEnum.getPaymentMethods.i18n[lang]);
         }
         setLoading(false);
         setFormData((prev) => ({
@@ -133,22 +138,22 @@ function AddProductModal(props: IAddProductModalProps) {
           },
         }));
       } catch (error) {
-        setErrorMessage(errorMessages.getPaymentMethods);
+        setErrorMessage(errorMessagesEnum.getPaymentMethods.i18n[lang]);
         setErrorModal(true);
         setLoading(false);
       }
     };
 
     loadPaymentOptions();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
 
   useEffect(() => {
     const validateCurrentStep = () => {
-      if (currentStep === stepsAddProduct.creditLineSelection.id) {
+      if (currentStep === stepsAddProductEnum.creditLineSelection.id) {
         const isValid = formData.selectedProducts.length > 0;
         setIsCurrentFormValid(isValid);
-      } else if (currentStep === stepsAddProduct.paymentConfiguration.id) {
+      } else if (currentStep === stepsAddProductEnum.paymentConfiguration.id) {
         const isValid =
           Boolean(formData.paymentConfiguration.paymentMethod) &&
           Boolean(formData.paymentConfiguration.paymentCycle) &&
@@ -162,30 +167,26 @@ function AddProductModal(props: IAddProductModalProps) {
 
   const isMobile = useMediaQuery("(max-width: 550px)");
 
-  const steps = Object.values(stepsAddProduct);
+  const steps = Object.values(stepsAddProductEnum);
 
-  const currentStepsNumber = steps.find(
-    (step: { number: number }) => step.number === currentStep,
-  ) || { id: 0, number: 0, name: "", description: "" };
-
-  const handleNextStep = () => {
-    if (currentStep === stepsAddProduct.creditLineSelection.id) {
-      setCurrentStep(stepsAddProduct.paymentConfiguration.id);
+  const handleNextStep = useCallback(() => {
+    if (currentStep === stepsAddProductEnum.creditLineSelection.id) {
+      setCurrentStep(stepsAddProductEnum.paymentConfiguration.id);
     } else if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
-  };
+  }, [currentStep, steps.length]);
 
-  const handlePreviousStep = () => {
+  const handlePreviousStep = useCallback(() => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
     setIsCurrentFormValid(true);
-  };
+  }, [currentStep]);
 
-  const handleSubmitClick = () => {
+  const handleSubmitClick = useCallback(() => {
     onConfirm(formData);
-  };
+  }, [onConfirm, formData]);
 
   const handleFormChange = (updatedValues: Partial<IFormValues>) => {
     setFormData((prev) => ({
@@ -209,6 +210,47 @@ function AddProductModal(props: IAddProductModalProps) {
       .required(),
   });
 
+  const assistedControls = useMemo(() => ({
+    goBackText: titleButtonTextAssistedEnum.goBackText.i18n[lang],
+    goNextText: titleButtonTextAssistedEnum.goNextText.i18n[lang],
+    submitText: titleButtonTextAssistedEnum.submitText.i18n[lang],
+  }), [lang]);
+
+  const stepsMap: StepDetails[] = useMemo(() => [
+    {
+      ...stepsAddProductEnum.creditLineSelection,
+      name: stepsAddProductEnum.creditLineSelection.i18n[lang],
+    },
+    {
+      ...stepsAddProductEnum.paymentConfiguration,
+      name: stepsAddProductEnum.paymentConfiguration.i18n[lang],
+    },
+    {
+      ...stepsAddProductEnum.termSelection,
+      name: stepsAddProductEnum.termSelection.i18n[lang],
+    },
+    {
+      ...stepsAddProductEnum.amountCapture,
+      name: stepsAddProductEnum.amountCapture.i18n[lang],
+    },
+    {
+      ...stepsAddProductEnum.verification,
+      name: stepsAddProductEnum.verification.i18n[lang],
+    },
+  ], [lang]);
+
+  const stepsList: StepDetails[] = useMemo(() =>
+    Object.values(stepsAddProductEnum).map((step) => ({
+      id: step.id,
+      number: step.number,
+      name: step.i18n[lang],
+      description: step.description,
+    })),
+    [lang]);
+
+
+  const currentStepsNumberReference = stepsList[currentStep - 1];
+
   return (
     <AddProductModalUI
       title={title}
@@ -221,9 +263,9 @@ function AddProductModal(props: IAddProductModalProps) {
       iconAfter={iconAfter}
       creditLineTerms={creditLineTerms}
       isMobile={isMobile}
-      steps={steps}
+      steps={stepsMap}
       currentStep={currentStep}
-      currentStepsNumber={currentStepsNumber}
+      currentStepsNumber={currentStepsNumberReference}
       isCurrentFormValid={isCurrentFormValid}
       formData={formData}
       setIsCurrentFormValid={setIsCurrentFormValid}
@@ -243,6 +285,8 @@ function AddProductModal(props: IAddProductModalProps) {
       errorModal={errorModal}
       setCurrentStep={setCurrentStep}
       isSendingData={isSendingData}
+      lang={lang}
+      assistedControls={assistedControls}
     />
   );
 }

@@ -6,58 +6,149 @@ import {
   RateType,
 } from "@services/enum/icorebanking-vi-crediboard/schedule";
 
-export const modalTexts = {
+export const editProductModalLabels = {
   titles: {
-    editProduct: "Editar producto",
+    editProduct: {
+      code: "Modal_title_editProduct",
+      description: "Title for the edit product modal",
+      i18n: { en: "Edit product", es: "Editar producto" },
+    },
   },
   buttons: {
-    cancel: "Cancelar",
-    confirm: "Confirmar",
+    cancel: {
+      code: "Button_cancel",
+      description: "Label for cancel button",
+      i18n: { en: "Cancel", es: "Cancelar" },
+    },
+    confirm: {
+      code: "Button_confirm",
+      description: "Label for confirm button",
+      i18n: { en: "Confirm", es: "Confirmar" },
+    },
   },
   placeholders: {
-    creditAmount: "Monto solicitado",
-    interestRate: "Ej: 0.9",
-    selectOption: "Selecciona una opción",
-    noPaymentOptions: "No hay opciones de pago disponibles",
+    selectOption: {
+      code: "Placeholder_selectOption",
+      description: "Common placeholder for select inputs",
+      i18n: { en: "Select an option", es: "Selecciona una opción" },
+    },
+    noPaymentOptions: {
+      code: "Placeholder_noPaymentOptions",
+      description: "Message when no payment options are available",
+      i18n: {
+        en: "No payment options available",
+        es: "No hay opciones de pago disponibles",
+      },
+    },
   },
-  labels: {
-    creditAmount: "Monto del crédito",
-    paymentMethod: "Medio de pago",
-    paymentCycle: "Ciclo de pagos",
-    firstPaymentCycle: "Primer ciclo de pago",
-    termInMonths: "Plazo en meses",
-    amortizationType: "Tipo de amortización",
-    interestRate: "Tasa de interés",
-    rateType: "Tipo de tasa",
+  paymentCycleMap: {
+    Weekly: { en: "Weekly", es: "Semanal" },
+    TenDayIntervals: { en: "Every 10 days", es: "Cada 10 días" },
+    Biweekly: { en: "Biweekly", es: "Bisemanal" },
+    Semimonthly: { en: "Semimonthly", es: "Quincenal" },
+    Monthly: { en: "Monthly", es: "Mensual" },
   },
-  messages: {
-    errors: {
-      loanAmountRange: (amount: number, from: number, to: number) => 
-        `El monto ingresado es $${amount.toLocaleString()}. Debe estar entre $${from.toLocaleString()} y $${to.toLocaleString()}`,
-      loanAmountMax: (amount: number, maxAmount: number) =>
-        `El monto ingresado es $${amount.toLocaleString()}. El máximo permitido es $${maxAmount.toLocaleString()}`,
-      loanAmountValidation: "No se pudo validar el monto del crédito",
-      loanAmountGeneric: "Error al validar el monto del crédito",
-      
-      loanTermRange: (term: number, from: number, to: number) =>
-        `El plazo ingresado es ${term} meses. Debe estar entre ${from} y ${to} meses`,
-      loanTermValidation: "No se pudo validar el plazo",
-      loanTermGeneric: "Error al validar el plazo",
-      
-      interestRateRange: (rate: number, min: number, max: number) =>
-        `La tasa ingresada es ${rate}% mensual. Debe estar entre ${min.toFixed(2)}% y ${max.toFixed(2)}% mensual`,
-      interestRateValidation: "Error al validar la tasa de interés",
-      
-      loadPaymentOptions: "Error al cargar las opciones de pago",
-      validateLoanAmount: "Error al validar el monto del crédito",
-      validateLoanTermBusiness: "El plazo no cumple con las reglas de negocio",
-      validateLoanTermRange: "El plazo debe estar dentro del rango permitido",
-      validateLoanTermOther: "Error al validar el plazo",
-      validateInterestRateBusiness: "La tasa no cumple con las reglas de negocio",
-      validateInterestRateRange: "La tasa debe estar dentro del rango permitido",
-      validateInterestRateOther: "Error al validar la tasa de interés",
-    }
-  }
+  interestRateTypeMap: {
+    VariableInterestRate: { en: "Variable rate", es: "Tasa variable" },
+    FixedInterestRate: { en: "Fixed rate", es: "Tasa fija" },
+  },
+  repaymentStructureMap: {
+    FixedInstallment: {
+      en: "Fixed integral installment",
+      es: "Cuota integral fija",
+    },
+    ConstantAmortization: {
+      en: "Fixed capital payments",
+      es: "Abonos fijos a capital",
+    },
+    GeometricGradientRepayment: {
+      en: "Geometric gradient",
+      es: "Gradiente geométrico",
+    },
+    ArithmeticGradientRepayment: {
+      en: "Arithmetic gradient",
+      es: "Gradiente aritmético",
+    },
+    ValueIncrement: {
+      en: "Increment value payments",
+      es: "Pagos valor de incremento",
+    },
+    PercentageIncrement: {
+      en: "Increment percentage payments",
+      es: "Pagos con porcentaje de incremento",
+    },
+  },
+  validationMessages: {
+    incrementRequired: {
+      code: "Validation_incrementRequired",
+      description: "Error when increment field is empty",
+      i18n: {
+        en: "Increment value is required",
+        es: "El valor de incremento es requerido",
+      },
+    },
+    incrementMustBePositive: {
+      code: "Validation_incrementPositive",
+      description: "Error when value is 0 or negative",
+      i18n: {
+        en: "Value must be greater than 0",
+        es: "El valor debe ser mayor a 0",
+      },
+    },
+    incrementValidating: {
+      code: "Validation_incrementPending",
+      description: "Status while validating increment",
+      i18n: { en: "Validating...", es: "Validando..." },
+    },
+    incrementValueRange: {
+      code: "Validation_incrementValueRange",
+      description: "Error for out of range currency increment",
+      i18n: {
+        en: "Value must be between ${min} and ${max}",
+        es: "El valor debe estar entre ${min} y ${max}",
+      },
+    },
+    incrementPercentageRange: {
+      code: "Validation_incrementPercentageRange",
+      description: "Error for out of range percentage increment",
+      i18n: {
+        en: "Percentage must be between {min}% and {max}%",
+        es: "El porcentaje debe estar entre {min}% y {max}%",
+      },
+    },
+    loanAmountRange: {
+      code: "Validation_loanAmountRange",
+      description: "Error for loan amount out of business rules range",
+      i18n: {
+        en: "The entered amount is {amount}. It must be between {from} and {to}",
+        es: "El monto ingresado es {amount}. Debe estar entre {from} y {to}",
+      },
+    },
+    loanAmountMax: {
+      code: "Validation_loanAmountMax",
+      description: "Error when loan exceeds maximum",
+      i18n: {
+        en: "The entered amount is {amount}. Maximum allowed is {max}",
+        es: "El monto ingresado es {amount}. El máximo permitido es {max}",
+      },
+    },
+    interestRateRange: {
+      code: "Validation_interestRateRange",
+      description: "Error for interest rate out of range",
+      i18n: {
+        en: "Rate is {rate}% monthly. Must be between {min}% and {max}%",
+        es: "La tasa ingresada es {rate}% mensual. Debe estar entre {min}% y {max}%",
+      },
+    },
+    genericFetchError: {
+      code: "Error_loadPaymentOptions",
+      description: "Error when service fails to load payment methods",
+      i18n: {
+        en: "Error loading payment options",
+        es: "Error al cargar las opciones de pago",
+      },
+    },
+  },
 };
 
 const creditLineOptions = [
@@ -216,41 +307,31 @@ const rateTypeOptions = [
 ];
 
 export const paymentCycleMap: Record<string, string> = {
-  "Weekly": "Cada 10 días",
-  "Biweekly": "Bisemanal",
-  "Semimonthly": "Quincenal",
-  "Monthly": "Mensual",
+  Weekly: "Cada 10 días",
+  Biweekly: "Bisemanal",
+  Semimonthly: "Quincenal",
+  Monthly: "Mensual",
 };
 
 export const interestRateTypeMap: Record<string, string> = {
-  "VariableInterestRate": "Tasa variable",
-  "FixedInterestRate": "Tasa fija",
+  VariableInterestRate: "Tasa variable",
+  FixedInterestRate: "Tasa fija",
 };
 
 export const VALIDATED_NUMBER_REGEX = /[^0-9]/g;
-export const messagesErrorValidations = {
-  loadPaymentOptions: "Error al cargar las opciones de pago",
-  validateLoanAmount: "Error al validar el monto del crédito",
-  validateLoanTermBusiness: "El plazo no cumple con las reglas de negocio",
-  validateLoanTermRange: "El plazo debe estar dentro del rango permitido",
-  validateLoanTermOther: "Error al validar el plazo",
-  validateInterestRateBusiness: "La tasa no cumple con las reglas de negocio",
-  validateInterestRateRange: "La tasa debe estar dentro del rango permitido",
-  validateInterestRateOther: "Error al validar la tasa de interés",
-};
 
 export const repaymentStructureMap: Record<string, string> = {
-  "FixedInstallment": "Cuota integral fija",
-  "ConstantAmortization": "Abonos fijos a capital",
-  "GeometricGradientRepayment": "Gradiente geométrico",
-  "ArithmeticGradientRepayment": "Gradiente aritmético",
+  FixedInstallment: "Cuota integral fija",
+  ConstantAmortization: "Abonos fijos a capital",
+  GeometricGradientRepayment: "Gradiente geométrico",
+  ArithmeticGradientRepayment: "Gradiente aritmético",
 };
 
 export const defaultPaymentOptions = [
   {
     id: "0",
-    value: modalTexts.placeholders.noPaymentOptions,
-    label: modalTexts.placeholders.noPaymentOptions,
+    value: editProductModalLabels.placeholders.noPaymentOptions.i18n["en"],
+    label: editProductModalLabels.placeholders.noPaymentOptions.i18n["en"],
   },
 ];
 export const REPAYMENT_STRUCTURES_WITH_INCREMENT = {
@@ -258,57 +339,273 @@ export const REPAYMENT_STRUCTURES_WITH_INCREMENT = {
   PERCENTAGE_INCREMENT: "Pagos con porcentaje de incremento",
 };
 
-export const validationMessages = {
-  incrementRequired: "El valor de incremento es requerido",
-  incrementMustBePositive: "El valor debe ser mayor a 0",
-  incrementValidating: "Validando...",
-  incrementValueRange: (min: number, max: number) =>
-    `El valor debe estar entre $${min.toLocaleString()} y $${max.toLocaleString()}`,
-  incrementPercentageRange: (min: number, max: number) =>
-    `El porcentaje debe estar entre ${min}% y ${max}%`,
-  incrementValidationError: "Error al validar el incremento",
-  loanAmountOutOfRange: (amount: number, min: number, max: number) =>
-    `El monto ingresado es $${amount.toLocaleString()}. Debe estar entre $${min.toLocaleString()} y $${max.toLocaleString()}`,
-  loanAmountExceedsMax: (amount: number, max: number) =>
-    `El monto ingresado es $${amount.toLocaleString()}. El máximo permitido es $${max.toLocaleString()}`,
-  loanAmountValidationFailed: "No se pudo validar el monto del crédito",
-  loanAmountValidationError: "Error al validar el monto del crédito",
-  loanTermOutOfRange: (term: number, min: number, max: number) =>
-    `El plazo ingresado es ${term} meses. Debe estar entre ${min} y ${max} meses`,
-  loanTermValidationFailed: "No se pudo validar el plazo",
-  loanTermValidationError: "Error al validar el plazo",
-  interestRateOutOfRange: (rate: number, min: number, max: number) =>
-    `La tasa ingresada es ${rate}% mensual. Debe estar entre ${min.toFixed(2)}% y ${max.toFixed(2)}% mensual`,
-  interestRateValidationError: "Error al validar la tasa de interés",
+export const validationMessagesEnum = {
+  incrementRequired: {
+    code: "Validation_incrementRequired",
+    description: "Error when increment value is missing",
+    i18n: {
+      en: "Increment value is required",
+      es: "El valor de incremento es requerido",
+    },
+  },
+  incrementMustBePositive: {
+    code: "Validation_incrementMustBePositive",
+    description: "Error when value is zero or negative",
+    i18n: {
+      en: "The value must be greater than 0",
+      es: "El valor debe ser mayor a 0",
+    },
+  },
+  incrementValidating: {
+    code: "Validation_incrementValidating",
+    description: "Status text while validating increment",
+    i18n: {
+      en: "Validating...",
+      es: "Validando...",
+    },
+  },
+  incrementValueRange: {
+    code: "Validation_incrementValueRange",
+    description: "Error for increment value out of range",
+    i18n: {
+      en: "The value must be between ${min} and ${max}",
+      es: "El valor debe estar entre ${min} y ${max}",
+    },
+  },
+  incrementPercentageRange: {
+    code: "Validation_incrementPercentageRange",
+    description: "Error for increment percentage out of range",
+    i18n: {
+      en: "The percentage must be between {min}% and {max}%",
+      es: "El porcentaje debe estar entre {min}% y {max}%",
+    },
+  },
+  incrementValidationError: {
+    code: "Validation_incrementError",
+    description: "General error during increment validation",
+    i18n: {
+      en: "Error validating increment",
+      es: "Error al validar el incremento",
+    },
+  },
+  loanAmountOutOfRange: {
+    code: "Validation_loanAmountOutOfRange",
+    description: "Error for loan amount outside allowed range",
+    i18n: {
+      en: "The entered amount is ${amount}. It must be between ${min} and ${max}",
+      es: "El monto ingresado es ${amount}. Debe estar entre ${min} y ${max}",
+    },
+  },
+  loanAmountExceedsMax: {
+    code: "Validation_loanAmountExceedsMax",
+    description: "Error when loan amount exceeds maximum limit",
+    i18n: {
+      en: "The entered amount is ${amount}. The maximum allowed is ${max}",
+      es: "El monto ingresado es ${amount}. El máximo permitido es ${max}",
+    },
+  },
+  loanAmountValidationFailed: {
+    code: "Validation_loanAmountFailed",
+    description: "Error when loan amount validation cannot be completed",
+    i18n: {
+      en: "Could not validate the credit amount",
+      es: "No se pudo validar el monto del crédito",
+    },
+  },
+  loanAmountValidationError: {
+    code: "Validation_loanAmountError",
+    description: "Generic error during loan amount validation",
+    i18n: {
+      en: "Error validating credit amount",
+      es: "Error al validar el monto del crédito",
+    },
+  },
+  loanTermOutOfRange: {
+    code: "Validation_loanTermOutOfRange",
+    description: "Error for loan term outside allowed range",
+    i18n: {
+      en: "The entered term is {term} months. It must be between {min} and {max} months",
+      es: "El plazo ingresado es {term} meses. Debe estar entre {min} y {max} meses",
+    },
+  },
+  loanTermValidationFailed: {
+    code: "Validation_loanTermFailed",
+    description: "Error when loan term validation cannot be completed",
+    i18n: {
+      en: "Could not validate the term",
+      es: "No se pudo validar el plazo",
+    },
+  },
+  loanTermValidationError: {
+    code: "Validation_loanTermError",
+    description: "Generic error during loan term validation",
+    i18n: {
+      en: "Error validating term",
+      es: "Error al validar el plazo",
+    },
+  },
+  interestRateOutOfRange: {
+    code: "Validation_interestRateOutOfRange",
+    description: "Error for interest rate outside allowed range",
+    i18n: {
+      en: "The entered rate is {rate}% monthly. It must be between {min}% and {max}% monthly",
+      es: "La tasa ingresada es {rate}% mensual. Debe estar entre {min}% y {max}% mensual",
+    },
+  },
+  interestRateValidationError: {
+    code: "Validation_interestRateError",
+    description: "Generic error during interest rate validation",
+    i18n: {
+      en: "Error validating interest rate",
+      es: "Error al validar la tasa de interés",
+    },
+  },
 };
 
-export const fieldLabels = {
-  creditAmount: "Monto del crédito",
-  termInMonths: "Plazo en meses",
-  amortizationType: "Tipo de amortización",
-  incrementValue: "Valor de incremento",
-  incrementPercentage: "Porcentaje de incremento",
-  interestRate: "Tasa de interés",
-  rateType: "Tipo de tasa",
-  paymentMethod: "Método de pago",
-  paymentCycle: "Ciclo de pago",
-  firstPaymentCycle: "Primer ciclo de pago",
-  creditLine: "Línea de crédito",
-  ordinaryPayment: "Cuota ordinaria mensual",
-};
-
-export const fieldPlaceholders = {
-  incrementValue: "Ej: 50000",
-  incrementPercentage: "Ej: 5",
-  creditAmount: "Ingrese el monto",
-  interestRate: "Ingrese la tasa",
-};
-
-export const errorMessages = {
+export const errorMessagesEnum = {
   updateCreditProduct: {
-    description: "No se pudo actualizar el producto de crédito."
-  }
-}
+    code: "Error_update_credit_product",
+    description: "Error message when the credit product update service fails",
+    i18n: {
+      en: "Could not update credit product.",
+      es: "No se pudo actualizar el producto de crédito.",
+    },
+  },
+};
+
+export const fieldLabelsEnum = {
+  creditAmount: {
+    code: "FieldLabels_creditAmount",
+    description: "Label for credit amount",
+    i18n: {
+      en: "Credit amount",
+      es: "Monto del crédito",
+    },
+  },
+  termInMonths: {
+    code: "FieldLabels_termInMonths",
+    description: "Label for term in months",
+    i18n: {
+      en: "Term in months",
+      es: "Plazo en meses",
+    },
+  },
+  amortizationType: {
+    code: "FieldLabels_amortizationType",
+    description: "Label for amortization type",
+    i18n: {
+      en: "Amortization type",
+      es: "Tipo de amortización",
+    },
+  },
+  incrementValue: {
+    code: "FieldLabels_incrementValue",
+    description: "Label for increment value",
+    i18n: {
+      en: "Increment value",
+      es: "Valor de incremento",
+    },
+  },
+  incrementPercentage: {
+    code: "FieldLabels_incrementPercentage",
+    description: "Label for increment percentage",
+    i18n: {
+      en: "Increment percentage",
+      es: "Porcentaje de incremento",
+    },
+  },
+  interestRate: {
+    code: "FieldLabels_interestRate",
+    description: "Label for interest rate",
+    i18n: {
+      en: "Interest rate",
+      es: "Tasa de interés",
+    },
+  },
+  rateType: {
+    code: "FieldLabels_rateType",
+    description: "Label for rate type",
+    i18n: {
+      en: "Rate type",
+      es: "Tipo de tasa",
+    },
+  },
+  paymentMethod: {
+    code: "FieldLabels_paymentMethod",
+    description: "Label for Payment channel",
+    i18n: {
+      en: "Payment channel",
+      es: "Método de pago",
+    },
+  },
+  paymentCycle: {
+    code: "FieldLabels_paymentCycle",
+    description: "Label for payment cycle",
+    i18n: {
+      en: "Payment cycle",
+      es: "Ciclo de pago",
+    },
+  },
+  firstPaymentCycle: {
+    code: "FieldLabels_firstPaymentCycle",
+    description: "Label for first payment cycle",
+    i18n: {
+      en: "First payment cycle",
+      es: "Primer ciclo de pago",
+    },
+  },
+  creditLine: {
+    code: "FieldLabels_creditLine",
+    description: "Label for credit line",
+    i18n: {
+      en: "Credit line",
+      es: "Línea de crédito",
+    },
+  },
+  ordinaryPayment: {
+    code: "FieldLabels_ordinaryPayment",
+    description: "Label for ordinary monthly payment",
+    i18n: {
+      en: "Ordinary monthly payment",
+      es: "Cuota ordinaria mensual",
+    },
+  },
+};
+
+export const fieldPlaceholdersEnum = {
+  incrementValue: {
+    code: "FieldPlaceholders_incrementValue",
+    description: "Placeholder for increment value",
+    i18n: {
+      en: "Ex: 50000",
+      es: "Ej: 50000",
+    },
+  },
+  incrementPercentage: {
+    code: "FieldPlaceholders_incrementPercentage",
+    description: "Placeholder for increment percentage",
+    i18n: {
+      en: "Ex: 5",
+      es: "Ej: 5",
+    },
+  },
+  creditAmount: {
+    code: "FieldPlaceholders_creditAmount",
+    description: "Placeholder for credit amount",
+    i18n: {
+      en: "Enter the amount",
+      es: "Ingrese el monto",
+    },
+  },
+  interestRate: {
+    code: "FieldPlaceholders_interestRate",
+    description: "Placeholder for interest rate",
+    i18n: {
+      en: "Enter the rate",
+      es: "Ingrese la tasa",
+    },
+  },
+};
 
 export const simulationFormLabels = {
   cancelButton: {

@@ -6,6 +6,7 @@ import { CustomValueModal } from "@components/modals/CustomValueModal";
 import { currencyFormat } from "@utils/formatData/currency";
 import { IPaymentOption } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
 import { EPaymentOptionType } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
+import { EnumType } from "@hooks/useEnum";
 
 import { 
   StyledCardContainer, 
@@ -13,7 +14,7 @@ import {
   StyledInputRadio 
 } from "./styles";
 import { 
-  dataConsolidatedCredit,
+  dataConsolidatedCreditEnum,
   IApplyPayOption
  } from "./config";
 
@@ -33,6 +34,7 @@ export interface ICardConsolidatedCreditProps {
   description: string;
   date: Date;
   tags: ITag[];
+  lang: EnumType;
   isMobile?: boolean;
   initialValue?: number;
   allowCustomValue?: boolean;
@@ -61,6 +63,7 @@ export function CardConsolidatedCredit(props: ICardConsolidatedCreditProps) {
     initialType,
     allowCustomValue,
     handleRemoveCredit,
+    lang
   } = props;
   
 const hasInitialValue = initialValue !== undefined && initialValue > 0;
@@ -80,19 +83,19 @@ const hasInitialValue = initialValue !== undefined && initialValue > 0;
   const paymentOptions = [
     {
       id: "nextPayment",
-      label: dataConsolidatedCredit.expiredValue,
+      label: dataConsolidatedCreditEnum.expiredValue.i18n[lang],
       value: expiredValue,
     },
     {
       id: "nextDueDate",
-      label: dataConsolidatedCredit.nextDueDate,
+      label: dataConsolidatedCreditEnum.nextDueDate.i18n[lang],
       value: nextDueDate,
       description: description,
       date: date,
     },
     {
       id: "fullPayment",
-      label: dataConsolidatedCredit.fullPayment,
+      label: dataConsolidatedCreditEnum.fullPayment.i18n[lang],
       value: fullPayment,
     },
   ];
@@ -254,6 +257,7 @@ const hasInitialValue = initialValue !== undefined && initialValue > 0;
           onCloseModal={handleToggleModal}
           onApplyPayOption={handleApplyPayOption}
           onChangeOtherValue={handleChangeOption}
+          lang={lang}
         />
       )}
     </>

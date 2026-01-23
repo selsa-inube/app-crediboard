@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import { MdOutlineInfo } from "react-icons/md";
-import {
-  Button,
-  Icon,
-  IOption,
-  Select,
-  Stack,
-  Text,
-} from "@inubekit/inubekit";
+import { Button, Icon, IOption, Select, Stack, Text } from "@inubekit/inubekit";
 
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
@@ -15,9 +8,10 @@ import { IProspect } from "@services/prospect/types";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
 import { CardGray } from "@components/cards/CardGray";
+import { useEnum } from "@hooks/useEnum";
 
 import { BaseModal } from "../baseModal";
-import { dataCreditProspect } from "./config";
+import { dataCreditProspectEnum } from "./config";
 
 interface IIncomeBorrowersModalProps {
   borrowersProspect: IProspect | undefined;
@@ -43,13 +37,16 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
     handleCloseModal,
     handleChange,
     setOpenModal,
-    availableEditCreditRequest
+    availableEditCreditRequest,
   } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { lang } = useEnum();
+
   const currentBorrower =
     dataProspect.borrowers?.find(
       (borrower) =>
-        borrower.borrowerName === borrowerOptions[selectedIndex]?.value
+        borrower.borrowerName === borrowerOptions[selectedIndex]?.value,
     ) || selectedBorrower;
 
   const { disabledButton: editCreditApplication } = useValidateUseCase({
@@ -86,8 +83,8 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
 
   return (
     <BaseModal
-      title={dataCreditProspect.incomeSources}
-      nextButton={dataCreditProspect.close}
+      title={dataCreditProspectEnum.incomeSources.i18n[lang]}
+      nextButton={dataCreditProspectEnum.close.i18n[lang]}
       handleNext={handleCloseModal}
       handleClose={handleCloseModal}
       width={isMobile ? "300px" : "auto"}
@@ -105,13 +102,13 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
             {borrowerOptions && borrowerOptions.length === 1 ? (
               <CardGray
                 isMobile={isMobile}
-                label="Deudor"
+                label="borrower"
                 placeHolder={borrowerOptions[selectedIndex]?.value}
                 apparencePlaceHolder="gray"
               />
             ) : (
               <Select
-                label="Deudor"
+                label="borrower"
                 id="borrower"
                 name="borrower"
                 options={borrowerOptions}
@@ -121,13 +118,18 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
                 size="compact"
               />
             )}
-            <Stack alignItems="center" justifyContent="center" gap="2px" width={isMobile ? "100%" : "auto"}>
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              gap="2px"
+              width={isMobile ? "100%" : "auto"}
+            >
               <Button
                 onClick={handleEditClick}
                 fullwidth={isMobile}
                 disabled={editCreditApplication || availableEditCreditRequest}
               >
-                {dataCreditProspect.edit}
+                {dataCreditProspectEnum.edit.i18n[lang]}
               </Button>
               {editCreditApplication || availableEditCreditRequest ? (
                 <Icon
@@ -150,7 +152,7 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
         </>
       ) : (
         <Stack width="400px">
-          <Text>{dataCreditProspect.noDataIncome}</Text>
+          <Text>{dataCreditProspectEnum.noDataIncome.i18n[lang]}</Text>
         </Stack>
       )}
       {isModalOpen ? (
@@ -158,7 +160,11 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
           onClose={handleInfoModalClose}
           title={privilegeCrediboard.title}
           subtitle={privilegeCrediboard.subtitle}
-          description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
+          description={
+            availableEditCreditRequest
+              ? optionsDisableStage.description
+              : privilegeCrediboard.description
+          }
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
         />

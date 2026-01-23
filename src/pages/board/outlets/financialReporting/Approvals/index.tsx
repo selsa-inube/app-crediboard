@@ -13,8 +13,8 @@ import { getApprovalsById } from "@services/creditRequest/query/getApprovals";
 import { IApprovals } from "@services/creditRequest/query/types";
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import {
-  actionMobileApprovals,
-  titlesApprovals,
+  getActionMobileApprovals,
+  getTitlesApprovals,
   handleNotificationClick,
   handleErrorClick,
   desktopActions,
@@ -24,9 +24,10 @@ import {
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
 import { AppContext } from "@context/AppContext";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { useEnum } from "@hooks/useEnum";
 
-import { errorObserver, errorMessages } from "../config";
-import { dataInfoApprovals } from "./config";
+import { errorObserver, errorMessagesEnum } from "../config";
+import { dataInfoApprovalsEnum } from "./config";
 
 interface IApprovalsProps {
   user: string;
@@ -36,6 +37,8 @@ interface IApprovalsProps {
 
 export const Approvals = (props: IApprovalsProps) => {
   const { isMobile, id } = props;
+  const { lang } = useEnum();
+
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [approvalsEntries, setApprovalsEntries] = useState<IEntries[]>([]);
@@ -88,7 +91,7 @@ export const Approvals = (props: IApprovalsProps) => {
         requests.creditRequestId
       );
       if (data && Array.isArray(data)) {
-        const entries: IEntries[] = entriesApprovals(data).map((entry) => ({
+        const entries: IEntries[] = entriesApprovals(data, lang).map((entry) => ({
           ...entry,
           error: entry.concept === "Pendiente",
         }));
@@ -104,6 +107,7 @@ export const Approvals = (props: IApprovalsProps) => {
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, requests?.creditRequestId, businessManagerCode]);
 
   useEffect(() => {
@@ -111,22 +115,23 @@ export const Approvals = (props: IApprovalsProps) => {
   }, [fetchApprovalsData]);
 
   const handleNotificationClickBound = (data: IEntries) => {
-    handleNotificationClick(data, setSelectedData, setShowNotificationModal);
+    handleNotificationClick(data, setSelectedData, setShowNotificationModal, lang);
   };
 
   const handleErrorClickBound = (data: IEntries) => {
-    handleErrorClick(data, setSelectedData, setErrorModal);
+    handleErrorClick(data, setSelectedData, setErrorModal, lang);
   };
 
   const desktopActionsConfig = !isMobile
-    ? desktopActions([], handleNotificationClickBound, handleErrorClickBound)
+    ? desktopActions([], handleNotificationClickBound, handleErrorClickBound, lang)
     : [];
 
   const mobileActions = !isMobile
     ? getMobileActionsConfig(
-      actionMobileApprovals,
+      getActionMobileApprovals(lang),
       handleNotificationClickBound,
-      handleErrorClickBound
+      handleErrorClickBound,
+      lang
     )
     : [];
 
@@ -142,8 +147,8 @@ export const Approvals = (props: IApprovalsProps) => {
       );
 
       addFlag({
-        title: dataInfoApprovals.notifySend,
-        description: `${dataInfoApprovals.notidyDescription} ${code?.codeNotification}.`,
+        title: dataInfoApprovalsEnum.notifySend.i18n[lang],
+        description: `${dataInfoApprovalsEnum.notidyDescription.i18n[lang]} ${code?.codeNotification}.`,
         appearance: "success",
         duration: 5000,
       });
@@ -151,7 +156,7 @@ export const Approvals = (props: IApprovalsProps) => {
     } catch (error) {
       setShowNotificationModal(false);
 
-      setErrorMessage(dataInfoApprovals.error);
+      setErrorMessage(dataInfoApprovalsEnum.error.i18n[lang]);
       setErrorModal(true);
     }
   };
@@ -167,7 +172,7 @@ export const Approvals = (props: IApprovalsProps) => {
   return (
     <>
       <Fieldset
-        title={errorMessages.approval.titleCard}
+        title={errorMessagesEnum.approval.titleCard.i18n[lang]}
         heightFieldset="100%"
         hasTable
         hasError={!requests ? true : false}
@@ -176,19 +181,19 @@ export const Approvals = (props: IApprovalsProps) => {
         {!requests || error ? (
           <ItemNotFound
             image={userNotFound}
-            title={errorMessages.approval.title}
-            description={errorMessages.approval.description}
-            buttonDescription={errorMessages.approval.button}
+            title={errorMessagesEnum.approval.title.i18n[lang]}
+            description={errorMessagesEnum.approval.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.approval.button.i18n[lang]}
             onRetry={handleRetry}
           />
         ) : (
           <TableBoard
             id="usuarios"
-            titles={titlesApprovals}
+            titles={getTitlesApprovals(lang)}
             entries={approvalsEntries}
             actions={desktopActionsConfig}
             actionMobile={mobileActions}
-            actionMobileIcon={getActionsMobileIcon()}
+            actionMobileIcon={getActionsMobileIcon(lang)}
             loading={loading}
             isFirstTable={true}
             hideTagOnTablet={false}
@@ -200,13 +205,13 @@ export const Approvals = (props: IApprovalsProps) => {
       </Fieldset>
       {showNotificationModal && selectedData && (
         <BaseModal
-          title={dataInfoApprovals.notify}
+          title={dataInfoApprovalsEnum.notify.i18n[lang]}
           nextButton="Enviar"
           handleNext={handleSubmit}
           handleClose={handleCloseNotificationModal}
           width={isMobile ? "290px" : "400px"}
         >
-          <Text>{dataInfoApprovals.notifyModal}</Text>
+          <Text>{dataInfoApprovalsEnum.notifyModal.i18n[lang]}</Text>
         </BaseModal>
       )}
 

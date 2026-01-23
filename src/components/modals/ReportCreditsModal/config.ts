@@ -10,49 +10,80 @@ export interface IFinancialObligation {
   idUser: string;
 }
 
-export const headers: {
-  label: string;
-  key: keyof IFinancialObligation;
-  action?: boolean;
-}[] = [
-  { label: "Tipo", key: "type" },
-  { label: "Saldo", key: "balance" },
-  { label: "Cuota", key: "fee" },
-  { label: "Entidad", key: "entity" },
-  { label: "Medio de pago", key: "payment" },
-  { label: "Id", key: "idUser" },
-  { label: "Altura", key: "feePaid" },
-  { label: "Acciones", key: "actions", action: true },
-];
-
-export const dataReport = {
-  title: "Obligaciones financieras",
-  close: "Cerrar",
-  addObligations: "Agregar obligaciones",
-  noData: "¡Ups! No se encontraron obligaciones financieras vigentes.",
-  totalFee: "Cuota Total",
-  totalBalance: "Saldo Total",
+export const defaultOptionsSelectEnum = {
+  noDebtors: {
+    id: "0",
+    code: "DebtorSelect_noDebtors",
+    description: "Opción por defecto cuando no hay deudores disponibles",
+    value: "0",
+    i18n: {
+      en: "No borrowers",
+      es: "No hay deudores",
+    },
+  },
 };
 
-export const defaultOptionsSelect = {
-  id: "0",
-  label: "No hay deudores",
-  value: "0",
+export const configSelectEnum = {
+  label: {
+    id: "debtorLabel",
+    code: "DebtorSelect_label",
+    description: "Etiqueta para el selector de deudores",
+    i18n: {
+      en: "Borrower",
+      es: "Deudor",
+    },
+  },
+  placeholder: {
+    id: "borrowerPlaceholder",
+    code: "BorrowerSelect_placeholder",
+    description: "Placeholder para el selector de deudores",
+    i18n: {
+      en: "Select an option",
+      es: "Seleccione una opción",
+    },
+  },
+  name: {
+    id: "borrowerPlaceholder",
+    code: "BorrowerSelect_placeholder",
+    description: "name",
+    i18n: {
+      en: "borrower",
+      es: "borrower",
+    },
+  },
 };
 
-export const configSelect = {
-  name: "deudor",
-  label: "Deudor",
-  placeholder: "Seleccione una opcion",
+export const restoreDataEnum = {
+  justification: {
+    id: "restoreJustification",
+    code: "Restore_justification",
+    description:
+      "Justificación para la restauración de obligaciones financieras",
+    i18n: {
+      en: "Restore financial obligations",
+      es: "Restaurar obligaciones financieras",
+    },
+  },
+  label: {
+    id: "restoreLabel",
+    code: "Restore_label",
+    description: "Etiqueta para el botón de restaurar",
+    i18n: {
+      en: "Restore",
+      es: "Restaurar",
+    },
+  },
 };
 
-export const restoreData = {
-  justification: "Restore financial obligations",
-  label: "Restaurar",
+export const errorMessagesEnum = {
+  updateProspectDescription: {
+    id: "updateProspectDescription",
+    code: "Error_updateProspectDescription",
+    description:
+      "Mensaje de error cuando falla la restauración de obligaciones",
+    i18n: {
+      en: "Financial obligations could not be restored.",
+      es: "No se pudieron restaurar las obligaciones financieras.",
+    },
+  },
 };
-
-export const errorMessages = {
-  updateProspect: {
-    description: "No se pudieron restaurar las obligaciones financieras.",
-  }
-}

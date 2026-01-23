@@ -26,9 +26,13 @@ import { SearchAllBank } from "@services/bank/SearchAllBank";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { IProspect } from "@services/prospect/types";
+import { EnumType } from "@hooks/useEnum";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
-import { disbursementGeneral, disbursemenOptionAccount } from "../config";
+import {
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum,
+} from "../config";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
 
 interface IDisbursementWithExternalAccountProps {
@@ -40,6 +44,7 @@ interface IDisbursementWithExternalAccountProps {
   businessUnitPublicCode: string;
   isAmountReadOnly: boolean;
   businessManagerCode: string;
+  lang: EnumType;
   onFormValid: (isValid: boolean) => void;
   handleOnChange: (values: IDisbursementGeneral) => void;
   getTotalAmount: () => number;
@@ -50,8 +55,14 @@ interface IDisbursementWithExternalAccountProps {
 export function DisbursementWithExternalAccount(
   props: IDisbursementWithExternalAccountProps,
 ) {
-  const { isMobile, initialValues, formik, optionNameForm, isAmountReadOnly } =
-    props;
+  const {
+    isMobile,
+    initialValues,
+    formik,
+    optionNameForm,
+    isAmountReadOnly,
+    lang,
+  } = props;
 
   const {
     isAutoCompleted,
@@ -111,8 +122,8 @@ export function DisbursementWithExternalAccount(
             <Textfield
               id={`${optionNameForm}.amount`}
               name="amount"
-              label={disbursementGeneral.label}
-              placeholder={disbursementGeneral.place}
+              label={disbursementGeneralEnum.labelCheck.i18n[lang]}
+              placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
               iconBefore={
                 <MdOutlineAttachMoney
                   color={inube.palette.neutralAlpha.N900A}
@@ -134,7 +145,7 @@ export function DisbursementWithExternalAccount(
               }}
               status={isInvalidAmount ? "invalid" : undefined}
               readOnly={isAmountReadOnly}
-              message={`${disbursemenOptionAccount.valueTurnFail}${currencyFormat(initialValues.amount, false)}`}
+              message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[lang]}${currencyFormat(initialValues.amount, false)}`}
               fullwidth
             />
           </Stack>
@@ -148,14 +159,14 @@ export function DisbursementWithExternalAccount(
               disabled={isDisabled}
             />
             <Text type="label" size="medium">
-              {disbursementGeneral.labelCheck}
+              {disbursementGeneralEnum.labelCheck.i18n[lang]}
             </Text>
           </Stack>
         </Stack>
         <Divider dashed />
         <Stack direction="column" gap="16px">
           <Text type="label" size="medium">
-            {disbursementGeneral.labelToggle}
+            {disbursementGeneralEnum.labelToggle.i18n[lang]}
           </Text>
         </Stack>
         <Stack direction="row" gap="16px">
@@ -174,8 +185,8 @@ export function DisbursementWithExternalAccount(
             }
           >
             {(formik.values[optionNameForm]?.toggle ?? true)
-              ? disbursementGeneral.optionToggleYes
-              : disbursementGeneral.optionToggleNo}
+              ? disbursementGeneralEnum.optionToggleYes.i18n[lang]
+              : disbursementGeneralEnum.optionToggleNo.i18n[lang]}
           </Text>
         </Stack>
         <Divider dashed />
@@ -199,8 +210,8 @@ export function DisbursementWithExternalAccount(
             <Textfield
               id={`${optionNameForm}.bank`}
               name={`${optionNameForm}.bank`}
-              label={disbursemenOptionAccount.labelBank}
-              placeholder={disbursemenOptionAccount.placeOption}
+              label={disbursemenOptionAccountEnum.labelBank.i18n[lang]}
+              placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
               size="compact"
               value={banks[0]?.label || ""}
               readOnly={true}
@@ -211,8 +222,8 @@ export function DisbursementWithExternalAccount(
             <Select
               id={`${optionNameForm}.bank`}
               name={`${optionNameForm}.bank`}
-              label={disbursemenOptionAccount.labelBank}
-              placeholder={disbursemenOptionAccount.placeOption}
+              label={disbursemenOptionAccountEnum.labelBank.i18n[lang]}
+              placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
               size="compact"
               options={banks}
               onBlur={formik.handleBlur}
@@ -224,7 +235,7 @@ export function DisbursementWithExternalAccount(
               message={
                 (alreadyShowMessageErrorBank &&
                   banks.length === 0 &&
-                  disbursemenOptionAccount.errorBanks) ||
+                  disbursemenOptionAccountEnum.errorBanks.i18n[lang]) ||
                 ""
               }
               fullwidth
@@ -234,8 +245,8 @@ export function DisbursementWithExternalAccount(
             <Textfield
               id={"accountType"}
               name={`${optionNameForm}.accountType`}
-              label={disbursemenOptionAccount.labelAccountType}
-              placeholder={disbursemenOptionAccount.placeOption}
+              label={disbursemenOptionAccountEnum.labelAccountType.i18n[lang]}
+              placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
               size="compact"
               value={typeAccount[0]?.label || ""}
               readOnly={true}
@@ -246,8 +257,8 @@ export function DisbursementWithExternalAccount(
             <Select
               id={"accountType"}
               name={`${optionNameForm}.accountType`}
-              label={disbursemenOptionAccount.labelAccountType}
-              placeholder={disbursemenOptionAccount.placeOption}
+              label={disbursemenOptionAccountEnum.labelAccountType.i18n[lang]}
+              placeholder={disbursemenOptionAccountEnum.placeOption.i18n[lang]}
               size="compact"
               options={typeAccount}
               onBlur={formik.handleBlur}
@@ -260,8 +271,10 @@ export function DisbursementWithExternalAccount(
           <Input
             id={"accountNumber"}
             name={`${optionNameForm}.accountNumber`}
-            label={disbursemenOptionAccount.labelAccountNumber}
-            placeholder={disbursemenOptionAccount.placeAccountNumber}
+            label={disbursemenOptionAccountEnum.labelAccountNumber.i18n[lang]}
+            placeholder={
+              disbursemenOptionAccountEnum.placeAccountNumber.i18n[lang]
+            }
             value={formik.values[optionNameForm]?.accountNumber || ""}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -270,11 +283,11 @@ export function DisbursementWithExternalAccount(
           />
         </Stack>
         <Textarea
-          id={"observation"}
-          name={`${optionNameForm}.observation`}
-          label={disbursemenOptionAccount.observation}
-          placeholder={disbursemenOptionAccount.placeObservation}
-          value={formik.values[optionNameForm]?.observation || ""}
+          id={"description"}
+          name={`${optionNameForm}.description`}
+          label={disbursemenOptionAccountEnum.observation.i18n[lang]}
+          placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
+          value={formik.values[optionNameForm]?.description || ""}
           onChange={(event) => {
             const value = event.target.value;
             if (value.length <= 100) {
@@ -288,7 +301,7 @@ export function DisbursementWithExternalAccount(
       {modalError && !alreadyShowMessageErrorBank && (
         <ErrorModal
           isMobile={isMobile}
-          message={disbursemenOptionAccount.errorBanks}
+          message={disbursemenOptionAccountEnum.errorBanks.i18n[lang]}
           handleClose={() => {
             setAlreadyShowMessageErrorBank(true);
             setModalError(false);

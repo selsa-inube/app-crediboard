@@ -11,8 +11,9 @@ import { getPaymentCapacityById } from "@services/creditProfiles/GetPaymentCapac
 import { IPaymentCapacityById } from "@services/creditProfiles/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ICreditRequest } from "@services/creditRequest/query/types";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataPaymentCapacity } from "./config";
+import { dataPaymentCapacityEnum } from "./config";
 
 interface PaymentCapacityProps {
   isMobile?: boolean;
@@ -35,6 +36,8 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
     retryDelay = 2000,
     setLoading,
   } = props;
+
+  const { lang } = useEnum();
 
   const [data, setData] = useState<IPaymentCapacityById | null>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -77,7 +80,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
         }, retryDelay);
       } else {
         setShowErrorModal(true);
-        setMessageError(dataPaymentCapacity.modalError);
+        setMessageError(dataPaymentCapacityEnum.modalError.i18n[lang]);
         setIsInitialLoad(false);
       }
     } finally {
@@ -108,16 +111,16 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
 
   return (
     <CardInfoContainer
-      title={dataPaymentCapacity.cardTitle}
+      title={dataPaymentCapacityEnum.cardTitle.i18n[lang]}
       icon={<MdOutlinePaid />}
       isMobile={isMobile}
     >
       {!data ? (
         <ItemNotFound
           image={userNotFound}
-          title={dataPaymentCapacity.itemNotFoundTitle}
-          description={dataPaymentCapacity.itemNotFoundDescription}
-          buttonDescription={dataPaymentCapacity.itemNotFoundButton}
+          title={dataPaymentCapacityEnum.itemNotFoundTitle.i18n[lang]}
+          description={dataPaymentCapacityEnum.itemNotFoundDescription.i18n[lang]}
+          buttonDescription={dataPaymentCapacityEnum.itemNotFoundButton.i18n[lang]}
           route="#"
           onRetry={handleRetry}
         />
@@ -126,7 +129,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width="110px">
               <Text size={isMobile ? "small" : "medium"}>
-                {dataPaymentCapacity.availableValueLabel}
+                {dataPaymentCapacityEnum.availableValueLabel.i18n[lang]}
               </Text>
             </Stack>
             <Stack>
@@ -145,7 +148,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width="110px">
               <Text size={isMobile ? "small" : "medium"}>
-                {dataPaymentCapacity.availablePercentageLabel}
+                {dataPaymentCapacityEnum.availablePercentageLabel.i18n[lang]}
               </Text>
             </Stack>
             <Stack>
@@ -158,7 +161,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
                   {availablePercentage.toFixed(4)}%
                 </Text>
                 <Text size={isMobile ? "small" : "medium"}>
-                  {dataPaymentCapacity.incomeLabel}{" "}
+                  {dataPaymentCapacityEnum.incomeLabel.i18n[lang]}{" "}
                   {currencyFormat(Math.round(data.totalMonthlyIncome))}
                 </Text>
               </Stack>
@@ -170,7 +173,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
           <Stack gap={"32px"}>
             <Stack width="110px">
               <Text size={isMobile ? "small" : "medium"}>
-                {dataPaymentCapacity.usedPercentageLabel}
+                {dataPaymentCapacityEnum.usedPercentageLabel.i18n[lang]}
               </Text>
             </Stack>
             <Stack>

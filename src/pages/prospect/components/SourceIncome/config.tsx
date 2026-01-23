@@ -1,7 +1,9 @@
 import { IncomeCard } from "@components/cards/IncomeCard";
+import { EnumType } from "@hooks/useEnum";
 
 interface IncomeProps {
   values: string[];
+  lang: EnumType;
   ShowSupport?: boolean;
   disabled?: boolean;
   onValueChange?: (index: number, newValue: string) => void;
@@ -12,6 +14,7 @@ function IncomeCapital({
   ShowSupport,
   disabled,
   onValueChange,
+  lang
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -26,6 +29,7 @@ function IncomeCapital({
       ShowSupport={ShowSupport}
       disabled={disabled}
       onValueChange={onValueChange}
+      lang={lang}
     />
   );
 }
@@ -35,6 +39,7 @@ function IncomeEmployment({
   ShowSupport,
   disabled,
   onValueChange,
+  lang
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -53,6 +58,7 @@ function IncomeEmployment({
       ShowSupport={ShowSupport}
       disabled={disabled}
       onValueChange={onValueChange}
+      lang={lang}
     />
   );
 }
@@ -62,6 +68,7 @@ function MicroBusinesses({
   ShowSupport,
   disabled,
   onValueChange,
+  lang
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -72,6 +79,7 @@ function MicroBusinesses({
       ShowSupport={ShowSupport}
       disabled={disabled}
       onValueChange={onValueChange}
+      lang={lang}
     />
   );
 }

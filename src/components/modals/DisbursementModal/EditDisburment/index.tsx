@@ -5,10 +5,11 @@ import { searchAllModesOfDisbursementTypes } from "@services/lineOfCredit/getSea
 import { IProspectSummaryById } from "@services/prospect/types";
 import { getSearchProspectSummaryById } from "@services/creditRequest/query/ProspectSummaryById";
 import { IModeOfDisbursement } from "@services/creditRequest/query/types";
+import { useEnum } from "@hooks/useEnum";
 import { getClientPortfolioObligationsById } from "@services/creditRequest/updateModeOfDisbursement";
 import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 
-import { disbursemenTabs } from "./disbursementGeneral/config";
+import { disbursemenTabsEnum } from "./disbursementGeneral/config";
 import { DisbursementGeneral } from "./disbursementGeneral";
 import {
   IDisbursementGeneral,
@@ -76,6 +77,8 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     );
   const [loadingDisbursementData, setLoadingDisbursementData] =
     useState<boolean>(false);
+
+  const { lang } = useEnum();
 
   useEffect(() => {
     const newData = mapModesToFormikInitialValues(initialDisbursementData);
@@ -204,7 +207,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
       );
     };
 
-    const allTabs = Object.values(disbursemenTabs);
+    const allTabs = Object.values(disbursemenTabsEnum);
 
     return allTabs.filter((tab) => {
       switch (tab.id) {
@@ -422,6 +425,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
       handleClose={handleClose}
       handleSave={handleSave}
       isLoading={loadingDisbursementData}
+      lang={lang}
     />
   ) : (
     <DisbursementModal

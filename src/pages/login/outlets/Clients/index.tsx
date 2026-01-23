@@ -5,6 +5,7 @@ import { flushSync } from "react-dom";
 import { AppContext } from "@context/AppContext";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface"; 
+import { useEnum } from "@hooks/useEnum";
 
 import { IBusinessUnitstate } from "./types";
 import { BusinessUnitsUI } from "./interface";
@@ -15,6 +16,8 @@ interface IBusinessUnitsProps {
 
 function BusinessUnits(props: IBusinessUnitsProps) {
   const { businessUnits } = props;
+  const { lang } = useEnum();
+
   const [search, setSearch] = useState("");
   const [businessUnitLocal, setBusinessUnitLocal] =
     useState<IBusinessUnitstate>({
@@ -83,7 +86,7 @@ const handleSubmit = () => {
   }
 
   if (!businessUnits || businessUnits.length === 0) {
-    return <LoadingAppUI />;
+    return <LoadingAppUI lang={lang} />;
   }
 
   return (
@@ -95,6 +98,7 @@ const handleSubmit = () => {
       handleBussinessUnitChange={handleCChange}
       filterBusinessUnits={filterBusinessUnits}
       handleSubmit={handleSubmit}
+      lang={lang}
     />
   );
 }

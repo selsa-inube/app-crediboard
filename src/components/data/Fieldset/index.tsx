@@ -6,6 +6,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { MenuProspect } from "@components/navigation/MenuProspect";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { useEnum } from "@hooks/useEnum";
 
 import {
   StyledContainerFieldset,
@@ -13,7 +14,7 @@ import {
   StyledMenuDropdown,
   StyledPrint,
 } from "./styles";
-import { titlesModal } from "./config";
+import { titlesModalEnum } from "./config";
 
 interface IOptionsButton {
   title: string;
@@ -59,11 +60,12 @@ export const Fieldset = (props: IFieldsetProps) => {
     alignContent,
   } = props;
 
-  const isMobile = useMediaQuery("(max-width:880px)");
-
   const [isSelected, setIsSelected] = useState(selectedState || false);
   const [infoModal, setInfoModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+
+  const { lang } = useEnum();
+  const isMobile = useMediaQuery("(max-width:880px)");
   const handleOnClick = () => {
     if (isClickable) {
       setIsSelected(!isSelected);
@@ -188,10 +190,10 @@ export const Fieldset = (props: IFieldsetProps) => {
             {isModalOpen ? (
               <InfoModal
                 onClose={handleInfoModalClose}
-                title={titlesModal.title}
-                subtitle={titlesModal.subTitle}
-                description={titlesModal.description}
-                nextButtonText={titlesModal.textButtonNext}
+                title={titlesModalEnum.title.i18n[lang]}
+                subtitle={titlesModalEnum.subTitle.i18n[lang]}
+                description={titlesModalEnum.description.i18n[lang]}
+                nextButtonText={titlesModalEnum.textButtonNext.i18n[lang]}
                 isMobile={isMobile}
               />
             ) : (
@@ -218,18 +220,18 @@ export const Fieldset = (props: IFieldsetProps) => {
       {infoModal && (
         <>
           <BaseModal
-            title={titlesModal.title}
-            nextButton={titlesModal.textButtonNext}
+            title={titlesModalEnum.title.i18n[lang]}
+            nextButton={titlesModalEnum.textButtonNext.i18n[lang]}
             handleNext={() => setInfoModal(false)}
             handleClose={() => setInfoModal(false)}
             width={isMobile ? "290px" : "400px"}
           >
             <Stack gap="16px" direction="column">
               <Text weight="bold" size="large">
-                {titlesModal.subTitle}
+                {titlesModalEnum.subTitle.i18n[lang]}
               </Text>
               <Text weight="normal" size="medium" appearance="gray">
-                {titlesModal.description}
+                {titlesModalEnum.description.i18n[lang]}
               </Text>
             </Stack>
           </BaseModal>
