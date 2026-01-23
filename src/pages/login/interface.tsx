@@ -1,8 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { Stack, Text, Grid, useMediaQueries } from "@inubekit/inubekit";
-
-import selsaLogo from "@assets/images/selsa.png";
-import { EnumType } from "@hooks/useEnum";
+import { Stack, Text, Grid } from "@inubekit/inubekit";
 
 import {
   StyledWelcomeContainer,
@@ -10,20 +7,10 @@ import {
   StyledImage,
 } from "./styles";
 import { loginLabels } from "./config";
-
-interface ILoginUI {
-  lang: EnumType;
-}
+import { ILoginUI } from "./types";
 
 function LoginUI(props: ILoginUI) {
-  const { lang } = props;
-  const {
-    "(max-width: 768px)": screenMobile,
-    "(min-width: 993px) and (max-width: 2200px)": screenDesktop,
-  }: { [key: string]: boolean } = useMediaQueries([
-    "(max-width: 768px)",
-    "(min-width: 993px) and (max-width: 2200px)",
-  ]);
+  const { lang, eventData, screenMobile, screenDesktop } = props;
 
   return (
     <Grid
@@ -47,9 +34,10 @@ function LoginUI(props: ILoginUI) {
             </Text>
           </Stack>
           <StyledImage
-            src={selsaLogo}
-            alt={loginLabels.logoAlt.i18n[lang]}
-            width={screenDesktop ? "240px" : "160px"}
+            src={eventData.businessManager.urlLogo}
+            alt="Sistemas Enlinea"
+            $maxWidth={screenDesktop ? "180px" : "160px"}
+            $maxHeight="80px"
           />
         </Stack>
       </StyledWelcomeContainer>

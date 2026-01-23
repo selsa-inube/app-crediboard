@@ -62,7 +62,7 @@ function AppPage() {
   const collapseMenuRef = useRef<HTMLDivElement>(null);
   const businessUnitChangeRef = useRef<HTMLDivElement>(null);
   const [noveltiesData, setNoveltiesData] = useState<IUnreadNoveltiesByUser[]>(
-    []
+    [],
   );
   const navigate = useNavigate();
   const { businessUnitSigla } = useContext(AppContext);
@@ -100,7 +100,7 @@ function AppPage() {
   const isTablet: boolean = useMediaQuery("(max-width: 1024px)");
   const isMobile: boolean = useMediaQuery("(max-width: 555px)");
   const [selectedClient, setSelectedClient] = useState<string>(
-    eventData.businessUnit.abbreviatedName
+    eventData.businessUnit.abbreviatedName,
   );
 
   const handleToggleLogoutModal = () => {
@@ -110,7 +110,7 @@ function AppPage() {
 
   const userMenuConfig = getUserMenu(
     handleToggleLogoutModal,
-    getNotificationsCount()
+    getNotificationsCount(),
   );
 
   useEffect(() => {
@@ -170,7 +170,7 @@ function AppPage() {
         const data = await getUnreadNoveltiesByUser(
           eventData.user.identificationDocumentNumber || "",
           businessUnitPublicCode,
-          businessManagerCode
+          businessManagerCode,
         );
         setNoveltiesData(data);
       } catch (error) {
@@ -213,7 +213,6 @@ function AppPage() {
               user={{
                 username: eventData.user.userAccount,
                 breakpoint: "848px",
-                client: eventData.businessUnit.abbreviatedName,
               }}
               menu={userMenuConfig}
               unreadNotificationsAmount={getNotificationsCount()}
@@ -290,11 +289,13 @@ function AppPage() {
                       userName={novelty.clientName}
                       dateTime={formatPrimaryDate(
                         new Date(novelty.executionDate),
-                        true
+                        true,
                       )}
                       referenceCode={novelty.creditRequestCode}
                       description={novelty.traceValue}
-                      actionText={emptyNoveltiesConfigEnum.novelties.actionText.i18n[lang]}
+                      actionText={
+                        emptyNoveltiesConfigEnum.novelties.actionText.i18n[lang]
+                      }
                       onActionClick={() =>
                         handleNoveltyActionClick(novelty.creditRequestCode)
                       }
