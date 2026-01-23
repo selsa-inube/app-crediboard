@@ -115,9 +115,8 @@ export function DecisionModal(props: DecisionModalProps) {
       const makeDecisionsPayload: IMakeDecisionsPayload = {
         concept: data.makeDecision.concept,
         creditRequestId: data.makeDecision.creditRequestId,
-        justification: formValues.textarea || "",
+        justificacion: formValues.textarea || "", //esto deberia serjustification
       };
-
       if (
         formValues.selectedOptions &&
         data.xAction === "DisapproveLegalDocumentsAndWarranties"
@@ -129,6 +128,8 @@ export function DecisionModal(props: DecisionModalProps) {
       if (data.xAction === "RegisterIndividualConceptOfApproval") {
         makeDecisionsPayload["registerIndividualConcept"] = true;
       }
+
+
 
       const response = await makeDecisions(
         data.businessUnit,
@@ -185,9 +186,7 @@ export function DecisionModal(props: DecisionModalProps) {
             handleNext={handleSubmit}
             handleBack={onSecondaryButtonClick}
             handleClose={onCloseModal}
-            disabledNext={
-              data.makeDecision.concept && values.textarea ? false : true
-            }
+            disabledNext={!data.makeDecision.concept || !values.textarea}
             width={isMobile ? "290px" : "500px"}
           >
             <Form>

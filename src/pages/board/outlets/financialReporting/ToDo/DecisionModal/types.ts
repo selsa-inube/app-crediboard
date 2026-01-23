@@ -12,7 +12,8 @@ interface IMakeDecisionsPayload {
   concept: string;
   creditRequestId: string;
   humanDecision?: string;
-  justification: string;
+  justification?: string;
+  justificacion?: string;
   nonCompliantDocuments?: string[];
   registerIndividualConcept?: boolean;
 }
