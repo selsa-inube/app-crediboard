@@ -28,7 +28,7 @@ export const selectDataEnum = {
     description: "Months",
     i18n: {
       en: "Months",
-      es: "meses",
+      es: "Meses",
     },
   },
 };

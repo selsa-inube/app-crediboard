@@ -101,10 +101,10 @@ export const errorMessagesEnum = {
   saveExtraordinaryInstallments: {
     description: {
       code: "Error_save_extraordinary_installments",
-      description: "Error: could not save extra payments.",
+      description: "Error: Unable to save extra payments.",
       i18n: {
-        en: "Error: could not save extra payments.",
-        es: "Error no se pudo guardar los Pagos Extras.",
+        en: "Error: Unable to save extra payments.",
+        es: "Error: No fue posible guardar los pagos extra.",
       },
     },
   },

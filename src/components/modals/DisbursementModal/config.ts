@@ -59,10 +59,10 @@ export const dataTabsEnum = [
 export const dataDisbursementEnum = {
   title: {
     code: "Disbursement_title",
-    description: "Disbursement modeinstead",
+    description: "Disbursement mode",
     i18n: {
-      en: "Disbursement modeinstead",
-      es: "Medio de Desembolso",
+      en: "Disbursement mode",
+      es: "Forma de Desembolso",
     },
   },
   close: {
@@ -75,17 +75,17 @@ export const dataDisbursementEnum = {
   },
   noDataTitle: {
     code: "Disbursement_no_data_title",
-    description: "No Disbursements modeinstead found",
+    description: "No Disbursements modes found",
     i18n: {
-      en: "No Disbursements modeinstead found",
-      es: "No se encontraron medios de desembolso",
+      en: "No Disbursements modes found",
+      es: "No se encontraron formas de desembolso",
     },
   },
   noDataDescription: {
     code: "Disbursement_no_data_description",
-    description: "There are no Disbursements modeinstead available for this request.",
+    description: "No disbursement modes available",
     i18n: {
-      en: "There are no Disbursements modeinstead available for this request.",
+      en: "No disbursement modes available",
       es: "No hay medios de desembolso disponibles para esta solicitud.",
     },
   },
@@ -229,7 +229,7 @@ export const disbursemenOptionAccountEnum = {
     description: "Date of birth",
     i18n: {
       en: "Date of birth",
-      es: "fecha de nacimiento",
+      es: "Fecha de nacimiento",
     },
   },
   labelphone: {
@@ -317,7 +317,7 @@ export const disbursemenOptionAccountEnum = {
     description: "Extra things to consider.",
     i18n: {
       en: "Extra things to consider.",
-      es: "Cosas extra que deben tenerse en cuenta.",
+      es: "Comentarios extra a tener en cuenta.",
     },
   },
   placeOption: {

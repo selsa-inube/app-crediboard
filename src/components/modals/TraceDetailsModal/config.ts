@@ -20,7 +20,7 @@ export const dataTraceEnum = {
     description: "Question about approving requirement",
     i18n: {
       en: "Do you want to approve the requirement even if it could not be evaluated?",
-      es: "¿Quieres aprobar el requisito aunque no se pudo evaluar?",
+      es: "¿Quieres aprobar el requisito? pudo evaluar?",
     },
   },
   observations: {

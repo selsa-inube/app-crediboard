@@ -9,17 +9,17 @@ export const optionsEnum = {
   },
   labelOtherValue: {
     code: "Options_label_other_value",
-    description: "Capital payment",
+    description: "Advance principal payment",
     i18n: {
-      en: "Capital payment",
+      en: "Advance principal payment",
       es: "Abono a capital",
     },
   },
   labelPayAnotherValue: {
     code: "Options_label_pay_another_value",
-    description: "Pay another amount",
+    description: "Other amount",
     i18n: {
-      en: "Pay another amount",
+      en: "Other amount",
       es: "Pagar otro valor",
     },
   },

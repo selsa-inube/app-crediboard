@@ -17,7 +17,7 @@ export const defaultOptionsSelectEnum = {
     description: "Opción por defecto cuando no hay deudores disponibles",
     value: "0",
     i18n: {
-      en: "No debtors",
+      en: "No borrowers",
       es: "No hay deudores",
     },
   },
@@ -29,26 +29,26 @@ export const configSelectEnum = {
     code: "DebtorSelect_label",
     description: "Etiqueta para el selector de deudores",
     i18n: {
-      en: "Debtor",
+      en: "Borrower",
       es: "Deudor",
     },
   },
   placeholder: {
-    id: "debtorPlaceholder",
-    code: "DebtorSelect_placeholder",
+    id: "borrowerPlaceholder",
+    code: "BorrowerSelect_placeholder",
     description: "Placeholder para el selector de deudores",
     i18n: {
       en: "Select an option",
-      es: "Seleccione una opcion",
+      es: "Seleccione una opción",
     },
   },
   name: {
-    id: "debtorPlaceholder",
-    code: "DebtorSelect_placeholder",
+    id: "borrowerPlaceholder",
+    code: "BorrowerSelect_placeholder",
     description: "name",
     i18n: {
-      en: "deudor",
-      es: "deudor",
+      en: "borrower",
+      es: "borrower",
     },
   },
 };
@@ -57,7 +57,8 @@ export const restoreDataEnum = {
   justification: {
     id: "restoreJustification",
     code: "Restore_justification",
-    description: "Justificación para la restauración de obligaciones financieras",
+    description:
+      "Justificación para la restauración de obligaciones financieras",
     i18n: {
       en: "Restore financial obligations",
       es: "Restaurar obligaciones financieras",
@@ -78,7 +79,8 @@ export const errorMessagesEnum = {
   updateProspectDescription: {
     id: "updateProspectDescription",
     code: "Error_updateProspectDescription",
-    description: "Mensaje de error cuando falla la restauración de obligaciones",
+    description:
+      "Mensaje de error cuando falla la restauración de obligaciones",
     i18n: {
       en: "Financial obligations could not be restored.",
       es: "No se pudieron restaurar las obligaciones financieras.",

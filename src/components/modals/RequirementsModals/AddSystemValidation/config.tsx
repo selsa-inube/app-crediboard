@@ -2,19 +2,19 @@ export const requirementJustificationEnum = {
   ageRequirement: {
     code: "Requirement_ageRequirement",
     description: "Minimum age requirement validation",
-    value: "El asociado tiene más de 20 años de edad.", 
+    value: "El asociado tiene más de 20 años de edad.",
     i18n: {
       en: "Minimum age requirement is validated",
-      es: "Se valida la edad mínima para el requisito",
+      es: "Validación del requisito de edad mínima",
     },
   },
   seniorityRequirement: {
     code: "Requirement_seniorityRequirement",
     description: "Minimum seniority requirement validation",
-    value: "Antiguedad minima", 
+    value: "Antiguedad minima",
     i18n: {
       en: "Minimum seniority requirement is validated",
-      es: "Se valida la antigüedad mínima para el requisito",
+      es: "Validación del requisito de antigüedad mínima",
     },
   },
 };

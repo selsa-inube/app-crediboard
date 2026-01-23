@@ -12,7 +12,7 @@ export const incomeCardDataEnum = {
     description: "Borrower",
     i18n: {
       en: "Borrower",
-      es: "Deudor",
+      es: "borrower",
     },
   },
   income: {
@@ -33,7 +33,8 @@ export const incomeCardDataEnum = {
   },
   description: {
     code: "IncomeCard_restore_description",
-    description: "Do you really want to reset the values to their initial state?",
+    description:
+      "Do you really want to reset the values to their initial state?",
     i18n: {
       en: "Do you really want to reset the values to their initial state?",
       es: "¿Realmente deseas restablecer los valores a su estado inicial?",

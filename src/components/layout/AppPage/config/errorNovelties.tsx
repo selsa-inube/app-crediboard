@@ -31,9 +31,9 @@ export const emptyNoveltiesConfigEnum = {
   messages: {
     primary: {
       code: "EmptyNovelties_primary_message",
-      description: "You have no unread novelties",
+      description: "No unread novelties.",
       i18n: {
-        en: "You have no unread novelties",
+        en: "No unread novelties.",
         es: "No tienes novedades sin leer",
       },
     },
@@ -67,4 +67,3 @@ export const emptyNoveltiesConfigEnum = {
     actionIcon: <MdChevronRight />,
   },
 };
-

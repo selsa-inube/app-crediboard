@@ -21,12 +21,17 @@ import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { restoreFinancialObligationsByBorrowerId } from "@services/prospect/restoreFinancialObligationsByBorrowerId";
-import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles"
+import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles";
 import { CardGray } from "@components/cards/CardGray";
 import { useEnum } from "@hooks/useEnum";
 
 import { FinancialObligationModal } from "../financialObligationModal";
-import { defaultOptionsSelectEnum, configSelectEnum, restoreDataEnum, errorMessagesEnum } from "./config";
+import {
+  defaultOptionsSelectEnum,
+  configSelectEnum,
+  restoreDataEnum,
+  errorMessagesEnum,
+} from "./config";
 
 export interface ReportCreditsModalProps {
   handleClose: () => void;
@@ -66,7 +71,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     businessUnitPublicCode,
     businessManagerCode,
     creditRequestCode,
-    availableEditCreditRequest
+    availableEditCreditRequest,
   } = props;
   const [loading, setLoading] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -75,7 +80,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
   const [optionsBorrowers, setOptionsBorrowers] = useState<optionsSelect[]>([]);
   const [newObligation, setNewObligation] = useState<IFinancialObligation>();
   const [localProspectData, setLocalProspectData] = useState<IProspect[]>(
-    prospectData || []
+    prospectData || [],
   );
   const [tableRefreshKey, setTableRefreshKey] = useState(0);
   const [errorModal, setErrorModal] = useState(false);
@@ -103,14 +108,14 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         const completeData = await getSearchProspectByCode(
           businessUnitPublicCode,
           businessManagerCode,
-          creditRequestCode
+          creditRequestCode,
         );
 
         setLocalProspectData([completeData]);
 
         if (!initialProspectSnapshot.current) {
           initialProspectSnapshot.current = JSON.parse(
-            JSON.stringify([completeData])
+            JSON.stringify([completeData]),
           );
         }
 
@@ -136,12 +141,12 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           if (borrower[parameter] === value) {
             return borrower;
           }
-        }
+        },
       );
 
       return listsBorrowers?.[0];
     },
-    [localProspectData]
+    [localProspectData],
   );
 
   const buildObjectSelection = useCallback((name: string, value: string) => {
@@ -158,7 +163,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     return localProspectData[0].borrowers?.map((borrower) => {
       return buildObjectSelection(
         borrower.borrowerName,
-        borrower.borrowerIdentificationNumber
+        borrower.borrowerIdentificationNumber,
       );
     });
   }, [localProspectData, buildObjectSelection]);
@@ -178,8 +183,8 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       setSelectedBorrower(
         buildObjectSelection(
           mainBorrower.borrowerName,
-          mainBorrower.borrowerIdentificationNumber
-        )
+          mainBorrower.borrowerIdentificationNumber,
+        ),
       );
     }
 
@@ -191,7 +196,9 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       value: defaultOptionsSelectEnum.noDebtors.value,
     };
 
-    setOptionsBorrowers(options && options.length > 0 ? options : [fallbackOption]);
+    setOptionsBorrowers(
+      options && options.length > 0 ? options : [fallbackOption],
+    );
 
     return () => clearTimeout(timeout);
   }, [filterListBorrowers, getOptionsSelect, buildObjectSelection, lang]);
@@ -244,7 +251,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         businessManagerCode,
         selectedBorrower.value,
         creditRequestCode,
-        restoreDataEnum.justification.i18n[lang]
+        restoreDataEnum.justification.i18n[lang],
       );
 
       setTableRefreshKey((prev) => prev + 1);
@@ -252,7 +259,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
       const refreshedData = await getSearchProspectByCode(
         businessUnitPublicCode,
         businessManagerCode,
-        creditRequestCode
+        creditRequestCode,
       );
 
       setLocalProspectData([refreshedData]);
@@ -287,7 +294,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               >
                 {optionsBorrowers && optionsBorrowers.length === 1 ? (
                   <CardGray
-                    label={"Deudor"}
+                    label={"borrower"}
                     placeHolder={optionsBorrowers[0]?.label}
                   />
                 ) : (
@@ -307,27 +314,18 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                   direction={isMobile ? "column" : "row"}
                   alignItems="center"
                   gap="16px"
-                  width={
-                    isMobile
-                      ? "100%"
-                      : "auto"
-                  }
+                  width={isMobile ? "100%" : "auto"}
                 >
-                  <Stack
-                    gap="2px"
-                    width={
-                      isMobile
-                        ? "100%"
-                        : "auto"
-                    }
-                  >
+                  <Stack gap="2px" width={isMobile ? "100%" : "auto"}>
                     <Button
                       children={restoreDataEnum.label.i18n[lang]}
                       iconBefore={<MdCached />}
                       fullwidth={isMobile}
                       variant="outlined"
                       spacing="wide"
-                      disabled={editCreditApplication || availableEditCreditRequest}
+                      disabled={
+                        editCreditApplication || availableEditCreditRequest
+                      }
                       onClick={() => setIsOpenModal(true)}
                     />
                     <Stack alignItems="center">
@@ -344,27 +342,15 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
                       )}
                     </Stack>
                   </Stack>
-                  <Stack
-                    gap="2px"
-                    width={
-                      isMobile
-                        ? "100%"
-                        : "auto"
-                    }
-                  >
-                    <Stack
-                      gap="16px"
-                      width={
-                        isMobile
-                          ? "100%"
-                          : "auto"
-                      }
-                    >
+                  <Stack gap="2px" width={isMobile ? "100%" : "auto"}>
+                    <Stack gap="16px" width={isMobile ? "100%" : "auto"}>
                       <Button
                         children={dataReportEnum.addObligations.i18n[lang]}
                         iconBefore={<MdAdd />}
                         fullwidth={isMobile}
-                        disabled={editCreditApplication || availableEditCreditRequest}
+                        disabled={
+                          editCreditApplication || availableEditCreditRequest
+                        }
                         onClick={() => setOpenModal(true)}
                       />
                     </Stack>
@@ -427,7 +413,11 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               onClose={handleInfoModalClose}
               title={privilegeCrediboard.title}
               subtitle={privilegeCrediboard.subtitle}
-              description={availableEditCreditRequest ? optionsDisableStage.description : privilegeCrediboard.description}
+              description={
+                availableEditCreditRequest
+                  ? optionsDisableStage.description
+                  : privilegeCrediboard.description
+              }
               nextButtonText={privilegeCrediboard.nextButtonText}
               isMobile={isMobile}
             />
@@ -436,17 +426,15 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           )}
         </ScrollableContainer>
       </BaseModal>
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

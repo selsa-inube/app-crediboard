@@ -3,7 +3,7 @@ export const newBorrowedDataEnum = {
     code: "NewBorrowedData_names",
     description: "Label for borrower names",
     i18n: {
-      en: "Names",
+      en: "Name",
       es: "Nombres",
     },
   },
@@ -39,4 +39,4 @@ export const newBorrowedDataEnum = {
       es: "Obligaciones financieras",
     },
   },
-}
+};

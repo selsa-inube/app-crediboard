@@ -28,15 +28,15 @@ export const TextLabelsEnum = {
     description: "Changes saved successfully!",
     i18n: {
       en: "Changes saved successfully!",
-      es: "Cambios guardados con éxito!",
+      es: "¡Cambios guardados con éxito!",
     },
   },
   descriptionSuccess: {
     code: "TextLabels_description_success",
-    description: "We have successfully created the field.",
+    description: "The data was saved correctly.",
     i18n: {
-      en: "We have successfully created the field.",
-      es: "Hemos creado el campo exitosamente.",
+      en: "The data was saved correctly.",
+      es: "Los datos se guardaron correctamente.",
     },
   },
   titleError: {
@@ -49,9 +49,9 @@ export const TextLabelsEnum = {
   },
   descriptionError: {
     code: "TextLabels_description_error",
-    description: "The changes could not be saved.",
+    description: "Unable to save changes.",
     i18n: {
-      en: "The changes could not be saved.",
+      en: "Unable to save changes.",
       es: "No se han podido guardar los cambios.",
     },
   },

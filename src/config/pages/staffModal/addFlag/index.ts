@@ -4,7 +4,7 @@ export const textFlagsUsersEnum = {
     description: "Title for success message",
     i18n: {
       en: "Changes saved successfully!",
-      es: "Cambios guardados con éxito!",
+      es: "¡Cambios guardados con éxito!",
     },
   },
   descriptionSuccess: {
@@ -55,7 +55,7 @@ export const textFlagsRejectEnum = {
     description: "Title for success message when rejecting a request",
     i18n: {
       en: "Changes saved successfully!",
-      es: "Cambios guardados con éxito!",
+      es: "¡Cambios guardados con éxito!",
     },
   },
   descriptionSuccess: {
@@ -90,7 +90,7 @@ export const textFlagsCancelEnum = {
     description: "Title for success message when canceling a request",
     i18n: {
       en: "Changes saved successfully!",
-      es: "Cambios guardados con éxito!",
+      es: "¡Cambios guardados con éxito!",
     },
   },
   descriptionSuccess: {

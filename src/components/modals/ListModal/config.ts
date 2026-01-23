@@ -68,7 +68,7 @@ export const listModalDataEnum = {
     description: "Allowed file types",
     i18n: {
       en: "Only PDF or image files (JPG, JPEG, PNG) up to 2.5MB are allowed.",
-      es: "Solo se permiten archivos PDF o imágenes (JPG, JPEG, PNG) de máximo 2.5MB.",
+      es: "Sólo se permiten archivos PDF o imágenes (JPG, JPEG, PNG) de máximo 2.5MB.",
     },
   },
   errorDocument: {

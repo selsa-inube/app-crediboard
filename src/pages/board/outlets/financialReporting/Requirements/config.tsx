@@ -21,10 +21,11 @@ import { MappedRequirements } from "./types";
 export const getDataButton = (
   lang: EnumType,
   onClick: () => void,
-  onClickSistemValidation: () => void
+  onClickSistemValidation: () => void,
 ) => ({
   title: lang === "en" ? "Add human validation" : "Agregar validación humana",
-  titleSistemValidation: lang === "en" ? "Add system validation" : "Agregar validación del sistema",
+  titleSistemValidation:
+    lang === "en" ? "Add system validation" : "Agregar validación del sistema",
   onClick,
   onClickSistemValidation,
 });
@@ -34,21 +35,27 @@ const receiveData = (data: IEntries) => {
 };
 
 export const getTitlesRequirements = (lang: EnumType) => [
-  Object.values(titlesRequirementsEnum.validacionesDelSistema.columns).map(col => ({
-    id: col.code.includes("main") ? "Validaciones del sistema" : "tag",
-    titleName: col.i18n[lang],
-    priority: col.priority
-  })),
-  Object.values(titlesRequirementsEnum.requisitosDocumentales.columns).map(col => ({
-    id: col.code.includes("main") ? "Requisitos documentales" : "tag",
-    titleName: col.i18n[lang],
-    priority: col.priority
-  })),
-  Object.values(titlesRequirementsEnum.validacionesHumanas.columns).map(col => ({
-    id: col.code.includes("main") ? "Validaciones humanas" : "tag",
-    titleName: col.i18n[lang],
-    priority: col.priority
-  })),
+  Object.values(titlesRequirementsEnum.validacionesDelSistema.columns).map(
+    (col) => ({
+      id: col.code.includes("main") ? "Validaciones del sistema" : "tag",
+      titleName: col.i18n[lang],
+      priority: col.priority,
+    }),
+  ),
+  Object.values(titlesRequirementsEnum.requisitosDocumentales.columns).map(
+    (col) => ({
+      id: col.code.includes("main") ? "Requisitos documentales" : "tag",
+      titleName: col.i18n[lang],
+      priority: col.priority,
+    }),
+  ),
+  Object.values(titlesRequirementsEnum.validacionesHumanas.columns).map(
+    (col) => ({
+      id: col.code.includes("main") ? "Validaciones humanas" : "tag",
+      titleName: col.i18n[lang],
+      priority: col.priority,
+    }),
+  ),
 ];
 
 export const titlesRequirementsEnum = {
@@ -132,7 +139,7 @@ export const textFlagsRequirementsEnum = {
     description: "Title for success message",
     i18n: {
       en: "Changes saved successfully!",
-      es: "Cambios guardados con éxito!",
+      es: "¡Cambios guardados con éxito!",
     },
   },
   descriptionSuccess: {
@@ -330,7 +337,7 @@ export const justificationDescriptionsEnum = {
     description: "Justification for age requirement",
     i18n: {
       en: "Minimum age for the requirement is validated",
-      es: "Se valida la edad mínima para el requisito",
+      es: "Validación del requisito de edad mínima",
     },
   },
   antiguedad: {
@@ -338,7 +345,7 @@ export const justificationDescriptionsEnum = {
     description: "Justification for seniority requirement",
     i18n: {
       en: "Minimum seniority for the requirement is validated",
-      es: "Se valida la antigüedad mínima para el requisito",
+      es: "Validación del requisito de antigüedad mínima",
     },
   },
 };
@@ -491,28 +498,54 @@ export const requirementLabelsEnum = {
     id: "notEvaluated",
     i18n: { en: "Not Evaluated", es: "Sin Evaluar" },
   },
-}
+};
 
 const generateTag = (value: string, lang: EnumType): JSX.Element => {
   const isPassed = [
-    "PASSED_WITH_SYSTEM_VALIDATION", "DOCUMENT_STORED_WITHOUT_VALIDATION",
-    "PASSED_WITH_HUMAN_VALIDATION", "DOCUMENT_VALIDATED_BY_THE_USER",
-    "IGNORED_BY_THE_USER", "PASSED_HUMAN_VALIDATION",
-    "DOCUMENT_STORED_AND_VALIDATED", "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
+    "PASSED_WITH_SYSTEM_VALIDATION",
+    "DOCUMENT_STORED_WITHOUT_VALIDATION",
+    "PASSED_WITH_HUMAN_VALIDATION",
+    "DOCUMENT_VALIDATED_BY_THE_USER",
+    "IGNORED_BY_THE_USER",
+    "PASSED_HUMAN_VALIDATION",
+    "DOCUMENT_STORED_AND_VALIDATED",
+    "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
     "DOCUMENT_IGNORED_BY_THE_USER",
   ].includes(value);
 
   const isFailed = [
-    "FAILED_SYSTEM_VALIDATION", "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
-    "FAILED_DOCUMENT_VALIDATION", "FAILED_HUMAN_VALIDATION",
+    "FAILED_SYSTEM_VALIDATION",
+    "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
+    "FAILED_DOCUMENT_VALIDATION",
+    "FAILED_HUMAN_VALIDATION",
   ].includes(value);
 
-  if (isPassed) return <Tag label={requirementLabelsEnum.compliant.i18n[lang]} appearance="success" />;
-  if (isFailed) return <Tag label={requirementLabelsEnum.notCompliant.i18n[lang]} appearance="danger" />;
-  return <Tag label={requirementLabelsEnum.notEvaluated.i18n[lang]} appearance="warning" />;
+  if (isPassed)
+    return (
+      <Tag
+        label={requirementLabelsEnum.compliant.i18n[lang]}
+        appearance="success"
+      />
+    );
+  if (isFailed)
+    return (
+      <Tag
+        label={requirementLabelsEnum.notCompliant.i18n[lang]}
+        appearance="danger"
+      />
+    );
+  return (
+    <Tag
+      label={requirementLabelsEnum.notEvaluated.i18n[lang]}
+      appearance="warning"
+    />
+  );
 };
 
-export const maperEntries = (data: MappedRequirements, lang: EnumType): IEntries[][] => {
+export const maperEntries = (
+  data: MappedRequirements,
+  lang: EnumType,
+): IEntries[][] => {
   return [
     Object.entries(data.SYSTEM_VALIDATION).map(([key, value], index) => ({
       id: `sistema-${index + 1}`,
@@ -568,11 +601,29 @@ export const getActionsMobileIcon = () => {
   ];
 };
 
-export const maperDataRequirements = (processedEntries: IEntries[][], lang: EnumType) => {
+export const maperDataRequirements = (
+  processedEntries: IEntries[][],
+  lang: EnumType,
+) => {
   const titles = getTitlesRequirements(lang);
   return [
-    { id: "tableApprovalSystem", titlesRequirements: titles[0], entriesRequirements: processedEntries[0], actionsMovile: actionsMobile },
-    { id: "tableDocumentValues", titlesRequirements: titles[1], entriesRequirements: processedEntries[1], actionsMovile: actionsMobile },
-    { id: "tableApprovalHuman", titlesRequirements: titles[2], entriesRequirements: processedEntries[2], actionsMovile: actionsMobile },
+    {
+      id: "tableApprovalSystem",
+      titlesRequirements: titles[0],
+      entriesRequirements: processedEntries[0],
+      actionsMovile: actionsMobile,
+    },
+    {
+      id: "tableDocumentValues",
+      titlesRequirements: titles[1],
+      entriesRequirements: processedEntries[1],
+      actionsMovile: actionsMobile,
+    },
+    {
+      id: "tableApprovalHuman",
+      titlesRequirements: titles[2],
+      entriesRequirements: processedEntries[2],
+      actionsMovile: actionsMobile,
+    },
   ];
 };

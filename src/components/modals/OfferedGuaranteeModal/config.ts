@@ -2,9 +2,9 @@ export const dataTabsEnum = {
   borrower: {
     id: "borrower",
     code: "GuaranteeTabs_borrower",
-    description: "Co-debtor tab",
+    description: "Co-borrower tab",
     i18n: {
-      en: "Co-debtor",
+      en: "Co-borrower",
       es: "Codeudor",
     },
   },
@@ -56,25 +56,25 @@ export const dataGuaranteeEnum = {
   },
   borrower: {
     code: "Guarantee_borrower",
-    description: "Co-debtor label",
+    description: "Co-borrower label",
     i18n: {
-      en: "Co-debtor",
+      en: "Co-borrower",
       es: "Codeudor",
     },
   },
   noBorrowersTitle: {
     code: "Guarantee_noBorrowersTitle",
-    description: "No co-debtors found title",
+    description: "No Co-borrowers found title",
     i18n: {
-      en: "No co-debtors found.",
+      en: "No Co-borrowers found.",
       es: "No se encontraron codeudores.",
     },
   },
   noBorrowersDescription: {
     code: "Guarantee_noBorrowersDescription",
-    description: "No co-debtors found description",
+    description: "No Co-borrowers found description",
     i18n: {
-      en: "There are no co-debtors available for this request.",
+      en: "There are no Co-borrowers available for this request.",
       es: "No hay codeudores disponibles para esta solicitud.",
     },
   },
@@ -104,9 +104,9 @@ export const dataGuaranteeEnum = {
   },
   errorCoDebtor: {
     code: "Guarantee_errorCoDebtor",
-    description: "Co-debtor error",
+    description: "Co-borrower error",
     i18n: {
-      en: "Error retrieving co-debtor data",
+      en: "Error retrieving Co-borrower data",
       es: "Error al obtener los datos del Codeudor",
     },
   },

@@ -27,8 +27,8 @@ export const approvalsConfigEnum = {
     code: "Approvals_approval",
     description: "Approval question",
     i18n: {
-      en: "Do you want to approve the requirement even if it does not meet",
-      es: "¿Quieres aprobar el requisito aunque no se",
+      en: "Do you want to approve the requirement?",
+      es: "¿Quieres aprobar el requisito?",
     },
   },
   observations: {

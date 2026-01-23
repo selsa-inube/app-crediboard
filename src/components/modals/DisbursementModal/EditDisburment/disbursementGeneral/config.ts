@@ -290,7 +290,7 @@ export const disbursemenOptionAccountEnum = {
     description: "Placeholder para observaciones",
     i18n: {
       en: "Extra things to be taken into account.",
-      es: "Cosas extra que deben tenerse en cuenta.",
+      es: "Comentarios extra a tener en cuenta.",
     },
   },
   placeOption: {

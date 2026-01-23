@@ -28,7 +28,7 @@ export const dataBailEnum = {
     description: "No bond found title",
     i18n: {
       en: "No bond found.",
-      es: "No se encontraro una fianza.",
+      es: "No se encontró el valor de la fianza.",
     },
   },
   noBorrowersDescription: {
