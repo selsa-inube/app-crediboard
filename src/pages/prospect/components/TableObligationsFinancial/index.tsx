@@ -6,6 +6,7 @@ import { updateProspect } from "@services/prospect/updateProspect";
 import { IBorrower, IProspect, IBorrowerProperty } from "@services/prospect/types";
 import { optionsSelect, IFinancialObligation } from "@components/modals/ReportCreditsModal/index.tsx";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+import { useEnum } from "@hooks/useEnum";
 
 import { headers, ROWS_PER_PAGE, errorMessages } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
@@ -38,6 +39,7 @@ export const TableFinancialObligations = (
   props: ITableFinancialObligationsProps
 ) => {
   const { refreshKey, showActions, businessUnitPublicCode, businessManagerCode, creditRequestCode, selectedBorrower, newObligation, onObligationProcessed } = props;
+  const { lang } = useEnum();
 
   const [dataProspect, setDataProspect] = useState<IProspect[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -416,6 +418,7 @@ export const TableFinancialObligations = (
       setErrorModal={setErrorModal}
       errorMessage={errorMessage}
       errorModal={errorModal}
+      lang={lang}
     />
   );
 };

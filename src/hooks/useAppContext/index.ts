@@ -19,6 +19,7 @@ import { IOptionStaff } from "@services/staff/staffs/searchOptionForStaff/types"
 interface IBusinessUnits {
   businessUnitPublicCode: string;
   abbreviatedName: string;
+  langId: string;
   languageId: string;
   languageiso: string;
   urlLogo: string;
@@ -74,6 +75,7 @@ function useAppContext() {
     businessUnit: {
       businessUnitPublicCode: businessUnit?.businessUnitPublicCode || "",
       abbreviatedName: businessUnit?.abbreviatedName || "",
+      langId: businessUnit?.langId || "",
       languageId: businessUnit?.languageId || "",
       languageiso: businessUnit?.languageiso || "",
       urlLogo: businessUnit?.urlLogo || "",
@@ -307,6 +309,7 @@ function useAppContext() {
             ...prev.businessUnit,
             abbreviatedName: businessUnit?.abbreviatedName || "",
             businessUnitPublicCode: businessUnit?.businessUnitPublicCode || "",
+            langId: businessUnit?.langId || "",
             languageId: businessUnit?.languageId || "",
             languageiso: businessUnit?.languageiso || "",
             urlLogo: businessUnit?.urlLogo || "",

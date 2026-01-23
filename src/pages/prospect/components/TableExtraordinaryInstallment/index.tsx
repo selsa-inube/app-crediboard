@@ -18,13 +18,14 @@ import { IProspect } from "@services/prospect/types";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { useEnum } from "@hooks/useEnum";
 
 import { Detail } from "./Detail";
 import {
-  headersTableExtraordinaryInstallment,
+  getHeadersTableExtraordinaryInstallment,
   rowsVisbleMobile,
   rowsActions,
-  dataTableExtraordinaryInstallment,
+  dataTableExtraordinaryInstallmentEnum,
   messageError
 } from "./config";
 import { removeExtraordinaryInstallment } from "./utils";
@@ -87,8 +88,9 @@ export const TableExtraordinaryInstallment = (
     creditRequestCode,
     availableEditCreditRequest
   } = props;
+  const { lang } = useEnum();
 
-  const headers = headersTableExtraordinaryInstallment;
+  const headers = getHeadersTableExtraordinaryInstallment(lang);
 
   const [extraordinaryInstallments, setExtraordinaryInstallments] = useState<
     TableExtraordinaryInstallmentProps[]
@@ -308,7 +310,7 @@ export const TableExtraordinaryInstallment = (
                 appearance="gray"
                 textAlign="center"
               >
-                {dataTableExtraordinaryInstallment.noData}
+                {dataTableExtraordinaryInstallmentEnum.noData.i18n[lang]}
               </Text>
             </Td>
           </Tr>
@@ -341,7 +343,7 @@ export const TableExtraordinaryInstallment = (
           handleDelete={() =>
             handleExtraordinaryInstallment(itemIdentifiersForUpdate)
           }
-          TextDelete={dataTableExtraordinaryInstallment.content}
+          TextDelete={dataTableExtraordinaryInstallmentEnum.deletion.i18n[lang]}
         />
       )}
       {

@@ -1,12 +1,20 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { formatPrimaryDate } from "@utils/formatData/date";
+import { useEnum } from "@hooks/useEnum";
 
 import { PaymentConfigurationUI } from "./interface";
-import { paymentConfiguration, IPaymentConfigurationMain } from "../config";
+import { IPaymentConfigurationMain, paymentConfigurationEnum } from "../config";
 
 export function PaymentConfiguration(props: IPaymentConfigurationMain) {
   const { paymentConfig, onChange, onFormValid } = props;
+  const { lang } = useEnum();
+
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   const flatChannels = useMemo(() => {
     return (
       paymentConfig.paymentChannelData?.flatMap(
@@ -69,30 +77,37 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
   }, [selectedCycle]);
 
   useEffect(() => {
+    let shouldUpdate = false;
     const updates: Partial<IPaymentConfigurationMain["paymentConfig"]> = {};
 
-    if (paymentMethodOptions.length === 1 && !paymentConfig.paymentMethod) {
-      updates.paymentMethod = paymentMethodOptions[0].value;
+    if (paymentMethodOptions.length === 1) {
+      const singleMethod = paymentMethodOptions[0].value;
+      if (paymentConfig.paymentMethod !== singleMethod) {
+        updates.paymentMethod = singleMethod;
+        shouldUpdate = true;
+      }
     }
 
-    if (
-      paymentCycleOptions.length === 1 &&
-      paymentConfig.paymentMethod &&
-      !paymentConfig.paymentCycle
-    ) {
-      updates.paymentCycle = paymentCycleOptions[0].value;
+    const currentMethod = updates.paymentMethod || paymentConfig.paymentMethod;
+    if (currentMethod && paymentCycleOptions.length === 1) {
+      const singleCycle = paymentCycleOptions[0].value;
+      if (paymentConfig.paymentCycle !== singleCycle) {
+        updates.paymentCycle = singleCycle;
+        shouldUpdate = true;
+      }
     }
 
-    if (
-      firstPaymentDateOptions.length === 1 &&
-      paymentConfig.paymentCycle &&
-      !paymentConfig.firstPaymentDate
-    ) {
-      updates.firstPaymentDate = firstPaymentDateOptions[0].value;
+    const currentCycle = updates.paymentCycle || paymentConfig.paymentCycle;
+    if (currentCycle && firstPaymentDateOptions.length === 1) {
+      const singleDate = firstPaymentDateOptions[0].value;
+      if (paymentConfig.firstPaymentDate !== singleDate) {
+        updates.firstPaymentDate = singleDate;
+        shouldUpdate = true;
+      }
     }
 
-    if (Object.keys(updates).length > 0) {
-      onChange(updates);
+    if (shouldUpdate) {
+      onChangeRef.current(updates);
     }
   }, [
     paymentMethodOptions,
@@ -101,17 +116,21 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
     paymentConfig.paymentMethod,
     paymentConfig.paymentCycle,
     paymentConfig.firstPaymentDate,
-    onChange,
   ]);
 
   useEffect(() => {
     const isValid =
-      paymentConfig.paymentMethod !== "" &&
-      paymentConfig.paymentCycle !== "" &&
-      paymentConfig.firstPaymentDate !== "";
+      Boolean(paymentConfig.paymentMethod) &&
+      Boolean(paymentConfig.paymentCycle) &&
+      Boolean(paymentConfig.firstPaymentDate);
 
     onFormValid(isValid);
-  }, [paymentConfig, onFormValid]);
+  }, [
+    paymentConfig.paymentMethod,
+    paymentConfig.paymentCycle,
+    paymentConfig.firstPaymentDate,
+    onFormValid,
+  ]);
 
   const handlePaymentMethodChange = (value: string) => {
     onChange({
@@ -132,23 +151,39 @@ export function PaymentConfiguration(props: IPaymentConfigurationMain) {
     onChange({ firstPaymentDate: value });
   };
 
+  const configUI = {
+    paymentMethod: {
+      label: paymentConfigurationEnum.paymentMethod.label.i18n[lang],
+      placeholder:
+        paymentConfigurationEnum.paymentMethod.placeholder.i18n[lang],
+    },
+    paymentCycle: {
+      label: paymentConfigurationEnum.paymentCycle.label.i18n[lang],
+    },
+    firstPaymentDate: {
+      label: paymentConfigurationEnum.firstPaymentDate.label.i18n[lang],
+      placeholder:
+        paymentConfigurationEnum.paymentMethod.placeholder.i18n[lang],
+    },
+  };
+
   const hasOnlyOnePaymentMethod = paymentMethodOptions.length === 1;
   const hasOnlyOnePaymentCycle = paymentCycleOptions.length === 1;
   const hasOnlyOneFirstPaymentDate = firstPaymentDateOptions.length === 1;
-
   return (
     <PaymentConfigurationUI
       paymentConfig={paymentConfig}
       paymentMethodOptions={paymentMethodOptions}
       paymentCycleOptions={paymentCycleOptions}
       firstPaymentDateOptions={firstPaymentDateOptions}
-      paymentConfiguration={paymentConfiguration}
+      paymentConfiguration={configUI}
       handlePaymentMethodChange={handlePaymentMethodChange}
       handlePaymentCycleChange={handlePaymentCycleChange}
       handleFirstPaymentDateChange={handleFirstPaymentDateChange}
       hasOnlyOnePaymentMethod={hasOnlyOnePaymentMethod}
       hasOnlyOnePaymentCycle={hasOnlyOnePaymentCycle}
       hasOnlyOneFirstPaymentDate={hasOnlyOneFirstPaymentDate}
+      lang={lang}
     />
   );
 }

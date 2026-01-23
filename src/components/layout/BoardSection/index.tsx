@@ -19,6 +19,7 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 import { getCanUnpin } from "@utils/configRules/permissions";
 import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
+import { useEnum } from "@hooks/useEnum";
 
 import {
   StyledBoardSection,
@@ -26,7 +27,7 @@ import {
   StyledFilterIcon,
 } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
-import { configOption, infoModal, messagesError } from "./config";
+import { configOptionEnum, infoModalEnum, messagesErrorEnum } from "./config";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -81,9 +82,12 @@ function BoardSection(props: BoardSectionProps) {
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+
   const flagMessage = useRef(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
+  const { lang } = useEnum();
+
   const businessManagerCode = eventData.businessManager.abbreviatedName;
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
@@ -105,15 +109,15 @@ function BoardSection(props: BoardSectionProps) {
   const getNoDataMessage = () => {
     if (sectionInformation.length === 0) {
       if (showPinnedOnly) {
-        return configOption.noPinnedRequests;
+        return configOptionEnum.noPinnedRequests.i18n[lang];
       }
       if (searchRequestValue && searchRequestValue.trim().length >= 1) {
-        return configOption.noKeywordResults;
+        return configOptionEnum.noKeywordResults.i18n[lang];
       }
       if (hasActiveFilters) {
-        return configOption.noFilterResults;
+        return configOptionEnum.noFilterResults.i18n[lang];
       }
-      return configOption.textNodata;
+      return configOptionEnum.textNodata.i18n[lang];
     }
     return "";
   };
@@ -162,7 +166,9 @@ function BoardSection(props: BoardSectionProps) {
         businessManagerCode,
       );
     } catch (error) {
-      setErrorMessage(messagesError.changeTracesToReadById.description);
+      setErrorMessage(
+        messagesErrorEnum.changeTracesToReadById.description.i18n[lang],
+      );
       setErrorModal(true);
     }
   };
@@ -180,9 +186,11 @@ function BoardSection(props: BoardSectionProps) {
       }
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(messagesError.changeTracesToReadById.description);
+      setMessageError(
+        messagesErrorEnum.changeTracesToReadById.description.i18n[lang],
+      );
     }
-  }, [businessUnitPublicCode]);
+  }, [businessUnitPublicCode, lang]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -345,7 +353,7 @@ function BoardSection(props: BoardSectionProps) {
                 appearance="dark"
                 onClick={handleLoadMoreData}
               >
-                {configOption.load}
+                {configOptionEnum.load.i18n[lang]}
               </Button>
             </Stack>
           )}
@@ -371,8 +379,8 @@ function BoardSection(props: BoardSectionProps) {
       )}
       {isInfoModalOpen && (
         <BaseModal
-          title={infoModal.title}
-          nextButton={infoModal.button}
+          title={infoModalEnum.title.i18n[lang]}
+          nextButton={infoModalEnum.button.i18n[lang]}
           handleNext={() => setIsInfoModalOpen(false)}
           handleClose={() => setIsInfoModalOpen(false)}
           width={isMobile ? "290px" : "403px"}
@@ -380,7 +388,7 @@ function BoardSection(props: BoardSectionProps) {
           <Stack direction="column" alignItems="center" gap="16px">
             <Icon icon={<MdInfoOutline />} size="68px" appearance="primary" />
             <Text type="body" size="medium" appearance="gray">
-              {infoModal.message}
+              {infoModalEnum.message.i18n[lang]}
             </Text>
           </Stack>
         </BaseModal>

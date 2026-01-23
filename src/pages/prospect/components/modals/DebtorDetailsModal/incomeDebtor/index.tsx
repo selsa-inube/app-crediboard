@@ -5,30 +5,32 @@ import { Fieldset } from "@components/data/Fieldset";
 import { getPropertyValue } from "@utils/mappingData/mappings";
 import { currencyFormat } from "@utils/formatData/currency";
 import { IBorrower } from "@services/prospect/types";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataIncomeDebtor } from "./config";
+import { dataIncomeDebtorEnum } from "./config";
 
 interface IIncomeBorrower {
   initialIncome: IBorrower;
 }
 
-const incomeFields = [
-  {
-    label: dataIncomeDebtor.work,
-    keys: ["PeriodicSalary", "OtherNonSalaryEmoluments", "PensionAllowances"],
-  },
-  {
-    label: dataIncomeDebtor.capital,
-    keys: ["FinancialIncome", "Leases", "Dividends"],
-  },
-  {
-    label: dataIncomeDebtor.variables,
-    keys: ["ProfessionalFees", "PersonalBusinessUtilities"],
-  },
-];
-
 export function IncomeBorrower(props: IIncomeBorrower) {
   const { initialIncome } = props;
+const { lang } = useEnum();
+
+  const incomeFields = [
+    {
+      label: dataIncomeDebtorEnum.work.i18n[lang],
+      keys: ["PeriodicSalary", "OtherNonSalaryEmoluments", "PensionAllowances"],
+    },
+    {
+      label: dataIncomeDebtorEnum.capital.i18n[lang],
+      keys: ["FinancialIncome", "Leases", "Dividends"],
+    },
+    {
+      label: dataIncomeDebtorEnum.variables.i18n[lang],
+      keys: ["ProfessionalFees", "PersonalBusinessUtilities"],
+    },
+  ];
 
   return (
     <Fieldset

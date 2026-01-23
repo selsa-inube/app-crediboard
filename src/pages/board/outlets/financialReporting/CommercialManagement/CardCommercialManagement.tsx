@@ -23,6 +23,9 @@ import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { RemoveCreditProduct } from "@services/creditRequest/command/removeCreditProduct";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { useEnum } from "@hooks/useEnum";
+
+import { SummaryProspectCreditEnum, tittleOptionsEnum } from "./config/config";
 import { paymentCycleMap } from "@pages/prospect/components/modals/ProspectProductModal/config";
 import { capitalizeFirstLetter } from "@utils/formatData/text";
 
@@ -32,7 +35,6 @@ import {
   StylePrintCardSummary,
   StyledPrintCardProspect,
 } from "./styles";
-import { SummaryProspectCredit, tittleOptions } from "./config/config";
 
 interface CardCommercialManagementProps {
   id: string;
@@ -64,7 +66,6 @@ export const CardCommercialManagement = (
     [],
   );
 
-  const { addFlag } = useFlag();
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -107,6 +108,8 @@ export const CardCommercialManagement = (
     }
   }, [prospectData]);
   const isMobile = useMediaQuery("(max-width: 800px)");
+  const { lang } = useEnum();
+  const { addFlag } = useFlag();
 
   const handleDelete = async () => {
     if (!prospectData || !prospectProducts.length) return;
@@ -142,8 +145,8 @@ export const CardCommercialManagement = (
       setShowDeleteModal(false);
 
       addFlag({
-        title: tittleOptions.successDeleteTitle,
-        description: tittleOptions.successDeleteDescription,
+        title: tittleOptionsEnum.successDeleteTitle.i18n[lang],
+        description: tittleOptionsEnum.successDeleteDescription.i18n[lang],
         appearance: "success",
         duration: 5000,
       });
@@ -157,7 +160,9 @@ export const CardCommercialManagement = (
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       const description = code + err?.message + (err?.data?.description || "");
       setShowErrorModal(true);
-      setMessageError(tittleOptions.errorDeleteProduct || description);
+      setMessageError(
+        tittleOptionsEnum.errorDeleteProduct.i18n[lang] || description,
+      );
       setIsSendingData(false);
     }
   };
@@ -179,8 +184,8 @@ export const CardCommercialManagement = (
         }
       } catch (error) {
         addFlag({
-          title: tittleOptions.titleError,
-          description: tittleOptions.descriptionError,
+          title: tittleOptionsEnum.titleError.i18n[lang],
+          description: tittleOptionsEnum.descriptionError.i18n[lang],
           appearance: "danger",
           duration: 5000,
         });
@@ -205,7 +210,7 @@ export const CardCommercialManagement = (
         setDeductibleExpenses(data);
       } catch (error) {
         addFlag({
-          title: tittleOptions.deductibleExpensesErrorTitle,
+          title: tittleOptionsEnum.deductibleExpensesErrorTitle.i18n[lang],
           description: `${error}`,
           appearance: "danger",
           duration: 5000,
@@ -271,11 +276,12 @@ export const CardCommercialManagement = (
                     ? handleInfo
                     : () => handleDeleteClick(entry.creditProductCode)
                 }
+                lang={lang}
               />
             ))}
             {!availableEditCreditRequest && (
               <StyledPrint>
-                <NewCreditProductCard onClick={onClick} />
+                <NewCreditProductCard onClick={onClick} lang={lang} />
               </StyledPrint>
             )}
           </Stack>
@@ -289,12 +295,14 @@ export const CardCommercialManagement = (
               direction={isMobile ? "column" : "row"}
               justifyContent="space-between"
             >
-              {SummaryProspectCredit.map((entry, index) => (
+              {SummaryProspectCreditEnum.map((entry, index) => (
                 <CardValues
                   key={index}
                   items={entry.item.map((item) => ({
-                    ...item,
+                    title: item.title.i18n[lang],
                     amount: String(prospectSummaryData?.[item.id] ?? 0),
+                    operation: item.operation,
+                    miniIcon: item.miniIcon,
                     icon:
                       item.id === "totalConsolidatedAmount" &&
                       availableEditCreditRequest ? (
@@ -302,6 +310,7 @@ export const CardCommercialManagement = (
                       ) : (
                         item.icon
                       ),
+                    modal: item.modal,
                   }))}
                   showIcon={entry.iconEdit}
                   isMobile={isMobile}
@@ -316,7 +325,7 @@ export const CardCommercialManagement = (
           <DeleteModal
             handleClose={() => setShowDeleteModal(false)}
             handleDelete={handleDelete}
-            TextDelete={tittleOptions.descriptionDelete}
+            TextDelete={tittleOptionsEnum.descriptionDelete.i18n[lang]}
             isSendingData={isSendingData}
           />
         )}

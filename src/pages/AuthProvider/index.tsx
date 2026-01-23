@@ -24,7 +24,7 @@ function AuthContent({ children }: { children: ReactNode }) {
   useAuthHandler(authConfig, hasAuthError, portalCode);
 
   if (loading) {
-    return <LoadingAppUI />;
+    return <LoadingAppUI lang={"es"} />;
   }
 
   if (!portalCode || !publicCode) {
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
     usePortalLogic();
 
   if (loading) {
-    return <LoadingAppUI />;
+    return <LoadingAppUI lang={"es"} />;
   }
 
   if (!portalCode || !publicCode) {

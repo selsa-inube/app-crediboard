@@ -2,9 +2,11 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { MdInfoOutline } from "react-icons/md";
 import { Text, Stack, Icon, Textfield } from "@inubekit/inubekit";
-import { BaseModal } from "@components/modals/baseModal";
 
-import { dataShareModal } from "./config";
+import { BaseModal } from "@components/modals/baseModal";
+import { useEnum } from "@hooks/useEnum";
+
+import { dataShareModalEnum } from "./config";
 
 export interface IShareCreditModalProps {
   handleClose: () => void;
@@ -13,6 +15,7 @@ export interface IShareCreditModalProps {
 
 export function ShareCreditModal(props: IShareCreditModalProps) {
   const { handleClose, isMobile } = props;
+  const { lang } = useEnum();
 
   const initialValues = {
     name: "",
@@ -36,9 +39,9 @@ export function ShareCreditModal(props: IShareCreditModalProps) {
     >
       {(formik) => (
         <BaseModal
-          title={dataShareModal.title}
-          nextButton={dataShareModal.share}
-          backButton={dataShareModal.cancel}
+          title={dataShareModalEnum.title.i18n[lang]}
+          nextButton={dataShareModalEnum.share.i18n[lang]}
+          backButton={dataShareModalEnum.cancel.i18n[lang]}
           handleNext={() => {
             formik.submitForm();
             handleClose();
@@ -51,16 +54,16 @@ export function ShareCreditModal(props: IShareCreditModalProps) {
             <Stack direction="column">
               <Stack gap="4px">
                 <Text type="label" weight="bold" size="medium">
-                  {dataShareModal.name}
+                  {dataShareModalEnum.name.i18n[lang]}
                 </Text>
                 <Text type="body" size="small" appearance="danger">
-                  {dataShareModal.required}
+                  {dataShareModalEnum.required.i18n[lang]}
                 </Text>
               </Stack>
               <Textfield
                 name="name"
                 id="name"
-                placeholder={dataShareModal.placeHolderName}
+                placeholder={dataShareModalEnum.placeHolderName.i18n[lang]}
                 value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -70,16 +73,16 @@ export function ShareCreditModal(props: IShareCreditModalProps) {
             <Stack direction="column">
               <Stack gap="4px">
                 <Text type="label" weight="bold" size="medium">
-                  {dataShareModal.email}
+                  {dataShareModalEnum.email.i18n[lang]}
                 </Text>
                 <Text type="body" size="small" appearance="danger">
-                  {dataShareModal.required}
+                  {dataShareModalEnum.required.i18n[lang]}
                 </Text>
               </Stack>
               <Textfield
                 name="email"
                 id="email"
-                placeholder={dataShareModal.placeHolderEmail}
+                placeholder={dataShareModalEnum.placeHolderEmail.i18n[lang]}
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -89,14 +92,14 @@ export function ShareCreditModal(props: IShareCreditModalProps) {
             <Stack direction="column">
               <Stack gap="4px">
                 <Text type="label" weight="bold" size="medium">
-                  {dataShareModal.aditionalEmail}
+                  {dataShareModalEnum.aditionalEmail.i18n[lang]}
                 </Text>
               </Stack>
               <Stack direction="column" gap="4px">
                 <Textfield
                   name="aditionalEmail"
                   id="aditionalEmail"
-                  placeholder={dataShareModal.placeHolderAditionalEmail}
+                  placeholder={dataShareModalEnum.placeHolderAditionalEmail.i18n[lang]}
                   value={formik.values.aditionalEmail}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -109,7 +112,7 @@ export function ShareCreditModal(props: IShareCreditModalProps) {
                     size="14px"
                   ></Icon>
                   <Text type="label" size="small">
-                    {dataShareModal.optional}
+                    {dataShareModalEnum.optional.i18n[lang]}
                   </Text>
                 </Stack>
               </Stack>

@@ -4,9 +4,10 @@ import { IOption, useFlag, useMediaQuery } from "@inubekit/inubekit";
 import { BaseModal } from "@components/modals/baseModal";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { SourceIncome } from "@pages/prospect/components/SourceIncome";
-import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles"
+import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataIncomeModal } from "./config";
+import { dataIncomeModalEnum } from "./config";
 
 interface IncomeModalProps {
   initialValues?: IIncomeSources;
@@ -32,6 +33,7 @@ export function IncomeModal(props: IncomeModalProps) {
     openModal,
     onSubmit,
   } = props;
+  const { lang } = useEnum();
 
   const [formData, setFormData] = useState<IIncomeSources | undefined>(
     initialValues
@@ -50,8 +52,8 @@ export function IncomeModal(props: IncomeModalProps) {
     onSubmit(formData);
     handleClose();
     addFlag({
-      title: `${dataIncomeModal.flagTittle}`,
-      description: `${dataIncomeModal.flagDescription}`,
+      title: `${dataIncomeModalEnum.flagTitle.i18n[lang]}`,
+      description: `${dataIncomeModalEnum.flagDescription.i18n[lang]}`,
       appearance: "success",
       duration: 5000,
     });
@@ -59,9 +61,9 @@ export function IncomeModal(props: IncomeModalProps) {
 
   return (
     <BaseModal
-      title={dataIncomeModal.title}
-      nextButton={dataIncomeModal.save}
-      backButton={dataIncomeModal.cancel}
+      title={dataIncomeModalEnum.title.i18n[lang]}
+      nextButton={dataIncomeModalEnum.save.i18n[lang]}
+      backButton={dataIncomeModalEnum.cancel.i18n[lang]}
       handleNext={handleSubmit}
       handleBack={handleClose}
       width={isMobile ? "auto" : "1002px"}

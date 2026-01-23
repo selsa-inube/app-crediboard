@@ -1,13 +1,18 @@
 import { ErrorPage } from "@components/layout/ErrorPage";
 import clientNotFound from "@assets/images/Expired.png";
+import { useEnum } from "@hooks/useEnum";
+
+import { errorNotClientLabels } from "./config";
 
 function ErrorNotClient() {
+  const { lang } = useEnum();
+
   return (
     <ErrorPage
       image={clientNotFound}
-      imageAlt="Cliente no encontrado"
-      heading="No hay resultados..."
-      description="Su usuario no tiene clientes relacionados, consulte con su administrador."
+      imageAlt={errorNotClientLabels.imageAlt.i18n[lang]}
+      heading={errorNotClientLabels.heading.i18n[lang]}
+      description={errorNotClientLabels.description.i18n[lang]}
     />
   );
 }

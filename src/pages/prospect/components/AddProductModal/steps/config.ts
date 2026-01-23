@@ -1,6 +1,8 @@
 import * as Yup from "yup";
 
-import { stepsAddProduct } from "../config";
+import { EnumType } from "@hooks/useEnum";
+
+import { stepsAddProductEnum } from "../config";
 
 export interface IResponsePaymentDatesChannel {
   creditLine: string;
@@ -73,6 +75,7 @@ export interface ITermSelection {
 export interface ITermSelectionUI {
   isMobile: boolean;
   initialValues: ITermSelectionValuesMain;
+  lang: EnumType;
   validationSchema: Yup.ObjectSchema<{
     quotaCapValue?: string;
     maximumTermValue?: string;
@@ -118,6 +121,7 @@ export interface IPaymentConfigurationUI {
   paymentMethodOptions: IPaymentsOptions[];
   paymentCycleOptions: IPaymentsOptions[];
   firstPaymentDateOptions: IPaymentsOptions[];
+  lang: EnumType;
   paymentConfiguration: {
     paymentMethod: {
       label: string;
@@ -164,6 +168,8 @@ export interface IAmountCaptureUI {
   isMobile: boolean;
 }
 
+export type PaymentChannelItem = IResponsePaymentDatesChannel | { paymentChannels: IResponsePaymentDatesChannel[] };
+
 export const amountCaptureTexts = {
   label: "Valor que el cliente espera recibir.",
   placeholder: "Ej. 500.000",
@@ -205,60 +211,186 @@ export const paymentConfiguration = {
   },
 };
 
-export const loanData = {
-  quotaCapTitle: "¿Tienes un tope para el valor de la cuota ordinaria?",
-  quotaCapLabel: "¿Cuánto?",
-  quotaCapPlaceholder: "Ej: 10.000.000",
-  maximumTermTitle: "¿Tienes un plazo máximo para el pago?",
-  maximumTermLabel: "¿Cuántos meses?",
-  maximumTermPlaceholder: "Ej: 12",
-  yes: "SI",
-  no: "NO",
+export const paymentConfigurationEnum = {
+  paymentMethod: {
+    label: {
+      id: "paymentMethodLabel",
+      code: "PaymentConfig_methodLabel",
+      description: "Etiqueta medio de pago",
+      i18n: { en: "Payment channel", es: "Medio de pago" },
+    },
+    placeholder: {
+      id: "paymentMethodPlaceholder",
+      code: "PaymentConfig_methodPlaceholder",
+      description: "Placeholder medio de pago",
+      i18n: { en: "Select an option", es: "Selecciona una opcion" },
+    },
+  },
+  paymentCycle: {
+    label: {
+      id: "paymentCycleLabel",
+      code: "PaymentConfig_cycleLabel",
+      description: "Etiqueta ciclo de pago",
+      i18n: { en: "Payment cycle", es: "Ciclo de pagos" },
+    },
+  },
+  firstPaymentDate: {
+    label: {
+      id: "firstPaymentDateLabel",
+      code: "PaymentConfig_firstDateLabel",
+      description: "Etiqueta primera fecha de pago",
+      i18n: { en: "First payment cycle", es: "Primer ciclo de pago" },
+    },
+  },
+    paymentDate: {
+    label: {
+      id: "paymentDate",
+      code: "PaymentConfig_firstDateLabel",
+      description: "Etiqueta primera fecha de pago",
+      i18n: { en: "First payment date", es: "Fecha primer pago" },
+    },
+  },
 };
 
-export const dataAmount = {
-  availableQuota: "Cupo disponible sin garantía.",
-  expectToReceive: "Valor que el cliente espera recibir.",
-  amountRequested: "Valor que el cliente espera recibir.",
-  currentObligations: "¿Quiere abonar a otras obligaciones vigentes?",
-  ordinaryPayment: "Medio de atención plan de pago ordinario",
-  Periodicity: "Ciclo de pago",
-  Requested: "(Requerido)",
-  paymentDate: "Fecha primer pago",
-  selectOption: "Selecciona una opción",
-  creditText: "Cupo disponible sin garantía por línea de crédito",
-  day15: "día-15",
-  day30: "día-30",
-  placeholderValue: "",
+export const amountCaptureTextsEnum = {
+  label: {
+    id: "label",
+    code: "AmountCapture_label",
+    description: "Etiqueta del valor que el cliente espera recibir",
+    i18n: {
+      en: "Amount the client expects to receive.",
+      es: "Valor que el cliente espera recibir.",
+    },
+  },
+  placeholder: {
+    id: "placeholder",
+    code: "AmountCapture_placeholder",
+    description: "Ejemplo de monto",
+    i18n: { en: "Eg. 500,000", es: "Ej. 500.000" },
+  },
+  errorZeroAmount: {
+    id: "errorZeroAmount",
+    code: "AmountCapture_errorZeroAmount",
+    description: "Error monto cero",
+    i18n: {
+      en: "The amount must be greater than zero",
+      es: "El monto debe ser mayor a cero",
+    },
+  },
+  errorValidationFailed: {
+    id: "errorValidationFailed",
+    code: "AmountCapture_errorValidationFailed",
+    description: "Error reglas de negocio",
+    i18n: {
+      en: "Could not validate the amount with business rules",
+      es: "No se pudo validar el monto con las reglas de negocio",
+    },
+  },
 };
 
-export const verificationAddProductConfig = {
+export const dataAmountEnum = {
+  availableQuota: {
+    id: "availableQuota",
+    code: "DataAmount_availableQuota",
+    description: "Cupo disponible sin garantía",
+    i18n: {
+      en: "Available quota without guarantee.",
+      es: "Cupo disponible sin garantía.",
+    },
+  },
+  ordinaryPayment: {
+    id: "ordinaryPayment",
+    code: "DataAmount_ordinaryPayment",
+    description: "Atención plan de pago ordinario",
+    i18n: {
+      en: "Ordinary payment plan attention method",
+      es: "Medio de atención plan de pago ordinario",
+    },
+  },
+};
+
+export const loanDataEnum = {
+  maximumTermPlaceholder: {
+    id: "quotaCapTitle",
+    code: "LoanData_quotaCapTitle",
+    description: "Pregunta sobre el tope de cuota",
+    i18n: {
+      en: "e.g.: 12",
+      es: "Ej: 12",
+    },
+  },
+    quotaCapTitle: {
+    id: "maximumTermPlaceholder",
+    code: "maximumTermPlaceholder",
+    description: "Máximo sobre el tope de cuota",
+    i18n: {
+      en: "Do you have a limit for the ordinary loan amount value?",
+      es: "¿Tienes un tope para el valor de la cuota ordinaria?",
+    },
+  },
+  quotaCapLabel: {
+    id: "quotaCapLabel",
+    code: "LoanData_quotaCapLabel",
+    description: "Etiqueta cuanto tope de cuota",
+    i18n: { en: "How much?", es: "¿Cuánto?" },
+  },
+  maximumTermTitle: {
+    id: "maximumTermTitle",
+    code: "LoanData_maximumTermTitle",
+    description: "Pregunta sobre el plazo máximo",
+    i18n: {
+      en: "Do you have a maximum term for payment?",
+      es: "¿Tienes un plazo máximo para el pago?",
+    },
+  },
+  maximumTermLabel: {
+    id: "maximumTermLabel",
+    code: "LoanData_maximumTermLabel",
+    description: "Etiqueta cuantos meses",
+    i18n: { en: "How many months?", es: "¿Cuántos meses?" },
+  },
+  yes: {
+    id: "yes",
+    code: "LoanData_yes",
+    description: "Opción sí",
+    i18n: { en: "YES", es: "SÍ" },
+  },
+  no: {
+    id: "no",
+    code: "LoanData_no",
+    description: "Opción no",
+    i18n: { en: "NO", es: "NO" },
+  },
+};
+
+
+export const getVerificationAddProductConfig = (lang: EnumType) => ({
   creditLineInfo: {
-    title: stepsAddProduct.creditLineSelection.name,
+    title: stepsAddProductEnum.creditLineSelection.i18n[lang],
     fields: {
-      creditLine: "Línea de crédito",
-      products: "Productos seleccionados",
+      creditLine: lang === "en" ? "Credit line" : "Línea de crédito",
+      products: lang === "en" ? "Selected products" : "Productos seleccionados",
     },
   },
   paymentConfiguration: {
-    title: stepsAddProduct.paymentConfiguration.name,
+    title: stepsAddProductEnum.paymentConfiguration.i18n[lang],
     fields: {
-      paymentMethod: dataAmount.ordinaryPayment,
-      paymentCycle: paymentConfiguration.paymentCycle.label,
-      firstPaymentDate: paymentConfiguration.firstPaymentDate.label,
+      paymentMethod: dataAmountEnum.ordinaryPayment.i18n[lang],
+      paymentCycle: paymentConfigurationEnum.paymentCycle.label.i18n[lang],
+      firstPaymentDate: paymentConfigurationEnum.firstPaymentDate.label.i18n[lang],
     },
   },
   termInfo: {
-    title: stepsAddProduct.termSelection.name,
+    title: stepsAddProductEnum.termSelection.i18n[lang],
     fields: {
-      quotaCap: loanData.quotaCapTitle,
-      maximumTerm: loanData.maximumTermTitle,
+      quotaCap: loanDataEnum.quotaCapTitle.i18n[lang],
+      maximumTerm: loanDataEnum.maximumTermTitle.i18n[lang],
     },
   },
   amountInfo: {
-    title: stepsAddProduct.amountCapture.name,
+    title: stepsAddProductEnum.amountCapture.i18n[lang],
     fields: {
-      creditAmount: amountCaptureTexts.label,
+      creditAmount: amountCaptureTextsEnum.label.i18n[lang],
     },
   },
-};
+});

@@ -19,8 +19,12 @@ import {
   validateCurrencyField,
 } from "@utils/formatData/currency";
 import { IProspect } from "@services/prospect/types";
+import { EnumType } from "@hooks/useEnum";
 
-import { disbursementGeneral, disbursemenOptionAccount } from "../config";
+import {
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum,
+} from "../config";
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import { useDisbursementForm } from "../../hook/useDisbursementForm";
 
@@ -33,6 +37,7 @@ interface IDisbursementWithCashProps {
   businessUnitPublicCode: string;
   isAmountReadOnly: boolean;
   businessManagerCode: string;
+  lang: EnumType;
   customerData?: ICustomerData;
   onFormValid: (isValid: boolean) => void;
   handleOnChange: (values: IDisbursementGeneral) => void;
@@ -51,6 +56,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
     customerData,
     getTotalAmount,
     prospectData,
+    lang,
   } = props;
 
   const {
@@ -76,8 +82,8 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
             }
             id={`${optionNameForm}.amount`}
             name="amount"
-            label={disbursementGeneral.label}
-            placeholder={disbursementGeneral.place}
+            label={disbursementGeneralEnum.labelTurn.i18n[lang]}
+            placeholder={disbursementGeneralEnum.placeTurn.i18n[lang]}
             size="compact"
             value={validateCurrencyField(
               "amount",
@@ -94,7 +100,7 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
             }}
             status={isInvalidAmount ? "invalid" : undefined}
             readOnly={isAmountReadOnly}
-            message={`${disbursemenOptionAccount.valueTurnFail}${currencyFormat(initialValues.amount, false)}`}
+            message={`${disbursemenOptionAccountEnum.valueTurnFail.i18n[lang]}${currencyFormat(initialValues.amount, false)}`}
             fullwidth
           />
         </Stack>
@@ -109,14 +115,14 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
             disabled={isDisabled}
           />
           <Text type="label" size="medium">
-            {disbursementGeneral.labelCheck}
+            {disbursementGeneralEnum.labelCheck.i18n[lang]}
           </Text>
         </Stack>
       </Stack>
       <Divider dashed />
       <Stack direction="column" gap="16px">
         <Text type="label" size="medium">
-          {disbursementGeneral.labelToggle}
+          {disbursementGeneralEnum.labelToggle.i18n[lang]}
         </Text>
       </Stack>
       <Stack direction="row" gap="16px">
@@ -139,8 +145,8 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
           }
         >
           {(formik.values[optionNameForm]?.toggle ?? true)
-            ? disbursementGeneral.optionToggleYes
-            : disbursementGeneral.optionToggleNo}
+            ? disbursementGeneralEnum.optionToggleYes.i18n[lang]
+            : disbursementGeneralEnum.optionToggleNo.i18n[lang]}
         </Text>
       </Stack>
       <Divider dashed />
@@ -161,11 +167,11 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
       )}
       <Stack direction="row" gap="16px">
         <Textarea
-          id={"observation"}
-          name={`${optionNameForm}.observation`}
-          label={disbursemenOptionAccount.observation}
-          placeholder={disbursemenOptionAccount.placeObservation}
-          value={formik.values[optionNameForm]?.observation || ""}
+          id={"description"}
+          name={`${optionNameForm}.description`}
+          label={disbursemenOptionAccountEnum.observation.i18n[lang]}
+          placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
+          value={formik.values[optionNameForm]?.description || ""}
           onChange={(event) => {
             const value = event.target.value;
             if (value.length <= 100) {
