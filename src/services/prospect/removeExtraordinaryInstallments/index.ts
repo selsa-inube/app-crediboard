@@ -23,17 +23,17 @@ export const removeExtraordinaryInstallments = async (
         headers: {
           "X-Action": "RemoveExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
-          "Content-type": "application/json; charset=UTF-8"
+          "Content-type": "application/json; charset=UTF-8",
         },
         body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)
+          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),
         ),
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -62,7 +62,7 @@ export const removeExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar los Pagos Extras."
+          "Todos los intentos fallaron. No se pudo eliminar los Pagos Extras.",
         );
       }
     }
