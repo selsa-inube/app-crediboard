@@ -40,6 +40,7 @@ import {
   txtTaskQueryEnum,
   titlesModalEnum,
   txtOthersOptionsEnum,
+  txtConfirmRepresentativeEnum,
 } from "./config";
 import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
@@ -102,8 +103,10 @@ function ToDo(props: ToDoProps) {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
-  const { userAccount } =
-    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+  const userAccount =
+    typeof eventData === "string"
+      ? JSON.parse(eventData).user.identificationDocumentNumber
+      : eventData.user.identificationDocumentNumber;
 
   useEffect(() => {
     const fetchRepresentable = async () => {
@@ -194,33 +197,6 @@ function ToDo(props: ToDoProps) {
     businessManagerCode,
     setIdProspect,
   ]);
-
-  // NUEVO: Cargar aprobadores
-  // useEffect(() => {
-  //   const fetchApprovalsData = async () => {
-  //     if (!requests?.creditRequestId) return;
-
-  //     try {
-  //       const data: IApprovals = await getApprovalsById(
-  //         businessUnitPublicCode,
-  //         businessManagerCode,
-  //         requests.creditRequestId,
-  //       );
-
-  //       if (data && Array.isArray(data) && data.length > 0) {
-  //         const entries: IEntries[] = entriesApprovals(data).map((entry) => ({
-  //           ...entry,
-  //           error: entry.concept === "Pendiente",
-  //         }));
-  //         setApprovalsEntries(entries);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching approvals:", error);
-  //     }
-  //   };
-
-  //   fetchApprovalsData();
-  // }, [businessUnitPublicCode, requests?.creditRequestId, businessManagerCode]);
 
   useEffect(() => {
     const fetchDecisions = async () => {
@@ -358,30 +334,20 @@ function ToDo(props: ToDoProps) {
     setIsModalOpen(true);
   };
 
-  // MODIFICADO: Nueva validación completa
   const validationIsApprover = () => {
-    // PASO 1: Verificar que estamos en etapa de Verificación de Aprobación
     if (requests?.stage !== "VERIFICACION_APROBACION") {
       return false;
     }
-
-    // PASO 2: Verificar que el usuario logueado esté en la tabla de aprobadores
     const currentUserId = eventData?.user?.identificationDocumentNumber;
-    console.log(currentUserId);
     const isUserInApprovals = approvalsEntries.some(
       (approval) => approval.identificationNumber === currentUserId,
     );
-
-    // Si está en aprobadores Y estamos en VERIFICACION_APROBACION,
-    // automáticamente se cumple que es un aprobador válido
     return isUserInApprovals;
   };
-  console.log(approvalsEntries);
 
-  // MODIFICADO: Usar validationIsApprover en lugar de validationId
   const data = {
     makeDecision: {
-      concept: selectedDecision?.code || "", // MODIFICADO: Ahora es dinámico
+      concept: selectedDecision?.code || "",
       creditRequestId: requests?.creditRequestId || "",
       humanDecision: selectedDecision?.code || "",
       justification: "",
@@ -390,7 +356,7 @@ function ToDo(props: ToDoProps) {
     user: eventData.user.identificationDocumentNumber || "",
     xAction: isRepresentativeButNotApprover()
       ? "RegisterIndividualConceptOfApproval"
-      : getXAction(selectedDecision?.code || "", validationIsApprover()), // MODIFICADO: Nueva validación
+      : getXAction(selectedDecision?.code || "", validationIsApprover()),
     humanDecisionDescription: selectedDecision?.label || "",
   };
 
@@ -442,19 +408,15 @@ function ToDo(props: ToDoProps) {
 
   const getToDoDescriptionTitle = (): string => {
     if (requests?.stage === "VERIFICACION_APROBACION") {
-      // Verificar si el usuario logueado ES un aprobador
       const currentUserId = eventData?.user?.identificationDocumentNumber;
 
       const isUserApprover = approvalsEntries.some(
-        (approval) => approval.identificationNumber === currentUserId, // o el campo correcto
+        (approval) => approval.identificationNumber === currentUserId,
       );
 
-      // SOLO mostrar el usuario logueado si ES un aprobador
       if (isUserApprover) {
         return eventData?.user?.userAccount || "";
       }
-
-      // Si NO es aprobador, mostrar el analista o comercial (NO el usuario logueado)
       return assignedStaff.analyst || assignedStaff.commercialManager || "";
     }
 
@@ -491,7 +453,7 @@ function ToDo(props: ToDoProps) {
             <Stack direction={isMobile ? "column" : "row"}>
               {isMobile && (
                 <Text appearance="primary" type="title" size="medium">
-                  Tarea
+                  {txtConfirmRepresentativeEnum.taskLabel.i18n[lang]}
                 </Text>
               )}
 
@@ -527,7 +489,10 @@ function ToDo(props: ToDoProps) {
                     name="decision"
                     label={txtOthersOptionsEnum.txtDecision.i18n[lang]}
                     value={decisionValue.decision}
-                    placeholder="Selecciona una opción"
+                    placeholder={
+                      txtConfirmRepresentativeEnum.representativePlaceholder
+                        .i18n[lang]
+                    }
                     size="compact"
                     options={taskDecisions || []}
                     onChange={onChangeDecision}
@@ -698,7 +663,7 @@ function ToDo(props: ToDoProps) {
       )}
       {isModalConfirm && (
         <BaseModal
-          title={"Confirmar"}
+          title={txtConfirmRepresentativeEnum.confirmTitle.i18n[lang]}
           nextButton={staffConfigEnum.confirm.i18n[lang]}
           backButton={staffConfigEnum.cancel.i18n[lang]}
           handleNext={handleConfirmRepresentative}
@@ -706,18 +671,24 @@ function ToDo(props: ToDoProps) {
         >
           <Stack direction="column" gap="16px">
             <Text>
-              {`Estás ${selectedDecision?.label || "procesando"} la solicitud en representación de ${
+              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} ${selectedDecision?.label || "procesando"} ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} ${
                 representablePersons.length === 1
                   ? representablePersons[0]
                   : selectedRepresentative || "..."
-              }, ¿Deseas continuar?`}
+              }, ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
             </Text>
             {representablePersons.length > 1 && (
               <Select
                 name="Representative"
                 id="Representative"
-                label={"Representante"}
-                placeholder={"Seleccione una opción"}
+                label={
+                  txtConfirmRepresentativeEnum.representativeLabel.i18n[lang]
+                }
+                placeholder={
+                  txtConfirmRepresentativeEnum.representativePlaceholder.i18n[
+                    lang
+                  ]
+                }
                 size="compact"
                 fullwidth
                 options={representablePersons.map((person) => ({

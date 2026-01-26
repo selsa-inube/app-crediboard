@@ -13,7 +13,6 @@ const getXAction = (humanDecision?: string, isApprover?: boolean): string => {
     return "RegisterIndividualConceptOfApproval";
   }
 
-  // Mapeo estándar para cuando NO es aprobador o son otras decisiones
   if (humanDecision === "APROBAR_SOLICITUD") {
     return "ApproveCreditRequest";
   } else if (humanDecision === "SOPORTES_VALIDOS") {
