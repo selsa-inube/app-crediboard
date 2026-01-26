@@ -289,3 +289,7 @@ export interface IGuaranteesSummary {
   offeredGuarantees: string[];
   requiredGuarantees: string[];
 }
+
+export interface IApprovalBoard {
+  approvalBoardRepresentablePersons: string[];
+}

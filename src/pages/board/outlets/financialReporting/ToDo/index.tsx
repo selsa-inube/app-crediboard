@@ -30,6 +30,7 @@ import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmta
 import { BaseModal } from "@components/modals/baseModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { IEntries } from "@components/data/TableBoard/types";
+import { getApprovalBoardRepresentablePersons } from "@services/creditRequest/query/approvalBoardRepresentablePersons";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -68,7 +69,12 @@ function ToDo(props: ToDoProps) {
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
+  const [isModalConfirm, setIsModalConfirm] = useState(false);
   const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
+  const [representablePersons, setRepresentablePersons] = useState<string[]>(
+    [],
+  );
+  const [selectedRepresentative, setSelectedRepresentative] = useState("");
 
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
@@ -98,6 +104,41 @@ function ToDo(props: ToDoProps) {
 
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
+  useEffect(() => {
+    const fetchRepresentable = async () => {
+      if (
+        requests?.stage === "VERIFICACION_APROBACION" &&
+        requests.creditRequestId
+      ) {
+        try {
+          const response = await getApprovalBoardRepresentablePersons(
+            businessUnitPublicCode,
+            businessManagerCode,
+            userAccount,
+            requests.creditRequestId,
+          );
+
+          const persons = response?.approvalBoardRepresentablePersons || [];
+          setRepresentablePersons(persons);
+
+          if (persons.length === 1) {
+            setSelectedRepresentative(persons[0]);
+          }
+        } catch (error) {
+          console.error("Error fetching representable persons:", error);
+        }
+      }
+    };
+
+    fetchRepresentable();
+  }, [
+    requests?.stage,
+    requests?.creditRequestId,
+    businessUnitPublicCode,
+    businessManagerCode,
+    userAccount,
+  ]);
 
   useEffect(() => {
     const fetchCreditRequest = async () => {
@@ -291,12 +332,30 @@ function ToDo(props: ToDoProps) {
     handleToggleStaffModal();
   };
 
+  const isRepresentativeButNotApprover = () => {
+    const isApprover = validationIsApprover();
+    const isRepresentative = representablePersons.includes(
+      eventData?.user?.userAccount || "",
+    );
+
+    return isRepresentative && !isApprover;
+  };
+
   const handleSend = () => {
-    setIsModalOpen(true);
+    if (isRepresentativeButNotApprover()) {
+      setIsModalConfirm(true);
+    } else {
+      setIsModalOpen(true);
+    }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleConfirmRepresentative = () => {
+    setIsModalConfirm(false);
+    setIsModalOpen(true);
   };
 
   // MODIFICADO: Nueva validación completa
@@ -329,7 +388,9 @@ function ToDo(props: ToDoProps) {
     },
     businessUnit: businessUnitPublicCode,
     user: eventData.user.identificationDocumentNumber || "",
-    xAction: getXAction(selectedDecision?.code || "", validationIsApprover()), // MODIFICADO: Nueva validación
+    xAction: isRepresentativeButNotApprover()
+      ? "RegisterIndividualConceptOfApproval"
+      : getXAction(selectedDecision?.code || "", validationIsApprover()), // MODIFICADO: Nueva validación
     humanDecisionDescription: selectedDecision?.label || "",
   };
 
@@ -634,6 +695,42 @@ function ToDo(props: ToDoProps) {
             </Stack>
           </BaseModal>
         </>
+      )}
+      {isModalConfirm && (
+        <BaseModal
+          title={"Confirmar"}
+          nextButton={staffConfigEnum.confirm.i18n[lang]}
+          backButton={staffConfigEnum.cancel.i18n[lang]}
+          handleNext={handleConfirmRepresentative}
+          handleClose={() => setIsModalConfirm(false)}
+        >
+          <Stack direction="column" gap="16px">
+            <Text>
+              {`Estás ${selectedDecision?.label || "procesando"} la solicitud en representación de ${
+                representablePersons.length === 1
+                  ? representablePersons[0]
+                  : selectedRepresentative || "..."
+              }, ¿Deseas continuar?`}
+            </Text>
+            {representablePersons.length > 1 && (
+              <Select
+                name="Representative"
+                id="Representative"
+                label={"Representante"}
+                placeholder={"Seleccione una opción"}
+                size="compact"
+                fullwidth
+                options={representablePersons.map((person) => ({
+                  id: person,
+                  label: person,
+                  value: person,
+                }))}
+                value={selectedRepresentative}
+                onChange={(_id, value) => setSelectedRepresentative(value)}
+              />
+            )}
+          </Stack>
+        </BaseModal>
       )}
     </>
   );

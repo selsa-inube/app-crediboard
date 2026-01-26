@@ -129,8 +129,6 @@ export function DecisionModal(props: DecisionModalProps) {
         makeDecisionsPayload["registerIndividualConcept"] = true;
       }
 
-
-
       const response = await makeDecisions(
         data.businessUnit,
         businessManagerCode,
