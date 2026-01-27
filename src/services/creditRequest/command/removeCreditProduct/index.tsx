@@ -9,7 +9,8 @@ import { IProspect } from "@services/prospect/types";
 export const RemoveCreditProduct = async (
   businessUnitPublicCode: string,
   userName: string,
-  payload: IRemoveCreditProduct
+  payload: IRemoveCreditProduct,
+  token: string,
 ): Promise<IProspect | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,6 +26,7 @@ export const RemoveCreditProduct = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-User-Name": userName,
+          Authorization: token,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

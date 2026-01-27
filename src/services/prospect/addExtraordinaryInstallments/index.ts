@@ -11,6 +11,7 @@ import { mapExtraordinaryInstallmentsEntity } from "./mappers";
 export const addExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string,
+  token: string,
 ): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -24,17 +25,18 @@ export const addExtraordinaryInstallments = async (
         headers: {
           "X-Action": "AddExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
-          "Content-type": "application/json; charset=UTF-8"
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: token,
         },
         body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments)
+          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),
         ),
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -63,7 +65,7 @@ export const addExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo guardar los Pagos Extras."
+          "Todos los intentos fallaron. No se pudo guardar los Pagos Extras.",
         );
       }
     }

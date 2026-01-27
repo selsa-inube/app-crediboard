@@ -16,6 +16,7 @@ import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import {
   IMakeDecisionsCreditRequestWithXAction,
@@ -41,6 +42,7 @@ export interface DecisionModalProps {
   inputLabel: string;
   inputPlaceholder: string;
   businessManagerCode: string;
+  eventData: ICrediboardData;
   onSubmit?: (values: { textarea: string }) => void;
   onSecondaryButtonClick?: () => void;
   maxLength?: number;
@@ -59,6 +61,7 @@ export function DecisionModal(props: DecisionModalProps) {
     inputPlaceholder,
     businessManagerCode,
     onSubmit,
+    eventData,
     onSecondaryButtonClick,
     maxLength = 200,
     readOnly = false,
@@ -135,6 +138,7 @@ export function DecisionModal(props: DecisionModalProps) {
         data.user,
         makeDecisionsPayload,
         data.xAction,
+        eventData.token,
       );
 
       if (response?.statusServices === 200) {

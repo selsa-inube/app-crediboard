@@ -140,7 +140,7 @@ function useAppContext() {
           return;
         }
 
-        const staffData = await getStaff(userIdentifier);
+        const staffData = await getStaff(userIdentifier, eventData.token || "");
         if (!staffData.length) return;
 
         setEventData((prev) => ({
@@ -194,6 +194,7 @@ function useAppContext() {
           eventData.businessUnit.abbreviatedName,
           eventData.businessManager.publicCode,
           identificationNumber,
+          eventData.token || "",
         );
         setStaffUseCases(staffUseCaseData);
       } catch (error) {
@@ -204,6 +205,7 @@ function useAppContext() {
     eventData.businessUnit.abbreviatedName,
     eventData.businessManager.publicCode,
     eventData?.user?.identificationDocumentNumber,
+    eventData.token,
   ]);
 
   const userIdentifier = eventData?.user?.identificationDocumentNumber;
@@ -224,6 +226,7 @@ function useAppContext() {
           eventData.businessUnit.businessUnitPublicCode,
           eventData.businessManager.abbreviatedName,
           userIdentifier || "",
+          eventData.token || "",
         );
         setOptionStaffData(result);
       } catch (error) {
@@ -239,6 +242,7 @@ function useAppContext() {
     user?.username,
     isIAuthLoading,
     userIdentifier,
+    eventData.token,
   ]);
 
   useEffect(() => {
@@ -307,6 +311,7 @@ function useAppContext() {
         const enumRoles = await getEnumerators(
           businessUnit.businessUnitPublicCode,
           businessManagers.abbreviatedName,
+          eventData.token || "",
         );
         setEventData((prev) => ({
           ...prev,
@@ -323,7 +328,12 @@ function useAppContext() {
         }));
       })();
     }
-  }, [businessUnitSigla, businessUnitsToTheStaff, businessManagers]);
+  }, [
+    businessUnitSigla,
+    businessUnitsToTheStaff,
+    businessManagers,
+    eventData.token,
+  ]);
 
   useEffect(() => {
     const obtenerDatos = async () => {
@@ -339,6 +349,7 @@ function useAppContext() {
     };
     obtenerDatos();
   }, [getAccessTokenSilently]);
+
   useEffect(() => {
     localStorage.setItem(
       "businessUnitsToTheStaff",

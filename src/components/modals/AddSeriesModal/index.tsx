@@ -79,8 +79,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     creditRequestCode,
   } = props;
 
-  const { businessUnitSigla } = useContext(AppContext);
-
+  const { businessUnitSigla, eventData } = useContext(AppContext);
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -223,6 +222,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       await updateExtraordinaryInstallment(
         businessUnitPublicCode,
         extraordinaryInstallments,
+        eventData.token || "",
       );
 
       setSentData?.(extraordinaryInstallments);

@@ -9,7 +9,8 @@ import { mapCommercialManagerAndAnalystEntities } from "./mappers";
 export const getCommercialManagerAndAnalyst = async (
   roles: string,
   businessUnitCode: string,
-  publicCodeBusinessManager: string
+  publicCodeBusinessManager: string,
+  token: string
 ): Promise<ICommercialManagerAndAnalyst[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,6 +28,7 @@ export const getCommercialManagerAndAnalyst = async (
         headers: {
           "X-Action": "SearchStaffByRoles",
           "Content-type": "application/json; charset=UTF-8",
+          Authorization: token,
         },
         signal: controller.signal,
       };

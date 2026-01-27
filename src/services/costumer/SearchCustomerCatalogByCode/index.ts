@@ -10,6 +10,7 @@ export const searchAllCustomerCatalog = async (
   publicCode: string,
   businessUnitPublicCode: string,
   businessManagerCode: string,
+  token: string,
   silent = false,
 ): Promise<ICustomer | null> => {
   const maxRetries = maxRetriesServices;
@@ -30,6 +31,7 @@ export const searchAllCustomerCatalog = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };

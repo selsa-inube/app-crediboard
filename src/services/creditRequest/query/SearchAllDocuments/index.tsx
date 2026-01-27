@@ -9,6 +9,7 @@ export const getSearchAllDocumentsById = async (
   userAccount: string,
   businessUnitPublicCode: string,
   businessManagerCode: string,
+  token: string,
 ) => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -26,13 +27,14 @@ export const getSearchAllDocumentsById = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/documents/${creditRequestId}`,
-        options
+        options,
       );
       clearTimeout(timeoutId);
 
@@ -60,13 +62,13 @@ export const getSearchAllDocumentsById = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener los documentos."
+          "Todos los intentos fallaron. No se pudo obtener los documentos.",
         );
       }
     }
   }
 
   throw new Error(
-    "No se lograron obtener los documentos después de varios intentos."
+    "No se lograron obtener los documentos después de varios intentos.",
   );
 };

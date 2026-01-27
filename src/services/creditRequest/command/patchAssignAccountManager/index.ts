@@ -6,7 +6,8 @@ const patchAssignAccountManager = async (
   creditRequestId: string,
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  userAccount: string
+  userAccount: string,
+  token: string
 ): Promise<ICreditRequests | undefined> => {
   const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`;
   try {
@@ -18,6 +19,7 @@ const patchAssignAccountManager = async (
         "X-User-Name": userAccount,
         "Content-type": "application/json; charset=UTF-8",
         "X-Process-Manager": businessManagerCode,
+        Authorization: token,
       },
       body: JSON.stringify(mapCreditRequestsEntity(creditRequestId)),
     };

@@ -10,7 +10,8 @@ import { IPackagesOfRequirementsById } from "@services/requirementsPackages/type
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { ErrorModal } from "@components/modals/ErrorModal";
-import { useEnum} from "@hooks/useEnum";
+import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { IApprovalHuman } from "../types";
 import { approvalsConfigEnum, optionsAnswerEnum } from "./config";
@@ -19,6 +20,7 @@ interface IHumanValidationApprovalModalProps {
   isMobile: boolean;
   initialValues: IApprovalHuman;
   businessUnitPublicCode: string;
+  eventData: ICrediboardData;
   businessManagerCode: string;
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
@@ -28,7 +30,7 @@ interface IHumanValidationApprovalModalProps {
 }
 
 export function HumanValidationApprovalModal(
-  props: IHumanValidationApprovalModalProps
+  props: IHumanValidationApprovalModalProps,
 ) {
   const {
     isMobile,
@@ -40,19 +42,22 @@ export function HumanValidationApprovalModal(
     rawRequirements,
     onConfirm,
     onCloseModal,
+    eventData,
   } = props;
   const { lang } = useEnum();
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
 
-   const optionsAnswer = useMemo(() => 
-    Object.values(optionsAnswerEnum).map((option) => ({
-      id: option.id,
-      value: option.value,
-      label: option.i18n[lang],
-    })), 
-  [lang]);
+  const optionsAnswer = useMemo(
+    () =>
+      Object.values(optionsAnswerEnum).map((option) => ({
+        id: option.id,
+        value: option.value,
+        label: option.i18n[lang],
+      })),
+    [lang],
+  );
 
   const validationSchema = Yup.object({
     answer: Yup.string().required(),
@@ -82,11 +87,11 @@ export function HumanValidationApprovalModal(
           nextStatusValue = getRequirementCode("FAILED_HUMAN_VALIDATION");
         } else if (formik.values.answer === optionsAnswer[3].label) {
           nextStatusValue = getRequirementCode(
-            "VALIDATION_FAILED_CANCELS_REQUEST"
+            "VALIDATION_FAILED_CANCELS_REQUEST",
           );
         } else if (formik.values.answer === optionsAnswer[2].label) {
           nextStatusValue = getRequirementCode(
-            "IGNORED_BY_THE_USER_HUMAN_VALIDATION"
+            "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
           );
         }
 
@@ -109,7 +114,8 @@ export function HumanValidationApprovalModal(
         await approveRequirementById(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
+          eventData.token || "",
         );
 
         if (onConfirm) {

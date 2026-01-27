@@ -9,7 +9,8 @@ export const registerNewsToCreditRequest = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   userAccount: string,
-  payload: ITraceType
+  payload: ITraceType,
+  token: string,
 ): Promise<void> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,6 +28,7 @@ export const registerNewsToCreditRequest = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
@@ -34,7 +36,7 @@ export const registerNewsToCreditRequest = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -57,7 +59,7 @@ export const registerNewsToCreditRequest = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo registrar la novedad en la solicitud de crédito."
+          "Todos los intentos fallaron. No se pudo registrar la novedad en la solicitud de crédito.",
         );
       }
     }

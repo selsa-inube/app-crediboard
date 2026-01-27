@@ -65,6 +65,7 @@ export const Approvals = (props: IApprovalsProps) => {
         businessManagerCode,
         id,
         userAccount,
+        eventData.token || "",
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
@@ -74,7 +75,13 @@ export const Approvals = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
+  }, [
+    businessUnitPublicCode,
+    id,
+    userAccount,
+    businessManagerCode,
+    eventData.token,
+  ]);
 
   useEffect(() => {
     if (id) fetchCreditRequest();
@@ -89,6 +96,7 @@ export const Approvals = (props: IApprovalsProps) => {
         businessUnitPublicCode,
         businessManagerCode,
         requests.creditRequestId,
+        eventData.token || "",
       );
       if (data && Array.isArray(data)) {
         const entries: IEntries[] = entriesApprovals(data, lang).map(
@@ -156,6 +164,7 @@ export const Approvals = (props: IApprovalsProps) => {
           approvalId: selectedData?.approvalId?.toString() ?? "",
           creditRequestId: requests?.creditRequestId ?? "",
         },
+        eventData.token,
       );
 
       addFlag({

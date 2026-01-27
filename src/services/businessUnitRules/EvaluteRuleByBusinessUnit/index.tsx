@@ -5,7 +5,8 @@ import { IBusinessUnitRules } from "../types";
 const postBusinessUnitRules = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  submitData: IBusinessUnitRules
+  submitData: IBusinessUnitRules,
+  token: string,
 ): Promise<IBusinessUnitRules | undefined> => {
   const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/business-unit-rules`;
 
@@ -17,6 +18,7 @@ const postBusinessUnitRules = async (
         "X-Business-Unit": businessUnitPublicCode,
         "Content-type": "application/json; charset=UTF-8",
         "X-Process-Manager": businessManagerCode,
+        Authorization: token,
       },
       body: JSON.stringify(submitData),
     };

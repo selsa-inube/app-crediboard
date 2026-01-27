@@ -9,7 +9,8 @@ import { ICreditRiskScoreResponse } from "../types";
 export const getCreditRiskScoreById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  customerIdentificationNumber: string
+  customerIdentificationNumber: string,
+  token: string
 ): Promise<ICreditRiskScoreResponse | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -24,6 +25,7 @@ export const getCreditRiskScoreById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token
         },
         signal: controller.signal,
       };

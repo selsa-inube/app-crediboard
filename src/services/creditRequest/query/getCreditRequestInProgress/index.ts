@@ -11,7 +11,8 @@ export const getCreditRequestInProgress = async (
   businessManagerCode: string,
   page: number,
   userAccount: string,
-  searchParam?: { filter?: string; text?: string }
+  token: string,
+  searchParam?: { filter?: string; text?: string },
 ): Promise<ICreditRequest[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -45,6 +46,7 @@ export const getCreditRequestInProgress = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
@@ -76,7 +78,7 @@ export const getCreditRequestInProgress = async (
       console.error(`Attempt ${attempt} failed:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta."
+          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta.",
         );
       }
     }

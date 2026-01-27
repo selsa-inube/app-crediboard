@@ -12,17 +12,19 @@ import { getCreditRepayamentBehavior } from "@services/creditProfiles/getCreditR
 import { ICreditRepayamentBehavior } from "@services/creditProfiles/types";
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { creditBehaviorLabelsEnum } from "./config";
 
 interface CreditBehaviorProps {
   businessUnitPublicCode: string;
   requests: ICreditRequest;
+  eventData: ICrediboardData;
   isMobile?: boolean;
 }
 
 export function CreditBehavior(props: CreditBehaviorProps) {
-  const { isMobile, businessUnitPublicCode, requests } = props;
+  const { isMobile, businessUnitPublicCode, requests, eventData } = props;
 
   const { lang } = useEnum();
 
@@ -33,7 +35,8 @@ export function CreditBehavior(props: CreditBehaviorProps) {
 
     const response = await getCreditRepayamentBehavior(
       businessUnitPublicCode,
-      requests.clientIdentificationNumber
+      requests.clientIdentificationNumber,
+      eventData.token,
     );
 
     if (response === null) {
@@ -66,7 +69,9 @@ export function CreditBehavior(props: CreditBehaviorProps) {
           image={userNotFound}
           title={creditBehaviorLabelsEnum.notFound.title.i18n[lang]}
           description={creditBehaviorLabelsEnum.notFound.description.i18n[lang]}
-          buttonDescription={creditBehaviorLabelsEnum.notFound.retryButton.i18n[lang]}
+          buttonDescription={
+            creditBehaviorLabelsEnum.notFound.retryButton.i18n[lang]
+          }
           route="#"
           onRetry={handleRetry}
         />
@@ -95,7 +100,11 @@ export function CreditBehavior(props: CreditBehaviorProps) {
           <Stack alignItems="center" gap="32px">
             <Stack width={isMobile ? "120px" : "170px"}>
               <Text size={isMobile ? "small" : "medium"}>
-                {creditBehaviorLabelsEnum.fields.internalDelinquencies.i18n[lang]}
+                {
+                  creditBehaviorLabelsEnum.fields.internalDelinquencies.i18n[
+                    lang
+                  ]
+                }
               </Text>
             </Stack>
             <Stack>
