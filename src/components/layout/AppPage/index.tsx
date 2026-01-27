@@ -215,7 +215,6 @@ function AppPage() {
               user={{
                 username: eventData.user.userAccount,
                 breakpoint: "848px",
-                client: eventData.businessUnit.abbreviatedName,
               }}
               menu={userMenuConfig}
               unreadNotificationsAmount={getNotificationsCount()}
