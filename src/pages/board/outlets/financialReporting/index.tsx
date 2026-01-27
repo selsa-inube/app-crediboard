@@ -36,7 +36,7 @@ import {
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import {
   IProspect,
-  IExtraordinaryInstallments,
+  IExtraordinaryInstallmentsAddSeries,
 } from "@services/prospect/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ShareModal } from "@components/modals/ShareModal";
@@ -52,7 +52,7 @@ import {
   optionButtons,
   labelsAndValuesShareEnum,
   errorMessagesEnum,
-  financialReportingLabelsEnum
+  financialReportingLabelsEnum,
 } from "./config";
 import {
   StyledMarginPrint,
@@ -92,9 +92,8 @@ export const FinancialReporting = () => {
   const [attachDocuments, setAttachDocuments] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [collapse, setCollapse] = useState(false);
-  const [sentData, setSentData] = useState<IExtraordinaryInstallments | null>(
-    null,
-  );
+  const [sentData, setSentData] =
+    useState<IExtraordinaryInstallmentsAddSeries | null>(null);
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -198,7 +197,9 @@ export const FinancialReporting = () => {
         );
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
-        setErrorMessage(errorMessagesEnum.searchProspect.description.i18n[lang]);
+        setErrorMessage(
+          errorMessagesEnum.searchProspect.description.i18n[lang],
+        );
         setErrorModal(true);
         setErrorGetProspects(true);
         console.error("Error al obtener los prospectos:", error);
@@ -206,7 +207,7 @@ export const FinancialReporting = () => {
     };
 
     idProspect && businessUnitPublicCode && fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
     idProspect,
@@ -245,9 +246,13 @@ export const FinancialReporting = () => {
     if (!pdfState.blob) return;
 
     try {
-      const pdfFile = new File([pdfState.blob], labelsAndValuesShareEnum.fileName.i18n[lang], {
-        type: "application/pdf",
-      });
+      const pdfFile = new File(
+        [pdfState.blob],
+        labelsAndValuesShareEnum.fileName.i18n[lang],
+        {
+          type: "application/pdf",
+        },
+      );
 
       await navigator.share({
         files: [pdfFile],
@@ -571,10 +576,18 @@ export const FinancialReporting = () => {
               </Stack>
               {showAttachments && (
                 <ListModal
-                  title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
+                  title={
+                    financialReportingLabelsEnum.attachments.titleList.i18n[
+                      lang
+                    ]
+                  }
                   handleClose={handleAttachmentsClose}
                   optionButtons={optionButtons}
-                  buttonLabel={financialReportingLabelsEnum.attachments.saveButton.i18n[lang]}
+                  buttonLabel={
+                    financialReportingLabelsEnum.attachments.saveButton.i18n[
+                      lang
+                    ]
+                  }
                   id={data.creditRequestId!}
                   isViewing={false}
                   uploadedFiles={uploadedFiles}
@@ -583,9 +596,17 @@ export const FinancialReporting = () => {
               )}
               {attachDocuments && (
                 <ListModal
-                  title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
+                  title={
+                    financialReportingLabelsEnum.attachments.titleList.i18n[
+                      lang
+                    ]
+                  }
                   handleClose={() => setAttachDocuments(false)}
-                  buttonLabel={financialReportingLabelsEnum.attachments.closeButton.i18n[lang]}
+                  buttonLabel={
+                    financialReportingLabelsEnum.attachments.closeButton.i18n[
+                      lang
+                    ]
+                  }
                   id={data.creditRequestId!}
                   isViewing={true}
                   dataDocument={document}
@@ -596,9 +617,15 @@ export const FinancialReporting = () => {
           {showRejectModal && (
             <TextAreaModal
               title={financialReportingLabelsEnum.rejectModal.title.i18n[lang]}
-              buttonText={financialReportingLabelsEnum.rejectModal.button.i18n[lang]}
-              inputLabel={financialReportingLabelsEnum.rejectModal.label.i18n[lang]}
-              inputPlaceholder={financialReportingLabelsEnum.rejectModal.placeholder.i18n[lang]}
+              buttonText={
+                financialReportingLabelsEnum.rejectModal.button.i18n[lang]
+              }
+              inputLabel={
+                financialReportingLabelsEnum.rejectModal.label.i18n[lang]
+              }
+              inputPlaceholder={
+                financialReportingLabelsEnum.rejectModal.placeholder.i18n[lang]
+              }
               onCloseModal={() => setShowRejectModal(false)}
               handleNext={() => {
                 handleSubmit();
@@ -621,9 +648,15 @@ export const FinancialReporting = () => {
           {showCancelModal && (
             <TextAreaModal
               title={financialReportingLabelsEnum.cancelModal.title.i18n[lang]}
-              buttonText={financialReportingLabelsEnum.cancelModal.button.i18n[lang]}
-              inputLabel={financialReportingLabelsEnum.cancelModal.label.i18n[lang]}
-              inputPlaceholder={financialReportingLabelsEnum.cancelModal.placeholder.i18n[lang]}
+              buttonText={
+                financialReportingLabelsEnum.cancelModal.button.i18n[lang]
+              }
+              inputLabel={
+                financialReportingLabelsEnum.cancelModal.label.i18n[lang]
+              }
+              inputPlaceholder={
+                financialReportingLabelsEnum.cancelModal.placeholder.i18n[lang]
+              }
               onCloseModal={() => setShowCancelModal(false)}
               handleNext={() => {
                 handleDeleteCreditRequest();

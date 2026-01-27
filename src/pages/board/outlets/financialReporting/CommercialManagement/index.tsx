@@ -46,7 +46,10 @@ import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import {
+  IExtraordinaryInstallments,
+  IExtraordinaryInstallmentsAddSeries,
+} from "@services/prospect/types";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitModal";
@@ -84,7 +87,7 @@ interface ComercialManagementProps {
   setCollapse: React.Dispatch<React.SetStateAction<boolean>>;
   sentData: IExtraordinaryInstallments | null;
   setSentData: React.Dispatch<
-    React.SetStateAction<IExtraordinaryInstallments | null>
+    React.SetStateAction<IExtraordinaryInstallmentsAddSeries | null>
   >;
   setRequestValue: React.Dispatch<
     React.SetStateAction<IPaymentChannel[] | undefined>

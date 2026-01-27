@@ -35,7 +35,7 @@ import {
   menuOptions,
 } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { IExtraordinaryInstallments, IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
@@ -70,7 +70,7 @@ interface ICreditProspectProps {
   handleCloseModal: () => void;
   creditRequestCode?: string;
   setSentData: React.Dispatch<
-    React.SetStateAction<IExtraordinaryInstallments | null>
+    React.SetStateAction<IExtraordinaryInstallmentsAddSeries | null>
   >;
   prospectData?: IProspect;
   onProspectUpdate?: (prospect: IProspect) => void;

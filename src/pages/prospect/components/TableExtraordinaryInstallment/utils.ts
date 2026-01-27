@@ -1,9 +1,14 @@
 import { removeExtraordinaryInstallments } from "@services/prospect/removeExtraordinaryInstallments";
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import {
+  IExtraordinaryInstallments,
+  IExtraordinaryInstallmentsAddSeries,
+} from "@services/prospect/types";
 
 const removeExtraordinaryInstallment = (
   businessUnitPublicCode: string,
-  extraordinaryInstallments: IExtraordinaryInstallments
+  extraordinaryInstallments:
+    | IExtraordinaryInstallments
+    | IExtraordinaryInstallmentsAddSeries,
 ) => {
   return removeExtraordinaryInstallments(
     extraordinaryInstallments,
