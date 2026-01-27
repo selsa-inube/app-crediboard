@@ -99,7 +99,7 @@ const BorrowerProperties = {
   numberOfTimesTheIncomeForScoring: "Number of times the income for scorin",
   creditRiskScoring: "Credit risk scoring",
   assignedIndividualIndebtedness: "Assigned individual indebtegness",
-  offersGuaranteeWithCoDebtors: "Offers guarantee with co-debtors",
+  offersGuaranteeWithCoDebtors: "Offers guarantee with Co-borrowers",
   offersGuaranteeWithSurety: "Offers guarantee with surety",
   offersGuaranteeWithMortgage: "Offers guarantee with mortgage",
   offersGuaranteeWithPledge: "Offers guarantee with pledge",

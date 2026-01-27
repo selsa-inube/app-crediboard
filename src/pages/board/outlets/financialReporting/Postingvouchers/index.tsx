@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState, useMemo } from "react";
 import { Stack } from "@inubekit/inubekit";
 import { useIAuth } from "@inube/iauth-react";
 
@@ -11,13 +11,14 @@ import { IEntries } from "@components/data/TableBoard/types";
 import { UnfoundData } from "@components/layout/UnfoundData";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
+import { useEnum } from "@hooks/useEnum";
 
 import {
   actionsPostingvouchers,
-  titlesPostingvouchers,
+  titlesPostingvouchersEnum,
   actionMobile,
 } from "./config";
-import { errorMessages, errorObserver } from "../config";
+import { errorMessagesEnum, errorObserver } from "../config";
 
 interface IApprovalsProps {
   user: string;
@@ -26,13 +27,23 @@ interface IApprovalsProps {
 }
 export const Postingvouchers = (props: IApprovalsProps) => {
   const { id, isMobile } = props;
+  const { lang } = useEnum();
   const { user } = useIAuth();
+
   const [error, setError] = useState(false);
   const [positionsAccountingVouchers, setPositionsAccountingVouchers] =
     useState<IAccountingVouchers[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
+
+  const titles = useMemo(() => {
+    return Object.values(titlesPostingvouchersEnum).map((title) => ({
+      id: title.id,
+      titleName: title.i18n[lang],
+      priority: title.priority,
+    }));
+  }, [lang]);
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -86,16 +97,16 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   return (
     <Stack direction="column">
       <Fieldset
-        title={errorMessages.Postingvouchers.titleCard}
+        title={errorMessagesEnum.postingVouchers.titleCard.i18n[lang]}
         heightFieldset={isMobile ? "100%" : "162px"}
         hasTable
         hasOverflow={isMobile}
       >
         {error || (!loading && positionsAccountingVouchers.length === 0) ? (
           <UnfoundData
-            title={errorMessages.PromissoryNotes.title}
-            description={errorMessages.PromissoryNotes.description}
-            buttonDescription={errorMessages.PromissoryNotes.button}
+            title={errorMessagesEnum.postingVouchers.title.i18n[lang]}
+            description={errorMessagesEnum.postingVouchers.description.i18n[lang]}
+            buttonDescription={errorMessagesEnum.postingVouchers.button.i18n[lang]}
             onRetry={() => {
               setError(false);
               fetchCreditRequest();
@@ -105,7 +116,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
           <TableBoard
             id="postingvouchers"
             loading={loading}
-            titles={titlesPostingvouchers}
+            titles={titles}
             entries={positionsAccountingVouchers as unknown as IEntries[]}
             actions={actionsPostingvouchers}
             actionMobile={actionMobile}

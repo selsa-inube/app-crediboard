@@ -1,11 +1,13 @@
 import { useContext } from "react";
-
 import { EnumContext } from "@context/enumContext";
 
-export const useEnums = () => {
+export type EnumType = "en" | "es";
+
+export function useEnum() {
   const context = useContext(EnumContext);
   if (!context) {
-    throw new Error("Error EnumProvider");
+    throw new Error("error useEnum: EnumContext is undefined");
   }
   return context;
-};
+}
+ 

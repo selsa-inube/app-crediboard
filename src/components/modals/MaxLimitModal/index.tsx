@@ -4,6 +4,7 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import { getMaximumCreditLimitByLineOfCreditRegulation } from "@services/creditLimit/getMaximumCreditLimitByLineOfCreditRegulation";
 import { IMaximumCreditLimit } from "@services/creditLimit/types";
 import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimitCard/types";
+import { useEnum } from "@hooks/useEnum";
 
 import { MaxLimitModalUI } from "./interface";
 
@@ -34,6 +35,8 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
       customerTotalObligationsInLineOfCredit: 0,
       lineOfCreditLoanAmountLimitRegulation: 0,
     });
+
+  const { lang } = useEnum();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,6 +80,7 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
       handleClose={handleClose}
       isMobile={isMobile}
       dataMaximumCreditLimitService={dataMaximumCreditLimit}
+      lang={lang}
     />
   );
 };

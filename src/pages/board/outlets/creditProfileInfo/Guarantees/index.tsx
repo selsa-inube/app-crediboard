@@ -8,8 +8,9 @@ import { StyledDivider } from "@components/cards/SummaryCard/styles";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { getGuaranteesSummary } from "@services/creditRequest/query/guaranteesSummary";
 import { IGuaranteesSummary } from "@services/creditRequest/query/types";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataGuarantees } from "./config";
+import { dataGuaranteesEnum, guaranteesLabelsEnum } from "./config";
 
 interface GuaranteesProps {
   businessUnitPublicCode: string;
@@ -27,6 +28,7 @@ export function Guarantees(props: GuaranteesProps) {
     prospectCode,
     isMobile,
   } = props;
+  const { lang } = useEnum();
 
   const [guaranteesSummary, setGuaranteesSummary] =
     useState<IGuaranteesSummary | null>(null);
@@ -66,16 +68,16 @@ export function Guarantees(props: GuaranteesProps) {
 
   return (
     <CardInfoContainer
-      title="Garantías"
+      title={guaranteesLabelsEnum.title.i18n[lang]}
       icon={<PiSealCheckBold />}
       isMobile={isMobile}
     >
       {!guaranteesSummary ? (
         <ItemNotFound
           image={userNotFound}
-          title="Datos no encontrados"
-          description="No pudimos obtener los datos solicitados."
-          buttonDescription="Reintentar"
+          title={guaranteesLabelsEnum.notFound.title.i18n[lang]}
+          description={guaranteesLabelsEnum.notFound.description.i18n[lang]}
+          buttonDescription={guaranteesLabelsEnum.notFound.retry.i18n[lang]}
           route="#"
           onRetry={handleRetry}
         />
@@ -83,7 +85,7 @@ export function Guarantees(props: GuaranteesProps) {
         <Stack direction="column" gap={isMobile ? "8px" : "12px"}>
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuarantees.required}
+              {dataGuaranteesEnum.required.i18n[lang]}
             </Text>
             <Text
               appearance="primary"
@@ -97,7 +99,7 @@ export function Guarantees(props: GuaranteesProps) {
           <StyledDivider />
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuarantees.offered}
+              {dataGuaranteesEnum.offered.i18n[lang]}
             </Text>
             <Text
               appearance="primary"
@@ -111,7 +113,7 @@ export function Guarantees(props: GuaranteesProps) {
           <StyledDivider />
           <Stack direction="column">
             <Text size={isMobile ? "small" : "medium"}>
-              {dataGuarantees.active}
+              {dataGuaranteesEnum.active.i18n[lang]}
             </Text>
             <Text
               appearance="primary"

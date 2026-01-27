@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useMediaQueries } from "@inubekit/inubekit";
 
+import { EnumType } from "@hooks/useEnum";
+
 export interface Filter {
   id: string;
   label: string;
@@ -11,6 +13,7 @@ export interface Filter {
 
 export interface SelectedFiltersProps {
   filters: Filter[];
+  lang: EnumType;
   onRemove?: (filterId: string) => void;
 }
 

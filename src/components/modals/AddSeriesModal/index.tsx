@@ -27,8 +27,9 @@ import {
 } from "@services/prospect/types";
 import { IProspect } from "@services/prospect/types";
 import { ErrorModal } from "../ErrorModal";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataAddSeriesModal, errorMessages } from "./config";
+import { dataAddSeriesModalEnum, errorMessagesEnum } from "./config";
 import { updateExtraordinaryInstallment } from "../ExtraordinaryPaymentModal/utils";
 
 export interface AddSeriesModalProps {
@@ -84,6 +85,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const isMobile = useMediaQuery("(max-width: 700px)");
+  const { lang } = useEnum();
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -236,7 +238,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         code + (err?.message || "") + (err?.data?.description || "");
 
       setErrorMessage(
-        `${errorMessages.saveExtraordinaryInstallments.description} ${description}`,
+        `${errorMessagesEnum.saveExtraordinaryInstallments.description.i18n[lang]} ${description}`,
       );
       setErrorModal(true);
     }
@@ -276,9 +278,9 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   return (
     <>
       <BaseModal
-        title={dataAddSeriesModal.title}
-        backButton={dataAddSeriesModal.cancel}
-        nextButton={dataAddSeriesModal.add}
+        title={dataAddSeriesModalEnum.title.i18n[lang]}
+        backButton={dataAddSeriesModalEnum.cancel.i18n[lang]}
+        nextButton={dataAddSeriesModalEnum.add.i18n[lang]}
         handleBack={handleClose}
         handleNext={handleNextClick}
         handleClose={handleClose}
@@ -296,7 +298,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             <Textfield
               name="paymentChannelAbbreviatedName"
               id="paymentChannelAbbreviatedName"
-              label={dataAddSeriesModal.labelPaymentMethod}
+              label={dataAddSeriesModalEnum.labelPaymentMethod.i18n[lang]}
               value={getOptionLabel(
                 paymentMethodOptionsMock,
                 formik.values.paymentChannelAbbreviatedName,
@@ -310,8 +312,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             <Select
               name="paymentChannelAbbreviatedName"
               id="paymentChannelAbbreviatedName"
-              label={dataAddSeriesModal.labelPaymentMethod}
-              placeholder={dataAddSeriesModal.placeHolderSelect}
+              label={dataAddSeriesModalEnum.labelPaymentMethod.i18n[lang]}
+              placeholder={dataAddSeriesModalEnum.placeHolderSelect.i18n[lang]}
               options={paymentMethodOptionsMock}
               value={formik.values.paymentChannelAbbreviatedName}
               onChange={(name, value) => handleFieldChange(name, value)}
@@ -324,8 +326,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           <Textfield
             name="value"
             id="value"
-            label={dataAddSeriesModal.labelAmount}
-            placeholder={dataAddSeriesModal.placeHolderAmount}
+            label={dataAddSeriesModalEnum.labelAmount.i18n[lang]}
+            placeholder={dataAddSeriesModalEnum.placeHolderAmount.i18n[lang]}
             onChange={(e) => {
               handleChangeWithCurrency(
                 { setFieldValue: formik.setFieldValue },
@@ -340,8 +342,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
           <Textfield
             name="installmentAmount"
             id="installmentAmount"
-            label={dataAddSeriesModal.labelValue}
-            placeholder={dataAddSeriesModal.placeHolderValue}
+            label={dataAddSeriesModalEnum.labelValue.i18n[lang]}
+            placeholder={dataAddSeriesModalEnum.placeHolderValue.i18n[lang]}
             iconBefore={
               <MdOutlineAttachMoney color={inube.palette.green.G400} />
             }
@@ -362,7 +364,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             <Textfield
               name="frequency"
               id="frequency"
-              label={dataAddSeriesModal.labelFrequency}
+              label={dataAddSeriesModalEnum.labelFrequency.i18n[lang]}
               value={getOptionLabel(
                 frequencyOptionsMock,
                 formik.values.frequency,
@@ -375,8 +377,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             <Select
               name="frequency"
               id="frequency"
-              label={dataAddSeriesModal.labelFrequency}
-              placeholder={dataAddSeriesModal.placeHolderSelect}
+              label={dataAddSeriesModalEnum.labelFrequency.i18n[lang]}
+              placeholder={dataAddSeriesModalEnum.placeHolderSelect.i18n[lang]}
               options={frequencyOptionsMock}
               value={formik.values.frequency}
               onChange={(name, value) => formik.setFieldValue(name, value)}
@@ -389,7 +391,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             <Textfield
               name="installmentDate"
               id="installmentDate"
-              label={dataAddSeriesModal.labelDate}
+              label={dataAddSeriesModalEnum.labelDate.i18n[lang]}
               value={getOptionLabel(
                 paymentDateOptionsMock,
                 formik.values.installmentDate,
@@ -403,8 +405,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             <Select
               name="installmentDate"
               id="installmentDate"
-              label={dataAddSeriesModal.labelDate}
-              placeholder={dataAddSeriesModal.placeHolderSelect}
+              label={dataAddSeriesModalEnum.labelDate.i18n[lang]}
+              placeholder={dataAddSeriesModalEnum.placeHolderSelect.i18n[lang]}
               options={paymentDateOptionsMock}
               value={formik.values.installmentDate}
               onChange={(name, value) => handleFieldChange(name, value)}

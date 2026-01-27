@@ -5,8 +5,9 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { BaseModal } from "@components/modals/baseModal";
 import { Fieldset } from "@components/data/Fieldset";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
+import { useEnum } from "@hooks/useEnum";
 
-import { dataDisbursement, dataTabs } from "./config";
+import { dataDisbursementEnum, dataTabsEnum } from "./config";
 import { DisbursementInternal } from "./Internal";
 import { DisbursementExternal } from "./External";
 import { DisbursementCheckEntity } from "./CheckEntity";
@@ -32,7 +33,7 @@ export interface IDisbursementModalProps {
 }
 
 export function DisbursementModal(
-  props: IDisbursementModalProps
+  props: IDisbursementModalProps,
 ): JSX.Element | null {
   const {
     handleClose,
@@ -46,25 +47,32 @@ export function DisbursementModal(
   } = props;
 
   const [error] = useState(false);
-  const availableTabs = dataTabs.filter((tab) => {
-    const hasValidData = (tabData: dataTabsDisbursement) =>
-      tabData && Object.values(tabData).some((value) => value !== "");
+  const { lang } = useEnum();
 
-    switch (tab.id) {
-      case "Internal":
-        return hasValidData(data.internal);
-      case "External":
-        return hasValidData(data.external);
-      case "CheckEntity":
-        return hasValidData(data.CheckEntity);
-      case "CheckManagement":
-        return hasValidData(data.checkManagementData);
-      case "Cash":
-        return hasValidData(data.cash);
-      default:
-        return false;
-    }
-  });
+  const availableTabs = dataTabsEnum
+    .filter((tab) => {
+      const hasValidData = (tabData: dataTabsDisbursement) =>
+        tabData && Object.values(tabData).some((value) => value !== "");
+
+      switch (tab.id) {
+        case "Internal":
+          return hasValidData(data.internal);
+        case "External":
+          return hasValidData(data.external);
+        case "CheckEntity":
+          return hasValidData(data.CheckEntity);
+        case "CheckManagement":
+          return hasValidData(data.checkManagementData);
+        case "Cash":
+          return hasValidData(data.cash);
+        default:
+          return false;
+      }
+    })
+    .map((tab) => ({
+      ...tab,
+      label: tab.label.i18n[lang],
+    }));
 
   useEffect(() => {
     if (
@@ -84,11 +92,11 @@ export function DisbursementModal(
 
   return (
     <BaseModal
-      title={dataDisbursement.title}
+      title={dataDisbursementEnum.title.i18n[lang]}
       finalDivider={true}
       handleClose={handleClose}
       handleNext={handleClose}
-      nextButton={dataDisbursement.close}
+      nextButton={dataDisbursementEnum.close.i18n[lang]}
       backButton="Editar"
       handleBack={handleOpenEdit}
       width={isMobile ? "340px" : "682px"}
@@ -128,8 +136,18 @@ export function DisbursementModal(
             >
               {Array.from({ length: 7 }).map((_, index) => (
                 <Fragment key={`skeleton-${index}-disbursement`}>
-                  <SkeletonLine key={`skeleton-one${index}-disbursement`} width="280px" height="40px" animated />
-                  <SkeletonLine key={`skeleton-two${index}-disbursement`} width="280px" height="40px" animated />
+                  <SkeletonLine
+                    key={`skeleton-one${index}-disbursement`}
+                    width="280px"
+                    height="40px"
+                    animated
+                  />
+                  <SkeletonLine
+                    key={`skeleton-two${index}-disbursement`}
+                    width="280px"
+                    height="40px"
+                    animated
+                  />
                 </Fragment>
               ))}
             </Grid>
@@ -141,9 +159,9 @@ export function DisbursementModal(
         {!loading && error ? (
           <ItemNotFound
             image={userNotFound}
-            title={dataDisbursement.noDataTitle}
-            description={dataDisbursement.noDataDescription}
-            buttonDescription={dataDisbursement.retry}
+            title={dataDisbursementEnum.noDataTitle.i18n[lang]}
+            description={dataDisbursementEnum.noDataDescription.i18n[lang]}
+            buttonDescription={dataDisbursementEnum.retry.i18n[lang]}
             onRetry={handleRetry}
           />
         ) : (
@@ -153,25 +171,39 @@ export function DisbursementModal(
         {!loading && !error ? (
           <>
             {currentTab === "Internal" && (
-              <DisbursementInternal isMobile={isMobile} data={data.internal} />
+              <DisbursementInternal
+                isMobile={isMobile}
+                data={data.internal}
+                lang={lang}
+              />
             )}
             {currentTab === "External" && (
-              <DisbursementExternal isMobile={isMobile} data={data.external} />
+              <DisbursementExternal
+                isMobile={isMobile}
+                data={data.external}
+                lang={lang}
+              />
             )}
             {currentTab === "CheckEntity" && (
               <DisbursementCheckEntity
                 isMobile={isMobile}
                 data={data.CheckEntity}
+                lang={lang}
               />
             )}
             {currentTab === "CheckManagement" && (
               <DisbursementChequeManagement
                 isMobile={isMobile}
                 data={data.checkManagementData}
+                lang={lang}
               />
             )}
             {currentTab === "Cash" && (
-              <DisbursementCash isMobile={isMobile} data={data.cash} />
+              <DisbursementCash
+                isMobile={isMobile}
+                data={data.cash}
+                lang={lang}
+              />
             )}
           </>
         ) : (

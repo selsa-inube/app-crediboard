@@ -25,9 +25,10 @@ import { DeleteModal } from "@components/modals/DeleteModal";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { privilegeCrediboard } from "@config/privilege";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { EnumType } from "@hooks/useEnum";
 
 import { usePagination } from "./utils";
-import { dataReport, ROWS_PER_PAGE } from "./config";
+import { dataReportEnum, ROWS_PER_PAGE } from "./config";
 import InfoModal from "../modals/InfoModal";
 
 export interface ITableFinancialObligationsProps {
@@ -63,6 +64,7 @@ interface UIProps {
   gotEndPage: boolean;
   showDeleteModal: boolean;
   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
+  lang: EnumType;
   setErrorModal?: React.Dispatch<React.SetStateAction<boolean>>;
   errorMessage?: string;
   errorModal?: boolean;
@@ -89,6 +91,7 @@ export const TableFinancialObligationsUI = ({
   setErrorModal,
   errorModal,
   errorMessage,
+  lang
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(
@@ -183,7 +186,7 @@ export const TableFinancialObligationsUI = ({
         height={245}
       >
         <Text size="large" type="label" appearance="gray" textAlign="center">
-          {dataReport.noData}
+          {dataReportEnum.noData.i18n[lang]}
         </Text>
       </Td>
     </Tr>
@@ -320,24 +323,24 @@ export const TableFinancialObligationsUI = ({
           )}
           {isModalOpenEdit && selectedDebtor && (
             <EditFinancialObligationModal
-              title={`${dataReport.edit} ${selectedDebtor.type || ""}`}
+              title={`${dataReportEnum.edit.i18n[lang]} ${selectedDebtor.type || ""}`}
               onCloseModal={() => setIsModalOpenEdit(false)}
               onConfirm={async (updatedDebtor) => {
                 await handleUpdate(updatedDebtor);
               }}
               initialValues={selectedDebtor}
-              confirmButtonText={dataReport.save}
+              confirmButtonText={dataReportEnum.save.i18n[lang]}
             />
           )}
           {isDeleteModal && (
             <BaseModal
-              title={dataReport.deletion}
-              nextButton={dataReport.delete}
-              backButton={dataReport.cancel}
+              title={dataReportEnum.deletion.i18n[lang]}
+              nextButton={dataReportEnum.delete.i18n[lang]}
+              backButton={dataReportEnum.cancel.i18n[lang]}
               handleClose={() => setIsDeleteModal(false)}
             >
               <Stack width="400px">
-                <Text>{dataReport.content}</Text>
+                <Text>{dataReportEnum.content.i18n[lang]}</Text>
               </Stack>
             </BaseModal>
           )}
@@ -352,13 +355,13 @@ export const TableFinancialObligationsUI = ({
           ) : (
             <NewPrice
               value={totalBalance}
-              label={dataReport.descriptionTotalBalance}
+              label={dataReportEnum.descriptionTotalBalance.i18n[lang]}
             />
           )}
           {loading ? (
             <SkeletonLine />
           ) : (
-            <NewPrice value={totalFee} label={dataReport.descriptionTotalFee} />
+            <NewPrice value={totalFee} label={dataReportEnum.descriptionTotalFee.i18n[lang]} />
           )}
         </Stack>
       </Stack>
@@ -375,7 +378,7 @@ export const TableFinancialObligationsUI = ({
 
             setShowDeleteModal(false);
           }}
-          TextDelete={dataReport.content}
+          TextDelete={dataReportEnum.content.i18n[lang]}
         />
       )}
       {isModalOpen && (

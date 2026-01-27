@@ -24,10 +24,11 @@ import { Filter } from "@components/cards/SelectedFilters/interface";
 import { SelectedFilters } from "@components/cards/SelectedFilters";
 import { FilterRequestModal } from "@components/modals/FilterRequestModal";
 import { AppContext } from "@context/AppContext";
-import { totalsKeyBySection } from "@components/layout/BoardSection/config";
+import { apiKeyToColumnIdEnum } from "@components/layout/BoardSection/config";
 import { BaseModal } from "@components/modals/baseModal";
 import { getCreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage";
 import { ICreditRequestTotalsByStage } from "@services/creditRequest/query/getCreditRequestTotalsByStage/types";
+import { useEnum } from "@hooks/useEnum";
 import {
   ICreditRequest,
   ICreditRequestPinned,
@@ -41,13 +42,14 @@ import {
   StyledRequestsContainer,
   StyledRequestsContainerVoiceSearch,
 } from "./styles";
-import { selectCheckOptions } from "./config/select";
+import { selectCheckOptionsEnum } from "./config/select";
 import { IFilterFormValues } from ".";
 import {
-  boardLayoutData,
-  dataInformationSearchModal,
+  boardLayoutDataEnum,
+  dataInformationSearchModalEnum,
   TBoardColumn,
 } from "./config/board";
+import { keywordLabel } from "./config";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -122,6 +124,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const businessManagerCode = eventData.businessManager.abbreviatedName;
   const stackRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const { lang } = useEnum();
 
   useEffect(() => {
     if (activeOptions.length === 0) {
@@ -233,11 +236,16 @@ function BoardLayoutUI(props: BoardLayoutProps) {
 
   const normalizedTotalData = (result: ICreditRequestTotalsByStage) => {
     return result
-      ? Object.entries(result).map(([key, value]) => ({
-          id: key,
-          name: totalsKeyBySection[key as keyof typeof totalsKeyBySection],
+      ? Object.entries(result).map(([apiKey, value]) => {
+        const columnId = apiKeyToColumnIdEnum[apiKey as keyof typeof apiKeyToColumnIdEnum]?.value;
+        const column = boardColumns.find(col => col.id === columnId);
+
+        return {
+          id: columnId,
+          name: column?.i18n[lang] || apiKey,
           counter: value,
-        }))
+        };
+      })
       : [];
   };
 
@@ -248,7 +256,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           businessUnitPublicCode,
           businessManagerCode
         );
+        console.log("API result:", result);
         if (result) setTotalsData(normalizedTotalData(result));
+        console.log("Normalized data:", normalizedTotalData(result));
       } catch (error) {
         console.error("Error fetching totals:", error);
       }
@@ -258,14 +268,14 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode]);
 
-  const counterTotalsData = (value: string, columnId: string) => {
+  const counterTotalsData = (columnId: string) => {
     if (columnId === "TRAMITADA") {
       return BoardRequests.filter((request) => request.stage === "TRAMITADA")
         .length;
     }
 
     if (totalsData) {
-      return totalsData.find((item) => item.name === value)?.counter;
+      return totalsData.find((item) => item.id === columnId)?.counter;
     }
   };
 
@@ -302,6 +312,13 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       setHasShownModalForCurrentFilters(false);
     }
   };
+
+  const selectCheckOptions = selectCheckOptionsEnum.map(option => ({
+    id: option.id,
+    label: option.i18n[lang],
+    value: option.value,
+    checked: option.checked,
+  }));
 
   return (
     <StyledContainerToCenter>
@@ -401,7 +418,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 <Textfield
                   id="SearchCardsDesktop"
                   name="SearchCardsDesktop"
-                  placeholder="Palabra clave"
+                  placeholder={keywordLabel.i18n[lang]}
                   size="compact"
                   iconAfter={<MdSearch />}
                   value={searchRequestValue}
@@ -419,6 +436,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 <SelectedFilters
                   filters={activeOptions}
                   onRemove={handleRemoveFilter}
+                  lang={lang}
                 />
                 <Button
                   appearance="primary"
@@ -429,7 +447,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   disabled={!activeOptions.length}
                   onClick={handleClearFilters}
                 >
-                  {boardLayoutData.remove}
+                  {boardLayoutDataEnum.remove.i18n[lang]}
                 </Button>
                 <Button
                   appearance="primary"
@@ -439,7 +457,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                   variant="outlined"
                   onClick={openFilterModal}
                 >
-                  {boardLayoutData.filter}
+                  {boardLayoutDataEnum.filter.i18n[lang]}
                 </Button>
               </StyledRequestsContainer>
             )}
@@ -505,8 +523,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
               <BoardSection
                 key={column.id}
                 sectionId={column.id}
-                sectionTitle={column.value}
-                sectionCounter={counterTotalsData(column.value, column.id) || 0}
+                sectionTitle={column.i18n[lang]}
+                sectionCounter={counterTotalsData(column.id) || 0}
                 sectionBackground={column.sectionBackground}
                 orientation={boardOrientation}
                 sectionInformation={BoardRequests.filter(
@@ -528,15 +546,15 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         </StyledBoardContainer>
         {isTextSearchModalOpen && (
           <BaseModal
-            title={dataInformationSearchModal.titleModal}
+            title={dataInformationSearchModalEnum.titleModal.i18n[lang]}
             width="400px"
-            nextButton={dataInformationSearchModal.succesModal}
-            backButton={dataInformationSearchModal.buttonModal}
+            nextButton={dataInformationSearchModalEnum.successModal.i18n[lang]}
+            backButton={dataInformationSearchModalEnum.buttonModal.i18n[lang]}
             handleBack={handleTextSearchModalBack}
             handleNext={handleTextSearchModalNext}
             handleClose={handleTextSearchModalClose}
           >
-            <Text>{dataInformationSearchModal.descriptionModal}</Text>
+            <Text>{dataInformationSearchModalEnum.descriptionModal.i18n[lang]}</Text>
           </BaseModal>
         )}
         {boardOrientation === "vertical" && <div ref={observerRef} />}

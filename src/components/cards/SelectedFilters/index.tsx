@@ -8,10 +8,10 @@ import {
   HiddenFilterItem,
 } from "./styles";
 import { useSelectedFilters, SelectedFiltersProps } from "./interface";
-import { dataFilters } from "./config";
+import { dataFiltersEnum } from "./config";
 
 function SelectedFilters(props: SelectedFiltersProps) {
-  const { filters, onRemove } = props;
+  const { filters, onRemove, lang } = props;
 
   const {
     containerRef,
@@ -74,7 +74,7 @@ function SelectedFilters(props: SelectedFiltersProps) {
         </Stack>
       ) : (
         <Text type="label" size="small" appearance="gray">
-          {dataFilters.withoutFilters}
+          {dataFiltersEnum.withoutFilters.i18n[lang]}
         </Text>
       )}
     </StyledContainerFilters>

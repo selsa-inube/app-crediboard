@@ -9,10 +9,11 @@ import { IMaximumCreditLimitByMoneyDestination } from "@services/creditLimit/typ
 import { CreditLimitCard } from "@pages/simulateCredit/CreditLimitCard";
 import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimitCard/types";
 import { ISourcesOfIncomeState } from "@components/modals/payCapacityModal/types";
-
 import { StyledContainer } from "@pages/simulateCredit/CreditLimitCard/styles";
+import { useEnum } from "@hooks/useEnum";
+
 import { IIncomeSources } from "../../CreditProspect/types";
-import { dataCreditLimitModal } from "./config";
+import { dataCreditLimitModalEnum } from "./config";
 
 export interface ICreditLimitModalProps {
   businessUnitPublicCode: string;
@@ -42,6 +43,8 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
     handleClose,
     incomeData
   } = props;
+  const { lang } = useEnum();
+
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [dataMaximumCreditLimit, setDataMaximumCreditLimit] = useState<
@@ -95,8 +98,8 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
 
   return (
     <BaseModal
-      title={dataCreditLimitModal.warningTitle}
-      nextButton={dataCreditLimitModal.close}
+      title={dataCreditLimitModalEnum.warningTitle.i18n[lang]}
+      nextButton={dataCreditLimitModalEnum.close.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
       width={isMobile ? "300px " : "450px"}
@@ -107,16 +110,16 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
         <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
-            {dataCreditLimitModal.error.title}
+            {dataCreditLimitModalEnum.errorTitle.i18n[lang]}
           </Text>
           <Text size="small" appearance="dark" textAlign="center">
-            {dataCreditLimitModal.error.message}
+            {dataCreditLimitModalEnum.errorMessage.i18n[lang]}
           </Text>
         </Stack>
       ) : (
         <Stack direction="column" gap="26px">
           <Text appearance="gray" type="body" size="medium" weight="normal">
-            {dataCreditLimitModal.warningDescription}
+            {dataCreditLimitModalEnum.warningDescription.i18n[lang]}
           </Text>
           <Stack
             direction={isMobile ? "column" : "row"}
@@ -161,9 +164,9 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
               size="medium"
               weight="bold"
             >
-              {dataCreditLimitModal.import}
+              {dataCreditLimitModalEnum.import.i18n[lang]}
             </Text>
-            {dataCreditLimitModal.textImport}
+            {dataCreditLimitModalEnum.textImport.i18n[lang]}
           </Text>
         </Stack>
       )}

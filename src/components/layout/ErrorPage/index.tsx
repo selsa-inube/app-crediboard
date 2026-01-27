@@ -8,9 +8,12 @@ import {
 } from "@inubekit/inubekit";
 
 import { environment } from "@config/environment";
-import { errorCodes } from "@config/errorCodes";
+import { errorCodesEnum } from "@config/errorCodes";
 import selsaLogo from "@assets/images/logoInube.png";
 import errorImage from "@assets/images/img-team-building-68.png";
+import { useEnum } from "@hooks/useEnum";
+
+import { staticTranslations } from "./config";
 
 import {
   StyledCompanyLogo,
@@ -60,11 +63,17 @@ function ErrorPage(props: ErrorPageProps) {
   const mediaQueries = ["(max-width: 600px)"];
   const matches = useMediaQueries(mediaQueries);
   const queriesMatches = matches["(max-width: 600px)"];
+  const { lang } = useEnum();
 
-  const errorDetail = errorCodes[errorCode] || {
-    whatWentWrong: ["No se proporcionó información sobre el error."],
-    howToFix: ["Intenta nuevamente más tarde."],
-  };
+ const errorEntry = errorCodesEnum[errorCode as keyof typeof errorCodesEnum];
+
+  const whatWentWrongItems = errorEntry?.whatWentWrong.i18n[lang] || [
+    staticTranslations.fallbackError[lang],
+  ];
+  
+  const howToFixItems = errorEntry?.howToFix.i18n[lang] || [
+    staticTranslations.fallbackFix[lang],
+  ];
 
   return (
     <StyledContainer>
@@ -116,10 +125,10 @@ function ErrorPage(props: ErrorPageProps) {
               >
                 <Stack direction="column" gap="24px" width="100%">
                   <Text type="headline" size="medium" weight="bold">
-                    ¿Qué salió mal?
+                    {staticTranslations.whatWentWrong[lang]}
                   </Text>
                   <StyledDiv>
-                    <ListContent items={errorDetail.whatWentWrong} />
+                    <ListContent items={whatWentWrongItems} />
                   </StyledDiv>
                 </Stack>
 
@@ -128,12 +137,12 @@ function ErrorPage(props: ErrorPageProps) {
 
                 <Stack direction="column" gap="24px" width="100%">
                   <Text type="headline" size="medium" weight="bold">
-                    ¿Cómo puedes solucionarlo?
+                    {staticTranslations.howToFix[lang]}
                   </Text>
                   <StyledDiv>
                     <ListContent
                       items={[
-                        ...errorDetail.howToFix,
+                        ...howToFixItems,
                         ...(Array.isArray(addToFix) ? addToFix : []),
                       ]}
                     />

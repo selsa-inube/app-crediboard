@@ -12,11 +12,12 @@ import { getTotalFinancialObligations } from "@utils/formatData/currency";
 import { currencyFormat } from "@utils/formatData/currency";
 import { getPropertyValue } from "@utils/mappingData/mappings";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
+import { useEnum } from "@hooks/useEnum";
 
 import { Mortgage } from "./Mortgage";
 import { Pledge } from "./Pledge";
-import { Bail } from "./bail";
-import { dataGuarantee, dataTabs } from "./config";
+import { Bond } from "./bail";
+import { dataTabsEnum, dataGuaranteeEnum } from "./config";
 import { ScrollableContainer } from "./styles";
 import { ErrorModal } from "../ErrorModal";
 
@@ -39,14 +40,14 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
     requestId,
   } = props;
 
-  const [currentTab, setCurrentTab] = useState(dataTabs[0].id);
+  const [currentTab, setCurrentTab] = useState(dataTabsEnum.borrower.id);
   const [dataProperty, setDataProperty] = useState<IGuarantees[]>();
   const [isLoadingMortgage, setIsLoadingMortgage] = useState(false);
   const [isLoadingPledge, setIsLoadingPledge] = useState(false);
-
   const onChange = (tabId: string) => {
     setCurrentTab(tabId);
   };
+  const { lang } = useEnum();
 
   const dataResponse = prospectData;
 
@@ -63,7 +64,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       setDataProperty(result);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataGuarantee.errorCoDebtor);
+      setMessageError(dataGuaranteeEnum.errorCoDebtor.i18n[lang]);
     }
   };
 
@@ -78,7 +79,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       setDataProperty(result);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataGuarantee.errorMortgage);
+      setMessageError(dataGuaranteeEnum.errorMortgage.i18n[lang]);
     } finally {
       setIsLoadingMortgage(false);
     }
@@ -95,7 +96,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       setDataProperty(result);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataGuarantee.errorPledge);
+      setMessageError(dataGuaranteeEnum.errorPledge.i18n[lang]);
     } finally {
       setIsLoadingPledge(false);
     }
@@ -111,10 +112,15 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
     dataProperty?.find((i) => i.guaranteeType === "mortgage")?.mortgages ?? [],
   ];
 
+  const tabs = Object.values(dataTabsEnum).map((tab) => ({
+    id: tab.id,
+    label: tab.i18n[lang],
+  }));
+
   return (
     <BaseModal
-      title={dataGuarantee.title}
-      nextButton={dataGuarantee.close}
+      title={dataGuaranteeEnum.title.i18n[lang]}
+      nextButton={dataGuaranteeEnum.close.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
       width={isMobile ? "300px" : "602px"}
@@ -125,7 +131,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
         <Tabs
           scroll={isMobile}
           selectedTab={currentTab}
-          tabs={dataTabs}
+          tabs={tabs}
           onChange={onChange}
         />
       </Stack>
@@ -142,7 +148,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                 >
                   <CardBorrower
                     key={index}
-                    title={`${dataGuarantee.borrower} ${index + 1}`}
+                    title={`${dataGuaranteeEnum.borrower.i18n[lang]} ${index + 1}`}
                     name={getPropertyValue(borrower.borrowerProperties, "name")}
                     lastName={getPropertyValue(
                       borrower.borrowerProperties,
@@ -159,18 +165,18 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                           "PeriodicSalary"
                         ) || 0
                       ) +
-                        Number(
-                          getPropertyValue(
-                            borrower.borrowerProperties,
-                            "OtherNonSalaryEmoluments"
-                          ) || 0
-                        ) +
-                        Number(
-                          getPropertyValue(
-                            borrower.borrowerProperties,
-                            "PensionAllowances"
-                          ) || 0
-                        ),
+                      Number(
+                        getPropertyValue(
+                          borrower.borrowerProperties,
+                          "OtherNonSalaryEmoluments"
+                        ) || 0
+                      ) +
+                      Number(
+                        getPropertyValue(
+                          borrower.borrowerProperties,
+                          "PensionAllowances"
+                        ) || 0
+                      ),
                       false
                     )}
                     obligations={currencyFormat(
@@ -178,6 +184,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                       false
                     )}
                     showIcons={false}
+                    lang={lang}
                   />
                 </Stack>
               ))
@@ -190,9 +197,9 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
                 >
                   <ItemNotFound
                     image={userNotFound}
-                    title={dataGuarantee.noBorrowersTitle}
-                    description={dataGuarantee.noBorrowersDescription}
-                    buttonDescription={dataGuarantee.retry}
+                    title={dataGuaranteeEnum.noBorrowersTitle.i18n[lang]}
+                    description={dataGuaranteeEnum.noBorrowersDescription.i18n[lang]}
+                    buttonDescription={dataGuaranteeEnum.retry.i18n[lang]}
                   />
                 </Stack>
               </Fieldset>
@@ -205,6 +212,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
             initialValues={mortgageData}
             onRetry={handleRetryMortgage}
             isLoadingMortgage={isLoadingMortgage}
+            lang={lang}
           />
         )}
         {currentTab === "pledge" && (
@@ -215,7 +223,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
             isLoadingPledge={isLoadingPledge}
           />
         )}
-        {currentTab === "bail" && <Bail data={dataResponse?.bondValue ?? 0} />}
+        {currentTab === "bond" && <Bond lang={lang} data={dataResponse?.bondValue ?? 0} />}
 
         {showErrorModal && (
           <ErrorModal

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, FieldProps, FormikHelpers } from "formik";
 import * as Yup from "yup";
@@ -15,13 +15,18 @@ import { BaseModal } from "@components/modals/baseModal";
 import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { useEnum } from "@hooks/useEnum";
 
 import {
   IMakeDecisionsCreditRequestWithXAction,
   IMakeDecisionsPayload,
 } from "./types";
 import { StyledContainerTextField } from "./styles";
-import { soporteInvalidOptions, txtFlags, txtOthersOptions } from "./../config";
+import {
+  soporteInvalidOptionsEnum,
+  txtFlagsEnum,
+  txtOthersOptionsEnum,
+} from "./../config";
 
 interface FormValues {
   textarea: string;
@@ -63,6 +68,7 @@ export function DecisionModal(props: DecisionModalProps) {
 
   const navigate = useNavigate();
   const { addFlag } = useFlag();
+  const { lang } = useEnum();
 
   const isMobile = useMediaQuery("(max-width: 700px)");
 
@@ -77,38 +83,40 @@ export function DecisionModal(props: DecisionModalProps) {
           .required(validationMessages.required),
   });
 
+  const mappedSoporteOptions = useMemo(
+    () =>
+      soporteInvalidOptionsEnum.map((option) => ({
+        id: option.id,
+        label: option.i18n[lang],
+        value: option.value,
+      })),
+    [lang],
+  );
   const handleNonCompliantDocuments = (formValues: FormValues): string[] => {
-    let selectedOptions: string[] | number[] = [];
+    let selectedIds: string[] = [];
 
     if (formValues.selectedOptions) {
-      selectedOptions = formValues.selectedOptions.split(",");
-      selectedOptions?.shift();
+      selectedIds = formValues.selectedOptions.split(",");
+      selectedIds.shift();
     }
 
-    selectedOptions = selectedOptions.map(
-      (option) => parseInt(`${option}`) - 1
-    );
+    const selectedIndices = selectedIds.map((id) => parseInt(id) - 1);
 
-    return realNamesEnumNonCompliantDocuments(selectedOptions) as string[];
+    return realNamesEnumNonCompliantDocuments(selectedIndices) as string[];
   };
 
   const realNamesEnumNonCompliantDocuments = (selectedOptions: number[]) => {
-    const valuesFromEnum: string[] = [];
-
-    selectedOptions.map((option) => {
-      valuesFromEnum.push(soporteInvalidOptions[option].value);
-    });
-
-    return valuesFromEnum;
+    return selectedOptions
+      .map((index) => soporteInvalidOptionsEnum[index]?.value)
+      .filter(Boolean);
   };
   const sendData = async (formValues: FormValues) => {
     try {
       const makeDecisionsPayload: IMakeDecisionsPayload = {
+        concept: data.makeDecision.concept,
         creditRequestId: data.makeDecision.creditRequestId,
-        humanDecision: data.makeDecision.humanDecision,
-        justification: formValues.textarea,
+        justificacion: formValues.textarea || "", //esto deberia serjustification
       };
-
       if (
         formValues.selectedOptions &&
         data.xAction === "DisapproveLegalDocumentsAndWarranties"
@@ -117,28 +125,32 @@ export function DecisionModal(props: DecisionModalProps) {
           handleNonCompliantDocuments(formValues);
       }
 
+      if (data.xAction === "RegisterIndividualConceptOfApproval") {
+        makeDecisionsPayload["registerIndividualConcept"] = true;
+      }
+
       const response = await makeDecisions(
         data.businessUnit,
         businessManagerCode,
         data.user,
         makeDecisionsPayload,
-        data.xAction
+        data.xAction,
       );
 
       if (response?.statusServices === 200) {
         navigate("/");
         addFlag({
-          title: txtFlags.titleSuccess,
-          description: `${txtFlags.descriptionSuccess} ${response.status}`,
+          title: txtFlagsEnum.titleSuccess.i18n[lang],
+          description: `${txtFlagsEnum.descriptionSuccess.i18n[lang]} ${response.status}`,
           appearance: "success",
-          duration: txtFlags.duration,
+          duration: txtFlagsEnum.duration.i18n[lang],
         });
       } else {
-        setErrorMessage(txtFlags.descriptionWarning);
+        setErrorMessage(txtFlagsEnum.descriptionWarning.i18n[lang]);
         setErrorModal(true);
       }
     } catch (error) {
-      setErrorMessage(txtFlags.descriptionDanger);
+      setErrorMessage(txtFlagsEnum.descriptionDanger.i18n[lang]);
       setErrorModal(true);
     } finally {
       onCloseModal?.();
@@ -157,7 +169,7 @@ export function DecisionModal(props: DecisionModalProps) {
         validationSchema={validationSchema}
         onSubmit={(
           values: FormValues,
-          { setSubmitting }: FormikHelpers<FormValues>
+          { setSubmitting }: FormikHelpers<FormValues>,
         ) => {
           onSubmit?.(values);
           setSubmitting(false);
@@ -172,9 +184,7 @@ export function DecisionModal(props: DecisionModalProps) {
             handleNext={handleSubmit}
             handleBack={onSecondaryButtonClick}
             handleClose={onCloseModal}
-            disabledNext={
-              data.makeDecision.humanDecision && values.textarea ? false : true
-            }
+            disabledNext={!data.makeDecision.concept || !values.textarea}
             width={isMobile ? "290px" : "500px"}
           >
             <Form>
@@ -186,7 +196,7 @@ export function DecisionModal(props: DecisionModalProps) {
                     appearance="dark"
                     weight="bold"
                   >
-                    {txtOthersOptions.txtDecision}
+                    {txtOthersOptionsEnum.txtDecision.i18n[lang]}
                   </Text>
                   <Text
                     type="body"
@@ -197,19 +207,19 @@ export function DecisionModal(props: DecisionModalProps) {
                   >
                     {data.humanDecisionDescription
                       ? data.humanDecisionDescription
-                      : txtOthersOptions.txtNoSelect}
+                      : txtOthersOptionsEnum.txtNoSelect.i18n[lang]}
                   </Text>
                 </Stack>
               </StyledContainerTextField>
-              {data.makeDecision.humanDecision === "SOPORTES_INVALIDOS" && (
+              {data.makeDecision.concept === "SOPORTES_INVALIDOS" && (
                 <Stack margin="0 0 20px 0">
                   <Field name="selectedOptions">
-                    {({ field, form }: FieldProps) => (
+                    {({ form }: FieldProps) => (
                       <Checkpicker
                         id="selectedOptions"
                         name="selectedOptions"
-                        options={soporteInvalidOptions}
-                        values={field.name}
+                        options={mappedSoporteOptions}
+                        values={values.selectedOptions || ""}
                         onChange={(name, values) =>
                           form.setFieldValue(name, values)
                         }

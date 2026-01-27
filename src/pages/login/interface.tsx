@@ -2,14 +2,21 @@ import { Outlet } from "react-router-dom";
 import { Stack, Text, Grid, useMediaQueries } from "@inubekit/inubekit";
 
 import selsaLogo from "@assets/images/selsa.png";
+import { EnumType } from "@hooks/useEnum";
 
 import {
   StyledWelcomeContainer,
   StyledOutletContainer,
   StyledImage,
 } from "./styles";
+import { loginLabels } from "./config";
 
-function LoginUI() {
+interface ILoginUI {
+  lang: EnumType;
+}
+
+function LoginUI(props: ILoginUI) {
+  const { lang } = props;
   const {
     "(max-width: 768px)": screenMobile,
     "(min-width: 993px) and (max-width: 2200px)": screenDesktop,
@@ -33,15 +40,15 @@ function LoginUI() {
         >
           <Stack direction="column">
             <Text type="headline" size="small" textAlign="center">
-              Bienvenido
+              {loginLabels.welcome.i18n[lang]}
             </Text>
             <Text as="h1" type="headline" size="large">
-              Crediboard Portal
+              {loginLabels.portalName.i18n[lang]}
             </Text>
           </Stack>
           <StyledImage
             src={selsaLogo}
-            alt="Sistemas Enlinea"
+            alt={loginLabels.logoAlt.i18n[lang]}
             width={screenDesktop ? "240px" : "160px"}
           />
         </Stack>
