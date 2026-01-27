@@ -18,12 +18,11 @@ const usePortalLogic = () => {
   const storedPortal = localStorage.getItem("portalCode");
   const decryptedPortal = storedPortal ? decrypt(storedPortal) : "";
   const portalCode = portalParam ?? decryptedPortal;
-
   const [portalData, setPortalData] =
     useState<IStaffPortalByBusinessManager | null>(null);
   const [publicCode, setPublicCode] = useState<string | null>(null);
   const [businessManager, setBusinessManager] = useState<IBusinessManagers>(
-    {} as IBusinessManagers
+    {} as IBusinessManagers,
   );
   const [authConfig, setAuthConfig] = useState<AuthConfig | null>(null);
   const [codeError, setCodeError] = useState<number | null>(null);
@@ -45,7 +44,7 @@ const usePortalLogic = () => {
       }
 
       try {
-        const portals = await getStaffPortalsByBusinessManager(portalCode);
+        const portals = await getStaffPortalsByBusinessManager(portalCode, "");
 
         if (!portals || portals.length === 0) {
           setCodeError(1001);
@@ -72,7 +71,7 @@ const usePortalLogic = () => {
           return;
         }
 
-        const manager = await getBusinessManagers(businessManagerCode);
+        const manager = await getBusinessManagers(businessManagerCode, "");
         setBusinessManager(manager);
 
         if (manager.clientId && manager.clientSecret) {

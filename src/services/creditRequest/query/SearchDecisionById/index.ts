@@ -9,7 +9,8 @@ import { IDecisionsToDo } from "../types";
 export const getSearchDecisionById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestId: string
+  creditRequestId: string,
+  token: string,
 ): Promise<IDecisionsToDo> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,13 +28,14 @@ export const getSearchDecisionById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/${creditRequestId}?${queryParams.toString()}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -57,13 +59,13 @@ export const getSearchDecisionById = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener el listado de decisiones."
+          "Todos los intentos fallaron. No se pudo obtener el listado de decisiones.",
         );
       }
     }
   }
 
   throw new Error(
-    "No se lograron obtener las decisiones después de varios intentos."
+    "No se lograron obtener las decisiones después de varios intentos.",
   );
 };

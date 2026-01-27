@@ -25,9 +25,14 @@ import { approveRequirementById } from "@services/requirementsPackages/approveRe
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { DocumentItem, IApprovalDocumentaries } from "../types";
-import { approvalsConfigEnum, optionButtons, optionsAnswerEnum } from "./config";
+import {
+  approvalsConfigEnum,
+  optionButtons,
+  optionsAnswerEnum,
+} from "./config";
 import { StyledScroll } from "./styles";
 
 interface IDocumentValidationApprovalModalsProps {
@@ -45,16 +50,18 @@ interface IDocumentValidationApprovalModalsProps {
   setSeenDocuments: React.Dispatch<React.SetStateAction<string[]>>;
   onConfirm?: (values: IApprovalDocumentaries) => void;
   onCloseModal?: () => void;
+  eventData: ICrediboardData;
 }
 
 export function DocumentValidationApprovalModal(
-  props: IDocumentValidationApprovalModalsProps
+  props: IDocumentValidationApprovalModalsProps,
 ) {
   const {
     isMobile,
     initialValues,
     title,
     id,
+    eventData,
     businessUnitPublicCode,
     businessManagerCode,
     user,
@@ -79,13 +86,15 @@ export function DocumentValidationApprovalModal(
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
 
-const optionsAnswer = useMemo(() => 
-    Object.values(optionsAnswerEnum).map((option) => ({
-      id: option.id,
-      value: option.value,
-      label: option.i18n[lang],
-    })), 
-  [lang]);
+  const optionsAnswer = useMemo(
+    () =>
+      Object.values(optionsAnswerEnum).map((option) => ({
+        id: option.id,
+        value: option.value,
+        label: option.i18n[lang],
+      })),
+    [lang],
+  );
 
   const getOptionLabel = (value: string) => {
     const option = optionsAnswer.find((opt) => opt.id === value);
@@ -98,7 +107,7 @@ const optionsAnswer = useMemo(() =>
       .max(200, validationMessages.limitedTxt)
       .required(validationMessages.required),
     selectedDocumentIds: Yup.object().test(
-      (value) => value && Object.values(value).some(Boolean)
+      (value) => value && Object.values(value).some(Boolean),
     ),
   });
 
@@ -118,7 +127,7 @@ const optionsAnswer = useMemo(() =>
 
         const selectedIds = values.selectedDocumentIds || {};
         const selectedDocuments = documents.filter(
-          (doc) => selectedIds[doc.documentId]
+          (doc) => selectedIds[doc.documentId],
         );
 
         let nextStatusValue = "";
@@ -128,7 +137,7 @@ const optionsAnswer = useMemo(() =>
           nextStatusValue = getRequirementCode("FAILED_DOCUMENT_VALIDATION");
         } else if (formik.values.answer === optionsAnswer[3].label) {
           nextStatusValue = getRequirementCode(
-            "INVALID_DOCUMENT_CANCELS_REQUEST"
+            "INVALID_DOCUMENT_CANCELS_REQUEST",
           );
         } else if (formik.values.answer === optionsAnswer[2].label) {
           nextStatusValue = getRequirementCode("DOCUMENT_IGNORED_BY_THE_USER");
@@ -153,7 +162,8 @@ const optionsAnswer = useMemo(() =>
         await approveRequirementById(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
+          eventData.token || "",
         );
 
         if (onConfirm) {
@@ -191,7 +201,8 @@ const optionsAnswer = useMemo(() =>
           id,
           user,
           businessUnitPublicCode,
-          businessManagerCode
+          businessManagerCode,
+          eventData.token || "",
         );
         setDocuments(response);
       } catch (error) {
@@ -210,7 +221,8 @@ const optionsAnswer = useMemo(() =>
         id,
         user,
         businessUnitPublicCode,
-        businessManagerCode
+        businessManagerCode,
+        eventData.token || "",
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);
@@ -258,7 +270,7 @@ const optionsAnswer = useMemo(() =>
                             ] || false;
                           formik.setFieldValue(
                             `selectedDocumentIds.${doc.documentId}`,
-                            !currentValue
+                            !currentValue,
                           );
                         }}
                         value={doc.documentId}

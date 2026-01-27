@@ -5,7 +5,8 @@ export const changeUsersByCreditRequest = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   creditRequests: ICreditRequests,
-  userAccount: string
+  userAccount: string,
+  token: string,
 ) => {
   let confirmationType = true;
   try {
@@ -13,7 +14,8 @@ export const changeUsersByCreditRequest = async (
       creditRequests,
       businessUnitPublicCode,
       businessManagerCode,
-      userAccount
+      userAccount,
+      token,
     );
   } catch (error) {
     confirmationType = false;

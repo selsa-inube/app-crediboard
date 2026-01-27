@@ -9,6 +9,7 @@ export const getClientPortfolioObligationsById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   payload: IExternalAccount | IInternalAccount | IPersonData | object,
+  token: string
 ) => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -23,6 +24,7 @@ export const getClientPortfolioObligationsById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify({
           ...payload,

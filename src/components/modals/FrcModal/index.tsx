@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   MdErrorOutline,
   MdExpandMore,
@@ -21,6 +21,7 @@ import { getCreditLimitByCreditRiskAnalysis } from "@services/creditLimit/getCre
 import { IMaximumCreditLimitAnalysis } from "@services/creditLimit/types";
 import { ScrollableContainer } from "@pages/prospect/components/AddProductModal/styles";
 import { useEnum } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { frcConfigEnum } from "./FrcConfig";
 import { StyledExpanded } from "./styles";
@@ -55,7 +56,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
   const [currentInfoType, setCurrentInfoType] =
     useState<InfoModalType>("intercept");
   const [isExpanded, setIsExpanded] = useState(false);
-
+  const { eventData } = useContext(AppContext);
   const [error, setError] = useState(false);
   const [
     dataMaximumCreditLimitReciprocity,
@@ -77,7 +78,8 @@ export const ScoreModal = (props: ScoreModalProps) => {
         const data = await getCreditLimitByCreditRiskAnalysis(
           businessUnitPublicCode,
           businessManagerCode,
-          clientIdentificationNumber
+          clientIdentificationNumber,
+          eventData.token,
         );
 
         if (data) {
@@ -89,27 +91,27 @@ export const ScoreModal = (props: ScoreModalProps) => {
     };
 
     fetchData();
-  }, [businessUnitPublicCode, businessManagerCode, clientIdentificationNumber]);
+  }, [businessUnitPublicCode, businessManagerCode, clientIdentificationNumber, eventData.token]);
 
   const handleInfoClick = (type: InfoModalType) => {
     setCurrentInfoType(type);
     setShowInfoModal(true);
   };
 
-const getInfoText = (type: string) => {
-  const infoMapping: Record<string, keyof typeof frcConfigEnum> = {
-    intercept: "infoTextsIntercept",
-    seniority: "infoTextsSeniority",
-    centralRisk: "infoTextsCentralRisk",
-    employmentStability: "infoTextsEmploymentStability",
-    maritalStatus: "infoTextsMaritalStatus",
-    economicActivity: "infoTextsEconomicActivity",
-  };
+  const getInfoText = (type: string) => {
+    const infoMapping: Record<string, keyof typeof frcConfigEnum> = {
+      intercept: "infoTextsIntercept",
+      seniority: "infoTextsSeniority",
+      centralRisk: "infoTextsCentralRisk",
+      employmentStability: "infoTextsEmploymentStability",
+      maritalStatus: "infoTextsMaritalStatus",
+      economicActivity: "infoTextsEconomicActivity",
+    };
 
-  const enumKey = infoMapping[type];
-  
-  return enumKey ? frcConfigEnum[enumKey].i18n[lang] : "";
-};
+    const enumKey = infoMapping[type];
+
+    return enumKey ? frcConfigEnum[enumKey].i18n[lang] : "";
+  };
 
   return (
     <BaseModal
@@ -121,7 +123,13 @@ const getInfoText = (type: string) => {
       width={isMobile ? "290px" : "500px"}
     >
       {error ? (
-        <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
+        <Stack
+          direction="column"
+          alignItems="center"
+          height={isMobile ? "auto" : "216px"}
+          justifyContent="center"
+          alignContent="center"
+        >
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
             {frcConfigEnum.errorTitle.i18n[lang]}
@@ -131,7 +139,10 @@ const getInfoText = (type: string) => {
           </Text>
         </Stack>
       ) : (
-        <ScrollableContainer $smallScreen={isMobile} $height={isMobile ? "440px" : "auto"}>
+        <ScrollableContainer
+          $smallScreen={isMobile}
+          $height={isMobile ? "440px" : "auto"}
+        >
           <Stack direction="column" gap="16px" padding="0 10px 0 0">
             <Stack direction="column" gap="12px">
               <Stack alignItems="center" justifyContent="space-between">
@@ -260,7 +271,9 @@ const getInfoText = (type: string) => {
                             icon={<MdInfoOutline />}
                             appearance="primary"
                             size="14px"
-                            onClick={() => handleInfoClick("employmentStability")}
+                            onClick={() =>
+                              handleInfoClick("employmentStability")
+                            }
                             cursorHover
                           />
                         </Stack>
@@ -329,7 +342,7 @@ const getInfoText = (type: string) => {
                   <Text>
                     {currencyFormat(
                       dataMaximumCreditLimitReciprocity.totalMonthlyIncome,
-                      false
+                      false,
                     )}
                   </Text>
                 )}
@@ -360,7 +373,7 @@ const getInfoText = (type: string) => {
                   <Text>
                     {currencyFormat(
                       dataMaximumCreditLimitReciprocity.maxAmountAvailableByCreditRiskAnalysis,
-                      false
+                      false,
                     )}
                   </Text>
                 )}
@@ -378,7 +391,7 @@ const getInfoText = (type: string) => {
                   <Text>
                     {currencyFormat(
                       dataMaximumCreditLimitReciprocity.assignedCreditLimit,
-                      false
+                      false,
                     )}
                   </Text>
                 )}
@@ -397,8 +410,9 @@ const getInfoText = (type: string) => {
                   >
                     $
                     {currencyFormat(
-                      dataMaximumCreditLimitReciprocity.totalPortfolioObligation | 0,
-                      false
+                      dataMaximumCreditLimitReciprocity.totalPortfolioObligation |
+                        0,
+                      false,
                     )}
                   </Text>
                 )}

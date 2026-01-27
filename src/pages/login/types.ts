@@ -1,3 +1,6 @@
+import { ICrediboardData } from "@context/AppContext/types";
+import { EnumType } from "@hooks/useEnum";
+
 interface IUser {
   id: string;
   username: string;
@@ -9,5 +12,11 @@ interface IUser {
   phone: string;
   clients: number[];
 }
+interface ILoginUI {
+  lang: EnumType;
+  eventData: ICrediboardData;
+  screenMobile: boolean;
+  screenDesktop: boolean;
+}
 
-export type { IUser };
+export type { IUser, ILoginUI };

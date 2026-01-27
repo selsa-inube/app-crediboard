@@ -164,6 +164,7 @@ function BoardSection(props: BoardSectionProps) {
         creditRequestId,
         businessUnitPublicCode,
         businessManagerCode,
+        eventData.token,
       );
     } catch (error) {
       setErrorMessage(
@@ -179,6 +180,7 @@ function BoardSection(props: BoardSectionProps) {
     try {
       const response = await getPositionsAuthorizedToRemoveAnchorsPlacedByOther(
         businessUnitPublicCode,
+        eventData.token || "",
       );
 
       if (response?.positionsAuthorized) {
@@ -190,7 +192,7 @@ function BoardSection(props: BoardSectionProps) {
         messagesErrorEnum.changeTracesToReadById.description.i18n[lang],
       );
     }
-  }, [businessUnitPublicCode, lang]);
+  }, [businessUnitPublicCode, lang, eventData.token]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {

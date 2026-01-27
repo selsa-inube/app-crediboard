@@ -67,11 +67,11 @@ interface BoardLayoutProps {
   handlePinRequest: (
     requestId: string,
     userWhoPinnnedId: string,
-    isPinned: string
+    isPinned: string,
   ) => void;
   handleShowPinnedOnly: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchRequestsValue: (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
   onOrientationChange: (orientation: SectionOrientation) => void;
   handleLoadMoreData: () => void;
@@ -151,7 +151,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   };
 
   const handleTextfieldChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     if (!isTextSearchModalOpen) {
       handleSearchRequestsValue(event);
@@ -220,7 +220,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
           handleLoadMoreData();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
 
     const currentRef = observerRef.current;
@@ -237,15 +237,17 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const normalizedTotalData = (result: ICreditRequestTotalsByStage) => {
     return result
       ? Object.entries(result).map(([apiKey, value]) => {
-        const columnId = apiKeyToColumnIdEnum[apiKey as keyof typeof apiKeyToColumnIdEnum]?.value;
-        const column = boardColumns.find(col => col.id === columnId);
+          const columnId =
+            apiKeyToColumnIdEnum[apiKey as keyof typeof apiKeyToColumnIdEnum]
+              ?.value;
+          const column = boardColumns.find((col) => col.id === columnId);
 
-        return {
-          id: columnId,
-          name: column?.i18n[lang] || apiKey,
-          counter: value,
-        };
-      })
+          return {
+            id: columnId,
+            name: column?.i18n[lang] || apiKey,
+            counter: value,
+          };
+        })
       : [];
   };
 
@@ -254,11 +256,10 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       try {
         const result = await getCreditRequestTotalsByStage(
           businessUnitPublicCode,
-          businessManagerCode
+          businessManagerCode,
+          eventData.token,
         );
-        console.log("API result:", result);
         if (result) setTotalsData(normalizedTotalData(result));
-        console.log("Normalized data:", normalizedTotalData(result));
       } catch (error) {
         console.error("Error fetching totals:", error);
       }
@@ -284,7 +285,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     setIsTextSearchModalOpen(false);
     setHasBeenFocused(false);
     const input = document.getElementById(
-      "SearchCardsDesktop"
+      "SearchCardsDesktop",
     ) as HTMLInputElement | null;
     input?.focus();
   };
@@ -296,7 +297,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     setHasAnsweredModal(true);
 
     const input = document.getElementById(
-      "SearchCardsDesktop"
+      "SearchCardsDesktop",
     ) as HTMLInputElement | null;
     input?.focus();
   };
@@ -313,7 +314,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     }
   };
 
-  const selectCheckOptions = selectCheckOptionsEnum.map(option => ({
+  const selectCheckOptions = selectCheckOptionsEnum.map((option) => ({
     id: option.id,
     label: option.i18n[lang],
     value: option.value,
@@ -512,7 +513,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         >
           {boardColumns.map((column) => {
             const hasFilterForColumn = activeOptions.some(
-              (filter) => filter.value === column.id
+              (filter) => filter.value === column.id,
             );
 
             const dragIcon = hasFilterForColumn ? (
@@ -528,7 +529,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 sectionBackground={column.sectionBackground}
                 orientation={boardOrientation}
                 sectionInformation={BoardRequests.filter(
-                  (request) => request.stage === column.id
+                  (request) => request.stage === column.id,
                 )}
                 pinnedRequests={pinnedRequests}
                 errorLoadingPins={errorLoadingPins}
@@ -554,7 +555,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             handleNext={handleTextSearchModalNext}
             handleClose={handleTextSearchModalClose}
           >
-            <Text>{dataInformationSearchModalEnum.descriptionModal.i18n[lang]}</Text>
+            <Text>
+              {dataInformationSearchModalEnum.descriptionModal.i18n[lang]}
+            </Text>
           </BaseModal>
         )}
         {boardOrientation === "vertical" && <div ref={observerRef} />}

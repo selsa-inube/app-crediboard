@@ -26,7 +26,11 @@ interface IBusinessUnits {
 }
 
 function useAppContext() {
-  const { user, isLoading: isIAuthLoading } = useIAuth();
+  const {
+    user,
+    isLoading: isIAuthLoading,
+    getAccessTokenSilently,
+  } = useIAuth();
 
   const [portalData, setPortalData] = useState<IStaffPortalByBusinessManager[]>(
     [],
@@ -109,6 +113,7 @@ function useAppContext() {
       },
     },
     enumRole: [],
+    token: "",
   });
 
   useEffect(() => {
@@ -135,7 +140,7 @@ function useAppContext() {
           return;
         }
 
-        const staffData = await getStaff(userIdentifier);
+        const staffData = await getStaff(userIdentifier, eventData.token || "");
         if (!staffData.length) return;
 
         setEventData((prev) => ({
@@ -189,6 +194,7 @@ function useAppContext() {
           eventData.businessUnit.abbreviatedName,
           eventData.businessManager.publicCode,
           identificationNumber,
+          eventData.token || "",
         );
         setStaffUseCases(staffUseCaseData);
       } catch (error) {
@@ -199,6 +205,7 @@ function useAppContext() {
     eventData.businessUnit.abbreviatedName,
     eventData.businessManager.publicCode,
     eventData?.user?.identificationDocumentNumber,
+    eventData.token,
   ]);
 
   const userIdentifier = eventData?.user?.identificationDocumentNumber;
@@ -219,6 +226,7 @@ function useAppContext() {
           eventData.businessUnit.businessUnitPublicCode,
           eventData.businessManager.abbreviatedName,
           userIdentifier || "",
+          eventData.token || "",
         );
         setOptionStaffData(result);
       } catch (error) {
@@ -234,12 +242,13 @@ function useAppContext() {
     user?.username,
     isIAuthLoading,
     userIdentifier,
+    eventData.token,
   ]);
 
   useEffect(() => {
     if (isIAuthLoading || !portalCode) return;
 
-    validateConsultation(portalCode).then((data) => {
+    validateConsultation(portalCode, "").then((data) => {
       setPortalData(data);
     });
   }, [portalCode, isIAuthLoading]);
@@ -255,7 +264,7 @@ function useAppContext() {
     )?.businessManagerCode;
 
     if (portalDataFiltered.length > 0 && foundBusiness) {
-      validateBusinessManagers(foundBusiness).then((data) => {
+      validateBusinessManagers(foundBusiness, "").then((data) => {
         setBusinessManagers(data);
       });
     }
@@ -302,6 +311,7 @@ function useAppContext() {
         const enumRoles = await getEnumerators(
           businessUnit.businessUnitPublicCode,
           businessManagers.abbreviatedName,
+          eventData.token || "",
         );
         setEventData((prev) => ({
           ...prev,
@@ -318,7 +328,27 @@ function useAppContext() {
         }));
       })();
     }
-  }, [businessUnitSigla, businessUnitsToTheStaff, businessManagers]);
+  }, [
+    businessUnitSigla,
+    businessUnitsToTheStaff,
+    businessManagers,
+    eventData.token,
+  ]);
+
+  useEffect(() => {
+    const obtenerDatos = async () => {
+      try {
+        const tokenData = await getAccessTokenSilently();
+        setEventData((prev) => ({
+          ...prev,
+          token: tokenData,
+        }));
+      } catch (error) {
+        console.error("Error Token:", error);
+      }
+    };
+    obtenerDatos();
+  }, [getAccessTokenSilently]);
 
   useEffect(() => {
     localStorage.setItem(

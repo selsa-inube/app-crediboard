@@ -110,12 +110,14 @@ function BoardLayout() {
             businessManagerCode,
             page,
             userAccount,
+            eventData.token || "",
             searchParam,
           ),
           page === 1
             ? getCreditRequestPinned(
                 businessUnitPublicCode,
                 businessManagerCode,
+                eventData.token || "",
               )
             : Promise.resolve([]),
         ]);
@@ -169,6 +171,7 @@ function BoardLayout() {
     try {
       const response = await getPositionsAuthorizedToRemoveAnchorsPlacedByOther(
         businessUnitPublicCode,
+        eventData.token || "",
       );
 
       if (response?.positionsAuthorized) {
@@ -178,7 +181,7 @@ function BoardLayout() {
       setShowErrorModal(true);
       setMessageError(errorMessagesEnum.changeAnchorToCreditRequest.i18n[lang]);
     }
-  }, [businessUnitPublicCode, lang]);
+  }, [businessUnitPublicCode, lang, eventData.token]);
 
   useEffect(() => {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 1)
@@ -384,6 +387,7 @@ function BoardLayout() {
           eventData.user.identificationDocumentNumber || "",
           creditRequestId,
           isPinned,
+          eventData.token,
         );
         await fetchBoardData(businessUnitPublicCode, businessManagerCode, 1);
         setCurrentPage(1);
@@ -571,6 +575,7 @@ function BoardLayout() {
                 businessManagerCode,
                 1,
                 userAccount,
+                eventData.token || "",
                 { text: trimmedValue },
               ),
               getCreditRequestInProgress(
@@ -578,6 +583,7 @@ function BoardLayout() {
                 businessManagerCode,
                 1,
                 userAccount,
+                eventData.token || "",
                 { filter: currentFilters },
               ),
             ]);
@@ -603,6 +609,7 @@ function BoardLayout() {
               businessManagerCode,
               1,
               userAccount,
+              eventData.token || "",
               { text: trimmedValue },
             );
 
@@ -640,6 +647,7 @@ function BoardLayout() {
             businessManagerCode,
             1,
             userAccount,
+            eventData.token || "",
             { text: trimmedValue },
           ),
           getCreditRequestInProgress(
@@ -647,6 +655,7 @@ function BoardLayout() {
             businessManagerCode,
             1,
             userAccount,
+            eventData.token || "",
             { filter: currentFilters },
           ),
         ]);

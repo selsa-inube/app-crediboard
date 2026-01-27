@@ -120,6 +120,7 @@ function ToDo(props: ToDoProps) {
             businessManagerCode,
             userAccount,
             requests.creditRequestId,
+            eventData.token || "",
           );
 
           const persons = response?.approvalBoardRepresentablePersons || [];
@@ -141,6 +142,7 @@ function ToDo(props: ToDoProps) {
     businessUnitPublicCode,
     businessManagerCode,
     userAccount,
+    eventData.token,
   ]);
 
   useEffect(() => {
@@ -151,6 +153,7 @@ function ToDo(props: ToDoProps) {
           businessManagerCode,
           id,
           userAccount,
+          eventData.token || "",
         );
 
         setRequests(data[0] as ICreditRequest);
@@ -166,7 +169,13 @@ function ToDo(props: ToDoProps) {
     if (id) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
+  }, [
+    businessUnitPublicCode,
+    id,
+    userAccount,
+    businessManagerCode,
+    eventData.token,
+  ]);
 
   useEffect(() => {
     const fetchToDoData = async () => {
@@ -177,6 +186,7 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           businessManagerCode,
           requests.creditRequestId,
+          eventData.token || "",
         );
 
         setTaskData(data);
@@ -196,6 +206,7 @@ function ToDo(props: ToDoProps) {
     requests?.creditRequestId,
     businessManagerCode,
     setIdProspect,
+    eventData.token,
   ]);
 
   useEffect(() => {
@@ -208,6 +219,7 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           businessManagerCode,
           requests.creditRequestId,
+          eventData.token || "",
         );
 
         const formattedDecisions = Array.isArray(decision)
@@ -237,6 +249,7 @@ function ToDo(props: ToDoProps) {
     businessManagerCode,
     lang,
     taskDecisions.length,
+    eventData.token,
   ]);
 
   useEffect(() => {
@@ -274,6 +287,7 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           businessManagerCode,
           requests.creditRequestId,
+          eventData.token || "",
         );
         setTaskData(data);
       } catch (error) {
@@ -546,6 +560,7 @@ function ToDo(props: ToDoProps) {
                   onSecondaryButtonClick={handleCloseModal}
                   onCloseModal={handleCloseModal}
                   data={data}
+                  eventData={eventData}
                 />
               )}
               <Stack

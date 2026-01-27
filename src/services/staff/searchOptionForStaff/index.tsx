@@ -12,6 +12,7 @@ const getSearchOptionForStaff = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   userAccount: string,
+  token: string,
 ): Promise<IOptionStaff[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -30,7 +31,7 @@ const getSearchOptionForStaff = async (
           "Content-type": "application/json; charset=UTF-8",
           "X-User-Name": userAccount,
           "X-Process-Manager": businessManagerCode,
-
+          Authorization: token,
         },
       };
       const res = await fetch(

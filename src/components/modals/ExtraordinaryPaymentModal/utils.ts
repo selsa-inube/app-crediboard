@@ -3,11 +3,13 @@ import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 const updateExtraordinaryInstallment = (
   businessUnitPublicCode: string,
-  extraordinaryInstallments: IExtraordinaryInstallments
+  extraordinaryInstallments: IExtraordinaryInstallments,
+  token: string,
 ) => {
   return addExtraordinaryInstallments(
     extraordinaryInstallments,
     businessUnitPublicCode,
+    token,
   );
 };
 

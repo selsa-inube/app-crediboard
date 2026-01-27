@@ -10,7 +10,8 @@ export const lateRejectionOfACreditRequest = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   humanDecision: string,
-  justificacion: string
+  justificacion: string,
+  token: string
 ) => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -28,6 +29,7 @@ export const lateRejectionOfACreditRequest = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify({ creditRequestId, humanDecision, justificacion }),
         signal: controller.signal,

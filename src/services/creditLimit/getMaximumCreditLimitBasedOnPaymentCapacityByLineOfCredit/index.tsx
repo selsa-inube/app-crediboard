@@ -10,6 +10,7 @@ const getMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   submitData: IMaximumCreditLimit,
+  token: string
 ): Promise<IMaximumCreditLimit | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,6 +28,7 @@ const getMaximumCreditLimitBasedOnPaymentCapacityByLineOfCredit = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify(submitData),
         signal: controller.signal,
