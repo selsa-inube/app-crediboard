@@ -5,7 +5,8 @@ import { IPatchChangeTracesToReadById } from "../types";
 const patchChangeTracesToReadById = async (
   creditRequestId: string,
   businessUnitPublicCode: string,
-  businessManagerCode: string
+  businessManagerCode: string,
+  token: string,
 ): Promise<IPatchChangeTracesToReadById | undefined> => {
   const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`;
 
@@ -17,6 +18,7 @@ const patchChangeTracesToReadById = async (
         "X-Business-Unit": businessUnitPublicCode,
         "Content-type": "application/json; charset=UTF-8",
         "X-Process-Manager": businessManagerCode,
+        Authorization: token,
       },
       body: JSON.stringify(mapChangeTracesToReadByIdEntity(creditRequestId)),
     };

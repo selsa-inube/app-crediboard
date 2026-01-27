@@ -10,6 +10,7 @@ export const searchAllCardSavingProducts = async (
   customerCode: string,
   businessUnitPublicCode: string,
   businessManagerCode: string,
+  token: string,
 ): Promise<IAllInternal[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -29,6 +30,7 @@ export const searchAllCardSavingProducts = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };

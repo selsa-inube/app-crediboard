@@ -8,6 +8,7 @@ import { IPositionsAuthorizedToRemoveAnchorsPlacedByOthers } from "../types";
 
 export const getPositionsAuthorizedToRemoveAnchorsPlacedByOther = async (
   businessUnitPublicCode: string,
+  token: string,
 ): Promise<IPositionsAuthorizedToRemoveAnchorsPlacedByOthers | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -22,6 +23,7 @@ export const getPositionsAuthorizedToRemoveAnchorsPlacedByOther = async (
           "X-Action": "PositionsAuthorizedToRemoveAnchorsPlacedByOther",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          Authorization: token,
         },
         signal: controller.signal,
       };

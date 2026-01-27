@@ -8,7 +8,8 @@ import { IBusinessManagers } from "../types";
 import { mapBusinessManagerApiToEntity } from "./mappers";
 
 const getBusinessManagers = async (
-  businessManagerCode: string
+  businessManagerCode: string,
+  token: string,
 ): Promise<IBusinessManagers> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -23,12 +24,13 @@ const getBusinessManagers = async (
         headers: {
           "X-Action": "SearchAllBusinessManager",
           "Content-type": "application/json; charset=UTF-8",
+          Authorization: token,
         },
       };
 
       const res = await fetch(
         `${environment.IVITE_ISAAS_QUERY_PROCESS_SERVICE}/business-managers/?publicCode=${businessManagerCode}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -41,7 +43,7 @@ const getBusinessManagers = async (
 
       if (!res.ok) {
         throw new Error(
-          `Error al obtener los datos: ${res.status}, Detalles: ${JSON.stringify(data)}`
+          `Error al obtener los datos: ${res.status}, Detalles: ${JSON.stringify(data)}`,
         );
       }
       return Array.isArray(data) && data.length > 0
@@ -50,7 +52,7 @@ const getBusinessManagers = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los datos del negocio."
+          "Todos los intentos fallaron. No se pudieron obtener los datos del negocio.",
         );
       }
     }

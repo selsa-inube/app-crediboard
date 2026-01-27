@@ -13,17 +13,24 @@ import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 
 import { jobStabilityConfigEnum } from "./config";
+import { ICrediboardData } from "@context/AppContext/types";
 
 interface JobStabilityCardProps {
   isMobile?: boolean;
   requests: ICreditRequest;
   businessUnitPublicCode: string;
   businessManagerCode: string;
+  eventData: ICrediboardData;
 }
 
 export function JobStabilityCard(props: JobStabilityCardProps) {
-  const { isMobile, requests, businessUnitPublicCode, businessManagerCode } =
-    props;
+  const {
+    isMobile,
+    requests,
+    businessUnitPublicCode,
+    businessManagerCode,
+    eventData,
+  } = props;
   const { lang } = useEnum();
 
   const [laborStabilityByCustomerId, setLaborStabilityByCustomerId] = useState<
@@ -37,7 +44,8 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
       const data = await getLaborStabilityByCustomerId(
         businessUnitPublicCode,
         businessManagerCode,
-        requests.clientIdentificationNumber
+        requests.clientIdentificationNumber,
+        eventData.token || "",
       );
       setLaborStabilityByCustomerId(data);
     } catch (error) {
@@ -47,7 +55,9 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
           message: (error as Error).message,
         };
       }
-      throw new Error(jobStabilityConfigEnum.errorMessages.fetchError.i18n[lang]);
+      throw new Error(
+        jobStabilityConfigEnum.errorMessages.fetchError.i18n[lang],
+      );
     }
   };
 
@@ -64,7 +74,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
       businessUnitPublicCode,
       businessManagerCode,
       requests.clientIdentificationNumber,
-    ]
+    ],
   );
   return (
     <CardInfoContainer
@@ -76,8 +86,14 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
         <ItemNotFound
           image={userNotFound}
           title={jobStabilityConfigEnum.errorMessages.dataNotFound.i18n[lang]}
-          description={jobStabilityConfigEnum.errorMessages.dataNotFoundDescription.i18n[lang]}
-          buttonDescription={jobStabilityConfigEnum.errorMessages.retryButton.i18n[lang]}
+          description={
+            jobStabilityConfigEnum.errorMessages.dataNotFoundDescription.i18n[
+              lang
+            ]
+          }
+          buttonDescription={
+            jobStabilityConfigEnum.errorMessages.retryButton.i18n[lang]
+          }
           route="#"
           onRetry={handleRetry}
         />
@@ -138,8 +154,8 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
                 {currencyFormat(
                   Number(
                     laborStabilityByCustomerId[0]
-                      ?.estimatedContractTerminationPayment
-                  ) || 0
+                      ?.estimatedContractTerminationPayment,
+                  ) || 0,
                 )}
               </Text>
             </Stack>

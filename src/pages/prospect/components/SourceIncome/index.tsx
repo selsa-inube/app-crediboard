@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { MdCached, MdOutlineEdit } from "react-icons/md";
 import {
   Stack,
@@ -21,6 +21,7 @@ import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { dataReportEnum } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { RestoreIncomeInformationByBorrowerId } from "@services/creditRequest/command/restoreIncome";
 import { useEnum } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { IIncomeSources } from "../CreditProspect/types";
 import { IncomeEmployment, IncomeCapital, MicroBusinesses } from "./config";
@@ -53,57 +54,57 @@ export function SourceIncome(props: ISourceIncomeProps) {
     businessUnitPublicCode,
     creditRequestCode,
     borrowerOptions,
-    setIsShowingEdit
+    setIsShowingEdit,
   } = props;
 
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
-
+  const { eventData } = useContext(AppContext);
   const isMobile = useMediaQuery("(max-width:880px)");
   const { lang } = useEnum();
 
   const dataValues = data
     ? {
-      borrower_id: data.identificationNumber,
-      borrower: `${data.name} ${data.surname}`,
-      capital: [
-        (data.Leases || 0).toString(),
-        (data.Dividends ?? 0).toString(),
-        (data.FinancialIncome ?? 0).toString(),
-      ],
-      employment: [
-        (data.PeriodicSalary ?? 0).toString(),
-        (data.OtherNonSalaryEmoluments ?? 0).toString(),
-        (data.PensionAllowances ?? 0).toString(),
-      ],
-      businesses: [
-        (data.ProfessionalFees ?? 0).toString(),
-        (data.PersonalBusinessUtilities ?? 0).toString(),
-      ],
-    }
+        borrower_id: data.identificationNumber,
+        borrower: `${data.name} ${data.surname}`,
+        capital: [
+          (data.Leases || 0).toString(),
+          (data.Dividends ?? 0).toString(),
+          (data.FinancialIncome ?? 0).toString(),
+        ],
+        employment: [
+          (data.PeriodicSalary ?? 0).toString(),
+          (data.OtherNonSalaryEmoluments ?? 0).toString(),
+          (data.PensionAllowances ?? 0).toString(),
+        ],
+        businesses: [
+          (data.ProfessionalFees ?? 0).toString(),
+          (data.PersonalBusinessUtilities ?? 0).toString(),
+        ],
+      }
     : null;
 
   const [borrowerIncome, setBorrowerIncome] = useState<IIncome | null>(
-    dataValues
+    dataValues,
   );
 
   const totalSum = () => {
     const sumCapital =
       borrowerIncome?.capital.reduce(
         (acc, val) => acc + parseCurrencyString(val),
-        0
+        0,
       ) ?? 0;
     const sumEmployment =
       borrowerIncome?.employment.reduce(
         (acc, val) => acc + parseCurrencyString(val),
-        0
+        0,
       ) ?? 0;
     const sumBusinesses =
       borrowerIncome?.businesses.reduce(
         (acc, val) => acc + parseCurrencyString(val),
-        0
+        0,
       ) ?? 0;
 
     return sumCapital + sumEmployment + sumBusinesses;
@@ -122,7 +123,8 @@ export function SourceIncome(props: ISourceIncomeProps) {
       const response = await RestoreIncomeInformationByBorrowerId(
         businessUnitPublicCode || "",
         businessManagerCode,
-        body
+        body,
+        eventData.token || "",
       );
       if (response && response.income) {
         const restoredIncome = {
@@ -169,12 +171,12 @@ export function SourceIncome(props: ISourceIncomeProps) {
       FinancialIncome: parseCurrencyString(values.capital[2] || "0"),
       PeriodicSalary: parseCurrencyString(values.employment[0] || "0"),
       OtherNonSalaryEmoluments: parseCurrencyString(
-        values.employment[1] || "0"
+        values.employment[1] || "0",
       ),
       PensionAllowances: parseCurrencyString(values.employment[2] || "0"),
       ProfessionalFees: parseCurrencyString(values.businesses[0] || "0"),
       PersonalBusinessUtilities: parseCurrencyString(
-        values.businesses[1] || "0"
+        values.businesses[1] || "0",
       ),
     };
   }
@@ -182,7 +184,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
   const handleIncomeChange = (
     category: "employment" | "capital" | "businesses",
     index: number,
-    newValue: string
+    newValue: string,
   ) => {
     const cleanedValue = parseCurrencyString(newValue);
     const cleanedString = cleanedValue.toString();
@@ -193,7 +195,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
       const updated = {
         ...prev,
         [category]: prev[category].map((val, i) =>
-          i === index ? cleanedString : val
+          i === index ? cleanedString : val,
         ),
       };
 
@@ -272,15 +274,12 @@ export function SourceIncome(props: ISourceIncomeProps) {
                 <Button
                   iconBefore={<MdOutlineEdit />}
                   onClick={() => {
-                    openModal
-                      ? openModal(true)
-                      : setIsOpenEditModal(true)
+                    openModal ? openModal(true) : setIsOpenEditModal(true);
 
                     if (isMobile && setIsShowingEdit) {
                       setIsShowingEdit(true);
                     }
-                  }
-                  }
+                  }}
                 >
                   {dataReportEnum.edit.i18n[lang]}
                 </Button>
@@ -337,7 +336,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
         <IncomeModal
           handleClose={() => setIsOpenEditModal(false)}
           disabled={false}
-          onSubmit={() => { }}
+          onSubmit={() => {}}
           businessManagerCode={businessManagerCode}
           borrowerOptions={borrowerOptions}
         />

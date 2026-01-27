@@ -8,7 +8,8 @@ import { IPromissoryNotes } from "../types";
 export const getPromissoryNotesById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestId: string
+  creditRequestId: string,
+  token: string,
 ): Promise<IPromissoryNotes[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,13 +26,14 @@ export const getPromissoryNotesById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/promissory-notes/${creditRequestId}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -55,13 +57,13 @@ export const getPromissoryNotesById = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener las promesas de financiación."
+          "Todos los intentos fallaron. No se pudo obtener las promesas de financiación.",
         );
       }
     }
   }
 
   throw new Error(
-    "No se pudo obtener las promesas de financiación después de varios intentos."
+    "No se pudo obtener las promesas de financiación después de varios intentos.",
   );
 };

@@ -18,7 +18,8 @@ const useLogin = () => {
     if (eventData.portal.publicCode) {
       validateBusinessUnits(
         eventData.portal.publicCode,
-        userIdentifier || ""
+        userIdentifier || "",
+        eventData.token,
       ).then((data) => {
         setBusinessUnitsToTheStaff(data);
         if (!setBusinessUnitsToTheStaff) {
@@ -36,6 +37,7 @@ const useLogin = () => {
     userIdentifier,
     hasError,
     setBusinessUnitsToTheStaff,
+    eventData.token,
   ]);
 
   useEffect(() => {

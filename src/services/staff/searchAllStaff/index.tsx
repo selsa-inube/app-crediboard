@@ -4,7 +4,8 @@ import { IStaff } from "../types";
 import { mapStaffToEntity } from "./mappers";
 
 const getStaff = async (
-  identificationDocumentNumber: string
+  identificationDocumentNumber: string,
+  token: string
 ): Promise<IStaff[]> => {
   const queryParams = new URLSearchParams({
     identificationDocumentNumber: identificationDocumentNumber,
@@ -17,6 +18,7 @@ const getStaff = async (
       headers: {
         "X-Action": "SearchAllStaff",
         "Content-type": "application/json; charset=UTF-8",
+         Authorization: token,
       },
     };
 

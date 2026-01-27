@@ -9,7 +9,8 @@ import { mapCreditRequestToEntities } from "./mappers";
 export const getSearchUseCaseForStaff = async (
   businessUnitCode: string,
   businessManagerCode: string,
-  userAccount: string
+  userAccount: string,
+  token: string
 ): Promise<string[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -30,6 +31,7 @@ export const getSearchUseCaseForStaff = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };

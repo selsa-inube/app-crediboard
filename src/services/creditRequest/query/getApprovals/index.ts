@@ -7,7 +7,8 @@ import { IApprovals } from "@pages/board/outlets/financialReporting/Approvals/ty
 export const getApprovalsById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestId: string
+  creditRequestId: string,
+  token: string
 ): Promise<IApprovals> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -24,6 +25,7 @@ export const getApprovalsById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };

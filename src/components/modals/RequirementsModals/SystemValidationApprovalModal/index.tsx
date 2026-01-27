@@ -9,10 +9,12 @@ import { approveRequirementById } from "@services/requirementsPackages/approveRe
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { useEnum } from "@hooks/useEnum";
+import { ErrorModal } from "@components/modals/ErrorModal";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { IApprovalSystem } from "../types";
 import { approvalsConfigEnum } from "./config";
-import { ErrorModal } from "@components/modals/ErrorModal";
+
 
 interface ISystemValidationApprovalModalProps {
   isMobile: boolean;
@@ -23,12 +25,13 @@ interface ISystemValidationApprovalModalProps {
   entryId: string;
   entryIdToRequirementMap: Record<string, string>;
   rawRequirements: IPackagesOfRequirementsById[];
+  eventData: ICrediboardData;
   onConfirm?: (values: IApprovalSystem) => void;
   onCloseModal?: () => void;
 }
 
 export function SystemValidationApprovalModal(
-  props: ISystemValidationApprovalModalProps
+  props: ISystemValidationApprovalModalProps,
 ) {
   const {
     isMobile,
@@ -41,6 +44,7 @@ export function SystemValidationApprovalModal(
     rawRequirements,
     onConfirm,
     onCloseModal,
+    eventData,
   } = props;
   const { lang: lang } = useEnum();
 
@@ -90,7 +94,8 @@ export function SystemValidationApprovalModal(
         await approveRequirementById(
           businessUnitPublicCode,
           businessManagerCode,
-          payload
+          payload,
+          eventData.token || "",
         );
 
         if (onConfirm) {
@@ -139,7 +144,7 @@ export function SystemValidationApprovalModal(
                   "labelText",
                   checked
                     ? approvalsConfigEnum.approveRequirementLabel.i18n[lang]
-                    : approvalsConfigEnum.rejectRequirementLabel.i18n[lang]
+                    : approvalsConfigEnum.rejectRequirementLabel.i18n[lang],
                 );
               }}
             />

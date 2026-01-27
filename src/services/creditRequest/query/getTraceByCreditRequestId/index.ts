@@ -8,7 +8,8 @@ import { ITraceType } from "@services/creditRequest/command/types";
 export const getTraceByCreditRequestId = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestId: string
+  creditRequestId: string,
+  token: string,
 ): Promise<ITraceType[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -24,13 +25,14 @@ export const getTraceByCreditRequestId = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/traces/${creditRequestId}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -53,7 +55,7 @@ export const getTraceByCreditRequestId = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta."
+          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta.",
         );
       }
     }

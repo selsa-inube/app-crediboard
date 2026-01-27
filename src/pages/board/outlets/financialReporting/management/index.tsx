@@ -44,7 +44,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   const { lang } = useEnum();
 
   const [creditRequest, setCreditRequest] = useState<ICreditRequest | null>(
-    null
+    null,
   );
   const [traces, setTraces] = useState<ITraceType[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -52,7 +52,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   const [error, setError] = useState<string | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<ITraceType | null>(
-    null
+    null,
   );
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
@@ -82,7 +82,8 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         businessUnitPublicCode,
         businessManagerCode,
         id,
-        userAccount
+        userAccount,
+        eventData.token || "",
       );
       setCreditRequest(data[0] as ICreditRequest);
     } catch (error) {
@@ -95,6 +96,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     userAccount,
     notifyError,
     businessManagerCode,
+    eventData.token,
   ]);
 
   useEffect(() => {
@@ -111,7 +113,8 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       const data = await getTraceByCreditRequestId(
         businessUnitPublicCode,
         businessManagerCode,
-        creditRequest.creditRequestId
+        creditRequest.creditRequestId,
+        eventData.token || "",
       );
       setTraces(Array.isArray(data) ? data.flat() : []);
     } catch (err) {
@@ -125,6 +128,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     creditRequest?.creditRequestId,
     businessManagerCode,
     notifyError,
+    eventData.token,
   ]);
 
   useEffect(() => {
@@ -163,7 +167,8 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         businessUnitPublicCode,
         businessManagerCode,
         eventData.user.identificationDocumentNumber || "",
-        newTrace
+        newTrace,
+        eventData.token || "",
       );
       setTraces((prev) => [...prev, newTrace]);
       setNewMessage("");
@@ -210,7 +215,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   };
 
   const getMessageType = (
-    traceType: string
+    traceType: string,
   ): "sent" | "received" | "system" => {
     const map: Record<string, "sent" | "received" | "system"> = {
       Novelty: "sent",
@@ -306,7 +311,11 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
                   />
                   <Textfield
                     id="text"
-                    placeholder={editCreditApplicationLabelsEnum.placeholderExample.i18n[lang]}
+                    placeholder={
+                      editCreditApplicationLabelsEnum.placeholderExample.i18n[
+                        lang
+                      ]
+                    }
                     fullwidth
                     value={newMessage}
                     onChange={handleInputChange}

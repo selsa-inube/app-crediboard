@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useContext } from "react";
 import { MdErrorOutline } from "react-icons/md";
 import { Icon, Stack, Text, SkeletonLine } from "@inubekit/inubekit";
 
@@ -11,6 +11,7 @@ import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimi
 import { ISourcesOfIncomeState } from "@components/modals/payCapacityModal/types";
 import { StyledContainer } from "@pages/simulateCredit/CreditLimitCard/styles";
 import { useEnum } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { IIncomeSources } from "../../CreditProspect/types";
 import { dataCreditLimitModalEnum } from "./config";
@@ -41,10 +42,10 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
     isMobile,
     moneyDestination,
     handleClose,
-    incomeData
+    incomeData,
   } = props;
   const { lang } = useEnum();
-
+  const { eventData } = useContext(AppContext);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [dataMaximumCreditLimit, setDataMaximumCreditLimit] = useState<
@@ -59,7 +60,8 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           moneyDestination,
-          dataMaximumCreditLimitService.identificationDocumentNumber
+          dataMaximumCreditLimitService.identificationDocumentNumber,
+          eventData.token,
         );
 
         if (data) {
@@ -78,10 +80,11 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
     moneyDestination,
     businessManagerCode,
     dataMaximumCreditLimitService,
+    eventData.token,
   ]);
 
   const incomeDataExtracted = useMemo(() => {
-    if (!incomeData || typeof incomeData !== 'object') {
+    if (!incomeData || typeof incomeData !== "object") {
       return null;
     }
 
@@ -107,7 +110,13 @@ export function CreditLimitModal(props: ICreditLimitModalProps) {
       finalDivider={true}
     >
       {error ? (
-        <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
+        <Stack
+          direction="column"
+          alignItems="center"
+          height={isMobile ? "auto" : "216px"}
+          justifyContent="center"
+          alignContent="center"
+        >
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
             {dataCreditLimitModalEnum.errorTitle.i18n[lang]}

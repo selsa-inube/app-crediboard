@@ -87,6 +87,7 @@ interface ICrediboardData {
   businessUnit: IBusinessUnit;
   user: IUser;
   enumRole: IEnumerator[];
+  token: string;
 }
 
 interface IAppContext {

@@ -8,7 +8,7 @@ import {
   Select,
   Textfield,
 } from "@inubekit/inubekit";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
@@ -52,6 +52,7 @@ import {
   errorMessagesEnum,
   simulationFormLabels,
 } from "./config";
+import { AppContext } from "@context/AppContext";
 
 interface EditProductModalProps {
   onCloseModal: () => void;
@@ -110,6 +111,7 @@ function EditProductModal(props: EditProductModalProps) {
     "value" | "percentage" | null
   >(null);
   const [incrementValue, setIncrementValue] = useState<string>("");
+  const { eventData } = useContext(AppContext);
   const [incrementError, setIncrementError] = useState<string>("");
   const [isValidatingIncrement, setIsValidatingIncrement] =
     useState<boolean>(false);
@@ -161,7 +163,6 @@ function EditProductModal(props: EditProductModalProps) {
   const [isLoadingRateTypes, setIsLoadingRateTypes] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
   const isMobile = useMediaQuery("(max-width: 550px)");
 
   useEffect(() => {
@@ -171,6 +172,7 @@ function EditProductModal(props: EditProductModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           clientIdentificationNumber,
+          eventData.token,
         );
 
         if (!response) {
@@ -232,6 +234,7 @@ function EditProductModal(props: EditProductModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           payload,
+          eventData.token || "",
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -281,6 +284,7 @@ function EditProductModal(props: EditProductModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           payload,
+          eventData.token || "",
         );
 
         const decisions = response as unknown as IRuleDecision[];
@@ -308,7 +312,12 @@ function EditProductModal(props: EditProductModalProps) {
     };
 
     loadRateTypes();
-  }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
+  }, [
+    businessUnitPublicCode,
+    businessManagerCode,
+    moneyDestination,
+    eventData.token,
+  ]);
 
   const isCreditAmountDisabled = (): boolean => {
     return termInMonthsModified;
@@ -394,6 +403,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessUnitPublicCode,
         businessManagerCode,
         payload,
+        eventData.token || "",
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -464,6 +474,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessUnitPublicCode,
         businessManagerCode,
         payload,
+        eventData.token || "",
       );
 
       const decisions = response as unknown as IRuleDecision[];
@@ -520,6 +531,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessManagerCode,
         initialValues.creditLine,
         clientIdentificationNumber,
+        eventData?.token || "",
       );
 
       const periodicInterestRateMin = response?.periodicInterestRateMin || 0;
@@ -601,6 +613,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessUnitPublicCode,
         businessManagerCode,
         payload,
+        eventData?.token || "",
       );
 
       if (!updatedProspect) {

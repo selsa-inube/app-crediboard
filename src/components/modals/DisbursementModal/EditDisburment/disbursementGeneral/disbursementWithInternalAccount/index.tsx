@@ -25,6 +25,7 @@ import { searchAllCardSavingProducts } from "@services/bank/cardSavingProducts/S
 import { IProspectSummaryById, IProspect } from "@services/prospect/types";
 import { CardGray } from "@components/cards/CardGray";
 import { EnumType } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import {
@@ -48,6 +49,7 @@ interface IDisbursementWithInternalAccountProps {
   getTotalAmount: () => number;
   prospectData: IProspect;
   lang: EnumType;
+  eventData: ICrediboardData;
   customerData?: ICustomerData;
 }
 
@@ -65,6 +67,7 @@ export function DisbursementWithInternalAccount(
     isAmountReadOnly,
     customerData,
     lang,
+    eventData,
   } = props;
 
   const {
@@ -81,7 +84,6 @@ export function DisbursementWithInternalAccount(
     { id: string; label: string; value: string }[]
   >([]);
   const lastValidState = useRef<boolean | null>(null);
-
   useEffect(() => {
     const checkValidity = () => {
       const stepErrors = formik.errors[optionNameForm];
@@ -151,6 +153,7 @@ export function DisbursementWithInternalAccount(
             : formik.values[optionNameForm].payeeIdentificationNumber,
           businessUnitPublicCode,
           businessManagerCode,
+          eventData.token,
         );
         const uniqueMap = new Map<
           string,
@@ -175,7 +178,7 @@ export function DisbursementWithInternalAccount(
     }
     fetchAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIdentification, formik.values[optionNameForm]?.toggle]);
+  }, [currentIdentification, formik.values[optionNameForm]?.toggle, eventData.token]);
 
   const { setFieldValue } = formik;
 
