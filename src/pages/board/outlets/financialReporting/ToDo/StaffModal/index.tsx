@@ -91,11 +91,11 @@ export function StaffModal(props: StaffModalProps) {
   const handleCommercialManagerChange = (
     name: string,
     value: string,
-    setFieldValue: (field: string, value: string) => void
+    setFieldValue: (field: string, value: string) => void,
   ) => {
     setFieldValue(name, value);
     const selectedManager = accountManagerList.find(
-      (manager) => manager.staffName === value
+      (manager) => manager.staffName === value,
     );
     if (selectedManager) {
       setSelectedCommercialManager(selectedManager);
@@ -105,7 +105,7 @@ export function StaffModal(props: StaffModalProps) {
   const handleAnalystChange = (
     name: string,
     value: string,
-    setFieldValue: (field: string, value: string) => void
+    setFieldValue: (field: string, value: string) => void,
   ) => {
     setFieldValue(name, value);
     const selected = analystList.find((analyst) => analyst.staffName === value);
@@ -121,12 +121,14 @@ export function StaffModal(props: StaffModalProps) {
           getCommercialManagerAndAnalyst(
             "CredicarAccountManager",
             businessUnitPublicCode,
-            businessManagerCode
+            businessManagerCode,
+            eventData.token || "",
           ),
           getCommercialManagerAndAnalyst(
             "CredicarAnalyst",
             businessUnitPublicCode,
-            businessManagerCode
+            businessManagerCode,
+            eventData.token || "",
           ),
         ]);
 
@@ -170,7 +172,7 @@ export function StaffModal(props: StaffModalProps) {
   const buildCreditRequest = (
     role: string,
     user: ICommercialManagerAndAnalyst | null,
-    previousUserName: string = ""
+    previousUserName: string = "",
   ): ICreditRequests | null => {
     if (!user) return null;
 
@@ -198,13 +200,13 @@ export function StaffModal(props: StaffModalProps) {
     const managerRequest = buildCreditRequest(
       "CredicarAccountManager",
       selectedCommercialManager,
-      commercialManager
+      commercialManager,
     );
 
     const analystRequest = buildCreditRequest(
       "CredicarAnalyst",
       selectedAnalyst,
-      analyst
+      analyst,
     );
 
     try {
@@ -213,7 +215,8 @@ export function StaffModal(props: StaffModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           managerRequest,
-          eventData.user.identificationDocumentNumber || ""
+          eventData.user.identificationDocumentNumber || "",
+          eventData.token || "",
         );
         setAssignedStaff((prev) => ({
           ...prev,
@@ -226,7 +229,8 @@ export function StaffModal(props: StaffModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           analystRequest,
-          eventData.user.identificationDocumentNumber || ""
+          eventData.user.identificationDocumentNumber || "",
+          eventData.token || "",
         );
         setAssignedStaff((prev) => ({
           ...prev,
@@ -242,7 +246,7 @@ export function StaffModal(props: StaffModalProps) {
       });
     } catch (error) {
       setErrorMessage(
-        errorMessages.patchChangeUsersByCreditRequest.description
+        errorMessages.patchChangeUsersByCreditRequest.description,
       );
       setErrorModal(true);
     } finally {

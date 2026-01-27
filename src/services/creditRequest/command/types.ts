@@ -4,6 +4,7 @@ export interface IMakeDecisionsCreditRequestResponse {
   humanDecision: string;
   executionDate: string;
   justification: string;
+  justificacion?: string;
   statusServices?: number;
 }
 export interface IDeleteCreditRequest {
@@ -12,9 +13,10 @@ export interface IDeleteCreditRequest {
 }
 
 export interface IMakeDecisionsCreditRequest {
+  concept: string;
   creditRequestId: string;
-  humanDecision: string;
-  justification: string;
+  justification?: string;
+  justificacion?: string;
 }
 
 export interface INotificationOnApprovals {

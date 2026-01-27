@@ -237,6 +237,7 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
                     businessManagerCode={businessManagerCode}
                     prospectData={prospectData}
                     lang={lang}
+                    eventData={eventData}
                   />
                 )}
               {validTabs.some(
@@ -258,6 +259,7 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
                     isAmountReadOnly={isAmountReadOnly}
                     prospectData={prospectData}
                     lang={lang}
+                    eventData={eventData}
                   />
                 )}
               {validTabs.some(

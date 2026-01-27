@@ -8,7 +8,8 @@ import { IAllDeductibleExpensesById } from "../../../prospect/types";
 const getAllDeductibleExpensesById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestCode: string
+  creditRequestCode: string,
+  token: string,
 ): Promise<IAllDeductibleExpensesById[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,13 +26,14 @@ const getAllDeductibleExpensesById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
-      
+
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -55,14 +57,14 @@ const getAllDeductibleExpensesById = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener los gastos descontables."
+          "Todos los intentos fallaron. No se pudo obtener los gastos descontables.",
         );
       }
     }
   }
 
   throw new Error(
-    "No se pudo obtener los gastos descontables después de varios intentos."
+    "No se pudo obtener los gastos descontables después de varios intentos.",
   );
 };
 

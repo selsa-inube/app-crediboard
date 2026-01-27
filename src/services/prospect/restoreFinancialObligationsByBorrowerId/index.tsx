@@ -9,7 +9,8 @@ export const restoreFinancialObligationsByBorrowerId = async (
   businessManagerCode: string,
   borrowerIdentificationNumber: string,
   creditRequestCode: string,
-  justification: string
+  justification: string,
+  token: string,
 ): Promise<void> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -17,7 +18,7 @@ export const restoreFinancialObligationsByBorrowerId = async (
   const payload = {
     borrowerIdentificationNumber,
     creditRequestCode,
-    justification
+    justification,
   };
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -31,6 +32,7 @@ export const restoreFinancialObligationsByBorrowerId = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

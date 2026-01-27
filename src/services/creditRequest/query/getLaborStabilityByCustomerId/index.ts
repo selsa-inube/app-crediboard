@@ -8,7 +8,8 @@ import { ILaborStabilityByCustomerId } from "./types";
 const getLaborStabilityByCustomerId = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  customerIdentificationNumber: string
+  customerIdentificationNumber: string,
+  token: string,
 ): Promise<ILaborStabilityByCustomerId[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,13 +26,14 @@ const getLaborStabilityByCustomerId = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/labor-stability/${customerIdentificationNumber}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -58,7 +60,7 @@ const getLaborStabilityByCustomerId = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la tarea."
+          "Todos los intentos fallaron. No se pudo obtener la tarea.",
         );
       }
     }

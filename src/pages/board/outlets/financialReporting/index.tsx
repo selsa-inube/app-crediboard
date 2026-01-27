@@ -52,7 +52,7 @@ import {
   optionButtons,
   labelsAndValuesShareEnum,
   errorMessagesEnum,
-  financialReportingLabelsEnum
+  financialReportingLabelsEnum,
 } from "./config";
 import {
   StyledMarginPrint,
@@ -71,6 +71,7 @@ import { Postingvouchers } from "./Postingvouchers";
 import { IDocumentData, IErrorService, IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
 import { ComercialManagement } from "./CommercialManagement";
+import { IEntries } from "@components/data/TableBoard/types";
 
 interface IListdataProps {
   data: { id: string; name: string }[];
@@ -80,7 +81,7 @@ interface IListdataProps {
 
 const removeErrorByIdServices = (
   errorsList: IErrorService[],
-  errorId: string
+  errorId: string,
 ) => {
   return errorsList.filter((error) => error.id !== errorId);
 };
@@ -92,7 +93,7 @@ export const FinancialReporting = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const [sentData, setSentData] = useState<IExtraordinaryInstallments | null>(
-    null
+    null,
   );
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -113,7 +114,7 @@ export const FinancialReporting = () => {
   });
 
   const [updateManagement, setUpdateManagement] = useState(0);
-
+  const [approvalsEntries, setApprovalsEntries] = useState<IEntries[]>([]);
   const { creditRequestCode } = useParams();
   const { user } = useIAuth();
 
@@ -145,7 +146,8 @@ export const FinancialReporting = () => {
       businessUnitPublicCode,
       businessManagerCode,
       creditRequestCode!,
-      userAccount
+      userAccount,
+      eventData.token || "",
     )
       .then((data) => {
         setData(data[0]);
@@ -158,6 +160,7 @@ export const FinancialReporting = () => {
     businessUnitPublicCode,
     userAccount,
     businessManagerCode,
+    eventData.token,
   ]);
 
   const fetchAndShowDocuments = async () => {
@@ -168,7 +171,8 @@ export const FinancialReporting = () => {
         data.creditRequestId,
         user.id,
         businessUnitPublicCode,
-        businessManagerCode
+        businessManagerCode,
+        eventData.token || "",
       );
 
       const dataToMap = Array.isArray(documents) ? documents : documents.value;
@@ -176,7 +180,7 @@ export const FinancialReporting = () => {
         (dataListDocument: IDocumentData) => ({
           id: dataListDocument.documentId,
           name: dataListDocument.fileName,
-        })
+        }),
       );
       setDocument(documentsUser);
       setAttachDocuments(true);
@@ -193,11 +197,14 @@ export const FinancialReporting = () => {
         const result = await getSearchProspectByCode(
           businessUnitPublicCode,
           businessManagerCode,
-          creditRequestCode
+          creditRequestCode,
+          eventData.token || "",
         );
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
-        setErrorMessage(errorMessagesEnum.searchProspect.description.i18n[lang]);
+        setErrorMessage(
+          errorMessagesEnum.searchProspect.description.i18n[lang],
+        );
         setErrorModal(true);
         setErrorGetProspects(true);
         console.error("Error al obtener los prospectos:", error);
@@ -205,7 +212,7 @@ export const FinancialReporting = () => {
     };
 
     idProspect && businessUnitPublicCode && fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
     idProspect,
@@ -222,7 +229,7 @@ export const FinancialReporting = () => {
         dataCommercialManagementRef,
         labelsAndValuesShareEnum.titleOnPdf.i18n[lang],
         setErrorModal,
-        true
+        true,
       );
 
       if (pdfBlob) {
@@ -244,9 +251,13 @@ export const FinancialReporting = () => {
     if (!pdfState.blob) return;
 
     try {
-      const pdfFile = new File([pdfState.blob], labelsAndValuesShareEnum.fileName.i18n[lang], {
-        type: "application/pdf",
-      });
+      const pdfFile = new File(
+        [pdfState.blob],
+        labelsAndValuesShareEnum.fileName.i18n[lang],
+        {
+          type: "application/pdf",
+        },
+      );
 
       await navigator.share({
         files: [pdfFile],
@@ -319,7 +330,8 @@ export const FinancialReporting = () => {
         businessUnitPublicCode,
         businessManagerCode,
         "RECHAZAR_SOLICITUD",
-        removalJustification
+        removalJustification,
+        eventData.token,
       );
 
       addFlag({
@@ -348,7 +360,8 @@ export const FinancialReporting = () => {
           data?.creditRequestId ?? "",
           businessUnitPublicCode,
           businessManagerCode,
-          user?.id ?? ""
+          user?.id ?? "",
+          eventData.token || "",
         );
       } finally {
         handleToggleModal();
@@ -368,7 +381,8 @@ export const FinancialReporting = () => {
         businessManagerCode,
         {
           creditRequestId: data.creditRequestId,
-        }
+        },
+        eventData.token || "",
       );
 
       if (Array.isArray(unreadErrors)) {
@@ -400,7 +414,8 @@ export const FinancialReporting = () => {
     await deleteCreditRequest(
       businessUnitPublicCode,
       businessManagerCode,
-      creditRequests
+      creditRequests,
+      eventData.token,
     )
       .then(() => {
         addFlag({
@@ -497,6 +512,7 @@ export const FinancialReporting = () => {
                         id={creditRequestCode!}
                         user={user!.nickname!}
                         setIdProspect={setIdProspect}
+                        approvalsEntries={approvalsEntries}
                       />
                     </Stack>
                   </BlockPdfSection>
@@ -509,6 +525,8 @@ export const FinancialReporting = () => {
                         user={creditRequestCode!}
                         isMobile={isMobile}
                         id={creditRequestCode!}
+                        approvalsEntries={approvalsEntries}
+                        setApprovalsEntries={setApprovalsEntries}
                       />
                     </BlockPdfSection>
                   </Stack>
@@ -525,6 +543,7 @@ export const FinancialReporting = () => {
                         businessUnitPublicCode={businessUnitPublicCode}
                         creditRequestCode={data.creditRequestCode!}
                         businessManagerCode={businessManagerCode}
+                        eventData={eventData}
                       />
                     </BlockPdfSection>
                   </Stack>
@@ -567,10 +586,18 @@ export const FinancialReporting = () => {
               </Stack>
               {showAttachments && (
                 <ListModal
-                  title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
+                  title={
+                    financialReportingLabelsEnum.attachments.titleList.i18n[
+                      lang
+                    ]
+                  }
                   handleClose={handleAttachmentsClose}
                   optionButtons={optionButtons}
-                  buttonLabel={financialReportingLabelsEnum.attachments.saveButton.i18n[lang]}
+                  buttonLabel={
+                    financialReportingLabelsEnum.attachments.saveButton.i18n[
+                      lang
+                    ]
+                  }
                   id={data.creditRequestId!}
                   isViewing={false}
                   uploadedFiles={uploadedFiles}
@@ -579,9 +606,17 @@ export const FinancialReporting = () => {
               )}
               {attachDocuments && (
                 <ListModal
-                  title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
+                  title={
+                    financialReportingLabelsEnum.attachments.titleList.i18n[
+                      lang
+                    ]
+                  }
                   handleClose={() => setAttachDocuments(false)}
-                  buttonLabel={financialReportingLabelsEnum.attachments.closeButton.i18n[lang]}
+                  buttonLabel={
+                    financialReportingLabelsEnum.attachments.closeButton.i18n[
+                      lang
+                    ]
+                  }
                   id={data.creditRequestId!}
                   isViewing={true}
                   dataDocument={document}
@@ -592,9 +627,15 @@ export const FinancialReporting = () => {
           {showRejectModal && (
             <TextAreaModal
               title={financialReportingLabelsEnum.rejectModal.title.i18n[lang]}
-              buttonText={financialReportingLabelsEnum.rejectModal.button.i18n[lang]}
-              inputLabel={financialReportingLabelsEnum.rejectModal.label.i18n[lang]}
-              inputPlaceholder={financialReportingLabelsEnum.rejectModal.placeholder.i18n[lang]}
+              buttonText={
+                financialReportingLabelsEnum.rejectModal.button.i18n[lang]
+              }
+              inputLabel={
+                financialReportingLabelsEnum.rejectModal.label.i18n[lang]
+              }
+              inputPlaceholder={
+                financialReportingLabelsEnum.rejectModal.placeholder.i18n[lang]
+              }
               onCloseModal={() => setShowRejectModal(false)}
               handleNext={() => {
                 handleSubmit();
@@ -617,9 +658,15 @@ export const FinancialReporting = () => {
           {showCancelModal && (
             <TextAreaModal
               title={financialReportingLabelsEnum.cancelModal.title.i18n[lang]}
-              buttonText={financialReportingLabelsEnum.cancelModal.button.i18n[lang]}
-              inputLabel={financialReportingLabelsEnum.cancelModal.label.i18n[lang]}
-              inputPlaceholder={financialReportingLabelsEnum.cancelModal.placeholder.i18n[lang]}
+              buttonText={
+                financialReportingLabelsEnum.cancelModal.button.i18n[lang]
+              }
+              inputLabel={
+                financialReportingLabelsEnum.cancelModal.label.i18n[lang]
+              }
+              inputPlaceholder={
+                financialReportingLabelsEnum.cancelModal.placeholder.i18n[lang]
+              }
               onCloseModal={() => setShowCancelModal(false)}
               handleNext={() => {
                 handleDeleteCreditRequest();

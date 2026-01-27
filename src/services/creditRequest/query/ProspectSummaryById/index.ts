@@ -9,7 +9,8 @@ import { IProspectSummaryById } from "../../../prospect/types";
 const getSearchProspectSummaryById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestCode: string
+  creditRequestCode: string,
+  token: string
 ): Promise<IProspectSummaryById> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,6 +26,7 @@ const getSearchProspectSummaryById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };

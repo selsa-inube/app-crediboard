@@ -16,7 +16,7 @@ import {
   errorMessagesEnum,
   extractBorrowerIncomeData,
   titleButtonTextAssistedEnum,
-  StepDetails
+  StepDetails,
 } from "./config";
 
 function AddProductModal(props: IAddProductModalProps) {
@@ -34,7 +34,8 @@ function AddProductModal(props: IAddProductModalProps) {
     businessManagerCode,
     identificationDocumentType,
     dataProspect,
-    isSendingData
+    isSendingData,
+    eventData,
   } = props;
 
   const [errorModal, setErrorModal] = useState(false);
@@ -72,6 +73,7 @@ function AddProductModal(props: IAddProductModalProps) {
           businessManagerCode,
           moneyDestination,
           identificationDocumentNumber,
+          eventData.token || "",
         );
 
         const linesArray = Array.isArray(lineOfCreditValues)
@@ -100,8 +102,13 @@ function AddProductModal(props: IAddProductModalProps) {
         setLoading(false);
       }
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, moneyDestination, identificationDocumentNumber, businessManagerCode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    businessUnitPublicCode,
+    moneyDestination,
+    identificationDocumentNumber,
+    businessManagerCode,
+  ]);
 
   useEffect(() => {
     if (currentStep !== stepsAddProductEnum.paymentConfiguration.id) return;
@@ -124,6 +131,7 @@ function AddProductModal(props: IAddProductModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           paymentChannelRequest,
+          eventData.token || "",
         );
 
         if (!response || response.length === 0) {
@@ -210,44 +218,51 @@ function AddProductModal(props: IAddProductModalProps) {
       .required(),
   });
 
-  const assistedControls = useMemo(() => ({
-    goBackText: titleButtonTextAssistedEnum.goBackText.i18n[lang],
-    goNextText: titleButtonTextAssistedEnum.goNextText.i18n[lang],
-    submitText: titleButtonTextAssistedEnum.submitText.i18n[lang],
-  }), [lang]);
+  const assistedControls = useMemo(
+    () => ({
+      goBackText: titleButtonTextAssistedEnum.goBackText.i18n[lang],
+      goNextText: titleButtonTextAssistedEnum.goNextText.i18n[lang],
+      submitText: titleButtonTextAssistedEnum.submitText.i18n[lang],
+    }),
+    [lang],
+  );
 
-  const stepsMap: StepDetails[] = useMemo(() => [
-    {
-      ...stepsAddProductEnum.creditLineSelection,
-      name: stepsAddProductEnum.creditLineSelection.i18n[lang],
-    },
-    {
-      ...stepsAddProductEnum.paymentConfiguration,
-      name: stepsAddProductEnum.paymentConfiguration.i18n[lang],
-    },
-    {
-      ...stepsAddProductEnum.termSelection,
-      name: stepsAddProductEnum.termSelection.i18n[lang],
-    },
-    {
-      ...stepsAddProductEnum.amountCapture,
-      name: stepsAddProductEnum.amountCapture.i18n[lang],
-    },
-    {
-      ...stepsAddProductEnum.verification,
-      name: stepsAddProductEnum.verification.i18n[lang],
-    },
-  ], [lang]);
+  const stepsMap: StepDetails[] = useMemo(
+    () => [
+      {
+        ...stepsAddProductEnum.creditLineSelection,
+        name: stepsAddProductEnum.creditLineSelection.i18n[lang],
+      },
+      {
+        ...stepsAddProductEnum.paymentConfiguration,
+        name: stepsAddProductEnum.paymentConfiguration.i18n[lang],
+      },
+      {
+        ...stepsAddProductEnum.termSelection,
+        name: stepsAddProductEnum.termSelection.i18n[lang],
+      },
+      {
+        ...stepsAddProductEnum.amountCapture,
+        name: stepsAddProductEnum.amountCapture.i18n[lang],
+      },
+      {
+        ...stepsAddProductEnum.verification,
+        name: stepsAddProductEnum.verification.i18n[lang],
+      },
+    ],
+    [lang],
+  );
 
-  const stepsList: StepDetails[] = useMemo(() =>
-    Object.values(stepsAddProductEnum).map((step) => ({
-      id: step.id,
-      number: step.number,
-      name: step.i18n[lang],
-      description: step.description,
-    })),
-    [lang]);
-
+  const stepsList: StepDetails[] = useMemo(
+    () =>
+      Object.values(stepsAddProductEnum).map((step) => ({
+        id: step.id,
+        number: step.number,
+        name: step.i18n[lang],
+        description: step.description,
+      })),
+    [lang],
+  );
 
   const currentStepsNumberReference = stepsList[currentStep - 1];
 

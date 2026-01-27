@@ -1,5 +1,4 @@
 import { useState, useEffect, ChangeEvent, useContext, useMemo } from "react";
-import { useParams } from "react-router-dom";
 import { MdOutlineInfo } from "react-icons/md";
 import {
   Stack,
@@ -30,6 +29,8 @@ import userNotFound from "@assets/images/ItemNotFound.png";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { BaseModal } from "@components/modals/baseModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
+import { IEntries } from "@components/data/TableBoard/types";
+import { getApprovalBoardRepresentablePersons } from "@services/creditRequest/query/approvalBoardRepresentablePersons";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -38,7 +39,8 @@ import {
   txtLabelsEnum,
   txtTaskQueryEnum,
   titlesModalEnum,
-  txtOthersOptionsEnum
+  txtOthersOptionsEnum,
+  txtConfirmRepresentativeEnum,
 } from "./config";
 import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
@@ -53,14 +55,12 @@ interface ToDoProps {
   user: string;
   id: string;
   setIdProspect: (idProspect: string) => void;
+  approvalsEntries: IEntries[];
 }
 
 function ToDo(props: ToDoProps) {
-  const { icon, button, isMobile, id, setIdProspect } = props;
-
-  const { approverid } = useParams();
+  const { icon, button, isMobile, id, setIdProspect, approvalsEntries } = props;
   const { lang } = useEnum();
-
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [staff, setStaff] = useState<IStaff[]>([]);
@@ -70,7 +70,12 @@ function ToDo(props: ToDoProps) {
   const [taskData, setTaskData] = useState<IToDo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
+  const [isModalConfirm, setIsModalConfirm] = useState(false);
   const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
+  const [representablePersons, setRepresentablePersons] = useState<string[]>(
+    [],
+  );
+  const [selectedRepresentative, setSelectedRepresentative] = useState("");
 
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
@@ -98,8 +103,47 @@ function ToDo(props: ToDoProps) {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
-  const { userAccount } =
-    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+  const userAccount =
+    typeof eventData === "string"
+      ? JSON.parse(eventData).user.identificationDocumentNumber
+      : eventData.user.identificationDocumentNumber;
+
+  useEffect(() => {
+    const fetchRepresentable = async () => {
+      if (
+        requests?.stage === "VERIFICACION_APROBACION" &&
+        requests.creditRequestId
+      ) {
+        try {
+          const response = await getApprovalBoardRepresentablePersons(
+            businessUnitPublicCode,
+            businessManagerCode,
+            userAccount,
+            requests.creditRequestId,
+            eventData.token || "",
+          );
+
+          const persons = response?.approvalBoardRepresentablePersons || [];
+          setRepresentablePersons(persons);
+
+          if (persons.length === 1) {
+            setSelectedRepresentative(persons[0]);
+          }
+        } catch (error) {
+          console.error("Error fetching representable persons:", error);
+        }
+      }
+    };
+
+    fetchRepresentable();
+  }, [
+    requests?.stage,
+    requests?.creditRequestId,
+    businessUnitPublicCode,
+    businessManagerCode,
+    userAccount,
+    eventData.token,
+  ]);
 
   useEffect(() => {
     const fetchCreditRequest = async () => {
@@ -109,6 +153,7 @@ function ToDo(props: ToDoProps) {
           businessManagerCode,
           id,
           userAccount,
+          eventData.token || "",
         );
 
         setRequests(data[0] as ICreditRequest);
@@ -124,7 +169,13 @@ function ToDo(props: ToDoProps) {
     if (id) {
       fetchCreditRequest();
     }
-  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
+  }, [
+    businessUnitPublicCode,
+    id,
+    userAccount,
+    businessManagerCode,
+    eventData.token,
+  ]);
 
   useEffect(() => {
     const fetchToDoData = async () => {
@@ -135,6 +186,7 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           businessManagerCode,
           requests.creditRequestId,
+          eventData.token || "",
         );
 
         setTaskData(data);
@@ -154,6 +206,7 @@ function ToDo(props: ToDoProps) {
     requests?.creditRequestId,
     businessManagerCode,
     setIdProspect,
+    eventData.token,
   ]);
 
   useEffect(() => {
@@ -166,6 +219,7 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           businessManagerCode,
           requests.creditRequestId,
+          eventData.token || "",
         );
 
         const formattedDecisions = Array.isArray(decision)
@@ -195,6 +249,7 @@ function ToDo(props: ToDoProps) {
     businessManagerCode,
     lang,
     taskDecisions.length,
+    eventData.token,
   ]);
 
   useEffect(() => {
@@ -232,6 +287,7 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           businessManagerCode,
           requests.creditRequestId,
+          eventData.token || "",
         );
         setTaskData(data);
       } catch (error) {
@@ -266,31 +322,55 @@ function ToDo(props: ToDoProps) {
     handleToggleStaffModal();
   };
 
+  const isRepresentativeButNotApprover = () => {
+    const isApprover = validationIsApprover();
+    const isRepresentative = representablePersons.includes(
+      eventData?.user?.userAccount || "",
+    );
+
+    return isRepresentative && !isApprover;
+  };
+
   const handleSend = () => {
-    setIsModalOpen(true);
+    if (isRepresentativeButNotApprover()) {
+      setIsModalConfirm(true);
+    } else {
+      setIsModalOpen(true);
+    }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  const validationId = () => {
-    if (approverid === eventData.user.staff.staffId) {
-      return true;
-    } else {
+  const handleConfirmRepresentative = () => {
+    setIsModalConfirm(false);
+    setIsModalOpen(true);
+  };
+
+  const validationIsApprover = () => {
+    if (requests?.stage !== "VERIFICACION_APROBACION") {
       return false;
     }
+    const currentUserId = eventData?.user?.identificationDocumentNumber;
+    const isUserInApprovals = approvalsEntries.some(
+      (approval) => approval.identificationNumber === currentUserId,
+    );
+    return isUserInApprovals;
   };
 
   const data = {
     makeDecision: {
+      concept: selectedDecision?.code || "",
       creditRequestId: requests?.creditRequestId || "",
       humanDecision: selectedDecision?.code || "",
       justification: "",
     },
     businessUnit: businessUnitPublicCode,
     user: eventData.user.identificationDocumentNumber || "",
-    xAction: getXAction(selectedDecision?.code || "", validationId()),
+    xAction: isRepresentativeButNotApprover()
+      ? "RegisterIndividualConceptOfApproval"
+      : getXAction(selectedDecision?.code || "", validationIsApprover()),
     humanDecisionDescription: selectedDecision?.label || "",
   };
 
@@ -307,7 +387,7 @@ function ToDo(props: ToDoProps) {
     );
 
     return matchedTask ? `${matchedTask.Value}` : taskData.taskToBeDone;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskData?.taskToBeDone]);
 
   const handleInfo = () => {
@@ -319,13 +399,17 @@ function ToDo(props: ToDoProps) {
   });
 
   useEffect(() => {
-    setHasPermitSend(
-      staff.some(
-        (s) =>
-          s.role === taskRole && s.userId === eventData?.user?.staff?.staffId,
-      ),
+    const hasStaffPermission = staff.some(
+      (s) =>
+        s.role === taskRole && s.userId === eventData?.user?.staff?.staffId,
     );
-  }, [staff, eventData, taskData, taskRole]);
+
+    const isVerificationWithAccount =
+      requests?.stage === "VERIFICACION_APROBACION" &&
+      Boolean(eventData?.user?.userAccount);
+
+    setHasPermitSend(hasStaffPermission || isVerificationWithAccount);
+  }, [staff, eventData, taskData, taskRole, requests]);
 
   const hasSingleDecision = taskDecisions.length === 1;
 
@@ -336,15 +420,32 @@ function ToDo(props: ToDoProps) {
     }
   }, [hasSingleDecision, taskDecisions, decisionValue.decision]);
 
+  const getToDoDescriptionTitle = (): string => {
+    if (requests?.stage === "VERIFICACION_APROBACION") {
+      const currentUserId = eventData?.user?.identificationDocumentNumber;
+
+      const isUserApprover = approvalsEntries.some(
+        (approval) => approval.identificationNumber === currentUserId,
+      );
+
+      if (isUserApprover) {
+        return eventData?.user?.userAccount || "";
+      }
+      return assignedStaff.analyst || assignedStaff.commercialManager || "";
+    }
+
+    if (taskRole === "CredicarAccountManager") {
+      return assignedStaff.commercialManager;
+    } else {
+      return assignedStaff.analyst;
+    }
+  };
+
   return (
     <>
       <Fieldset
         title={errorMessagesEnum.toDo.titleCard.i18n[lang]}
-        descriptionTitle={
-          taskRole === "CredicarAccountManager"
-            ? assignedStaff.commercialManager
-            : assignedStaff.analyst
-        }
+        descriptionTitle={getToDoDescriptionTitle()}
         heightFieldset="241px"
         hasOverflow
         aspectRatio={isMobile ? "auto" : "1"}
@@ -366,7 +467,7 @@ function ToDo(props: ToDoProps) {
             <Stack direction={isMobile ? "column" : "row"}>
               {isMobile && (
                 <Text appearance="primary" type="title" size="medium">
-                  Tarea
+                  {txtConfirmRepresentativeEnum.taskLabel.i18n[lang]}
                 </Text>
               )}
 
@@ -402,7 +503,10 @@ function ToDo(props: ToDoProps) {
                     name="decision"
                     label={txtOthersOptionsEnum.txtDecision.i18n[lang]}
                     value={decisionValue.decision}
-                    placeholder="Selecciona una opción"
+                    placeholder={
+                      txtConfirmRepresentativeEnum.representativePlaceholder
+                        .i18n[lang]
+                    }
                     size="compact"
                     options={taskDecisions || []}
                     onChange={onChangeDecision}
@@ -447,13 +551,16 @@ function ToDo(props: ToDoProps) {
                 <DecisionModal
                   title={txtLabelsEnum.title.i18n[lang]}
                   buttonText={txtLabelsEnum.buttonText.i18n[lang]}
-                  secondaryButtonText={txtLabelsEnum.secondaryButtonText.i18n[lang]}
+                  secondaryButtonText={
+                    txtLabelsEnum.secondaryButtonText.i18n[lang]
+                  }
                   inputLabel={txtLabelsEnum.inputLabel.i18n[lang]}
                   inputPlaceholder={txtLabelsEnum.inputPlaceholder.i18n[lang]}
                   businessManagerCode={businessManagerCode}
                   onSecondaryButtonClick={handleCloseModal}
                   onCloseModal={handleCloseModal}
                   data={data}
+                  eventData={eventData}
                 />
               )}
               <Stack
@@ -568,6 +675,48 @@ function ToDo(props: ToDoProps) {
             </Stack>
           </BaseModal>
         </>
+      )}
+      {isModalConfirm && (
+        <BaseModal
+          title={txtConfirmRepresentativeEnum.confirmTitle.i18n[lang]}
+          nextButton={staffConfigEnum.confirm.i18n[lang]}
+          backButton={staffConfigEnum.cancel.i18n[lang]}
+          handleNext={handleConfirmRepresentative}
+          handleClose={() => setIsModalConfirm(false)}
+        >
+          <Stack direction="column" gap="16px">
+            <Text>
+              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} ${selectedDecision?.label || "procesando"} ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} ${
+                representablePersons.length === 1
+                  ? representablePersons[0]
+                  : selectedRepresentative || "..."
+              }, ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
+            </Text>
+            {representablePersons.length > 1 && (
+              <Select
+                name="Representative"
+                id="Representative"
+                label={
+                  txtConfirmRepresentativeEnum.representativeLabel.i18n[lang]
+                }
+                placeholder={
+                  txtConfirmRepresentativeEnum.representativePlaceholder.i18n[
+                    lang
+                  ]
+                }
+                size="compact"
+                fullwidth
+                options={representablePersons.map((person) => ({
+                  id: person,
+                  label: person,
+                  value: person,
+                }))}
+                value={selectedRepresentative}
+                onChange={(_id, value) => setSelectedRepresentative(value)}
+              />
+            )}
+          </Stack>
+        </BaseModal>
       )}
     </>
   );

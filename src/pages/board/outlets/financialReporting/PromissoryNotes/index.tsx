@@ -10,9 +10,7 @@ import { UnfoundData } from "@components/layout/UnfoundData";
 import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { getPayrollDiscountAuthorizationsById } from "@services/creditRequest/query/payroll_discount_authorizations";
 import { getPromissoryNotesById } from "@services/creditRequest/query/promissory_notes";
-import {
-  ICreditRequest,
-} from "@services/creditRequest/query/types";
+import { ICreditRequest } from "@services/creditRequest/query/types";
 import { AppContext } from "@context/AppContext";
 import { useEnum } from "@hooks/useEnum";
 import { IPayrollDiscountAuthorization } from "@services/creditRequest/query/types";
@@ -42,12 +40,12 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   const { lang } = useEnum();
 
   const [creditRequets, setCreditRequests] = useState<ICreditRequest | null>(
-    null
+    null,
   );
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dataPromissoryNotes, setDataPromissoryNotes] = useState<IEntries[]>(
-    []
+    [],
   );
   const [showRetry, setShowRetry] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -68,7 +66,8 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
           businessUnitPublicCode,
           businessManagerCode,
           id,
-          userAccount
+          userAccount,
+          eventData.token || "",
         );
         setCreditRequests(data[0] as ICreditRequest);
       } catch (error) {
@@ -79,7 +78,13 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       }
     };
     if (id) fetchCreditRequest();
-  }, [businessUnitPublicCode, id, businessManagerCode, userAccount]);
+  }, [
+    businessUnitPublicCode,
+    id,
+    businessManagerCode,
+    userAccount,
+    eventData.token,
+  ]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -93,26 +98,29 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
           getPayrollDiscountAuthorizationsById(
             businessUnitPublicCode,
             businessManagerCode,
-            creditRequets.creditRequestId
+            creditRequets.creditRequestId,
+            eventData.token || "",
           ),
           getPromissoryNotesById(
             businessUnitPublicCode,
             businessManagerCode,
-            creditRequets.creditRequestId
+            creditRequets.creditRequestId,
+            eventData.token || "",
           ),
         ]);
 
- const processResult = (
-        result: PromiseSettledResult<IPayrollDiscountAuthorization[] | IPromissoryNotes[]>,
-        sourceType: "payroll" | "promissory_note"
+      const processResult = (
+        result: PromiseSettledResult<
+          IPayrollDiscountAuthorization[] | IPromissoryNotes[]
+        >,
+        sourceType: "payroll" | "promissory_note",
       ) => {
         if (result.status === "fulfilled") {
-
           const entries = result.value as DocumentEntry[];
 
           return entries.map((entry) => {
             let currentId = "";
-            
+
             if ("payrollDiscountAuthorizationId" in entry) {
               currentId = entry.payrollDiscountAuthorizationId;
             } else if ("promissoryNoteId" in entry) {
@@ -121,8 +129,10 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
 
             return {
               id: currentId,
-              [titlesFinancialReportingEnum.obligationCode.id]: entry.obligationCode,
-              [titlesFinancialReportingEnum.documentCode.id]: entry.documentCode,
+              [titlesFinancialReportingEnum.obligationCode.id]:
+                entry.obligationCode,
+              [titlesFinancialReportingEnum.documentCode.id]:
+                entry.documentCode,
               [titlesFinancialReportingEnum.type.id]:
                 // eslint-disable-next-line no-nested-ternary
                 sourceType === "payroll"
@@ -130,8 +140,8 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
                     ? "Libranza"
                     : "Payroll"
                   : lang === "es"
-                  ? "Pagaré"
-                  : "Promissory Note",
+                    ? "Pagaré"
+                    : "Promissory Note",
               tag: (
                 <Tag
                   label={entry.documentState}
@@ -140,11 +150,14 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
               ),
             };
           });
-        } 
-        
+        }
+
         errorObserver.notify({
           id: sourceType === "payroll" ? "PayrollDiscount" : "PromissoryNotes",
-          message: typeof result.reason === 'string' ? result.reason : (result.reason as Error).message,
+          message:
+            typeof result.reason === "string"
+              ? result.reason
+              : (result.reason as Error).message,
         });
         return [];
       };
@@ -160,16 +173,18 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
 
       setDataPromissoryNotes(combinedData);
     } catch (error) {
-   if ((error as Error).message === "NoData") {
-      setErrorMessage(errorMessagesEnum.promissoryNotes.description.i18n[lang]);
-    } else {
-      setErrorMessage((error as Error).message);
-    }
-    setShowRetry(true);
+      if ((error as Error).message === "NoData") {
+        setErrorMessage(
+          errorMessagesEnum.promissoryNotes.description.i18n[lang],
+        );
+      } else {
+        setErrorMessage((error as Error).message);
+      }
+      setShowRetry(true);
     } finally {
       setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, creditRequets]);
 
   useEffect(() => {
@@ -195,9 +210,12 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
           image={ItemNotFound}
           title={errorMessagesEnum.promissoryNotes.title.i18n[lang]}
           description={
-            errorMessagesEnum.promissoryNotes.description.i18n[lang] || errorMessage
+            errorMessagesEnum.promissoryNotes.description.i18n[lang] ||
+            errorMessage
           }
-          buttonDescription={errorMessagesEnum.promissoryNotes.button.i18n[lang]}
+          buttonDescription={
+            errorMessagesEnum.promissoryNotes.button.i18n[lang]
+          }
           onRetry={handleRetry}
         />
       ) : (

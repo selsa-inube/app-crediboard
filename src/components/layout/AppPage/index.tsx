@@ -171,6 +171,7 @@ function AppPage() {
           eventData.user.identificationDocumentNumber || "",
           businessUnitPublicCode,
           businessManagerCode,
+          eventData.token || "",
         );
         setNoveltiesData(data);
       } catch (error) {
@@ -186,6 +187,7 @@ function AppPage() {
     businessUnitPublicCode,
     businessManagerCode,
     businessUnitSigla,
+    eventData.token,
   ]);
 
   if (isLoadingBusinessUnit) {

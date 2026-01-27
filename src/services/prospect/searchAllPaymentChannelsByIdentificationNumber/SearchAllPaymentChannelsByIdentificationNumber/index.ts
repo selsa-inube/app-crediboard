@@ -4,15 +4,13 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import {
-  IPaymentDatesChannel,
-  IResponsePaymentDatesChannel,
-} from "./types";
+import { IPaymentDatesChannel, IResponsePaymentDatesChannel } from "./types";
 
 export const GetSearchAllPaymentChannels = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   paymentChannel: IPaymentDatesChannel,
+  token: string,
 ): Promise<IResponsePaymentDatesChannel[] | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -29,6 +27,7 @@ export const GetSearchAllPaymentChannels = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify(paymentChannel),
         signal: controller.signal,

@@ -268,7 +268,7 @@ export const soporteInvalidOptionsEnum = [
       es: "Gestión de garantías",
     },
   },
-]
+];
 
 export const txtTaskQueryEnum = {
   txtCommercialManager: {
@@ -324,6 +324,84 @@ export const titlesModalEnum = {
   },
 };
 
+export const txtConfirmRepresentativeEnum = {
+  confirmTitle: {
+    code: "TxtConfirmRepresentative_confirmTitle",
+    description: "Title for representative confirmation modal",
+    i18n: {
+      en: "Confirm",
+      es: "Confirmar",
+    },
+  },
+  selectPlaceholder: {
+    code: "TxtOthersOptions_selectPlaceholder",
+    description: "Placeholder for select inputs",
+    i18n: {
+      en: "Select an option",
+      es: "Selecciona una opción",
+    },
+  },
+  confirmationMessage: {
+    code: "TxtConfirmRepresentative_confirmationMessage",
+    description: "Message confirming action on behalf of representative",
+    i18n: {
+      en: "You are ",
+      es: "Estás",
+    },
+  },
+
+  decisionPlaceholder: {
+    code: "TxtConfirmRepresentative_decisionPlaceholder",
+    description: "Placeholder for decision selector",
+    i18n: {
+      en: "Do you want to continue?",
+      es: "¿Deseas continuar?",
+    },
+  },
+
+  decisionLabel: {
+    code: "TxtConfirmRepresentative_decisionLabel",
+    description: "Label for decision selector",
+    i18n: {
+      en: "the decision on behalf of",
+      es: "la solicitud en representación de",
+    },
+  },
+
+  processingDefault: {
+    code: "TxtConfirmRepresentative_processingDefault",
+    description: "Default text when no decision is selected",
+    i18n: {
+      en: "processing",
+      es: "procesando",
+    },
+  },
+  representativeLabel: {
+    code: "TxtConfirmRepresentative_representativeLabel",
+    description: "Label for representative selector",
+    i18n: {
+      en: "Representative",
+      es: "Representante",
+    },
+  },
+  representativePlaceholder: {
+    code: "TxtConfirmRepresentative_representativePlaceholder",
+    description: "Placeholder for representative selector",
+    i18n: {
+      en: "Select an option",
+      es: "Seleccione una opción",
+    },
+  },
+
+  taskLabel: {
+    code: "TxtLabels_taskLabel",
+    description: "Label for task field",
+    i18n: {
+      en: "Task",
+      es: "Tarea",
+    },
+  },
+};
 export const errorMessagesEnum = {
   patchChangeUsersByCreditRequest: {
     code: "ErrorMessages_patchChangeUsersByCreditRequest",
@@ -334,4 +412,3 @@ export const errorMessagesEnum = {
     },
   },
 };
-

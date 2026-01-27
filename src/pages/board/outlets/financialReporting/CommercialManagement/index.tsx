@@ -195,6 +195,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
           businessManagerCode,
           creditRequestCode,
           userAccount,
+          eventData.token || "",
         );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
@@ -232,6 +233,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
           businessUnitPublicCode,
           businessManagerCode,
           requests.creditRequestId,
+          eventData.token || "",
         );
 
         const typeMapping: Record<
@@ -283,7 +285,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       }
     }
   };
-
+  console.log(eventData.token, "aaa");
   const handleCloseModal = () => {
     setModalHistory((prevHistory) => {
       const newHistory = [...prevHistory];
@@ -917,6 +919,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   openModal={openModal}
                   setOpenModal={setOpenModal}
                   currentModal={currentModal}
+                  eventData={eventData}
                   handleOpenModal={handleOpenModal}
                   handleCloseModal={handleCloseModal}
                   onProspectUpdate={(prospect) => {

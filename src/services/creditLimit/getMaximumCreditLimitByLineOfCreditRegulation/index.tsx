@@ -12,7 +12,8 @@ export const getMaximumCreditLimitByLineOfCreditRegulation = async (
   identificationDocumentType: string,
   identificationDocumentNumber: string,
   moneyDestination: string,
-  primaryIncomeType: string
+  primaryIncomeType: string,
+  token: string
 ): Promise<IMaximumCreditLimit | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -32,6 +33,7 @@ export const getMaximumCreditLimitByLineOfCreditRegulation = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Divider, Stack, Text, useFlag } from "@inubekit/inubekit";
 
 import { CardGray } from "@components/cards/CardGray";
@@ -6,6 +6,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { Fieldset } from "@components/data/Fieldset";
 import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { useEnum } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { DocumentViewer } from "../DocumentViewer";
 import { dataTraceEnum } from "./config";
@@ -31,7 +32,7 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
     user,
   } = props;
   const { lang } = useEnum();
-
+  const { eventData } = useContext(AppContext);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -44,7 +45,8 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
         id,
         user ?? "",
         businessUnitPublicCode ?? "",
-        businessManagerCode ?? ""
+        businessManagerCode ?? "",
+        eventData.token || "",
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);

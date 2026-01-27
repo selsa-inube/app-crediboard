@@ -9,7 +9,8 @@ export const getGuaranteesSummary = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   creditRequestId: string,
-  prospectCode: string
+  prospectCode: string,
+  token: string,
 ): Promise<IGuaranteesSummary | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,13 +26,14 @@ export const getGuaranteesSummary = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/guarantees-summary/${creditRequestId}/${prospectCode}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -60,7 +62,7 @@ export const getGuaranteesSummary = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener las garantias."
+          "Todos los intentos fallaron. No se pudo obtener las garantias.",
         );
       }
     }

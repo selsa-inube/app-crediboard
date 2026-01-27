@@ -10,7 +10,8 @@ import { mapperProspectResponseToIProspect } from "../../../prospect/mapper";
 const getSearchProspectByCode = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestCode: string
+  creditRequestCode: string,
+  token: string
 ): Promise<IProspect> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,6 +28,7 @@ const getSearchProspectByCode = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };

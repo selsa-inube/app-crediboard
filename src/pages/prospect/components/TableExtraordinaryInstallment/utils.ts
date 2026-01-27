@@ -3,11 +3,13 @@ import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 const removeExtraordinaryInstallment = (
   businessUnitPublicCode: string,
-  extraordinaryInstallments: IExtraordinaryInstallments
+  extraordinaryInstallments: IExtraordinaryInstallments,
+  token: string
 ) => {
   return removeExtraordinaryInstallments(
     extraordinaryInstallments,
     businessUnitPublicCode,
+    token
   );
 };
 

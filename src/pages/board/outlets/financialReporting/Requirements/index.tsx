@@ -24,6 +24,8 @@ import {
   IPatchOfRequirements,
 } from "@services/requirementsPackages/types";
 import { useEnum } from "@hooks/useEnum";
+import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import {
   infoItems,
@@ -37,7 +39,6 @@ import {
 } from "./config";
 import { DocumentItem, MappedRequirements, RequirementType } from "./types";
 import { errorMessagesEnum } from "../config";
-import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 
 interface IRequirementsData {
   id: string;
@@ -52,6 +53,7 @@ export interface IRequirementsProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
   creditRequestCode: string;
+  eventData: ICrediboardData;
   isMobile: boolean;
 }
 
@@ -63,6 +65,7 @@ export const Requirements = (props: IRequirementsProps) => {
     businessUnitPublicCode,
     businessManagerCode,
     creditRequestCode,
+    eventData,
   } = props;
   const { lang } = useEnum();
 
@@ -102,7 +105,7 @@ export const Requirements = (props: IRequirementsProps) => {
   >({});
 
   const [dataRequirements, setDataRequirements] = useState<IRequirementsData[]>(
-    []
+    [],
   );
   const [requirementName, setRequirementName] = useState("");
   const [descriptionUseValue, setDescriptionUseValue] = useState("");
@@ -116,7 +119,7 @@ export const Requirements = (props: IRequirementsProps) => {
     IPackagesOfRequirementsById[]
   >([]);
   const [justificationRequirement, setJustificationRequirement] = useState(
-    dataAddRequirementEnum.descriptionJustification.i18n[lang]
+    dataAddRequirementEnum.descriptionJustification.i18n[lang],
   );
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
   const { addFlag } = useFlag();
@@ -134,7 +137,8 @@ export const Requirements = (props: IRequirementsProps) => {
         const data = await getAllPackagesOfRequirementsById(
           businessUnitPublicCode,
           businessManagerCode,
-          creditRequestCode
+          creditRequestCode,
+          eventData.token || "",
         );
         setRawRequirements(data);
 
@@ -203,12 +207,12 @@ export const Requirements = (props: IRequirementsProps) => {
           ];
 
           if (passedStatuses.includes(status)) {
-            return "Cumple"; 
+            return "Cumple";
           } else if (failedStatuses.includes(status)) {
-            return "No Cumple"; 
+            return "No Cumple";
           }
 
-          return ""; 
+          return "";
         };
 
         data.forEach((item) => {
@@ -235,7 +239,7 @@ export const Requirements = (props: IRequirementsProps) => {
                   req.descriptionEvaluationRequirement ||
                   "",
                 toggleChecked: answer === "Cumple",
-                labelText: answer, 
+                labelText: answer,
               };
             } else if (type === "DOCUMENT") {
               typeCounters.DOCUMENT += 1;
@@ -256,7 +260,7 @@ export const Requirements = (props: IRequirementsProps) => {
               const answer = getAnswerFromStatus(req.requirementStatus || "");
 
               humanVals[entryId] = {
-                answer: answer, 
+                answer: answer,
                 observations:
                   req.statusChangeJustification ||
                   req.descriptionEvaluationRequirement ||
@@ -271,7 +275,10 @@ export const Requirements = (props: IRequirementsProps) => {
         setApprovalHumanValues(humanVals);
 
         const processedEntries = maperEntries(mapped, lang);
-        const processedRequirements = maperDataRequirements(processedEntries, lang);
+        const processedRequirements = maperDataRequirements(
+          processedEntries,
+          lang,
+        );
         setDataRequirements(processedRequirements);
       } catch (error) {
         console.error("Error fetching requirements:", error);
@@ -368,7 +375,8 @@ export const Requirements = (props: IRequirementsProps) => {
     await saveRequirements(
       businessUnitPublicCode,
       businessManagerCode,
-      creditRequests
+      creditRequests,
+      eventData.token || "",
     )
       .then(() => {
         setSentData(creditRequests);
@@ -484,7 +492,7 @@ export const Requirements = (props: IRequirementsProps) => {
 
   let hasEntriesRequirements = [];
   hasEntriesRequirements = dataRequirements.filter(
-    (item) => item.entriesRequirements.length >= 1
+    (item) => item.entriesRequirements.length >= 1,
   );
   const refreshRequirementsData = async () => {
     try {
@@ -493,7 +501,8 @@ export const Requirements = (props: IRequirementsProps) => {
       const data = await getAllPackagesOfRequirementsById(
         businessUnitPublicCode,
         businessManagerCode,
-        creditRequestCode
+        creditRequestCode,
+        eventData.token || "",
       );
       setRawRequirements(data);
 
@@ -526,13 +535,15 @@ export const Requirements = (props: IRequirementsProps) => {
       });
 
       const processedEntries = maperEntries(mapped, lang);
-      const processedRequirements = maperDataRequirements(processedEntries, lang);
+      const processedRequirements = maperDataRequirements(
+        processedEntries,
+        lang,
+      );
       setDataRequirements(processedRequirements);
     } catch (error) {
       console.error("Error refreshing requirements:", error);
     }
   };
-
 
   return (
     <>
@@ -541,7 +552,7 @@ export const Requirements = (props: IRequirementsProps) => {
         activeButton={getDataButton(
           lang,
           () => setShowAddRequirementModal(true),
-          () => setShowAddSystemValidationModal(true)
+          () => setShowAddSystemValidationModal(true),
         )}
         disabledButton={canAddRequirements}
         heightFieldset="100%"
@@ -655,6 +666,7 @@ export const Requirements = (props: IRequirementsProps) => {
             }}
             onCloseModal={() => setShowAprovalsModal(false)}
             isMobile={isMobile}
+            eventData={eventData}
             onConfirm={async (values) => {
               setApprovalSystemValues((prev) => ({
                 ...prev,
@@ -666,7 +678,7 @@ export const Requirements = (props: IRequirementsProps) => {
               const entry = dataRequirements
                 .find((table) => table.id === "tableApprovalSystem")
                 ?.entriesRequirements.find(
-                  (entry) => entry.id === selectedEntryId
+                  (entry) => entry.id === selectedEntryId,
                 );
 
               let label: string | undefined;
@@ -699,11 +711,12 @@ export const Requirements = (props: IRequirementsProps) => {
               dataRequirements
                 .find((table) => table.id === "tableDocumentValues")
                 ?.entriesRequirements.find(
-                  (entry) => entry.id === selectedEntryId
+                  (entry) => entry.id === selectedEntryId,
                 )
                 ?.["Requisitos documentales"]?.toString() || ""
             }
             id={id}
+            eventData={eventData}
             onCloseModal={toggleAprovalsModal}
             businessUnitPublicCode={businessUnitPublicCode}
             user={user}
@@ -740,6 +753,7 @@ export const Requirements = (props: IRequirementsProps) => {
               }));
               await refreshRequirementsData();
             }}
+            eventData={eventData}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
             entryId={selectedEntryId}

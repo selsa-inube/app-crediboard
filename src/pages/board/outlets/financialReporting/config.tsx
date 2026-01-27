@@ -344,7 +344,7 @@ export const errorMessagesEnum = {
       code: "ErrorMessages_promissoryNotes_titleCard",
       description: "Título tarjeta pagarés",
       i18n: {
-        en: "Promissory Notes and Payroll Deductions",
+        en: "Promissory Notes and Payroll Deduction Agreements",
         es: "Pagarés y Libranzas",
       },
     },
@@ -362,7 +362,7 @@ export const errorMessagesEnum = {
       code: "ErrorMessages_promissoryNotes_description",
       description: "Descripción error pagarés",
       i18n: {
-        en: "No documents available related to promissory notes or payroll deductions.",
+        en: "No documents available related to promissory notes or payroll deduction agreements.",
         es: "No hay documentos disponibles relacionados con pagarés o libranzas.",
       },
     },

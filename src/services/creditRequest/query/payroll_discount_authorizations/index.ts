@@ -8,7 +8,8 @@ import { IPayrollDiscountAuthorization } from "../types";
 export const getPayrollDiscountAuthorizationsById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequestId: string
+  creditRequestId: string,
+  token: string,
 ): Promise<IPayrollDiscountAuthorization[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,20 +26,21 @@ export const getPayrollDiscountAuthorizationsById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/payroll-discount-authorizations/${creditRequestId}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
         throw new Error(
-          "No hay autorización de descuento por nómina disponible."
+          "No hay autorización de descuento por nómina disponible.",
         );
       }
 
@@ -57,13 +59,13 @@ export const getPayrollDiscountAuthorizationsById = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la autorización de descuento por nómina."
+          "Todos los intentos fallaron. No se pudo obtener la autorización de descuento por nómina.",
         );
       }
     }
   }
 
   throw new Error(
-    "No se pudo obtener la autorización de descuento por nómina después de varios intentos."
+    "No se pudo obtener la autorización de descuento por nómina después de varios intentos.",
   );
 };

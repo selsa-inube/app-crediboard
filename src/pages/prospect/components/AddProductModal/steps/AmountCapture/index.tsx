@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { IBusinessUnitRules } from "@services/businessUnitRules/types";
@@ -9,6 +9,7 @@ import {
   VALIDATED_NUMBER_REGEX,
   amountCaptureTexts,
 } from "../config";
+import { AppContext } from "@context/AppContext";
 
 export function AmountCapture(props: IAmountCaptureProps) {
   const {
@@ -24,6 +25,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
 
   const [loanAmountError, setLoanAmountError] = useState<string>("");
   const [displayValue, setDisplayValue] = useState<string>("");
+  const { eventData } = useContext(AppContext);
 
   const validateLoanAmount = async (amountValue: number): Promise<void> => {
     try {
@@ -46,6 +48,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
         businessUnitPublicCode,
         businessManagerCode,
         payload,
+        eventData.token
       );
 
       if (decisions && Array.isArray(decisions) && decisions.length > 0) {

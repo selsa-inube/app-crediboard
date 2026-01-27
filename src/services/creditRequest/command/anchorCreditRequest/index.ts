@@ -9,7 +9,8 @@ export const patchChangeAnchorToCreditRequest = async (
   businessManagerCode: string,
   userAccount: string,
   creditRequestId: string | undefined,
-  isPinned: string | undefined
+  isPinned: string | undefined,
+  token: string,
 ) => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,6 +28,7 @@ export const patchChangeAnchorToCreditRequest = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify({ creditRequestId, isPinned }),
         signal: controller.signal,
@@ -34,7 +36,7 @@ export const patchChangeAnchorToCreditRequest = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -57,7 +59,7 @@ export const patchChangeAnchorToCreditRequest = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo registrar la calificación en la solicitud de crédito."
+          "Todos los intentos fallaron. No se pudo registrar la calificación en la solicitud de crédito.",
         );
       }
     }

@@ -14,6 +14,7 @@ import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 
 import { dataOpenWalletEnum } from "./config";
+import { ICrediboardData } from "@context/AppContext/types";
 
 interface OpenWalletProps {
   overdraftFactor?: number;
@@ -24,6 +25,7 @@ interface OpenWalletProps {
   maxRetries?: number;
   retryDelay?: number;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  eventData: ICrediboardData;
 }
 
 export function OpenWallet(props: OpenWalletProps) {
@@ -35,6 +37,7 @@ export function OpenWallet(props: OpenWalletProps) {
     maxRetries = 2,
     retryDelay = 2000,
     setLoading,
+    eventData,
   } = props;
 
   const { lang } = useEnum();
@@ -47,7 +50,7 @@ export function OpenWallet(props: OpenWalletProps) {
 
   const fetchPaymentCapacity = async (
     currentRetryCount = 0,
-    requestId = currentRequestId + 1
+    requestId = currentRequestId + 1,
   ) => {
     setCurrentRequestId(requestId);
 
@@ -57,7 +60,8 @@ export function OpenWallet(props: OpenWalletProps) {
       const response = await getUnconveredPortfolio(
         businessUnitPublicCode,
         businessManagerCode,
-        requests.clientIdentificationNumber
+        requests.clientIdentificationNumber,
+        eventData.token,
       );
 
       if (requestId !== currentRequestId + 1) return;
@@ -110,7 +114,9 @@ export function OpenWallet(props: OpenWalletProps) {
           image={userNotFound}
           title={dataOpenWalletEnum.itemNotFound.title.i18n[lang]}
           description={dataOpenWalletEnum.itemNotFound.description.i18n[lang]}
-          buttonDescription={dataOpenWalletEnum.itemNotFound.buttonDescription.i18n[lang]}
+          buttonDescription={
+            dataOpenWalletEnum.itemNotFound.buttonDescription.i18n[lang]
+          }
           route="#"
           onRetry={handleRetry}
         />

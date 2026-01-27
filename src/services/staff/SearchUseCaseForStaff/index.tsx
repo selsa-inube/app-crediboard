@@ -4,55 +4,57 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IStaffPortalByBusinessManager } from "../types";
-import { mapResendApiToEntities } from "./mappers";
+import { mapCreditRequestToEntities } from "./mappers";
 
-const getStaffPortalsByBusinessManager = async (
-  staffPortalId: string
-): Promise<IStaffPortalByBusinessManager[]> => {
+export const getSearchUseCaseForStaff = async (
+  businessUnitCode: string,
+  businessManagerCode: string,
+  userAccount: string,
+  token: string
+): Promise<string[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
-  const queryParams = new URLSearchParams({
-    staffPortalId,
-    staffPortalCatalogCode: environment.VITE_STAFF_PORTAL_CATALOG_CODE,
-  });
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+      const queryParams = new URLSearchParams({
+        businessUnitCode: businessUnitCode || "",
+        businessManagerCode: businessManagerCode || "",
+      });
 
       const options: RequestInit = {
         method: "GET",
         headers: {
-          "X-Action": "SearchAllStaffPortalsByBusinessManager",
+          "X-Action": "SearchUseCaseForStaff",
+          "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
+        signal: controller.signal,
       };
 
-      const res = await fetch(
-        `${environment.IVITE_ISAAS_QUERY_PROCESS_SERVICE}/staff-portals-by-business-manager?${queryParams.toString()}`,
-        options
-      );
+      const url = `${environment.IVITE_IPORTAL_STAFF_QUERY_PROCESS_SERVICE}/staffs/?${queryParams.toString()}`;
 
+      const res = await fetch(url, options);
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
         return [];
       }
-
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error(`Error al obtener los datos: ${res.status}`);
       }
 
-      return Array.isArray(data) ? mapResendApiToEntities(data) : [];
+      return mapCreditRequestToEntities(data);
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los datos del operador."
+          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta."
         );
       }
     }
@@ -60,5 +62,3 @@ const getStaffPortalsByBusinessManager = async (
 
   return [];
 };
-
-export { getStaffPortalsByBusinessManager };
