@@ -26,17 +26,21 @@ interface IBusinessUnits {
 }
 
 function useAppContext() {
-  const { user, isLoading: isIAuthLoading } = useIAuth();
+  const {
+    user,
+    isLoading: isIAuthLoading,
+    getAccessTokenSilently,
+  } = useIAuth();
 
   const [portalData, setPortalData] = useState<IStaffPortalByBusinessManager[]>(
-    []
+    [],
   );
   const [staffUseCases, setStaffUseCases] = useState<string[]>([]);
   const [businessManagers, setBusinessManagers] = useState<IBusinessManagers>(
-    {} as IBusinessManagers
+    {} as IBusinessManagers,
   );
   const [businessUnitSigla, setBusinessUnitSigla] = useState(
-    localStorage.getItem("businessUnitSigla") || ""
+    localStorage.getItem("businessUnitSigla") || "",
   );
   const [businessUnitsToTheStaff, setBusinessUnitsToTheStaff] = useState<
     IBusinessUnitsPortalStaff[]
@@ -109,6 +113,7 @@ function useAppContext() {
       },
     },
     enumRole: [],
+    token: "",
   });
 
   useEffect(() => {
@@ -188,7 +193,7 @@ function useAppContext() {
         const staffUseCaseData = await getSearchUseCaseForStaff(
           eventData.businessUnit.abbreviatedName,
           eventData.businessManager.publicCode,
-          identificationNumber
+          identificationNumber,
         );
         setStaffUseCases(staffUseCaseData);
       } catch (error) {
@@ -218,7 +223,7 @@ function useAppContext() {
           eventData.portal.publicCode,
           eventData.businessUnit.businessUnitPublicCode,
           eventData.businessManager.abbreviatedName,
-          userIdentifier || ""
+          userIdentifier || "",
         );
         setOptionStaffData(result);
       } catch (error) {
@@ -248,10 +253,10 @@ function useAppContext() {
     if (!portalCode || isIAuthLoading) return;
 
     const portalDataFiltered = portalData.filter(
-      (data) => data.staffPortalId === portalCode
+      (data) => data.staffPortalId === portalCode,
     );
     const foundBusiness = portalDataFiltered.find(
-      (bussines) => bussines
+      (bussines) => bussines,
     )?.businessManagerCode;
 
     if (portalDataFiltered.length > 0 && foundBusiness) {
@@ -265,7 +270,7 @@ function useAppContext() {
     if (!businessManagers || isIAuthLoading) return;
 
     const portalDataFiltered = portalData.find(
-      (data) => data.staffPortalId === portalCode
+      (data) => data.staffPortalId === portalCode,
     );
     setEventData((prev) => ({
       ...prev,
@@ -301,7 +306,7 @@ function useAppContext() {
       (async () => {
         const enumRoles = await getEnumerators(
           businessUnit.businessUnitPublicCode,
-          businessManagers.abbreviatedName
+          businessManagers.abbreviatedName,
         );
         setEventData((prev) => ({
           ...prev,
@@ -321,9 +326,23 @@ function useAppContext() {
   }, [businessUnitSigla, businessUnitsToTheStaff, businessManagers]);
 
   useEffect(() => {
+    const obtenerDatos = async () => {
+      try {
+        const tokenData = await getAccessTokenSilently();
+        setEventData((prev) => ({
+          ...prev,
+          token: tokenData,
+        }));
+      } catch (error) {
+        console.error("Error Token:", error);
+      }
+    };
+    obtenerDatos();
+  }, [getAccessTokenSilently]);
+  useEffect(() => {
     localStorage.setItem(
       "businessUnitsToTheStaff",
-      JSON.stringify(businessUnitsToTheStaff)
+      JSON.stringify(businessUnitsToTheStaff),
     );
   }, [businessUnitsToTheStaff]);
 
@@ -360,7 +379,7 @@ function useAppContext() {
       businessUnitsToTheStaff,
       optionStaffData,
       isIAuthLoading,
-    ]
+    ],
   );
 
   return appContext;

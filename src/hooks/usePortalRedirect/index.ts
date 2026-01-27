@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { IStaffPortalByBusinessManager } from "@services/staff-portals-by-business-manager/types";
 import { getStaffPortalsByBusinessManager } from "@services/staff-portals-by-business-manager/SearchAllStaffPortalsByBusinessManager";
 import { getBusinessManagers } from "@services/businessManager/SearchByIdBusinessManager";
 import { decrypt, encrypt } from "@utils/encrypt/encrypt";
 import { IBusinessManagers } from "@services/businessManager/types";
+import { AppContext } from "@context/AppContext";
 
 interface AuthConfig {
   clientId: string;
@@ -18,12 +19,12 @@ const usePortalLogic = () => {
   const storedPortal = localStorage.getItem("portalCode");
   const decryptedPortal = storedPortal ? decrypt(storedPortal) : "";
   const portalCode = portalParam ?? decryptedPortal;
-
+  const { eventData } = useContext(AppContext);
   const [portalData, setPortalData] =
     useState<IStaffPortalByBusinessManager | null>(null);
   const [publicCode, setPublicCode] = useState<string | null>(null);
   const [businessManager, setBusinessManager] = useState<IBusinessManagers>(
-    {} as IBusinessManagers
+    {} as IBusinessManagers,
   );
   const [authConfig, setAuthConfig] = useState<AuthConfig | null>(null);
   const [codeError, setCodeError] = useState<number | null>(null);
@@ -35,7 +36,7 @@ const usePortalLogic = () => {
       localStorage.setItem("portalCode", encryptedPortal);
     }
   }, [portalParam, decryptedPortal]);
-
+  console.log(eventData, "eventData");
   useEffect(() => {
     const loadData = async () => {
       if (!portalCode) {
@@ -45,7 +46,7 @@ const usePortalLogic = () => {
       }
 
       try {
-        const portals = await getStaffPortalsByBusinessManager(portalCode);
+        const portals = await getStaffPortalsByBusinessManager(portalCode, "");
 
         if (!portals || portals.length === 0) {
           setCodeError(1001);
