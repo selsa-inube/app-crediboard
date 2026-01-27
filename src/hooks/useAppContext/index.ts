@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useIAuth } from "@inube/iauth-react";
 
-import { IStaffPortalByBusinessManager } from "@services/staff-portals-by-business-manager/types";
 import {
   validateBusinessManagers,
   validateConsultation,
@@ -9,12 +8,13 @@ import {
 import { ICrediboardData } from "@context/AppContext/types";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 import { getEnumerators } from "@services/enumerators";
-import { getStaff } from "@services/staff/staffs";
+import { getStaff } from "@services/staff/searchAllStaff";
 import { decrypt } from "@utils/encrypt/encrypt";
-import { getSearchUseCaseForStaff } from "@services/staffs/SearchUseCaseForStaff";
 import { IBusinessManagers } from "@services/businessManager/types";
-import { getSearchOptionForStaff } from "@services/staff/staffs/searchOptionForStaff";
-import { IOptionStaff } from "@services/staff/staffs/searchOptionForStaff/types";
+import { IOptionStaff } from "@services/staff/searchOptionForStaff/types";
+import { IStaffPortalByBusinessManager } from "@services/staff/types";
+import { getSearchUseCaseForStaff } from "@services/staff/SearchUseCaseForStaff";
+import { getSearchOptionForStaff } from "@services/staff/searchOptionForStaff";
 
 interface IBusinessUnits {
   businessUnitPublicCode: string;
@@ -29,14 +29,14 @@ function useAppContext() {
   const { user, isLoading: isIAuthLoading } = useIAuth();
 
   const [portalData, setPortalData] = useState<IStaffPortalByBusinessManager[]>(
-    []
+    [],
   );
   const [staffUseCases, setStaffUseCases] = useState<string[]>([]);
   const [businessManagers, setBusinessManagers] = useState<IBusinessManagers>(
-    {} as IBusinessManagers
+    {} as IBusinessManagers,
   );
   const [businessUnitSigla, setBusinessUnitSigla] = useState(
-    localStorage.getItem("businessUnitSigla") || ""
+    localStorage.getItem("businessUnitSigla") || "",
   );
   const [businessUnitsToTheStaff, setBusinessUnitsToTheStaff] = useState<
     IBusinessUnitsPortalStaff[]
@@ -188,7 +188,7 @@ function useAppContext() {
         const staffUseCaseData = await getSearchUseCaseForStaff(
           eventData.businessUnit.abbreviatedName,
           eventData.businessManager.publicCode,
-          identificationNumber
+          identificationNumber,
         );
         setStaffUseCases(staffUseCaseData);
       } catch (error) {
@@ -218,7 +218,7 @@ function useAppContext() {
           eventData.portal.publicCode,
           eventData.businessUnit.businessUnitPublicCode,
           eventData.businessManager.abbreviatedName,
-          userIdentifier || ""
+          userIdentifier || "",
         );
         setOptionStaffData(result);
       } catch (error) {
@@ -248,10 +248,10 @@ function useAppContext() {
     if (!portalCode || isIAuthLoading) return;
 
     const portalDataFiltered = portalData.filter(
-      (data) => data.staffPortalId === portalCode
+      (data) => data.staffPortalId === portalCode,
     );
     const foundBusiness = portalDataFiltered.find(
-      (bussines) => bussines
+      (bussines) => bussines,
     )?.businessManagerCode;
 
     if (portalDataFiltered.length > 0 && foundBusiness) {
@@ -265,7 +265,7 @@ function useAppContext() {
     if (!businessManagers || isIAuthLoading) return;
 
     const portalDataFiltered = portalData.find(
-      (data) => data.staffPortalId === portalCode
+      (data) => data.staffPortalId === portalCode,
     );
     setEventData((prev) => ({
       ...prev,
@@ -301,7 +301,7 @@ function useAppContext() {
       (async () => {
         const enumRoles = await getEnumerators(
           businessUnit.businessUnitPublicCode,
-          businessManagers.abbreviatedName
+          businessManagers.abbreviatedName,
         );
         setEventData((prev) => ({
           ...prev,
@@ -323,7 +323,7 @@ function useAppContext() {
   useEffect(() => {
     localStorage.setItem(
       "businessUnitsToTheStaff",
-      JSON.stringify(businessUnitsToTheStaff)
+      JSON.stringify(businessUnitsToTheStaff),
     );
   }, [businessUnitsToTheStaff]);
 
@@ -360,7 +360,7 @@ function useAppContext() {
       businessUnitsToTheStaff,
       optionStaffData,
       isIAuthLoading,
-    ]
+    ],
   );
 
   return appContext;
