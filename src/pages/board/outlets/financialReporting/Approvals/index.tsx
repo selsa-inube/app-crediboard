@@ -33,15 +33,15 @@ interface IApprovalsProps {
   user: string;
   isMobile: boolean;
   id: string;
+  setApprovalsEntries: (entries: IEntries[]) => void;
+  approvalsEntries: IEntries[];
 }
 
 export const Approvals = (props: IApprovalsProps) => {
-  const { isMobile, id } = props;
+  const { isMobile, id, setApprovalsEntries, approvalsEntries } = props;
   const { lang } = useEnum();
-
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [loading, setLoading] = useState(true);
-  const [approvalsEntries, setApprovalsEntries] = useState<IEntries[]>([]);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -64,7 +64,7 @@ export const Approvals = (props: IApprovalsProps) => {
         businessUnitPublicCode,
         businessManagerCode,
         id,
-        userAccount
+        userAccount,
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
@@ -88,13 +88,15 @@ export const Approvals = (props: IApprovalsProps) => {
       const data: IApprovals = await getApprovalsById(
         businessUnitPublicCode,
         businessManagerCode,
-        requests.creditRequestId
+        requests.creditRequestId,
       );
       if (data && Array.isArray(data)) {
-        const entries: IEntries[] = entriesApprovals(data, lang).map((entry) => ({
-          ...entry,
-          error: entry.concept === "Pendiente",
-        }));
+        const entries: IEntries[] = entriesApprovals(data, lang).map(
+          (entry) => ({
+            ...entry,
+            error: entry.concept === "Pendiente",
+          }),
+        );
         setApprovalsEntries(entries);
       }
     } catch (error) {
@@ -107,7 +109,7 @@ export const Approvals = (props: IApprovalsProps) => {
     } finally {
       setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, requests?.creditRequestId, businessManagerCode]);
 
   useEffect(() => {
@@ -115,7 +117,12 @@ export const Approvals = (props: IApprovalsProps) => {
   }, [fetchApprovalsData]);
 
   const handleNotificationClickBound = (data: IEntries) => {
-    handleNotificationClick(data, setSelectedData, setShowNotificationModal, lang);
+    handleNotificationClick(
+      data,
+      setSelectedData,
+      setShowNotificationModal,
+      lang,
+    );
   };
 
   const handleErrorClickBound = (data: IEntries) => {
@@ -123,16 +130,21 @@ export const Approvals = (props: IApprovalsProps) => {
   };
 
   const desktopActionsConfig = !isMobile
-    ? desktopActions([], handleNotificationClickBound, handleErrorClickBound, lang)
+    ? desktopActions(
+        [],
+        handleNotificationClickBound,
+        handleErrorClickBound,
+        lang,
+      )
     : [];
 
   const mobileActions = !isMobile
     ? getMobileActionsConfig(
-      getActionMobileApprovals(lang),
-      handleNotificationClickBound,
-      handleErrorClickBound,
-      lang
-    )
+        getActionMobileApprovals(lang),
+        handleNotificationClickBound,
+        handleErrorClickBound,
+        lang,
+      )
     : [];
 
   const handleSubmit = async () => {
@@ -143,7 +155,7 @@ export const Approvals = (props: IApprovalsProps) => {
         {
           approvalId: selectedData?.approvalId?.toString() ?? "",
           creditRequestId: requests?.creditRequestId ?? "",
-        }
+        },
       );
 
       addFlag({
@@ -215,18 +227,15 @@ export const Approvals = (props: IApprovalsProps) => {
         </BaseModal>
       )}
 
-      {
-        errorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={errorMessage}
-            handleClose={() => {
-              setErrorModal(false)
-            }}
-          />
-        )
-      }
-
+      {errorModal && (
+        <ErrorModal
+          isMobile={isMobile}
+          message={errorMessage}
+          handleClose={() => {
+            setErrorModal(false);
+          }}
+        />
+      )}
     </>
   );
 };

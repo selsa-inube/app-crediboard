@@ -3,48 +3,42 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+import { IApprovalBoard } from "../types";
 
-export const restoreFinancialObligationsByBorrowerId = async (
+export const getApprovalBoardRepresentablePersons = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  borrowerIdentificationNumber: string,
-  creditRequestCode: string,
-  justification: string,
-): Promise<void> => {
+  userAccount: string,
+  creditRequest: string,
+): Promise<IApprovalBoard | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
-  const payload = {
-    borrowerIdentificationNumber,
-    creditRequestCode,
-    justification,
-  };
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "RestoreFinancialObligationsByBorrowerId",
+          "X-Action": "GetApprovalBoardRepresentablePersons",
           "X-Business-Unit": businessUnitPublicCode,
+          "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
         },
-        body: JSON.stringify(payload),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/${creditRequest}`,
         options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -67,9 +61,11 @@ export const restoreFinancialObligationsByBorrowerId = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo restaurar las fuentes de ingresos.",
+          "Todos los intentos fallaron. No se pudo obtener los textos.",
         );
       }
     }
   }
+
+  return null;
 };

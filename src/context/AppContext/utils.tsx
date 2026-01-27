@@ -1,7 +1,7 @@
-import { IStaffPortalByBusinessManager } from "@services/staff-portals-by-business-manager/types";
-import { getStaffPortalsByBusinessManager } from "@services/staff-portals-by-business-manager/SearchAllStaffPortalsByBusinessManager";
 import { IBusinessManagers } from "@services/businessManager/types";
 import { getBusinessManagers } from "@services/businessManager/SearchByIdBusinessManager";
+import { IStaffPortalByBusinessManager } from "@services/staff/types";
+import { getStaffPortalsByBusinessManager } from "@services/staff/SearchAllStaffPortalsByBusinessManager";
 
 const validateBusinessManagers = async (
   code: string,

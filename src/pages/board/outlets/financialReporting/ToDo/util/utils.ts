@@ -1,7 +1,18 @@
-const getXAction = (humanDecision: string, id?: boolean): string => {
-  if (humanDecision === "APROBAR_SOLICITUD" && id === true) {
+const getXAction = (humanDecision?: string, isApprover?: boolean): string => {
+  const decisionsForIndividualConcept = [
+    "ANALISIS_RIESGO",
+    "APROBAR_SOLICITUD",
+    "RECHAZAR_SOLICITUD",
+    "GESTION_COMERCIAL",
+  ];
+
+  if (
+    isApprover === true &&
+    decisionsForIndividualConcept.includes(humanDecision || "")
+  ) {
     return "RegisterIndividualConceptOfApproval";
   }
+
   if (humanDecision === "APROBAR_SOLICITUD") {
     return "ApproveCreditRequest";
   } else if (humanDecision === "SOPORTES_VALIDOS") {
@@ -37,6 +48,7 @@ const getXAction = (humanDecision: string, id?: boolean): string => {
   } else if (humanDecision === "DESEMBOLSO_DECLINADO") {
     return "ConfirmDisbursementDeclined";
   }
+
   return "";
 };
 

@@ -4,10 +4,7 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import {
-  IPaymentDatesChannel,
-  IResponsePaymentDatesChannel,
-} from "./types";
+import { IPaymentDatesChannel, IResponsePaymentDatesChannel } from "./types";
 
 export const GetSearchAllPaymentChannels = async (
   businessUnitPublicCode: string,

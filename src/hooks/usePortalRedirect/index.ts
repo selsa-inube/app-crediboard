@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
-import { IStaffPortalByBusinessManager } from "@services/staff-portals-by-business-manager/types";
-import { getStaffPortalsByBusinessManager } from "@services/staff-portals-by-business-manager/SearchAllStaffPortalsByBusinessManager";
 import { getBusinessManagers } from "@services/businessManager/SearchByIdBusinessManager";
 import { decrypt, encrypt } from "@utils/encrypt/encrypt";
 import { IBusinessManagers } from "@services/businessManager/types";
+import { IStaffPortalByBusinessManager } from "@services/staff/types";
+import { getStaffPortalsByBusinessManager } from "@services/staff/SearchAllStaffPortalsByBusinessManager";
 
 interface AuthConfig {
   clientId: string;

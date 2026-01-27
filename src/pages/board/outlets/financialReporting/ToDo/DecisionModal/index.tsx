@@ -22,7 +22,11 @@ import {
   IMakeDecisionsPayload,
 } from "./types";
 import { StyledContainerTextField } from "./styles";
-import { soporteInvalidOptionsEnum, txtFlagsEnum, txtOthersOptionsEnum } from "./../config";
+import {
+  soporteInvalidOptionsEnum,
+  txtFlagsEnum,
+  txtOthersOptionsEnum,
+} from "./../config";
 
 interface FormValues {
   textarea: string;
@@ -75,17 +79,19 @@ export function DecisionModal(props: DecisionModalProps) {
     textarea: readOnly
       ? Yup.string()
       : Yup.string()
-        .max(maxLength, validationMessages.maxCharacters(maxLength))
-        .required(validationMessages.required),
+          .max(maxLength, validationMessages.maxCharacters(maxLength))
+          .required(validationMessages.required),
   });
 
-  const mappedSoporteOptions = useMemo(() =>
-    soporteInvalidOptionsEnum.map((option) => ({
-      id: option.id,
-      label: option.i18n[lang],
-      value: option.value,
-    })),
-    [lang]);
+  const mappedSoporteOptions = useMemo(
+    () =>
+      soporteInvalidOptionsEnum.map((option) => ({
+        id: option.id,
+        label: option.i18n[lang],
+        value: option.value,
+      })),
+    [lang],
+  );
   const handleNonCompliantDocuments = (formValues: FormValues): string[] => {
     let selectedIds: string[] = [];
 
@@ -100,17 +106,17 @@ export function DecisionModal(props: DecisionModalProps) {
   };
 
   const realNamesEnumNonCompliantDocuments = (selectedOptions: number[]) => {
-
-    return selectedOptions.map((index) => soporteInvalidOptionsEnum[index]?.value).filter(Boolean);
+    return selectedOptions
+      .map((index) => soporteInvalidOptionsEnum[index]?.value)
+      .filter(Boolean);
   };
   const sendData = async (formValues: FormValues) => {
     try {
       const makeDecisionsPayload: IMakeDecisionsPayload = {
+        concept: data.makeDecision.concept,
         creditRequestId: data.makeDecision.creditRequestId,
-        humanDecision: data.makeDecision.humanDecision,
-        justification: formValues.textarea,
+        justificacion: formValues.textarea || "", //esto deberia serjustification
       };
-
       if (
         formValues.selectedOptions &&
         data.xAction === "DisapproveLegalDocumentsAndWarranties"
@@ -119,12 +125,16 @@ export function DecisionModal(props: DecisionModalProps) {
           handleNonCompliantDocuments(formValues);
       }
 
+      if (data.xAction === "RegisterIndividualConceptOfApproval") {
+        makeDecisionsPayload["registerIndividualConcept"] = true;
+      }
+
       const response = await makeDecisions(
         data.businessUnit,
         businessManagerCode,
         data.user,
         makeDecisionsPayload,
-        data.xAction
+        data.xAction,
       );
 
       if (response?.statusServices === 200) {
@@ -159,7 +169,7 @@ export function DecisionModal(props: DecisionModalProps) {
         validationSchema={validationSchema}
         onSubmit={(
           values: FormValues,
-          { setSubmitting }: FormikHelpers<FormValues>
+          { setSubmitting }: FormikHelpers<FormValues>,
         ) => {
           onSubmit?.(values);
           setSubmitting(false);
@@ -174,9 +184,7 @@ export function DecisionModal(props: DecisionModalProps) {
             handleNext={handleSubmit}
             handleBack={onSecondaryButtonClick}
             handleClose={onCloseModal}
-            disabledNext={
-              data.makeDecision.humanDecision && values.textarea ? false : true
-            }
+            disabledNext={!data.makeDecision.concept || !values.textarea}
             width={isMobile ? "290px" : "500px"}
           >
             <Form>
@@ -203,7 +211,7 @@ export function DecisionModal(props: DecisionModalProps) {
                   </Text>
                 </Stack>
               </StyledContainerTextField>
-              {data.makeDecision.humanDecision === "SOPORTES_INVALIDOS" && (
+              {data.makeDecision.concept === "SOPORTES_INVALIDOS" && (
                 <Stack margin="0 0 20px 0">
                   <Field name="selectedOptions">
                     {({ form }: FieldProps) => (

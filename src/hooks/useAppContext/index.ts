@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useIAuth } from "@inube/iauth-react";
 
-import { IStaffPortalByBusinessManager } from "@services/staff-portals-by-business-manager/types";
 import {
   validateBusinessManagers,
   validateConsultation,
@@ -9,12 +8,13 @@ import {
 import { ICrediboardData } from "@context/AppContext/types";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 import { getEnumerators } from "@services/enumerators";
-import { getStaff } from "@services/staff/staffs";
+import { getStaff } from "@services/staff/searchAllStaff";
 import { decrypt } from "@utils/encrypt/encrypt";
-import { getSearchUseCaseForStaff } from "@services/staffs/SearchUseCaseForStaff";
 import { IBusinessManagers } from "@services/businessManager/types";
-import { getSearchOptionForStaff } from "@services/staff/staffs/searchOptionForStaff";
-import { IOptionStaff } from "@services/staff/staffs/searchOptionForStaff/types";
+import { IOptionStaff } from "@services/staff/searchOptionForStaff/types";
+import { IStaffPortalByBusinessManager } from "@services/staff/types";
+import { getSearchUseCaseForStaff } from "@services/staff/SearchUseCaseForStaff";
+import { getSearchOptionForStaff } from "@services/staff/searchOptionForStaff";
 
 interface IBusinessUnits {
   businessUnitPublicCode: string;
