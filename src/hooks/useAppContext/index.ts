@@ -244,7 +244,7 @@ function useAppContext() {
   useEffect(() => {
     if (isIAuthLoading || !portalCode) return;
 
-    validateConsultation(portalCode).then((data) => {
+    validateConsultation(portalCode, "").then((data) => {
       setPortalData(data);
     });
   }, [portalCode, isIAuthLoading]);
@@ -260,7 +260,7 @@ function useAppContext() {
     )?.businessManagerCode;
 
     if (portalDataFiltered.length > 0 && foundBusiness) {
-      validateBusinessManagers(foundBusiness).then((data) => {
+      validateBusinessManagers(foundBusiness, "").then((data) => {
         setBusinessManagers(data);
       });
     }
