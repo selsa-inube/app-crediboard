@@ -27,6 +27,7 @@ import { ICustomerData } from "@pages/prospect/components/AddProductModal/types"
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { IProspect } from "@services/prospect/types";
 import { EnumType } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import {
@@ -49,6 +50,7 @@ interface IDisbursementWithExternalAccountProps {
   handleOnChange: (values: IDisbursementGeneral) => void;
   getTotalAmount: () => number;
   prospectData: IProspect;
+  eventData: ICrediboardData;
   customerData?: ICustomerData;
 }
 
@@ -61,6 +63,7 @@ export function DisbursementWithExternalAccount(
     formik,
     optionNameForm,
     isAmountReadOnly,
+    eventData,
     lang,
   } = props;
 
@@ -80,7 +83,7 @@ export function DisbursementWithExternalAccount(
   useEffect(() => {
     const fetchBanks = async () => {
       try {
-        const response = await SearchAllBank();
+        const response = await SearchAllBank(eventData.token);
         const formattedBanks = response.map((bank) => ({
           id: bank.bankId,
           label: bank.bankName,
@@ -92,7 +95,7 @@ export function DisbursementWithExternalAccount(
       }
     };
     fetchBanks();
-  }, [initialValues]);
+  }, [initialValues, eventData.token]);
 
   useEffect(() => {
     if (banks.length === 1) {

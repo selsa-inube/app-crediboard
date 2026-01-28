@@ -31,7 +31,7 @@ export const errorObserver = observer<{
 export const handleConfirmReject = async (
   id: string,
   user: string,
-  formData: { textarea: string }
+  formData: { textarea: string },
 ) => {
   const justificationText = formData.textarea;
 
@@ -60,7 +60,7 @@ export const handleConfirmReject = async (
 export const handleConfirmCancel = async (
   id: string,
   user: string,
-  formData: { textarea: string }
+  formData: { textarea: string },
 ) => {
   const justificationText = formData.textarea;
 
@@ -201,13 +201,19 @@ export const errorMessagesEnum = {
       id: "title",
       code: "ErrorMessages_comercialManagement_title",
       description: "Título de error solicitud no encontrada",
-      i18n: { en: "Credit request not found", es: "No se encontró la solicitud de crédito" },
+      i18n: {
+        en: "Credit request not found",
+        es: "No se encontró la solicitud de crédito",
+      },
     },
     description: {
       id: "description",
       code: "ErrorMessages_comercialManagement_description",
       description: "Descripción de error",
-      i18n: { en: "No data related to the selected credit request.", es: "No hay datos relacionados a la solicitud de crédito seleccionada." },
+      i18n: {
+        en: "No data related to the selected credit request.",
+        es: "No hay datos relacionados a la solicitud de crédito seleccionada.",
+      },
     },
     button: {
       id: "button",
@@ -233,7 +239,10 @@ export const errorMessagesEnum = {
       id: "description",
       code: "ErrorMessages_toDo_description",
       description: "Descripción error tareas",
-      i18n: { en: "No tasks are available to display at this time.", es: "No hay tareas disponibles para mostrar en este momento." },
+      i18n: {
+        en: "No tasks are available to display at this time.",
+        es: "No hay tareas disponibles para mostrar en este momento.",
+      },
     },
     button: {
       id: "button",
@@ -259,7 +268,10 @@ export const errorMessagesEnum = {
       id: "description",
       code: "ErrorMessages_approval_description",
       description: "Descripción error aprobaciones",
-      i18n: { en: "No data related to the credit approval was found.", es: "No se encontraron datos relacionados con la aprobación del crédito." },
+      i18n: {
+        en: "No data related to the credit approval was found.",
+        es: "No se encontraron datos relacionados con la aprobación del crédito.",
+      },
     },
     button: {
       id: "button",
@@ -285,7 +297,10 @@ export const errorMessagesEnum = {
       id: "description",
       code: "ErrorMessages_requirements_description",
       description: "Descripción error requisitos",
-      i18n: { en: "No requirements available for this request.", es: "No hay requisitos disponibles para esta solicitud." },
+      i18n: {
+        en: "No requirements available for this request.",
+        es: "No hay requisitos disponibles para esta solicitud.",
+      },
     },
     button: {
       id: "button",
@@ -311,7 +326,10 @@ export const errorMessagesEnum = {
       id: "description",
       code: "ErrorMessages_management_description",
       description: "Descripción error gestión",
-      i18n: { en: "No management has been registered for this request.", es: "No se ha registrado gestión para esta solicitud." },
+      i18n: {
+        en: "No management has been registered for this request.",
+        es: "No se ha registrado gestión para esta solicitud.",
+      },
     },
     button: {
       id: "button",
@@ -325,19 +343,28 @@ export const errorMessagesEnum = {
       id: "titleCard",
       code: "ErrorMessages_promissoryNotes_titleCard",
       description: "Título tarjeta pagarés",
-      i18n: { en: "Promissory Notes and Payroll Deductions", es: "Pagarés y Libranzas" },
+      i18n: {
+        en: "Promissory Notes and Payroll Deduction Agreements",
+        es: "Pagarés y Libranzas",
+      },
     },
     title: {
       id: "title",
       code: "ErrorMessages_promissoryNotes_title",
       description: "Título error pagarés",
-      i18n: { en: "No obligation documents found", es: "No se encontraron documentos de obligación" },
+      i18n: {
+        en: "No obligation documents found",
+        es: "No se encontraron documentos de obligación",
+      },
     },
     description: {
       id: "description",
       code: "ErrorMessages_promissoryNotes_description",
       description: "Descripción error pagarés",
-      i18n: { en: "No documents available related to promissory notes or payroll deductions.", es: "No hay documentos disponibles relacionados con pagarés o libranzas." },
+      i18n: {
+        en: "No documents available related to promissory notes or payroll deduction agreements.",
+        es: "No hay documentos disponibles relacionados con pagarés o libranzas.",
+      },
     },
     button: {
       id: "button",
@@ -351,7 +378,10 @@ export const errorMessagesEnum = {
       id: "titleCard",
       code: "ErrorMessages_postingVouchers_titleCard",
       description: "Título tarjeta comprobantes",
-      i18n: { en: "Accounting Vouchers", es: "Comprobantes de Contabilización" },
+      i18n: {
+        en: "Accounting Vouchers",
+        es: "Comprobantes de Contabilización",
+      },
     },
     title: {
       id: "title",
@@ -363,7 +393,10 @@ export const errorMessagesEnum = {
       id: "description",
       code: "ErrorMessages_postingVouchers_description",
       description: "Descripción error comprobantes",
-      i18n: { en: "No accounting vouchers associated with this request.", es: "No hay comprobantes contables asociados a esta solicitud." },
+      i18n: {
+        en: "No accounting vouchers associated with this request.",
+        es: "No hay comprobantes contables asociados a esta solicitud.",
+      },
     },
     button: {
       id: "button",
@@ -389,7 +422,10 @@ export const errorMessagesEnum = {
       id: "description",
       code: "ErrorMessages_share_description",
       description: "Descripción error compartir",
-      i18n: { en: "Error generating the document to share.", es: "Error al generar el documento para compartir." },
+      i18n: {
+        en: "Error generating the document to share.",
+        es: "Error al generar el documento para compartir.",
+      },
     },
     button: {
       id: "button",
@@ -415,7 +451,10 @@ export const errorMessagesEnum = {
       id: "description",
       code: "ErrorMessages_getData_description",
       description: "Descripción error carga datos",
-      i18n: { en: "There was a problem loading the data. Please try again later.", es: "Hubo un problema al cargar los datos. Por favor, inténtelo de nuevo más tarde." },
+      i18n: {
+        en: "There was a problem loading the data. Please try again later.",
+        es: "Hubo un problema al cargar los datos. Por favor, inténtelo de nuevo más tarde.",
+      },
     },
     button: {
       id: "button",
@@ -429,7 +468,10 @@ export const errorMessagesEnum = {
       id: "lateRejectionDescription",
       code: "ErrorMessages_lateRejection_description",
       description: "Error rechazo tardío",
-      i18n: { en: "Error: credit request could not be rejected.", es: "Error no se pudo rechazar la solicitud de crédito." },
+      i18n: {
+        en: "Error: credit request could not be rejected.",
+        es: "Error no se pudo rechazar la solicitud de crédito.",
+      },
     },
   },
   registerNews: {
@@ -437,7 +479,10 @@ export const errorMessagesEnum = {
       id: "registerNewsDescription",
       code: "ErrorMessages_registerNews_description",
       description: "Error registro novedades",
-      i18n: { en: "Error sending the message. Please try again.", es: "Error al enviar el mensaje. Intente nuevamente." },
+      i18n: {
+        en: "Error sending the message. Please try again.",
+        es: "Error al enviar el mensaje. Intente nuevamente.",
+      },
     },
   },
   unreadErrors: {
@@ -445,7 +490,10 @@ export const errorMessagesEnum = {
       id: "unreadErrorsDescription",
       code: "ErrorMessages_unreadErrors_description",
       description: "Error búsqueda errores no leídos",
-      i18n: { en: "Error: could not retrieve unread errors.", es: "Error no se pudo traer los errores no leídos." },
+      i18n: {
+        en: "Error: could not retrieve unread errors.",
+        es: "Error no se pudo traer los errores no leídos.",
+      },
     },
   },
   searchProspect: {
@@ -453,7 +501,10 @@ export const errorMessagesEnum = {
       id: "searchProspectDescription",
       code: "ErrorMessages_searchProspect_description",
       description: "Error búsqueda prospecto",
-      i18n: { en: "Could not retrieve related prospect data.", es: "No se pudo obtener los datos del prospecto relacionado." },
+      i18n: {
+        en: "Could not retrieve related prospect data.",
+        es: "No se pudo obtener los datos del prospecto relacionado.",
+      },
     },
   },
 };
@@ -538,7 +589,10 @@ export const financialReportingLabelsEnum = {
     placeholder: {
       code: "FinancialReporting_reject_placeholder",
       description: "Input placeholder for rejection reason",
-      i18n: { en: "Describe the reason for rejection.", es: "Describe el motivo del Rechazo." },
+      i18n: {
+        en: "Describe the reason for rejection.",
+        es: "Describe el motivo del Rechazo.",
+      },
     },
   },
   cancelModal: {
@@ -560,7 +614,10 @@ export const financialReportingLabelsEnum = {
     placeholder: {
       code: "FinancialReporting_cancel_placeholder",
       description: "Input placeholder for annulment reason",
-      i18n: { en: "Describe the reason for annulment.", es: "Describe el motivo de la anulación." },
+      i18n: {
+        en: "Describe the reason for annulment.",
+        es: "Describe el motivo de la anulación.",
+      },
     },
   },
 };

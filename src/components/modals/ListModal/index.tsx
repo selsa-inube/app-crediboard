@@ -170,7 +170,7 @@ export const ListModal = (props: IListModalProps) => {
     if (!setUploadedFiles) return;
     setUploadedFiles(
       (prev: { id: string; name: string; file: File }[] | null) =>
-        (prev || []).filter((file) => file.id !== id)
+        (prev || []).filter((file) => file.id !== id),
     );
   };
 
@@ -186,7 +186,7 @@ export const ListModal = (props: IListModalProps) => {
   const handleFlag = (
     title: string,
     description: string,
-    appearance: FlagAppearance
+    appearance: FlagAppearance,
   ) => {
     addFlag({
       title: title,
@@ -230,7 +230,8 @@ export const ListModal = (props: IListModalProps) => {
       "image/JPG",
     ];
     const validFiles = files.filter(
-      (file) => validMimeTypes.includes(file.type) && file.size <= MAX_FILE_SIZE
+      (file) =>
+        validMimeTypes.includes(file.type) && file.size <= MAX_FILE_SIZE,
     );
 
     const newFiles = validFiles.map((file) => ({
@@ -270,7 +271,8 @@ export const ListModal = (props: IListModalProps) => {
             id,
             abbreviatedName,
             fileData.file,
-            eventData.user.identificationDocumentNumber || ""
+            eventData.user.identificationDocumentNumber || "",
+            eventData.token || "",
           );
         }
 
@@ -283,14 +285,14 @@ export const ListModal = (props: IListModalProps) => {
         handleFlag(
           optionFlagsEnum.title.i18n[lang],
           optionFlagsEnum.descriptionSuccess.i18n[lang],
-          optionFlagsEnum.appearance.i18n[lang] as FlagAppearance
+          optionFlagsEnum.appearance.i18n[lang] as FlagAppearance,
         );
       }
     } catch (error) {
       handleFlag(
         optionFlagsEnum.title.i18n[lang],
         optionFlagsEnum.description.i18n[lang],
-        optionFlagsEnum.appearanceError.i18n[lang] as FlagAppearance
+        optionFlagsEnum.appearanceError.i18n[lang] as FlagAppearance,
       );
     } finally {
       handleClose(filesSaved);
@@ -303,7 +305,8 @@ export const ListModal = (props: IListModalProps) => {
         id,
         eventData.user.identificationDocumentNumber || "",
         businessUnitPublicCode,
-        businessManagerCode
+        businessManagerCode,
+        eventData.token || "",
       );
       const fileUrl = URL.createObjectURL(documentData);
       setSelectedFile(fileUrl);
@@ -438,7 +441,7 @@ export const ListModal = (props: IListModalProps) => {
                         size={formatFileSize(file.file.size)}
                         onDelete={() => {
                           setPendingFiles((prevFiles) =>
-                            prevFiles.filter((f) => f.id !== file.id)
+                            prevFiles.filter((f) => f.id !== file.id),
                           );
                           if (
                             fileInputRef.current &&
@@ -476,7 +479,7 @@ export const ListModal = (props: IListModalProps) => {
                         }
                         onDelete={() => {
                           setUploadedFiles?.((prev: IDocumentUpload[] = []) =>
-                            prev.filter((f) => f.id !== file.id)
+                            prev.filter((f) => f.id !== file.id),
                           );
                         }}
                       />
@@ -529,6 +532,6 @@ export const ListModal = (props: IListModalProps) => {
         )}
       </StyledModal>
     </Blanket>,
-    node
+    node,
   );
 };

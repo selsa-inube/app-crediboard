@@ -10,6 +10,7 @@ export const getApprovalBoardRepresentablePersons = async (
   businessManagerCode: string,
   userAccount: string,
   creditRequest: string,
+  token: string
 ): Promise<IApprovalBoard | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -26,6 +27,7 @@ export const getApprovalBoardRepresentablePersons = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };

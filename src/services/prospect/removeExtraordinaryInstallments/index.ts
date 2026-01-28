@@ -15,6 +15,7 @@ export const removeExtraordinaryInstallments = async (
     | IExtraordinaryInstallments
     | IExtraordinaryInstallmentsAddSeries,
   businessUnitPublicCode: string,
+  token: string,
 ): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -29,6 +30,7 @@ export const removeExtraordinaryInstallments = async (
           "X-Action": "RemoveExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          Authorization: token,
         },
         body: JSON.stringify(
           mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),

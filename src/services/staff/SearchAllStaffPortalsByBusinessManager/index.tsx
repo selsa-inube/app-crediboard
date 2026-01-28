@@ -8,7 +8,8 @@ import { IStaffPortalByBusinessManager } from "../types";
 import { mapResendApiToEntities } from "./mappers";
 
 const getStaffPortalsByBusinessManager = async (
-  staffPortalId: string
+  staffPortalId: string,
+  token: string,
 ): Promise<IStaffPortalByBusinessManager[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -28,12 +29,13 @@ const getStaffPortalsByBusinessManager = async (
         headers: {
           "X-Action": "SearchAllStaffPortalsByBusinessManager",
           "Content-type": "application/json; charset=UTF-8",
+          Authorization: token,
         },
       };
 
       const res = await fetch(
         `${environment.IVITE_ISAAS_QUERY_PROCESS_SERVICE}/staff-portals-by-business-manager?${queryParams.toString()}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -52,7 +54,7 @@ const getStaffPortalsByBusinessManager = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los datos del operador."
+          "Todos los intentos fallaron. No se pudieron obtener los datos del operador.",
         );
       }
     }

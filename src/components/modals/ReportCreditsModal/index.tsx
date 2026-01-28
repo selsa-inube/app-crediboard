@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { MdAdd, MdCached, MdOutlineInfo } from "react-icons/md";
 import { FormikValues } from "formik";
 import {
@@ -24,6 +24,7 @@ import { restoreFinancialObligationsByBorrowerId } from "@services/prospect/rest
 import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles";
 import { CardGray } from "@components/cards/CardGray";
 import { useEnum } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { FinancialObligationModal } from "../financialObligationModal";
 import {
@@ -74,6 +75,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     availableEditCreditRequest,
   } = props;
   const [loading, setLoading] = useState(true);
+  const { eventData } = useContext(AppContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedBorrower, setSelectedBorrower] = useState<optionsSelect>();
@@ -109,6 +111,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           creditRequestCode,
+          eventData.token || "",
         );
 
         setLocalProspectData([completeData]);
@@ -126,7 +129,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     };
 
     loadCompleteData();
-  }, [businessUnitPublicCode, businessManagerCode, creditRequestCode]);
+  }, [businessUnitPublicCode, businessManagerCode, creditRequestCode, eventData.token]);
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -252,6 +255,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         selectedBorrower.value,
         creditRequestCode,
         restoreDataEnum.justification.i18n[lang],
+        eventData.token || "",
       );
 
       setTableRefreshKey((prev) => prev + 1);
@@ -260,6 +264,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         businessUnitPublicCode,
         businessManagerCode,
         creditRequestCode,
+        eventData.token || "",
       );
 
       setLocalProspectData([refreshedData]);
@@ -406,6 +411,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
               onObligationProcessed={handleObligationProcessed}
               creditRequestCode={creditRequestCode}
               businessManagerCode={businessManagerCode}
+              eventData={eventData}
             />
           </Stack>
           {isModalOpen ? (

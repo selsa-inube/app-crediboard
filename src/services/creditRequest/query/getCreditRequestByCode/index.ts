@@ -11,7 +11,8 @@ export const getCreditRequestByCode = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   idProspect: string,
-  userAccount: string
+  userAccount: string,
+  token: string,
 ): Promise<ICreditRequest[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -30,13 +31,14 @@ export const getCreditRequestByCode = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests?${queryParams.toString()}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -63,7 +65,7 @@ export const getCreditRequestByCode = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta."
+          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta.",
         );
       }
     }

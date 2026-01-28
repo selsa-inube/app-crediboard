@@ -2,9 +2,11 @@ import * as Yup from "yup";
 
 import { IProspect } from "@services/prospect/types";
 import { EnumType } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { IPaymentConfiguration } from "./steps/config";
 import { ICustomerData } from "./types";
+
 
 
 export const messageNotFound = "No se encontraron resultados";
@@ -15,6 +17,7 @@ export interface IAddProductModalProps {
   title: string;
   confirmButtonText: string;
   initialValues: Partial<IFormValues>;
+  eventData: ICrediboardData;
   moneyDestination: string;
   businessUnitPublicCode: string;
   businessManagerCode: string;

@@ -122,6 +122,7 @@ export const CardCommercialManagement = (
           creditProductCode: selectedProductId,
           creditRequestCode: id,
         },
+        eventData.token,
       );
       setProspectProducts((prev) =>
         prev.filter(
@@ -178,6 +179,7 @@ export const CardCommercialManagement = (
           businessUnitPublicCode,
           businessManagerCode,
           id,
+          eventData.token || "",
         );
         if (result) {
           setProspectSummaryData(result);
@@ -206,6 +208,7 @@ export const CardCommercialManagement = (
           businessUnitPublicCode,
           businessManagerCode,
           id,
+          eventData.token || "",
         );
         setDeductibleExpenses(data);
       } catch (error) {
@@ -386,6 +389,7 @@ export const CardCommercialManagement = (
             onProspectUpdated={() => {}}
             clientIdentificationNumber={clientIdentificationNumber}
             creditRequestCode={id || ""}
+            eventData={eventData}
           />
         )}
         {showDeductibleExpensesModal && (

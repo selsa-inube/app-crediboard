@@ -4,14 +4,16 @@ import { IPatchOfRequirements } from "@services/requirementsPackages/types";
 export const saveRequirements = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  creditRequests: IPatchOfRequirements
+  creditRequests: IPatchOfRequirements,
+  token: string,
 ) => {
   let confirmationType = true;
   try {
     await patchOfRequirements(
       creditRequests,
       businessUnitPublicCode,
-      businessManagerCode
+      businessManagerCode,
+      token,
     );
   } catch (error) {
     confirmationType = false;

@@ -98,6 +98,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   } = props;
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
+
   const isMobile = useMediaQuery("(max-width: 700px)");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -330,6 +331,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       await addExtraordinaryInstallments(
         extraordinaryInstallments,
         businessUnitPublicCode,
+        eventData.token || "",
       );
 
       if (extraordinaryInstallments === null) {

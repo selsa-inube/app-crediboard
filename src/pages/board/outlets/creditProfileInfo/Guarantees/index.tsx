@@ -11,12 +11,14 @@ import { IGuaranteesSummary } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 
 import { dataGuaranteesEnum, guaranteesLabelsEnum } from "./config";
+import { ICrediboardData } from "@context/AppContext/types";
 
 interface GuaranteesProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
   creditRequestId: string;
   prospectCode: string;
+  eventData: ICrediboardData;
   isMobile?: boolean;
 }
 
@@ -26,6 +28,7 @@ export function Guarantees(props: GuaranteesProps) {
     businessManagerCode,
     creditRequestId,
     prospectCode,
+    eventData,
     isMobile,
   } = props;
   const { lang } = useEnum();
@@ -41,7 +44,8 @@ export function Guarantees(props: GuaranteesProps) {
         businessUnitPublicCode,
         businessManagerCode,
         creditRequestId,
-        prospectCode
+        prospectCode,
+        eventData.token || "",
       );
       setGuaranteesSummary(data);
     } catch (error) {
@@ -63,7 +67,7 @@ export function Guarantees(props: GuaranteesProps) {
       fetchLaborStabilityByCustomerId();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [businessUnitPublicCode, businessManagerCode, creditRequestId]
+    [businessUnitPublicCode, businessManagerCode, creditRequestId],
   );
 
   return (

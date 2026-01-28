@@ -7,6 +7,7 @@ const patchOfRequirements = async (
   creditRequest: IPatchOfRequirements,
   businessUnitPublicCode: string,
   businessManagerCode: string,
+  token: string,
 ): Promise<IPatchOfRequirements | undefined> => {
   const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/requirements-packages`;
 
@@ -18,6 +19,7 @@ const patchOfRequirements = async (
         "X-Business-Unit": businessUnitPublicCode,
         "Content-type": "application/json; charset=UTF-8",
         "X-Process-Manager": businessManagerCode,
+        Authorization: token,
       },
       body: JSON.stringify(mapRequirementsEntity(creditRequest)),
     };

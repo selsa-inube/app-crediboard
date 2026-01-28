@@ -14,6 +14,7 @@ import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 
 import { dataPaymentCapacityEnum } from "./config";
+import { ICrediboardData } from "@context/AppContext/types";
 
 interface PaymentCapacityProps {
   isMobile?: boolean;
@@ -24,11 +25,13 @@ interface PaymentCapacityProps {
   retryDelay?: number;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
+   eventData: ICrediboardData;
 }
 
 export function PaymentCapacity(props: PaymentCapacityProps) {
   const {
     isMobile,
+    eventData,
     businessUnitPublicCode,
     businessManagerCode,
     requests,
@@ -61,7 +64,8 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
       const response = await getPaymentCapacityById(
         businessUnitPublicCode,
         businessManagerCode,
-        requests.clientIdentificationNumber
+        requests.clientIdentificationNumber,
+        eventData.token
       );
 
       if (requestId !== currentRequestId + 1) return;

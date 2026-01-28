@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { getMaximumCreditLimitByLineOfCreditRegulation } from "@services/creditLimit/getMaximumCreditLimitByLineOfCreditRegulation";
 import { IMaximumCreditLimit } from "@services/creditLimit/types";
 import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimitCard/types";
 import { useEnum } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { MaxLimitModalUI } from "./interface";
+
 
 export interface PaymentCapacityProps {
   businessUnitPublicCode: string;
@@ -27,7 +29,7 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
-
+  const { eventData } = useContext(AppContext);
   const [error, setError] = useState(false);
   const [dataMaximumCreditLimit, setDataMaximumCreditLimit] =
     useState<IMaximumCreditLimit>({
@@ -48,7 +50,8 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
           dataMaximumCreditLimitService.identificationDocumentType,
           dataMaximumCreditLimitService.identificationDocumentNumber,
           dataMaximumCreditLimitService.moneyDestination,
-          dataMaximumCreditLimitService.primaryIncomeType
+          dataMaximumCreditLimitService.primaryIncomeType,
+          eventData.token
         );
 
         if (data) {
@@ -65,6 +68,7 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
     businessManagerCode,
     dataMaximumCreditLimitService,
     error,
+    eventData.token
   ]);
 
   useEffect(() => {

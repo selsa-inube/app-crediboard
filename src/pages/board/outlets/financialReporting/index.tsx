@@ -146,6 +146,7 @@ export const FinancialReporting = () => {
       businessManagerCode,
       creditRequestCode!,
       userAccount,
+      eventData.token || "",
     )
       .then((data) => {
         setData(data[0]);
@@ -158,6 +159,7 @@ export const FinancialReporting = () => {
     businessUnitPublicCode,
     userAccount,
     businessManagerCode,
+    eventData.token,
   ]);
 
   const fetchAndShowDocuments = async () => {
@@ -169,6 +171,7 @@ export const FinancialReporting = () => {
         user.id,
         businessUnitPublicCode,
         businessManagerCode,
+        eventData.token || "",
       );
 
       const dataToMap = Array.isArray(documents) ? documents : documents.value;
@@ -194,6 +197,7 @@ export const FinancialReporting = () => {
           businessUnitPublicCode,
           businessManagerCode,
           creditRequestCode,
+          eventData.token || "",
         );
         setDataProspect(Array.isArray(result) ? result[0] : result);
       } catch (error) {
@@ -326,6 +330,7 @@ export const FinancialReporting = () => {
         businessManagerCode,
         "RECHAZAR_SOLICITUD",
         removalJustification,
+        eventData.token,
       );
 
       addFlag({
@@ -355,6 +360,7 @@ export const FinancialReporting = () => {
           businessUnitPublicCode,
           businessManagerCode,
           user?.id ?? "",
+          eventData.token || "",
         );
       } finally {
         handleToggleModal();
@@ -375,6 +381,7 @@ export const FinancialReporting = () => {
         {
           creditRequestId: data.creditRequestId,
         },
+        eventData.token || "",
       );
 
       if (Array.isArray(unreadErrors)) {
@@ -407,6 +414,7 @@ export const FinancialReporting = () => {
       businessUnitPublicCode,
       businessManagerCode,
       creditRequests,
+      eventData.token,
     )
       .then(() => {
         addFlag({
@@ -534,6 +542,7 @@ export const FinancialReporting = () => {
                         businessUnitPublicCode={businessUnitPublicCode}
                         creditRequestCode={data.creditRequestCode!}
                         businessManagerCode={businessManagerCode}
+                        eventData={eventData}
                       />
                     </BlockPdfSection>
                   </Stack>

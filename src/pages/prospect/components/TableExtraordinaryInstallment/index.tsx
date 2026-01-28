@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Text,
   SkeletonLine,
@@ -19,6 +19,7 @@ import { DeleteModal } from "@components/modals/DeleteModal";
 import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { Detail } from "./Detail";
 import {
@@ -104,6 +105,7 @@ export const TableExtraordinaryInstallment = (
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const { eventData } = useContext(AppContext);
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
@@ -203,6 +205,7 @@ export const TableExtraordinaryInstallment = (
       await removeExtraordinaryInstallment(
         businessUnitPublicCode || "",
         extraordinaryInstallments,
+        eventData.token || "",
       );
 
       setSentData?.(extraordinaryInstallments);

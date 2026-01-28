@@ -45,6 +45,7 @@ import { CardGray } from "@components/cards/CardGray";
 import { updateProspect } from "@services/prospect/updateProspect";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspectEnum, errorMessage } from "./config";
@@ -66,6 +67,7 @@ interface ICreditProspectProps {
   businessManagerCode: string;
   sentData: IExtraordinaryInstallments | null;
   currentModal: string;
+  eventData: ICrediboardData;
   handleOpenModal: (modalName: string) => void;
   handleCloseModal: () => void;
   creditRequestCode?: string;
@@ -95,6 +97,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     borrowerOptions,
     selectedIndex,
     dataProspect,
+    eventData,
     selectedBorrower,
     incomeData,
     prospectData,
@@ -202,6 +205,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         businessUnitPublicCode,
         businessManagerCode,
         updatedProspect,
+        eventData.token || "",
       );
 
       if (setDataProspect) {
@@ -256,6 +260,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         businessUnitPublicCode,
         businessManagerCode,
         payload,
+        eventData.token || "",
       );
 
       const normalizedProspect = {
@@ -453,6 +458,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           title={dataCreditProspectEnum.addProduct.i18n[lang]}
           confirmButtonText={dataCreditProspectEnum.save.i18n[lang]}
           initialValues={initialValues}
+          eventData={eventData}
           iconBefore={<MdOutlineAdd />}
           onCloseModal={handleCloseModal}
           onConfirm={handleConfirm}

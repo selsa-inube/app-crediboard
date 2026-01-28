@@ -9,7 +9,8 @@ import { IapproveRequirement, IapproveRequirementResponse } from "./types";
 export const approveRequirementById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  payload: IapproveRequirement
+  payload: IapproveRequirement,
+  token: string
 ): Promise<IapproveRequirementResponse[] | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -26,6 +27,7 @@ export const approveRequirementById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

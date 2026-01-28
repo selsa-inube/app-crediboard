@@ -9,7 +9,7 @@ interface IMakeDecisionsCreditRequestWithXAction {
 }
 
 interface IMakeDecisionsPayload {
-  concept: string;
+  concept?: string;
   creditRequestId: string;
   humanDecision?: string;
   justification?: string;

@@ -9,10 +9,12 @@ const removeExtraordinaryInstallment = (
   extraordinaryInstallments:
     | IExtraordinaryInstallments
     | IExtraordinaryInstallmentsAddSeries,
+  token: string,
 ) => {
   return removeExtraordinaryInstallments(
     extraordinaryInstallments,
     businessUnitPublicCode,
+    token,
   );
 };
 

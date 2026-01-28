@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import { MdInfoOutline, MdErrorOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import {
   Divider,
@@ -24,6 +24,7 @@ import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimi
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { CardGray } from "@components/cards/CardGray";
 import { useEnum } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { BaseModal } from "../baseModal";
 import {
@@ -35,6 +36,7 @@ import {
 import { StyledTable } from "./styles";
 import { ISourcesOfIncomeState } from "./types";
 import { detailsExtraordinaryInstallmentsEnum } from "./config";
+
 
 interface IPaymentCapacityModalProps {
   isMobile: boolean;
@@ -63,7 +65,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
     businessManagerCode,
   } = props;
   const { lang } = useEnum();
-
+  const { eventData } = useContext(AppContext);
   const [currentTab, setCurrentTab] = useState("ordinary");
   const [selectedDetail, setSelectedDetail] = useState<IExtraordinaryInstallments | null>(null);
   const [maximumCreditLimitData, setMaximumCreditLimitData] =
@@ -120,6 +122,7 @@ export function PaymentCapacityModal(props: IPaymentCapacityModalProps) {
           businessUnitPublicCode,
           businessManagerCode,
           submitData,
+          eventData.token
         );
 
         if (data) {

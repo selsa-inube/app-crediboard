@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   MdOutlineVisibility,
   MdInfoOutline,
@@ -18,6 +18,7 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { getGlobalCreditLimitByLineOfCredit } from "@services/creditLimit/getGlobalCreditLimitByLineOfCredit";
 import { IMaximumCreditLimitByLineOfCredit } from "@services/creditLimit/types";
 import { EnumType } from "@hooks/useEnum";
+import { AppContext } from "@context/AppContext";
 
 import { creditLimitTextsEnum } from "./creditLimitConfig";
 import { StyledList } from "./styles";
@@ -55,6 +56,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
   const isMobile = useMediaQuery("(max-width: 700px)");
 
   const [error, setError] = useState(false);
+  const { eventData } = useContext(AppContext);
   const [internalLoading, setInternalLoading] = useState(true);
   const [dataMaximumCreditLimit, setDataMaximumCreditLimit] = useState<
     IMaximumCreditLimitByLineOfCredit[]
@@ -70,6 +72,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
           businessUnitPublicCode,
           businessManagerCode,
           clientIdentificationNumber,
+          eventData.token,
         );
 
         if (data) {
@@ -83,7 +86,12 @@ export const CreditLimit = (props: ICreditLimitProps) => {
     };
 
     fetchData();
-  }, [businessUnitPublicCode, businessManagerCode, clientIdentificationNumber]);
+  }, [
+    businessUnitPublicCode,
+    businessManagerCode,
+    clientIdentificationNumber,
+    eventData.token,
+  ]);
 
   const limits = useMemo(() => {
     const map: Record<string, number> = {};
@@ -126,7 +134,13 @@ export const CreditLimit = (props: ICreditLimitProps) => {
       finalDivider={true}
     >
       {error ? (
-        <Stack direction="column" alignItems="center" height={isMobile ? "auto" : "216px"} justifyContent="center" alignContent="center">
+        <Stack
+          direction="column"
+          alignItems="center"
+          height={isMobile ? "auto" : "216px"}
+          justifyContent="center"
+          alignContent="center"
+        >
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
             {creditLimitTextsEnum.errorTitle.i18n[lang]}
@@ -136,18 +150,26 @@ export const CreditLimit = (props: ICreditLimitProps) => {
           </Text>
         </Stack>
       ) : (
-        <Stack direction="column" gap="24px" height={isMobile ? "400px" : "330px"}>
+        <Stack
+          direction="column"
+          gap="24px"
+          height={isMobile ? "400px" : "330px"}
+        >
           {isLoading ? (
             <StyledList>
               <Stack direction="column" gap="12px" height="160px">
                 {Array.from({ length: 5 }).map((__, index) => (
-                  <Skeletons index={index}  />
+                  <Skeletons index={index} />
                 ))}
               </Stack>
             </StyledList>
           ) : (
             <StyledList>
-              <Stack direction="column" gap="12px" height={isMobile ? "250px" : "170px"}>
+              <Stack
+                direction="column"
+                gap="12px"
+                height={isMobile ? "250px" : "170px"}
+              >
                 {limits.maxCreditLimit !== undefined && (
                   <li>
                     <Stack justifyContent="space-between">

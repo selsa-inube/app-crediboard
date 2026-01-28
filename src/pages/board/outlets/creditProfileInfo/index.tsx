@@ -62,7 +62,8 @@ export const CreditProfileInfo = () => {
       businessUnitPublicCode,
       businessManagerCode,
       creditRequestCode!,
-      eventData.user.identificationDocumentNumber || ""
+      eventData.user.identificationDocumentNumber || "",
+      eventData.token || "",
     )
       .then((data) => {
         setRequests(data[0] as ICreditRequest);
@@ -268,6 +269,7 @@ export const CreditProfileInfo = () => {
             requests={requests}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
+            eventData={eventData}
           />
           <PaymentCapacity
             isMobile={isMobile}
@@ -276,6 +278,7 @@ export const CreditProfileInfo = () => {
             requests={requests}
             setLoading={setLoading}
             loading={loading}
+            eventData={eventData}
           />
           <OpenWallet
             isMobile={isMobile}
@@ -283,12 +286,14 @@ export const CreditProfileInfo = () => {
             businessManagerCode={businessManagerCode}
             requests={requests}
             setLoading={setLoading}
+            eventData={eventData}
           />
           <RiskScoring
             isMobile={isMobile}
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
             requests={requests}
+            eventData={eventData}
           />
           <Guarantees
             isMobile={isMobile}
@@ -296,11 +301,13 @@ export const CreditProfileInfo = () => {
             businessManagerCode={businessManagerCode}
             creditRequestId={requests.creditRequestId!}
             prospectCode={requests.creditRequestCode!}
+            eventData={eventData}
           />
           <CreditBehavior
             isMobile={isMobile}
             businessUnitPublicCode={businessUnitPublicCode}
             requests={requests}
+            eventData={eventData}
           />
         </StyledGridPrint>
       </StyledContainerToCenter>

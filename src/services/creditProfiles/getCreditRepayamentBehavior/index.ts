@@ -8,6 +8,7 @@ import { ICreditRepayamentBehavior } from "../types";
 export const getCreditRepayamentBehavior = async (
   businessUnitPublicCode: string,
   customerIdentificationNumber: string,
+  token: string
 ): Promise<ICreditRepayamentBehavior | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -20,7 +21,8 @@ export const getCreditRepayamentBehavior = async (
         headers: {
           "X-Action": "GetCreditRepayamentBehavior",
           "X-Business-Unit": businessUnitPublicCode,
-          "Content-type": "application/json; charset=UTF-8"
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: token
         },
         signal: controller.signal,
       };

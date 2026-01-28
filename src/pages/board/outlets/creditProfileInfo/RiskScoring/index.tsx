@@ -11,6 +11,7 @@ import { getCreditRiskScoreById } from "@services/creditProfiles/GetCreditRiskSc
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import { dataRiskScoringEnum } from "./config";
 
@@ -19,11 +20,17 @@ interface RiskScoringProps {
   businessManagerCode: string;
   requests: ICreditRequest;
   isMobile: boolean;
+  eventData: ICrediboardData;
 }
 
 export function RiskScoring(props: RiskScoringProps) {
-  const { businessUnitPublicCode, businessManagerCode, requests, isMobile } =
-    props;
+  const {
+    businessUnitPublicCode,
+    businessManagerCode,
+    requests,
+    isMobile,
+    eventData,
+  } = props;
   const { lang } = useEnum();
 
   const [data, setData] = useState<ICreditRiskScoreResponse | null>(null);
@@ -54,7 +61,8 @@ export function RiskScoring(props: RiskScoringProps) {
       const response = await getCreditRiskScoreById(
         businessUnitPublicCode,
         businessManagerCode,
-        requests.clientIdentificationNumber
+        requests.clientIdentificationNumber,
+        eventData.token,
       );
       setData(response);
     } catch {
@@ -73,7 +81,8 @@ export function RiskScoring(props: RiskScoringProps) {
         const response = await getCreditRiskScoreById(
           businessUnitPublicCode,
           businessManagerCode,
-          requests.clientIdentificationNumber
+          requests.clientIdentificationNumber,
+          eventData.token,
         );
         setData(response);
       } catch {
@@ -90,6 +99,7 @@ export function RiskScoring(props: RiskScoringProps) {
     businessUnitPublicCode,
     requests.clientIdentificationNumber,
     businessManagerCode,
+    eventData.token,
   ]);
 
   return (

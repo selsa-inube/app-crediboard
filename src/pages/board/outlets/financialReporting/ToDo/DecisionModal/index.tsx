@@ -16,6 +16,7 @@ import { makeDecisions } from "@services/creditRequest/command/makeDecisions";
 import { validationMessages } from "@validations/validationMessages";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
 
 import {
   IMakeDecisionsCreditRequestWithXAction,
@@ -27,6 +28,7 @@ import {
   txtFlagsEnum,
   txtOthersOptionsEnum,
 } from "./../config";
+import { IMakeDecisionsCreditRequest } from "@services/creditRequest/command/types";
 
 interface FormValues {
   textarea: string;
@@ -41,6 +43,7 @@ export interface DecisionModalProps {
   inputLabel: string;
   inputPlaceholder: string;
   businessManagerCode: string;
+  eventData: ICrediboardData;
   onSubmit?: (values: { textarea: string }) => void;
   onSecondaryButtonClick?: () => void;
   maxLength?: number;
@@ -59,6 +62,7 @@ export function DecisionModal(props: DecisionModalProps) {
     inputPlaceholder,
     businessManagerCode,
     onSubmit,
+    eventData,
     onSecondaryButtonClick,
     maxLength = 200,
     readOnly = false,
@@ -113,10 +117,18 @@ export function DecisionModal(props: DecisionModalProps) {
   const sendData = async (formValues: FormValues) => {
     try {
       const makeDecisionsPayload: IMakeDecisionsPayload = {
-        concept: data.makeDecision.concept,
         creditRequestId: data.makeDecision.creditRequestId,
-        justificacion: formValues.textarea || "", //esto deberia serjustification
       };
+
+      if (data.xAction === "RegisterIndividualConceptOfApproval") {
+        makeDecisionsPayload["concept"] = data.makeDecision.concept;
+        makeDecisionsPayload["justificacion"] = formValues.textarea || "";
+        makeDecisionsPayload["registerIndividualConcept"] = true;
+      } else {
+        makeDecisionsPayload["humanDecision"] = data.makeDecision.humanDecision;
+        makeDecisionsPayload["justification"] = formValues.textarea || "";
+      }
+
       if (
         formValues.selectedOptions &&
         data.xAction === "DisapproveLegalDocumentsAndWarranties"
@@ -125,16 +137,13 @@ export function DecisionModal(props: DecisionModalProps) {
           handleNonCompliantDocuments(formValues);
       }
 
-      if (data.xAction === "RegisterIndividualConceptOfApproval") {
-        makeDecisionsPayload["registerIndividualConcept"] = true;
-      }
-
       const response = await makeDecisions(
         data.businessUnit,
         businessManagerCode,
         data.user,
-        makeDecisionsPayload,
+        makeDecisionsPayload as IMakeDecisionsCreditRequest,
         data.xAction,
+        eventData.token,
       );
 
       if (response?.statusServices === 200) {

@@ -12,7 +12,8 @@ export const makeDecisions = async (
   businessManagerCode: string,
   userAccount: string,
   makeDecisions: IMakeDecisionsCreditRequest,
-  xAction: string
+  xAction: string,
+  token: string
 ): Promise<IMakeDecisionsCreditRequestResponse | undefined> => {
   if (!xAction) {
     throw new Error(
@@ -35,6 +36,7 @@ export const makeDecisions = async (
           "X-User-Name": userAccount,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         body: JSON.stringify(makeDecisions),
         signal: controller.signal,

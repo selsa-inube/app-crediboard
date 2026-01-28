@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useContext } from "react";
 
 import { IProspect } from "@services/prospect/types";
 import { searchAllModesOfDisbursementTypes } from "@services/lineOfCredit/getSearchAllModesOfDisbursementTypes";
@@ -8,6 +8,7 @@ import { IModeOfDisbursement } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { getClientPortfolioObligationsById } from "@services/creditRequest/updateModeOfDisbursement";
 import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
+import { AppContext } from "@context/AppContext";
 
 import { disbursemenTabsEnum } from "./disbursementGeneral/config";
 import { DisbursementGeneral } from "./disbursementGeneral";
@@ -64,6 +65,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
   const [initialValues, setInitialValues] = useState<IDisbursementGeneral>(
     mapModesToFormikInitialValues(initialDisbursementData),
   );
+  const { eventData } = useContext(AppContext);
   const [viewMode, setViewMode] = useState<"view" | "edit">("view");
   const [currentTab, setCurrentTab] = useState<string>("");
   const [internalLoading, setInternalLoading] = useState(true);
@@ -101,6 +103,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
           businessUnitPublicCode,
           businessManagerCode,
           creditRequestCode,
+          eventData.token || "",
         );
         setInitialValues({
           ...initialValues,
@@ -140,6 +143,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
           prospectData.creditProducts[0].lineOfCreditAbbreviatedName,
           prospectData.moneyDestinationAbbreviatedName,
           prospectData.creditProducts[0].loanAmount.toString(),
+          eventData.token || "",
         );
 
         if (
@@ -321,6 +325,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
               identificationNumber,
               businessUnitPublicCode,
               businessManagerCode,
+              eventData.token,
             );
             if (dataClient !== null) {
               rawData = {
@@ -378,6 +383,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
             businessUnitPublicCode,
             businessManagerCode,
             rawData,
+            eventData.token || "",
           );
 
           handleClose();

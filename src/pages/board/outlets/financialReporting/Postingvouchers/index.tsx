@@ -58,7 +58,8 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         businessUnitPublicCode,
         businessManagerCode,
         id,
-        userAccount
+        userAccount,
+        eventData.token || "",
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
@@ -68,7 +69,13 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         message: (error as Error).message.toString(),
       });
     }
-  }, [businessUnitPublicCode, id, userAccount, businessManagerCode]);
+  }, [
+    businessUnitPublicCode,
+    id,
+    userAccount,
+    businessManagerCode,
+    eventData.token,
+  ]);
 
   useEffect(() => {
     fetchCreditRequest();
@@ -82,7 +89,8 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         const vouchers = await getAccountingVouchers(
           businessUnitPublicCode,
           businessManagerCode,
-          requests.creditRequestId
+          requests.creditRequestId,
+          eventData.token || "",
         );
         setPositionsAccountingVouchers(vouchers);
       } catch (error) {
@@ -93,7 +101,13 @@ export const Postingvouchers = (props: IApprovalsProps) => {
     };
 
     fetchAccountingVouchers();
-  }, [user, requests, businessUnitPublicCode, businessManagerCode]);
+  }, [
+    user,
+    requests,
+    businessUnitPublicCode,
+    businessManagerCode,
+    eventData.token,
+  ]);
   return (
     <Stack direction="column">
       <Fieldset
@@ -105,8 +119,12 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         {error || (!loading && positionsAccountingVouchers.length === 0) ? (
           <UnfoundData
             title={errorMessagesEnum.postingVouchers.title.i18n[lang]}
-            description={errorMessagesEnum.postingVouchers.description.i18n[lang]}
-            buttonDescription={errorMessagesEnum.postingVouchers.button.i18n[lang]}
+            description={
+              errorMessagesEnum.postingVouchers.description.i18n[lang]
+            }
+            buttonDescription={
+              errorMessagesEnum.postingVouchers.button.i18n[lang]
+            }
             onRetry={() => {
               setError(false);
               fetchCreditRequest();

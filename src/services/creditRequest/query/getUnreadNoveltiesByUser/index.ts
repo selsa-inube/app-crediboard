@@ -8,7 +8,8 @@ import { IUnreadNoveltiesByUser } from "./types";
 const getUnreadNoveltiesByUser = async (
   userAccount: string,
   businessUnitPublicCode: string,
-  businessManagerCode: string
+  businessManagerCode: string,
+  token: string
 ): Promise<IUnreadNoveltiesByUser[]> => {
   if (!userAccount || !businessUnitPublicCode || !businessManagerCode) {
     throw new Error("Parámetros requeridos faltantes");
@@ -30,6 +31,7 @@ const getUnreadNoveltiesByUser = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
         signal: controller.signal,
       };
