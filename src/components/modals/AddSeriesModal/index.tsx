@@ -284,18 +284,12 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     };
 
     fetchCycles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    prospectData,
     service,
     businessUnitPublicCode,
-    toggleAddSeriesModal,
     lineOfCreditAbbreviatedName,
     moneyDestinationAbbreviatedName,
-    eventData.businessManager.abbreviatedName,
-    setShowErrorModal,
-    setMessageError,
-    formik,
-    handleCycleChange,
   ]);
 
   const handleInstallmentAmountChange = (name: string, value: string) => {
@@ -488,7 +482,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
   useEffect(() => {
     formik.setFieldValue("frequency", defaultFrequency);
-  }, [formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <BaseModal

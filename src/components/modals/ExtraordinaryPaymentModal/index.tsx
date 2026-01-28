@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { MdOutlineAdd, MdOutlineInfo } from "react-icons/md";
 import { Stack, Icon, useMediaQuery, Button } from "@inubekit/inubekit";
 
@@ -74,6 +74,10 @@ export const ExtraordinaryPaymentModal = (
   const [seriesModal, setSeriesModal] = useState<
     IExtraordinaryInstallmentAddSeries[]
   >([]);
+
+  const handleCloseErrorModal = useCallback(() => {
+    setShowErrorModal(false);
+  }, []);
   const handleInfoModalClose = () => {
     setIsModalOpen(false);
   };
@@ -194,7 +198,7 @@ export const ExtraordinaryPaymentModal = (
       {showErrorModal && (
         <ErrorModal
           handleClose={() => {
-            setShowErrorModal(false);
+            handleCloseErrorModal();
             handleClose();
           }}
           message={messageError}
