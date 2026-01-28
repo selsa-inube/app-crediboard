@@ -5,8 +5,8 @@ import { Button } from "@inubekit/inubekit";
 import { AddSeriesModal, AddSeriesModalProps } from "../index";
 import { props, parameters } from "./props";
 import {
-  IExtraordinaryInstallment,
-  IExtraordinaryInstallments,
+  IExtraordinaryInstallmentAddSeries,
+  IExtraordinaryInstallmentsAddSeries,
 } from "@services/prospect/types";
 
 const story: Meta<typeof AddSeriesModal> = {
@@ -18,12 +18,15 @@ const story: Meta<typeof AddSeriesModal> = {
 
 const DefaultTemplate: StoryFn<AddSeriesModalProps> = (args) => {
   const [showModal, setShowModal] = useState(false);
-  const [seriesModal, setSeriesModal] = useState<IExtraordinaryInstallment[]>(
-    []
-  );
-  const [sentData, setSentData] = useState<IExtraordinaryInstallments | null>(
-    null
-  );
+  const [seriesModal, setSeriesModal] = useState<
+    IExtraordinaryInstallmentAddSeries[] | IExtraordinaryInstallmentAddSeries[]
+  >();
+
+  const [sentData, setSentData] =
+    useState<React.SetStateAction<IExtraordinaryInstallmentsAddSeries | null>>(
+      null,
+    );
+
   const [installmentState, setInstallmentState] = useState<{
     installmentAmount: number;
     installmentDate: string;
@@ -36,6 +39,12 @@ const DefaultTemplate: StoryFn<AddSeriesModalProps> = (args) => {
 
   const handleShowModal = () => {
     setShowModal(!showModal);
+    setSentData(null);
+    setSeriesModal([] as IExtraordinaryInstallmentAddSeries[]);
+
+    if (sentData === null) return;
+
+    setSentData({} as IExtraordinaryInstallmentsAddSeries);
   };
 
   return (
@@ -46,8 +55,6 @@ const DefaultTemplate: StoryFn<AddSeriesModalProps> = (args) => {
           {...args}
           handleClose={handleShowModal}
           seriesModal={seriesModal}
-          setSeriesModal={setSeriesModal}
-          sentData={sentData}
           setSentData={setSentData}
           installmentState={installmentState}
           setInstallmentState={setInstallmentState}

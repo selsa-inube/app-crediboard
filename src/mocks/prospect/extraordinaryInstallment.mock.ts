@@ -26,34 +26,3 @@ export const extraordinaryInstallmentMock: IExtraordinaryPayment[] = [
     frequency: "Anual",
   },
 ];
-
-export const paymentMethodOptionsMock = [
-  {
-    id: "bank_transfer",
-    label: "Transferencia Bancaria",
-    value: "Transferencia Bancaria",
-  },
-  {
-    id: "credit_card",
-    label: "Tarjeta de Crédito",
-    value: "Tarjeta de Crédito",
-  },
-  { id: "cash", label: "Efectivo", value: "Efectivo" },
-];
-export const paymentDateOptionsMock = [
-  {
-    id: "dic",
-    label: "15/Dic/2025",
-    value: "2025-12-15T00:00:00.000Z",
-  },
-  {
-    id: "Jun",
-    label: "30/Jun/2026",
-    value: "30/Jun/2026",
-  },
-];
-export const frequencyOptionsMock = [
-  { id: "monthly", label: "Mensual", value: "Mensual" },
-  { id: "quarterly", label: "Trimestral", value: "Trimestral" },
-  { id: "annually", label: "Anual", value: "Anual" },
-];

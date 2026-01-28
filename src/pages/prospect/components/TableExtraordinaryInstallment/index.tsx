@@ -16,7 +16,7 @@ import {
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { IProspect } from "@services/prospect/types";
 import { DeleteModal } from "@components/modals/DeleteModal";
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
@@ -39,9 +39,9 @@ export interface TableExtraordinaryInstallmentProps {
   handleClose?: (() => void) | undefined;
   refreshKey?: number;
   id?: string;
-  setSentData?:
-    | React.Dispatch<React.SetStateAction<IExtraordinaryInstallments | null>>
-    | undefined;
+  setSentData?: React.Dispatch<
+    React.SetStateAction<IExtraordinaryInstallmentsAddSeries | null>
+  >;
   creditRequestCode?: string | undefined;
   availableEditCreditRequest?: boolean;
 }
@@ -177,7 +177,7 @@ export const TableExtraordinaryInstallment = (
     setLoading(false);
   }, [prospectData, refreshKey]);
 
-  const itemIdentifiersForUpdate: IExtraordinaryInstallments = {
+  const itemIdentifiersForUpdate: IExtraordinaryInstallmentsAddSeries = {
     creditProductCode: prospectData?.creditProducts[0].creditProductCode || "",
     extraordinaryInstallments:
       prospectData?.creditProducts[0]?.extraordinaryInstallments
@@ -199,7 +199,7 @@ export const TableExtraordinaryInstallment = (
   };
 
   const handleExtraordinaryInstallment = async (
-    extraordinaryInstallments: IExtraordinaryInstallments,
+    extraordinaryInstallments: IExtraordinaryInstallmentsAddSeries,
   ) => {
     try {
       await removeExtraordinaryInstallment(

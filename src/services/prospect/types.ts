@@ -13,6 +13,25 @@ export interface IExtraordinaryInstallments {
   creditProductCode: string;
   extraordinaryInstallments: IExtraordinaryInstallment[];
   creditRequestCode: string;
+  prospectId?: string;
+}
+
+export interface IExtraordinaryInstallmentAddSeries {
+  id?: string;
+  installmentDate: Date | string;
+  installmentAmount: number;
+  paymentChannelAbbreviatedName: string;
+  humanChannelPaymentDay?: number;
+  creditProductCode?: string;
+  creditRequestCode?: string;
+  extraordinaryInstallments?: IExtraordinaryInstallmentAddSeries[];
+}
+
+export interface IExtraordinaryInstallmentsAddSeries {
+  creditProductCode: string;
+  extraordinaryInstallments: IExtraordinaryInstallmentAddSeries[];
+  prospectId?: string;
+  creditRequestCode?: string;
 }
 
 export interface IAllDeductibleExpensesById {
@@ -83,7 +102,7 @@ export interface ICreditProduct {
   installmentFrequency?: string;
   referenceIndexForVariableInterestRate?: string;
   fixedPoints?: number;
-  modeOfDisbursement?: string[]; 
+  modeOfDisbursement?: string[];
 }
 
 export interface IOutlay {
