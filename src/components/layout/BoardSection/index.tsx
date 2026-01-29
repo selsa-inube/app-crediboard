@@ -88,7 +88,7 @@ function BoardSection(props: BoardSectionProps) {
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const { lang } = useEnum();
 
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const businessManagerCode = eventData.businessManager.publicCode;
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
   const businessUnitPublicCode: string =

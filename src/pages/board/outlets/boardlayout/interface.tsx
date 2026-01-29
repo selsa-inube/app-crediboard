@@ -121,7 +121,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const businessManagerCode = eventData.businessManager.publicCode;
   const stackRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
   const { lang } = useEnum();

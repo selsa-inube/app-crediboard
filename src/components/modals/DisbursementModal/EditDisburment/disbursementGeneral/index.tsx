@@ -75,7 +75,7 @@ export function DisbursementGeneral(props: IDisbursementGeneralProps) {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const businessManagerCode = eventData.businessManager.publicCode;
 
   useEffect(() => {
     if (!initialDataLoadedRef.current && initialValues.amount > 0) {

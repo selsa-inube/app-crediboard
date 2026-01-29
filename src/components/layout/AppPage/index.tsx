@@ -71,7 +71,7 @@ function AppPage() {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const businessManagerCode = eventData.businessManager.publicCode;
 
   const getNotificationsCount = (): number => {
     return noveltiesData && noveltiesData.length > 0 ? noveltiesData.length : 0;
