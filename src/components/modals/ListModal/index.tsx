@@ -109,7 +109,7 @@ export const ListModal = (props: IListModalProps) => {
   const dragCounter = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const businessManagerCode = eventData.businessManager.publicCode;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const [pendingFiles, setPendingFiles] = useState<

@@ -224,7 +224,7 @@ function useAppContext() {
         const result = await getSearchOptionForStaff(
           eventData.portal.publicCode,
           eventData.businessUnit.businessUnitPublicCode,
-          eventData.businessManager.abbreviatedName,
+          eventData.businessManager.publicCode,
           userIdentifier || "",
           eventData.token || "",
         );
@@ -238,7 +238,7 @@ function useAppContext() {
   }, [
     eventData?.portal?.publicCode,
     eventData?.businessUnit?.businessUnitPublicCode,
-    eventData.businessManager.abbreviatedName,
+    eventData.businessManager.publicCode,
     user?.username,
     isIAuthLoading,
     userIdentifier,

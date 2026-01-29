@@ -40,7 +40,7 @@ export const CreditProfileInfo = () => {
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const businessManagerCode = eventData.businessManager.publicCode;
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;

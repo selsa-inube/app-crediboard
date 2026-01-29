@@ -56,7 +56,7 @@ export const Approvals = (props: IApprovalsProps) => {
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
-  const businessManagerCode = eventData.businessManager.abbreviatedName;
+  const businessManagerCode = eventData.businessManager.publicCode;
 
   const fetchCreditRequest = useCallback(async () => {
     try {

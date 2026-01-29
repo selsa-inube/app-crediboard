@@ -3,7 +3,7 @@ import { encrypt } from "@utils/encrypt/encrypt";
 import { IBusinessManagers } from "../types";
 
 const mapBusinessManagerApiToEntity = (
-  businessManager: Record<string, unknown>
+  businessManager: Record<string, unknown>,
 ): IBusinessManagers => {
   const toStringSafe = (value: unknown): string => {
     if (typeof value === "string" || typeof value === "number") {
