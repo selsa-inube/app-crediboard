@@ -19,7 +19,6 @@ import { dataInformationModalEnum, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
 import { selectCheckOptionsEnum } from "./config/select";
 import { IBoardData } from "./types";
-import { errorMessagesEnum } from "./config";
 
 export interface IFilterFormValues {
   assignment: string;
@@ -53,6 +52,7 @@ function BoardLayout() {
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [hasServerError, setHasServerError] = useState(false);
   const useDebounceSearch = Boolean(
     eventData?.user?.identificationDocumentNumber,
@@ -87,8 +87,7 @@ function BoardLayout() {
     assignment: "",
     status: "",
   });
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
+
   const boardColumns = getBoardColumns(activeOptions, filters.boardOrientation);
 
   const fetchBoardData = async (
@@ -178,10 +177,23 @@ function BoardLayout() {
         setPositionsAuthorized(response.positionsAuthorized);
       }
     } catch (error) {
-      setShowErrorModal(true);
-      setMessageError(errorMessagesEnum.changeAnchorToCreditRequest.i18n[lang]);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setErrorMessage(description);
+      setErrorModal(true);
+
+      setPositionsAuthorized([]);
     }
-  }, [businessUnitPublicCode, lang, eventData.token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, lang]);
 
   useEffect(() => {
     if (activeOptions.length > 0 || filters.searchRequestValue.length >= 1)
@@ -766,6 +778,7 @@ function BoardLayout() {
         filterValues={filterValues}
         shouldCollapseAll={shouldCollapseAll}
         boardColumns={boardColumns}
+        positionsAuthorized={positionsAuthorized}
       />
       {isOpenModal && (
         <BaseModal
@@ -786,22 +799,10 @@ function BoardLayout() {
       {errorModal && (
         <ErrorModal
           isMobile={isMobile}
-          message={
-            errorMessagesEnum.changeAnchorToCreditRequest.i18n[lang]
-            /* errorMessages.changeAnchorToCreditRequest.description */
-          }
+          message={errorMessage}
           handleClose={() => {
             setErrorModal(false);
           }}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
         />
       )}
     </>

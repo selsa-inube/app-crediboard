@@ -23,7 +23,7 @@ export function ErrorModal(props: IErrorModalProps) {
       nextButton={errorModalConfigEnum.understood.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
-      width={isMobile ? "300px" : "450px"}
+      width={isMobile ? "100%" : "450px"}
     >
       <Stack direction="column" gap="16px" alignItems="center">
         <Icon
