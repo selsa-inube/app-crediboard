@@ -3,12 +3,17 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IExtraordinaryInstallments } from "@services/prospect/types";
+import {
+  IExtraordinaryInstallments,
+  IExtraordinaryInstallmentsAddSeries,
+} from "@services/prospect/types";
 
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
 
 export const removeExtraordinaryInstallments = async (
-  extraordinaryInstallments: IExtraordinaryInstallments,
+  extraordinaryInstallments:
+    | IExtraordinaryInstallments
+    | IExtraordinaryInstallmentsAddSeries,
   businessUnitPublicCode: string,
   token: string,
 ): Promise<IExtraordinaryInstallments | undefined> => {

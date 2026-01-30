@@ -36,7 +36,7 @@ import {
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import {
   IProspect,
-  IExtraordinaryInstallments,
+  IExtraordinaryInstallmentsAddSeries,
 } from "@services/prospect/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ShareModal } from "@components/modals/ShareModal";
@@ -92,9 +92,8 @@ export const FinancialReporting = () => {
   const [attachDocuments, setAttachDocuments] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [collapse, setCollapse] = useState(false);
-  const [sentData, setSentData] = useState<IExtraordinaryInstallments | null>(
-    null,
-  );
+  const [sentData, setSentData] =
+    useState<IExtraordinaryInstallmentsAddSeries | null>(null);
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
