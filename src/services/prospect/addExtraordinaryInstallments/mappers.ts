@@ -1,7 +1,15 @@
-import { IExtraordinaryInstallment } from "@services/prospect/types";
+import {
+  IExtraordinaryInstallment,
+  IExtraordinaryInstallmentsAddSeries,
+  IExtraordinaryInstallmentAddSeries,
+  IExtraordinaryInstallments,
+} from "@services/prospect/types";
 
 const mapExtraordinaryInstallmentsEntity = (
-  data: IExtraordinaryInstallment
+  data:
+    | IExtraordinaryInstallmentAddSeries
+    | IExtraordinaryInstallmentsAddSeries
+    | IExtraordinaryInstallments,
 ): IExtraordinaryInstallment => {
   const creditRequest: IExtraordinaryInstallment = {
     creditProductCode: String(data.creditProductCode || ""),

@@ -13,11 +13,11 @@ export const makeDecisions = async (
   userAccount: string,
   makeDecisions: IMakeDecisionsCreditRequest,
   xAction: string,
-  token: string
+  token: string,
 ): Promise<IMakeDecisionsCreditRequestResponse | undefined> => {
   if (!xAction) {
     throw new Error(
-      "No se ha definido una acción valida para registrar la calificación de la solicitud de crédito"
+      "No se ha definido una acción valida para registrar la calificación de la solicitud de crédito",
     );
   }
 
@@ -44,7 +44,7 @@ export const makeDecisions = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -67,7 +67,7 @@ export const makeDecisions = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo registrar la calificación en la solicitud de crédito."
+          "Todos los intentos fallaron. No se pudo registrar la calificación en la solicitud de crédito.",
         );
       }
     }
