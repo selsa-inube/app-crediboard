@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState, useCallback } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   MdOutlineChevronRight,
   MdOutlineFilterAlt,
@@ -17,7 +17,6 @@ import { patchChangeTracesToReadById } from "@services/creditRequest/command/pat
 import { AppContext } from "@context/AppContext";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { getCanUnpin } from "@utils/configRules/permissions";
-import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { useEnum } from "@hooks/useEnum";
 
@@ -34,6 +33,7 @@ interface BoardSectionProps {
   sectionBackground: SectionBackground;
   orientation: SectionOrientation;
   sectionInformation: ICreditRequest[];
+  positionsAuthorized: string[];
   pinnedRequests: ICreditRequestPinned[];
   errorLoadingPins: boolean;
   searchRequestValue: string;
@@ -64,6 +64,7 @@ function BoardSection(props: BoardSectionProps) {
     searchRequestValue,
     sectionId,
     handlePinRequest,
+    positionsAuthorized,
     handleLoadMoreData,
     onOrientationChange,
     shouldCollapseAll,
@@ -74,13 +75,10 @@ function BoardSection(props: BoardSectionProps) {
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
     useMediaQueries(["(max-width: 1024px)", "(max-width: 595px)"]);
   const [collapse, setCollapse] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [currentOrientation, setCurrentOrientation] =
     useState<SectionOrientation>(orientation);
-  const [positionsAuthorized, setPositionsAuthorized] = useState<string[]>([]);
   const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const flagMessage = useRef(false);
@@ -167,32 +165,12 @@ function BoardSection(props: BoardSectionProps) {
         eventData.token,
       );
     } catch (error) {
-      setErrorMessage(
+      setMessageError(
         messagesErrorEnum.changeTracesToReadById.description.i18n[lang],
       );
       setErrorModal(true);
     }
   };
-
-  const fetchPositionsAuthorized = useCallback(async () => {
-    if (!businessUnitPublicCode) return;
-
-    try {
-      const response = await getPositionsAuthorizedToRemoveAnchorsPlacedByOther(
-        businessUnitPublicCode,
-        eventData.token || "",
-      );
-
-      if (response?.positionsAuthorized) {
-        setPositionsAuthorized(response.positionsAuthorized);
-      }
-    } catch (error) {
-      setShowErrorModal(true);
-      setMessageError(
-        messagesErrorEnum.changeTracesToReadById.description.i18n[lang],
-      );
-    }
-  }, [businessUnitPublicCode, lang, eventData.token]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -205,12 +183,6 @@ function BoardSection(props: BoardSectionProps) {
     }, 1000);
     return () => clearTimeout(timeout);
   }, [sectionInformation]);
-
-  useEffect(() => {
-    if (businessUnitPublicCode) {
-      fetchPositionsAuthorized();
-    }
-  }, [businessUnitPublicCode, fetchPositionsAuthorized]);
 
   const getTaskLabel = (code: string): string => {
     const task = taskPrs.find((t) => t.Code === code);
@@ -364,21 +336,13 @@ function BoardSection(props: BoardSectionProps) {
       {errorModal && (
         <ErrorModal
           isMobile={isMobile}
-          message={errorMessage}
+          message={messageError}
           handleClose={() => {
             setErrorModal(false);
           }}
         />
       )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
+
       {isInfoModalOpen && (
         <BaseModal
           title={infoModalEnum.title.i18n[lang]}

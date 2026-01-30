@@ -62,6 +62,7 @@ interface BoardLayoutProps {
   errorLoadingPins: boolean;
   activeOptions: Filter[];
   boardColumns: TBoardColumn[];
+  positionsAuthorized: string[];
   closeFilterModal: () => void;
   handleSelectCheckChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handlePinRequest: (
@@ -91,6 +92,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     openFilterModal,
     isFilterModalOpen,
     handleApplyFilters,
+    positionsAuthorized,
     boardOrientation,
     BoardRequests,
     searchRequestValue,
@@ -531,6 +533,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 sectionInformation={BoardRequests.filter(
                   (request) => request.stage === column.id,
                 )}
+                positionsAuthorized={positionsAuthorized}
                 pinnedRequests={pinnedRequests}
                 errorLoadingPins={errorLoadingPins}
                 searchRequestValue={searchRequestValue}
