@@ -47,3 +47,10 @@ export interface IExtraordinaryCycle {
   month: string;
   paymentDates: string[];
 }
+
+export interface ICalculatedSeries {
+  cycleName: string;
+  paymentChannelAbbreviatedName: string;
+  paymentDate: string;
+  value: number;
+}

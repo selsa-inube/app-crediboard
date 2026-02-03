@@ -7,7 +7,6 @@ import { IProspect } from "@services/prospect/types";
 import { AddSeriesModal } from "@components/modals/AddSeriesModal";
 import { TableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment";
 import {
-  IExtraordinaryInstallments,
   IExtraordinaryInstallmentsAddSeries,
   IExtraordinaryInstallmentAddSeries,
 } from "@services/prospect/types";
@@ -29,7 +28,7 @@ export interface ExtraordinaryPaymentModalProps {
   setSentData: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallmentsAddSeries | null>
   >;
-  sentData?: IExtraordinaryInstallments | null;
+  sentData?: IExtraordinaryInstallmentsAddSeries | null;
   handleClose: () => void;
   onClickDetails?: (id: string) => void;
   onClickEdit?: (id: string) => void;

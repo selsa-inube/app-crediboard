@@ -491,7 +491,7 @@ export const FinancialReporting = () => {
                         creditRequestCode={creditRequestCode!}
                         hideContactIcons={true}
                         prospectData={dataProspect!}
-                        sentData={null}
+                        sentData={sentData}
                         setSentData={setSentData}
                         setRequestValue={setRequestValue}
                         requestValue={requestValue}
