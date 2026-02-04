@@ -9,7 +9,7 @@ const entrySelection = (data: IEntries) => {
 
 export const titlesPostingvouchersEnum = {
   obligationCode: {
-    id: "obligationCode", 
+    id: "obligationCode",
     code: "TitlesPostingvouchers_obligationCode",
     description: "Title for obligation code column",
     i18n: {
@@ -19,7 +19,7 @@ export const titlesPostingvouchersEnum = {
     priority: 1,
   },
   documentCode: {
-     id: "documentCode",
+    id: "documentCode",
     code: "TitlesPostingvouchers_documentCode",
     description: "Title for document code column",
     i18n: {
@@ -29,8 +29,15 @@ export const titlesPostingvouchersEnum = {
     priority: 2,
   },
 };
-
-
+export const documentCodeText = {
+  id: "documentCodeText",
+  code: "TitlesPostingvouchers_documentCodeText",
+  description: "Title for document code text column",
+  i18n: {
+    en: "Document not delivered.",
+    es: "El documento no fue entregado.",
+  },
+};
 export const actionsPostingvouchers = [
   {
     id: "ver imagen",
