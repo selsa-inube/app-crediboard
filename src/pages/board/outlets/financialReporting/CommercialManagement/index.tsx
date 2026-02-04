@@ -285,7 +285,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       }
     }
   };
-  console.log(eventData.token, "aaa");
   const handleCloseModal = () => {
     setModalHistory((prevHistory) => {
       const newHistory = [...prevHistory];
