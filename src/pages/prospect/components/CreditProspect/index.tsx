@@ -35,7 +35,7 @@ import {
   menuOptions,
 } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
-import { IExtraordinaryInstallments, IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
@@ -65,7 +65,7 @@ interface ICreditProspectProps {
   isMobile: boolean;
   businessUnitPublicCode: string;
   businessManagerCode: string;
-  sentData: IExtraordinaryInstallments | null;
+  sentData: IExtraordinaryInstallmentsAddSeries | null;
   currentModal: string;
   eventData: ICrediboardData;
   handleOpenModal: (modalName: string) => void;
