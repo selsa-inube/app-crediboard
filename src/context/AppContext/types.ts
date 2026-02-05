@@ -1,6 +1,7 @@
 import { SectionOrientation } from "@components/layout/BoardSection/types";
 import { IEnumerator } from "@services/enumerators/types";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
+import { ISearchAllCreditRequestStates } from "@services/creditRequest/query/types";
 
 interface IPortal {
   abbreviatedName: string;
@@ -88,6 +89,7 @@ interface ICrediboardData {
   user: IUser;
   enumRole: IEnumerator[];
   token: string;
+  creditRequestStates: ISearchAllCreditRequestStates[];
 }
 
 interface IAppContext {
