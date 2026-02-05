@@ -17,6 +17,7 @@ import {
   actionsPostingvouchers,
   titlesPostingvouchersEnum,
   actionMobile,
+  documentCodeText,
 } from "./config";
 import { errorMessagesEnum, errorObserver } from "../config";
 
@@ -108,6 +109,17 @@ export const Postingvouchers = (props: IApprovalsProps) => {
     businessManagerCode,
     eventData.token,
   ]);
+
+  const transformedEntries = useMemo(() => {
+    return positionsAccountingVouchers.map((voucher) => ({
+      ...voucher,
+      documentCode:
+        !voucher.documentCode || voucher.documentCode === "undefined"
+          ? documentCodeText.i18n[lang]
+          : voucher.documentCode,
+    }));
+  }, [positionsAccountingVouchers, lang]);
+
   return (
     <Stack direction="column">
       <Fieldset
@@ -135,7 +147,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
             id="postingvouchers"
             loading={loading}
             titles={titles}
-            entries={positionsAccountingVouchers as unknown as IEntries[]}
+            entries={transformedEntries as unknown as IEntries[]}
             actions={actionsPostingvouchers}
             actionMobile={actionMobile}
             appearanceTable={{

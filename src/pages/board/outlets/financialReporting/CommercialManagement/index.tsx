@@ -283,7 +283,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       }
     }
   };
-
   const handleCloseModal = () => {
     setModalHistory((prevHistory) => {
       const newHistory = [...prevHistory];
