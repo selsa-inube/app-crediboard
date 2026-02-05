@@ -67,10 +67,10 @@ export const boardColumnsEnum: TBoardColumn[] = [
 
 export const getBoardColumns = (
   activeFilters: Filter[],
-  boardOrientation: string = "vertical"
+  boardOrientation: string = "vertical",
 ): TBoardColumn[] => {
   const hasCompletedFilter = activeFilters.some(
-    (filter) => filter.value === "completedLessThan30DaysAgo=Y"
+    (filter) => filter.value === "completedLessThan30DaysAgo=Y",
   );
 
   if (hasCompletedFilter && boardOrientation === "horizontal") {
@@ -85,8 +85,7 @@ export const getBoardColumns = (
           es: "Tramitadas",
         },
         sectionBackground: "light",
-
-      }
+      },
     ];
   }
 

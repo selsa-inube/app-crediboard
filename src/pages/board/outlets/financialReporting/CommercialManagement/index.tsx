@@ -53,12 +53,10 @@ import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitM
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
-import { boardColumnsEnum } from "@config/pages/board/board";
 import { IProspectSummaryById } from "@services/prospect/types";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { useEnum } from "@hooks/useEnum";
 
-import { TBoardColumn } from "../../boardlayout/config/board";
 import { titlesModalEnum } from "../ToDo/config";
 import { errorMessagesEnum } from "../config";
 import {
@@ -519,14 +517,13 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     data.stage === "VERIFICACION_APROBACION"
   );
 
-  let normalizedStageTitle: TBoardColumn[] | string = boardColumnsEnum.filter(
-    (item) => {
-      return item.id === data.stage;
-    },
-  ) as TBoardColumn[];
+  let normalizedStageTitle: string = "";
 
-  if (normalizedStageTitle[0]) {
-    normalizedStageTitle = normalizedStageTitle[0].i18n[lang];
+  const matchingState = eventData.creditRequestStates?.find(
+    (state) => state.stage === data.stage,
+  );
+  if (matchingState) {
+    normalizedStageTitle = matchingState.descriptionUse;
   } else {
     normalizedStageTitle = "";
   }

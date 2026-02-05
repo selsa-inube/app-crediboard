@@ -15,6 +15,7 @@ import { IOptionStaff } from "@services/staff/searchOptionForStaff/types";
 import { IStaffPortalByBusinessManager } from "@services/staff/types";
 import { getSearchUseCaseForStaff } from "@services/staff/SearchUseCaseForStaff";
 import { getSearchOptionForStaff } from "@services/staff/searchOptionForStaff";
+import { getSearchAllCreditRequestStates } from "@services/creditRequest/query/getSearchAllCreditRequestStates";
 
 interface IBusinessUnits {
   businessUnitPublicCode: string;
@@ -113,6 +114,7 @@ function useAppContext() {
       },
     },
     enumRole: [],
+    creditRequestStates: [],
     token: "",
   });
 
@@ -131,6 +133,41 @@ function useAppContext() {
       }
     }
   }, [user, isIAuthLoading]);
+
+  useEffect(() => {
+    const fetchCreditRequestStates = async () => {
+      try {
+        if (
+          !eventData.businessUnit.businessUnitPublicCode ||
+          !eventData.token ||
+          isIAuthLoading
+        ) {
+          return;
+        }
+
+        const creditStates = await getSearchAllCreditRequestStates(
+          eventData.businessUnit.businessUnitPublicCode,
+          eventData.token,
+        );
+
+        setEventData((prev) => ({
+          ...prev,
+          creditRequestStates: Array.isArray(creditStates) ? creditStates : [],
+        }));
+      } catch (error) {
+        setEventData((prev) => ({
+          ...prev,
+          creditRequestStates: [],
+        }));
+      }
+    };
+
+    fetchCreditRequestStates();
+  }, [
+    eventData.businessUnit.businessUnitPublicCode,
+    eventData.token,
+    isIAuthLoading,
+  ]);
 
   useEffect(() => {
     const fetchStaffData = async () => {
