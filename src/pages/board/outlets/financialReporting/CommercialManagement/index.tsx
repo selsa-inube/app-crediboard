@@ -167,8 +167,10 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
   const businessManagerCode = eventData.businessManager.publicCode;
 
-  const { userAccount } =
+  const { userEventData } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
+  const userAccount = userEventData?.identificationDocumentNumber || "";
 
   useEffect(() => {
     setLocalProspectData(prospectData);

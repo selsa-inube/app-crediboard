@@ -333,7 +333,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
         businessUnitPublicCode,
         creditRequestCode,
         consolidatedCredits,
-        businessManagerCode,
+        eventData?.user?.identificationDocumentNumber || "",
         eventData?.token || "",
       );
 
