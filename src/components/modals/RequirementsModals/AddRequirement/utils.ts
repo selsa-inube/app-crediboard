@@ -6,6 +6,7 @@ export const saveRequirements = async (
   businessManagerCode: string,
   creditRequests: IPatchOfRequirements,
   token: string,
+  xUserName: string,
 ) => {
   let confirmationType = true;
   try {
@@ -14,6 +15,7 @@ export const saveRequirements = async (
       businessUnitPublicCode,
       businessManagerCode,
       token,
+      xUserName,
     );
   } catch (error) {
     confirmationType = false;

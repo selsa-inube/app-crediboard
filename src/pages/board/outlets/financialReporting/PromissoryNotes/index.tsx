@@ -66,7 +66,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
           businessUnitPublicCode,
           businessManagerCode,
           id,
-          userAccount,
+          eventData.user.identificationDocumentNumber || "",
           eventData.token || "",
         );
         setCreditRequests(data[0] as ICreditRequest);
@@ -84,6 +84,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
     businessManagerCode,
     userAccount,
     eventData.token,
+    eventData.user.identificationDocumentNumber,
   ]);
 
   const fetchData = useCallback(async () => {

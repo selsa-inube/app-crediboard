@@ -51,15 +51,13 @@ export const Postingvouchers = (props: IApprovalsProps) => {
 
   const businessManagerCode = eventData.businessManager.publicCode;
 
-  const { userAccount } =
-    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
   const fetchCreditRequest = useCallback(async () => {
     try {
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
         businessManagerCode,
         id,
-        userAccount,
+        eventData.user.identificationDocumentNumber || "",
         eventData.token || "",
       );
       setRequests(data[0] as ICreditRequest);
@@ -73,9 +71,9 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   }, [
     businessUnitPublicCode,
     id,
-    userAccount,
     businessManagerCode,
     eventData.token,
+    eventData.user.identificationDocumentNumber,
   ]);
 
   useEffect(() => {

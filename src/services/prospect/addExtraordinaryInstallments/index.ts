@@ -19,6 +19,7 @@ export const addExtraordinaryInstallments = async (
     | IExtraordinaryInstallments,
   businessUnitPublicCode: string,
   token: string,
+  xUserName: string,
 ): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -33,6 +34,7 @@ export const addExtraordinaryInstallments = async (
           "X-Action": "AddExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-User-Name": xUserName,
           Authorization: token,
         },
         body: JSON.stringify(

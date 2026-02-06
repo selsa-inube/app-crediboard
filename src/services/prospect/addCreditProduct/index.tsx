@@ -12,6 +12,7 @@ export const addCreditProductService = async (
   businessManagerCode: string,
   payload: IAddCreditProduct,
   token: string,
+  xUserName: string,
 ): Promise<IProspect | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,7 +28,8 @@ export const addCreditProductService = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
-          Authorization: token
+          "X-User-Name": xUserName,
+          Authorization: token,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,

@@ -13,7 +13,8 @@ export const getNotificationOnApprovals = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   payload: INotificationOnApprovals,
-  token: string
+  token: string,
+  xUserName: string,
 ): Promise<INotificationOnApprovalsResponse | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -30,6 +31,7 @@ export const getNotificationOnApprovals = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          "X-User-Name": xUserName,
           Authorization: token,
         },
         body: JSON.stringify(payload),
@@ -38,7 +40,7 @@ export const getNotificationOnApprovals = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -61,7 +63,7 @@ export const getNotificationOnApprovals = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo traer los errores las notificaciones."
+          "Todos los intentos fallaron. No se pudo traer los errores las notificaciones.",
         );
       }
     }

@@ -252,6 +252,7 @@ export const TableFinancialObligations = (
         businessManagerCode || "",
         newContentTable[0],
         eventData?.token || "",
+        eventData?.user.identificationDocumentNumber || "",
       );
 
       if (borrowersListFinancialObligation.length % ROWS_PER_PAGE === 0) {
@@ -280,7 +281,8 @@ export const TableFinancialObligations = (
     setGotEndPage,
     setDataProspect,
     onObligationProcessed,
-    eventData?.token
+    eventData?.token,
+    eventData?.user.identificationDocumentNumber,
   ]);
 
   useEffect(() => {
@@ -302,7 +304,12 @@ export const TableFinancialObligations = (
     });
 
     return () => clearTimeout(timeout);
-  }, [businessUnitPublicCode, creditRequestCode, businessManagerCode, eventData?.token]);
+  }, [
+    businessUnitPublicCode,
+    creditRequestCode,
+    businessManagerCode,
+    eventData?.token,
+  ]);
 
   useEffect(() => {
     const financialObligationBorrowers =
@@ -431,6 +438,7 @@ export const TableFinancialObligations = (
         businessManagerCode || "",
         newContentTable[0],
         eventData?.token || "",
+        eventData?.user.identificationDocumentNumber || "",
       );
 
       if (setDataProspect === undefined) return;
@@ -445,6 +453,7 @@ export const TableFinancialObligations = (
       deleteFinancialObligation,
       moveBeforePage,
       eventData?.token,
+      eventData?.user.identificationDocumentNumber,
     ],
   );
 
@@ -472,6 +481,7 @@ export const TableFinancialObligations = (
           businessManagerCode || "",
           newContentTable[0],
           eventData?.token || "",
+          eventData?.user.identificationDocumentNumber || "",
         );
 
         setDataProspect(newContentTable);
@@ -482,7 +492,13 @@ export const TableFinancialObligations = (
         setErrorModal(true);
       }
     },
-    [editFinancialObligation, businessUnitPublicCode, businessManagerCode,  eventData?.token],
+    [
+      editFinancialObligation,
+      businessUnitPublicCode,
+      businessManagerCode,
+      eventData?.token,
+      eventData?.user.identificationDocumentNumber,
+    ],
   );
 
   return (

@@ -384,6 +384,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
             businessManagerCode,
             rawData,
             eventData.token || "",
+            eventData.user.identificationDocumentNumber || "",
           );
 
           handleClose();
