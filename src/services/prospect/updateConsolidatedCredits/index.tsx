@@ -9,7 +9,7 @@ export const updateConsolidatedCredits = async (
   businessUnitPublicCode: string,
   creditRequestCode: string,
   payload: IConsolidatedCredit[],
-  userAccount: string,
+  businessManagerCode: string,
   token: string,
 ): Promise<IConsolidatedCredit[] | null> => {
   const maxRetries = maxRetriesServices;
@@ -28,7 +28,7 @@ export const updateConsolidatedCredits = async (
           "X-Action": "UpdateConsolidatedCredits",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": userAccount,
+          "X-User-Name": businessManagerCode,
           Authorization: token,
         },
         signal: controller.signal,

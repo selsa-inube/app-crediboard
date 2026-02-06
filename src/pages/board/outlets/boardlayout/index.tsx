@@ -79,9 +79,8 @@ function BoardLayout() {
 
   const businessManagerCode = eventData.businessManager.publicCode;
 
-  const { userEventData } =
+  const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-  const userAccount = userEventData?.identificationDocumentNumber || "";
   const [positionsAuthorized, setPositionsAuthorized] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterValues, setFilterValues] = useState<IFilterFormValues>({

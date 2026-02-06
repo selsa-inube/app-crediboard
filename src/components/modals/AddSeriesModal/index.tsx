@@ -386,7 +386,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       const calculatedSeries = await calculateSeriesForExtraordinaryInstallment(
         businessUnitPublicCode,
         eventData.token || "",
-        eventData.user.identificationDocumentNumber || "",
+        eventData.user.userName,
         calculationBody,
       );
 
