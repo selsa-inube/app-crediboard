@@ -56,10 +56,8 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
 
   const businessManagerCode = eventData.businessManager.publicCode;
 
-  const { userEventData } =
+  const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-
-  const userAccount = userEventData?.identificationDocumentNumber || "";
 
   useEffect(() => {
     const fetchCreditRequest = async () => {
