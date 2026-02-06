@@ -46,22 +46,17 @@ import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import {
-  IExtraordinaryInstallments,
-  IExtraordinaryInstallmentsAddSeries,
-} from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitModal";
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
-import { boardColumnsEnum } from "@config/pages/board/board";
 import { IProspectSummaryById } from "@services/prospect/types";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { useEnum } from "@hooks/useEnum";
 
-import { TBoardColumn } from "../../boardlayout/config/board";
 import { titlesModalEnum } from "../ToDo/config";
 import { errorMessagesEnum } from "../config";
 import {
@@ -85,7 +80,7 @@ interface ComercialManagementProps {
   prospectData: IProspect;
   collapse: boolean;
   setCollapse: React.Dispatch<React.SetStateAction<boolean>>;
-  sentData: IExtraordinaryInstallments | null;
+  sentData: IExtraordinaryInstallmentsAddSeries | null;
   setSentData: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallmentsAddSeries | null>
   >;
@@ -170,8 +165,10 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
   const businessManagerCode = eventData.businessManager.publicCode;
 
-  const { userAccount } =
+  const { userEventData } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+
+  const userAccount = userEventData?.identificationDocumentNumber || "";
 
   useEffect(() => {
     setLocalProspectData(prospectData);
@@ -288,7 +285,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       }
     }
   };
-  console.log(eventData.token, "aaa");
   const handleCloseModal = () => {
     setModalHistory((prevHistory) => {
       const newHistory = [...prevHistory];
@@ -521,14 +517,13 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     data.stage === "VERIFICACION_APROBACION"
   );
 
-  let normalizedStageTitle: TBoardColumn[] | string = boardColumnsEnum.filter(
-    (item) => {
-      return item.id === data.stage;
-    },
-  ) as TBoardColumn[];
+  let normalizedStageTitle: string = "";
 
-  if (normalizedStageTitle[0]) {
-    normalizedStageTitle = normalizedStageTitle[0].i18n[lang];
+  const matchingState = eventData.creditRequestStates?.find(
+    (state) => state.stage === data.stage,
+  );
+  if (matchingState) {
+    normalizedStageTitle = matchingState.descriptionUse;
   } else {
     normalizedStageTitle = "";
   }

@@ -133,9 +133,9 @@ export const FinancialReporting = () => {
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { userAccount } =
+  const { userEventData } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-
+  const userAccount = userEventData?.identificationDocumentNumber || "";
   const businessManagerCode = eventData.businessManager.publicCode;
 
   const { addFlag } = useFlag();
@@ -325,7 +325,7 @@ export const FinancialReporting = () => {
     try {
       await lateRejectionOfACreditRequest(
         data?.creditRequestId || "",
-        user?.id || "",
+        user?.identificationDocumentNumber || "",
         businessUnitPublicCode,
         businessManagerCode,
         "RECHAZAR_SOLICITUD",
@@ -359,7 +359,7 @@ export const FinancialReporting = () => {
           data?.creditRequestId ?? "",
           businessUnitPublicCode,
           businessManagerCode,
-          user?.id ?? "",
+          user?.identificationDocumentNumber || "",
           eventData.token || "",
         );
       } finally {
@@ -491,7 +491,7 @@ export const FinancialReporting = () => {
                         creditRequestCode={creditRequestCode!}
                         hideContactIcons={true}
                         prospectData={dataProspect!}
-                        sentData={null}
+                        sentData={sentData}
                         setSentData={setSentData}
                         setRequestValue={setRequestValue}
                         requestValue={requestValue}

@@ -46,6 +46,7 @@ export interface IUsersByCreditRequests {
 export interface ICreditRequest {
   creditRequestId?: string;
   creditRequestCode: string;
+  creditRequestStateAbbreviatedName?: string;
   creditRequestDateOfCreation: string;
   loanAmount: number;
   clientId: string;
@@ -104,6 +105,13 @@ export interface IToDo {
   taskToBeDone: string;
   usersByCreditRequestResponse: IStaff[];
   prospectId: string;
+}
+export interface ISearchAllCreditRequestStates {
+  creditRequestStateId: string;
+  abbreviatedName: string;
+  descriptionUse: string;
+  stage: string;
+  taskToBeDone: string;
 }
 
 export interface IMortgages {

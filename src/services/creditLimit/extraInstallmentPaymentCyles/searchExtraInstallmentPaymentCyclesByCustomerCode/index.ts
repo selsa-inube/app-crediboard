@@ -29,7 +29,7 @@ export const searchExtraInstallmentPaymentCyclesByCustomerCode = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/${ClientIdentificationNumber}/${lineOfCreditAbbreviatedName}/${moneyDestinationAbbreviatedName}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/extra-installment-payment-cycles/${ClientIdentificationNumber}/${lineOfCreditAbbreviatedName}/${moneyDestinationAbbreviatedName}`,
         options,
       );
 

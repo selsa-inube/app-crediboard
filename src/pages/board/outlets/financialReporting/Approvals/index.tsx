@@ -53,8 +53,9 @@ export const Approvals = (props: IApprovalsProps) => {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
-  const { userAccount } =
+  const { userEventData } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
+  const userAccount = userEventData?.identificationDocumentNumber || "";
 
   const businessManagerCode = eventData.businessManager.publicCode;
 

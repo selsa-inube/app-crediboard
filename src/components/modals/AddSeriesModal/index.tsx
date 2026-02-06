@@ -16,7 +16,6 @@ import {
 } from "@utils/formatData/currency";
 import { AppContext } from "@context/AppContext";
 import {
-  IExtraordinaryInstallments,
   IExtraordinaryInstallmentAddSeries,
   IExtraordinaryInstallmentsAddSeries,
   IExtraordinaryInstallment,
@@ -26,6 +25,7 @@ import { EnumType } from "@hooks/useEnum";
 import { searchExtraInstallmentPaymentCyclesByCustomerCode } from "@services/creditLimit/extraInstallmentPaymentCyles/searchExtraInstallmentPaymentCyclesByCustomerCode";
 import { CardGray } from "@components/cards/CardGray";
 import { addExtraordinaryInstallments } from "@services/prospect/addExtraordinaryInstallments";
+import { calculateSeriesForExtraordinaryInstallment } from "@services/creditLimit/calculateSeriesForExtraordinaryInstallment";
 
 import { defaultFrequency, dataAddSeriesModal, frequencyTypes } from "./config";
 import { IOption, ICycleOption } from "./types";
@@ -51,7 +51,7 @@ export interface AddSeriesModalProps {
     | IExtraordinaryInstallmentAddSeries[]
     | IExtraordinaryInstallment[];
   sentData?:
-    | IExtraordinaryInstallments
+    | IExtraordinaryInstallmentsAddSeries
     | Record<string, string | number>
     | null;
   selectedModal?:
@@ -331,7 +331,6 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       if (extraordinaryInstallments === null) {
         return;
       }
-
       setSentData?.(extraordinaryInstallments);
       setIsLoading(false);
       handleClose();
@@ -351,7 +350,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     }
   };
 
-  const handleNextClick = () => {
+  const handleNextClick = async () => {
     if (!installmentState || !setSentData) return;
 
     const {
@@ -362,6 +361,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
     const count = parseInt(formik.values.value, 10);
     const frequency = formik.values.frequency;
+
     if (
       !installmentAmount ||
       !installmentDate ||
@@ -372,27 +372,54 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     )
       return;
 
-    const installments = [];
-    const currentDate = new Date(installmentDate);
-    for (let i = 0; i < count; i++) {
-      installments.push({
-        installmentAmount,
-        installmentDate: currentDate.toISOString(),
-        paymentChannelAbbreviatedName,
-      });
-      if (frequency === frequencyTypes.biannual) {
-        currentDate.setMonth(currentDate.getMonth() + 6);
-      } else if (frequency === frequencyTypes.annual) {
-        currentDate.setFullYear(currentDate.getFullYear() + 1);
+    try {
+      setIsLoading(true);
+
+      const calculationBody = {
+        installmentAmount: installmentAmount,
+        installmentDate: installmentDate,
+        numberInstallments: count,
+        frequency: frequency,
+        paymentChannelAbbreviatedName: paymentChannelAbbreviatedName,
+      };
+
+      const calculatedSeries = await calculateSeriesForExtraordinaryInstallment(
+        businessUnitPublicCode,
+        eventData.token || "",
+        eventData.user.identificationDocumentNumber || "",
+        calculationBody,
+      );
+
+      if (!calculatedSeries) {
+        setIsLoading(false);
+        return;
       }
+
+      const installments = calculatedSeries.map((series) => ({
+        installmentAmount: series.value,
+        installmentDate: series.paymentDate,
+        paymentChannelAbbreviatedName: series.paymentChannelAbbreviatedName,
+      }));
+
+      const updatedValues: IExtraordinaryInstallmentsAddSeries = {
+        ...itemIdentifiersForUpdate,
+        extraordinaryInstallments: installments,
+      };
+      await handleExtraordinaryInstallment(updatedValues);
+    } catch (error) {
+      setIsLoading(false);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
-
-    const updatedValues: IExtraordinaryInstallmentsAddSeries = {
-      ...itemIdentifiersForUpdate,
-      extraordinaryInstallments: installments,
-    };
-
-    handleExtraordinaryInstallment(updatedValues);
   };
 
   const handleSimpleSubmit = () => {

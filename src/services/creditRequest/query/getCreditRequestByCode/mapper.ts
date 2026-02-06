@@ -1,12 +1,13 @@
 import { DmEtapasPrs, ICreditRequest } from "../types";
 
-
 export const mapCreditRequestToEntity = (
-  data: Record<string, string | number | object>
+  data: Record<string, string | number | object>,
 ): ICreditRequest => {
   const creditRequest: ICreditRequest = {
     creditRequestId: data.creditRequestId as string,
     creditRequestCode: data.creditRequestCode as string,
+    creditRequestStateAbbreviatedName:
+      data.creditRequestStateAbbreviatedName as string,
     creditRequestDateOfCreation: data.creditRequestDateOfCreation as string,
     loanAmount: data.loanAmount as number,
     clientId: data.clientId as string,
@@ -23,7 +24,7 @@ export const mapCreditRequestToEntity = (
 };
 
 export const mapCreditRequestToEntities = (
-  creditRequest: Record<string, string | number | object>[]
+  creditRequest: Record<string, string | number | object>[],
 ): ICreditRequest[] => {
   return creditRequest.map(mapCreditRequestToEntity);
 };

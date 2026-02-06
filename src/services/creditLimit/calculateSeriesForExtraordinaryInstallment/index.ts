@@ -3,40 +3,36 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IConsolidatedCredit } from "../types";
 
-export const updateConsolidatedCredits = async (
+import { ICalculatedSeries } from "../types";
+
+export const calculateSeriesForExtraordinaryInstallment = async (
   businessUnitPublicCode: string,
-  creditRequestCode: string,
-  payload: IConsolidatedCredit[],
-  userAccount: string,
-  token: string,
-): Promise<IConsolidatedCredit[] | null> => {
+  authorizationToken: string,
+  userName: string,
+  body: Record<string, string | number>,
+): Promise<ICalculatedSeries[] | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-      const body = JSON.stringify({
-        creditRequestCode: creditRequestCode,
-        consolidatedCredits: payload,
-      });
       const options: RequestInit = {
-        method: "PATCH",
+        method: "POST",
         headers: {
-          "X-Action": "UpdateConsolidatedCredits",
+          "X-Action": "CalculateSeriesForExtraordinaryInstallment",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": userAccount,
-          Authorization: token,
+          "X-User-Name": userName,
+          Authorization: `${authorizationToken}`,
         },
         signal: controller.signal,
-        body,
+        body: JSON.stringify(body),
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-limits/`,
         options,
       );
 
@@ -50,13 +46,13 @@ export const updateConsolidatedCredits = async (
 
       if (!res.ok) {
         throw {
-          message: "Ha ocurrido un error: ",
+          message: "Ha ocurrido un error al calcular los pagos extra: ",
           status: res.status,
           data,
         };
       }
 
-      return data.consolidatedCredits;
+      return data;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -66,7 +62,7 @@ export const updateConsolidatedCredits = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo actualizar la información de créditos consolidados.",
+          "Todos los intentos fallaron. No se calcular los pagos extra.",
         );
       }
     }

@@ -3,74 +3,65 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IConsolidatedCredit } from "../types";
 
-export const updateConsolidatedCredits = async (
+import { ISearchAllCreditRequestStates } from "../types";
+
+export const getSearchAllCreditRequestStates = async (
   businessUnitPublicCode: string,
-  creditRequestCode: string,
-  payload: IConsolidatedCredit[],
-  userAccount: string,
   token: string,
-): Promise<IConsolidatedCredit[] | null> => {
+): Promise<ISearchAllCreditRequestStates> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-      const body = JSON.stringify({
-        creditRequestCode: creditRequestCode,
-        consolidatedCredits: payload,
-      });
+
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "UpdateConsolidatedCredits",
+          "X-Action": "SearchAllCreditRequestStates",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": userAccount,
           Authorization: token,
         },
         signal: controller.signal,
-        body,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-request-states`,
         options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return null;
+        throw new Error("No hay estados de solicitud de crédito.");
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Ha ocurrido un error: ",
+          message: "Error al obtener los estados de solicitud de crédito",
           status: res.status,
           data,
         };
       }
 
-      return data.consolidatedCredits;
+      return data;
     } catch (error) {
+      console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
-        if (typeof error === "object" && error !== null) {
-          throw {
-            ...(error as object),
-            message: (error as Error).message,
-          };
-        }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo actualizar la información de créditos consolidados.",
+          "Todos los intentos fallaron. No se pudo obtener los estados de solicitud de crédito",
         );
       }
     }
   }
 
-  return null;
+  throw new Error(
+    "No se pudo obtener los estados de solicitud de créditode despues de varios intentos.",
+  );
 };
