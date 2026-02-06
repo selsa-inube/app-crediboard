@@ -125,6 +125,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
         businessManagerCode,
         body,
         eventData.token || "",
+        eventData.user.identificationDocumentNumber || "",
       );
       if (response && response.income) {
         const restoredIncome = {

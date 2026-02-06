@@ -614,6 +614,7 @@ function EditProductModal(props: EditProductModalProps) {
         businessManagerCode,
         payload,
         eventData?.token || "",
+        eventData.user.identificationDocumentNumber || "",
       );
 
       if (!updatedProspect) {

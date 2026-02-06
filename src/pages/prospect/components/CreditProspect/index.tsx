@@ -206,6 +206,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         businessManagerCode,
         updatedProspect,
         eventData.token || "",
+        eventData?.user.identificationDocumentNumber || "",
       );
 
       if (setDataProspect) {
@@ -261,6 +262,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         businessManagerCode,
         payload,
         eventData.token || "",
+        eventData.user.identificationDocumentNumber || "",
       );
 
       const normalizedProspect = {

@@ -3,13 +3,18 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IInternalAccount, IExternalAccount, IPersonData } from "@components/modals/DisbursementModal/types";
+import {
+  IInternalAccount,
+  IExternalAccount,
+  IPersonData,
+} from "@components/modals/DisbursementModal/types";
 
 export const getClientPortfolioObligationsById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   payload: IExternalAccount | IInternalAccount | IPersonData | object,
-  token: string
+  token: string,
+  xUserName: string,
 ) => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -24,6 +29,7 @@ export const getClientPortfolioObligationsById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          "X-User-Name": xUserName,
           Authorization: token,
         },
         body: JSON.stringify({

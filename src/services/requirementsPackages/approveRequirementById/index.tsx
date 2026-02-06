@@ -10,7 +10,8 @@ export const approveRequirementById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   payload: IapproveRequirement,
-  token: string
+  token: string,
+  xUserName: string,
 ): Promise<IapproveRequirementResponse[] | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -27,6 +28,7 @@ export const approveRequirementById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          "X-User-Name": xUserName,
           Authorization: token,
         },
         body: JSON.stringify(payload),
@@ -35,7 +37,7 @@ export const approveRequirementById = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/requirements-packages`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -64,7 +66,7 @@ export const approveRequirementById = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo evaluar los requisitos."
+          "Todos los intentos fallaron. No se pudo evaluar los requisitos.",
         );
       }
     }

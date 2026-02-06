@@ -132,6 +132,7 @@ function AddProductModal(props: IAddProductModalProps) {
           businessManagerCode,
           paymentChannelRequest,
           eventData.token || "",
+          eventData.user.identificationDocumentNumber || "",
         );
 
         if (!response || response.length === 0) {

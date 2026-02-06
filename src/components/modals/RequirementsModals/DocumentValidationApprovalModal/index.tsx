@@ -164,6 +164,7 @@ export function DocumentValidationApprovalModal(
           businessManagerCode,
           payload,
           eventData.token || "",
+          eventData.user.identificationDocumentNumber || "",
         );
 
         if (onConfirm) {

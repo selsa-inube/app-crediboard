@@ -152,7 +152,7 @@ function ToDo(props: ToDoProps) {
           businessUnitPublicCode,
           businessManagerCode,
           id,
-          userAccount,
+          eventData.user.identificationDocumentNumber || "",
           eventData.token || "",
         );
 
@@ -175,6 +175,7 @@ function ToDo(props: ToDoProps) {
     userAccount,
     businessManagerCode,
     eventData.token,
+    eventData.user.identificationDocumentNumber,
   ]);
 
   useEffect(() => {

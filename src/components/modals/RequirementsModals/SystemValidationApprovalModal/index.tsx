@@ -15,7 +15,6 @@ import { ICrediboardData } from "@context/AppContext/types";
 import { IApprovalSystem } from "../types";
 import { approvalsConfigEnum } from "./config";
 
-
 interface ISystemValidationApprovalModalProps {
   isMobile: boolean;
   initialValues: IApprovalSystem;
@@ -96,6 +95,7 @@ export function SystemValidationApprovalModal(
           businessManagerCode,
           payload,
           eventData.token || "",
+          eventData.user.identificationDocumentNumber || "",
         );
 
         if (onConfirm) {

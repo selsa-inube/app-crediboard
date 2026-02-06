@@ -12,6 +12,7 @@ export const updateProspect = async (
   businessManagerCode: string,
   prospect: IProspect | ITableFinancialObligationsProps[],
   token: string,
+  xUserName: string,
 ): Promise<IProspect | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -26,6 +27,7 @@ export const updateProspect = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
+          "X-User-Name": xUserName,
           Authorization: token,
         },
         signal: controller.signal,
@@ -54,7 +56,6 @@ export const updateProspect = async (
       }
 
       return data;
-
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
