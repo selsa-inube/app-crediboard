@@ -326,6 +326,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         extraordinaryInstallments,
         businessUnitPublicCode,
         eventData.token || "",
+        eventData.user.identificationDocumentNumber || "",
       );
 
       if (extraordinaryInstallments === null) {
@@ -386,7 +387,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       const calculatedSeries = await calculateSeriesForExtraordinaryInstallment(
         businessUnitPublicCode,
         eventData.token || "",
-        eventData.user.userName,
+        eventData.user.identificationDocumentNumber || "",
         calculationBody,
       );
 

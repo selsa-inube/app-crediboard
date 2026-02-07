@@ -140,7 +140,7 @@ export function DecisionModal(props: DecisionModalProps) {
       const response = await makeDecisions(
         data.businessUnit,
         businessManagerCode,
-        data.user,
+        eventData.user.identificationDocumentNumber || "",
         makeDecisionsPayload as IMakeDecisionsCreditRequest,
         data.xAction,
         eventData.token,

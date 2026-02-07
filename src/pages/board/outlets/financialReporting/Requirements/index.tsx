@@ -377,6 +377,7 @@ export const Requirements = (props: IRequirementsProps) => {
       businessManagerCode,
       creditRequests,
       eventData.token || "",
+      eventData.user.identificationDocumentNumber || "",
     )
       .then(() => {
         setSentData(creditRequests);

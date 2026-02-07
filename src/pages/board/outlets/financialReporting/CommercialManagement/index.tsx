@@ -192,7 +192,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
           businessUnitPublicCode,
           businessManagerCode,
           creditRequestCode,
-          userAccount,
+          eventData.user.identificationDocumentNumber || "",
           eventData.token || "",
         );
         setRequests(data[0] as ICreditRequest);

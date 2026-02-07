@@ -145,7 +145,7 @@ export const FinancialReporting = () => {
       businessUnitPublicCode,
       businessManagerCode,
       creditRequestCode!,
-      userAccount,
+      eventData.user.identificationDocumentNumber || "",
       eventData.token || "",
     )
       .then((data) => {
@@ -160,6 +160,7 @@ export const FinancialReporting = () => {
     userAccount,
     businessManagerCode,
     eventData.token,
+    eventData.user.identificationDocumentNumber,
   ]);
 
   const fetchAndShowDocuments = async () => {
@@ -325,7 +326,7 @@ export const FinancialReporting = () => {
     try {
       await lateRejectionOfACreditRequest(
         data?.creditRequestId || "",
-        user?.id || "",
+        eventData.user.identificationDocumentNumber || "",
         businessUnitPublicCode,
         businessManagerCode,
         "RECHAZAR_SOLICITUD",
@@ -359,7 +360,7 @@ export const FinancialReporting = () => {
           data?.creditRequestId ?? "",
           businessUnitPublicCode,
           businessManagerCode,
-          user?.id ?? "",
+          eventData.user.identificationDocumentNumber || "",
           eventData.token || "",
         );
       } finally {

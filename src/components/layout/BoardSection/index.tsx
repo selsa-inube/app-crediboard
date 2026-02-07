@@ -163,6 +163,7 @@ function BoardSection(props: BoardSectionProps) {
         businessUnitPublicCode,
         businessManagerCode,
         eventData.token,
+        eventData.user.identificationDocumentNumber || "",
       );
     } catch (error) {
       setMessageError(

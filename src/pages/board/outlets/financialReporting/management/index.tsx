@@ -82,7 +82,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         businessUnitPublicCode,
         businessManagerCode,
         id,
-        userAccount,
+        eventData.user.identificationDocumentNumber || "",
         eventData.token || "",
       );
       setCreditRequest(data[0] as ICreditRequest);
@@ -93,10 +93,10 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   }, [
     businessUnitPublicCode,
     id,
-    userAccount,
     notifyError,
     businessManagerCode,
     eventData.token,
+    eventData.user.identificationDocumentNumber,
   ]);
 
   useEffect(() => {

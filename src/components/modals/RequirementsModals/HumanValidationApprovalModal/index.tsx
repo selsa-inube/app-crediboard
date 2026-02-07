@@ -116,6 +116,7 @@ export function HumanValidationApprovalModal(
           businessManagerCode,
           payload,
           eventData.token || "",
+          eventData.user.identificationDocumentNumber || "",
         );
 
         if (onConfirm) {

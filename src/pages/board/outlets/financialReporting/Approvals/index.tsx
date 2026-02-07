@@ -53,9 +53,6 @@ export const Approvals = (props: IApprovalsProps) => {
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
-  const { userAccount } =
-    typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
-
   const businessManagerCode = eventData.businessManager.publicCode;
 
   const fetchCreditRequest = useCallback(async () => {
@@ -64,7 +61,7 @@ export const Approvals = (props: IApprovalsProps) => {
         businessUnitPublicCode,
         businessManagerCode,
         id,
-        userAccount,
+        eventData.user.identificationDocumentNumber || "",
         eventData.token || "",
       );
       setRequests(data[0] as ICreditRequest);
@@ -78,9 +75,9 @@ export const Approvals = (props: IApprovalsProps) => {
   }, [
     businessUnitPublicCode,
     id,
-    userAccount,
     businessManagerCode,
     eventData.token,
+    eventData.user.identificationDocumentNumber,
   ]);
 
   useEffect(() => {
@@ -165,6 +162,7 @@ export const Approvals = (props: IApprovalsProps) => {
           creditRequestId: requests?.creditRequestId ?? "",
         },
         eventData.token,
+        eventData?.user.identificationDocumentNumber || "",
       );
 
       addFlag({
