@@ -199,52 +199,6 @@ function EditProductModal(props: EditProductModalProps) {
     }));
   }, [enums, lang]);
 
-  //   const loadAmortizationTypes = async () => {
-  //     setIsLoadingAmortizationTypes(true);
-
-  //     if (!moneyDestination) return;
-  //     setIsLoadingAmortizationTypes(true);
-
-  //     try {
-  //       const payload: IBusinessUnitRules = {
-  //         ruleName: "RepaymentStructure",
-  //         conditions: [],
-  //       };
-
-  //       const response = await postBusinessUnitRules(
-  //         businessUnitPublicCode,
-  //         businessManagerCode,
-  //         payload,
-  //         eventData.token || "",
-  //       );
-
-  //       const decisions = response as unknown as IRuleDecision[];
-
-  //       if (decisions && Array.isArray(decisions) && decisions.length > 0) {
-  //         const options = decisions
-  //           .filter((decision) => typeof decision.value === "string")
-  //           .map((decision, index) => ({
-  //             id: decision.decisionId || `${index}`,
-  //             value: decision.value as string,
-  //             label:
-  //               repaymentStructureMap[decision.value as string] ||
-  //               (decision.value as string),
-  //           }));
-  //         setAmortizationTypesList(options);
-  //       } else {
-  //         setAmortizationTypesList(amortizationTypeOptions);
-  //       }
-  //     } catch (error) {
-  //       setAmortizationTypesList(amortizationTypeOptions);
-  //     } finally {
-  //       setIsLoadingAmortizationTypes(false);
-  //       isLoadingAmortizationTypes;
-  //     }
-  //   };
-
-  //   loadAmortizationTypes();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
   const isLoading = !enums;
 
   const isCreditAmountDisabled = (): boolean => {

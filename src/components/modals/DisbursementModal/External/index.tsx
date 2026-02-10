@@ -3,6 +3,7 @@ import { Stack, Grid } from "@inubekit/inubekit";
 import { currencyFormat } from "@utils/formatData/currency";
 import { CardGray } from "@components/cards/CardGray";
 import { formatPrimaryDate } from "@utils/formatData/date";
+import { IAllEnumsResponse } from "@services/enumerators/types";
 
 import {
   formatObservation,
@@ -15,7 +16,6 @@ import {
   disbursemenOptionAccountEnum,
 } from "../config";
 import { dataTabsDisbursement } from "../types";
-import { IAllEnumsResponse } from "@services/enumerators/types";
 
 export interface IDisbursement {
   isMobile: boolean;
