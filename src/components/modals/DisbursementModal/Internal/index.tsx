@@ -4,8 +4,17 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { CardGray } from "@components/cards/CardGray";
 import { formatPrimaryDate } from "@utils/formatData/date";
 
-import { formatObservation, formatYesNo, formatBiologicalSex, capitalizeFirstLetter } from "../EditDisburment/utils";
-import { disbursementGeneralEnum, disbursemenOptionAccountEnum } from "../config";
+import {
+  formatObservation,
+  formatYesNo,
+  formatBiologicalSex,
+  capitalizeFirstLetter,
+  formatNoData,
+} from "../EditDisburment/utils";
+import {
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum,
+} from "../config";
 import { dataTabsDisbursement } from "../types";
 
 export interface IDisbursement {
@@ -16,6 +25,7 @@ export interface IDisbursement {
 
 export function DisbursementInternal(props: IDisbursement) {
   const { isMobile, data, lang } = props;
+  console.log(data);
   return (
     <Stack
       direction="column"
@@ -76,6 +86,14 @@ export function DisbursementInternal(props: IDisbursement) {
         <CardGray
           label={disbursemenOptionAccountEnum.labelAccount.i18n[lang]}
           placeHolder={`${data.accountNumber} - ${data.accountType} - ${data.accountBankName}`}
+        />
+        <CardGray
+          label={disbursemenOptionAccountEnum.paymentOrderReference.i18n[lang]}
+          placeHolder={formatNoData(data.paymentOrderReference)}
+        />
+        <CardGray
+          label={disbursemenOptionAccountEnum.disbursemerntRefernce.i18n[lang]}
+          placeHolder={formatNoData(data.disbursementReference)}
         />
       </Grid>
       <CardGray

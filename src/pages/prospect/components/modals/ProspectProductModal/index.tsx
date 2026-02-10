@@ -8,7 +8,7 @@ import {
   Select,
   Textfield,
 } from "@inubekit/inubekit";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
@@ -38,13 +38,9 @@ import { capitalizeFirstLetter } from "@utils/formatData/text";
 import { ScrollableContainer } from "./styles";
 import {
   termInMonthsOptions,
-  amortizationTypeOptions,
-  rateTypeOptions,
   paymentCycleMap,
-  interestRateTypeMap,
   editProductModalLabels,
   defaultPaymentOptions,
-  repaymentStructureMap,
   validationMessagesEnum,
   REPAYMENT_STRUCTURES_WITH_INCREMENT,
   fieldLabelsEnum,
@@ -82,11 +78,6 @@ interface IRuleDecision {
   effectiveFrom?: string;
   validUntil?: string;
 }
-interface SelectOption {
-  id: string;
-  value: string;
-  label: string;
-}
 
 function EditProductModal(props: EditProductModalProps) {
   const {
@@ -104,7 +95,7 @@ function EditProductModal(props: EditProductModalProps) {
     onProspectUpdate,
     creditProductCode,
   } = props;
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
 
   const [showIncrementField, setShowIncrementField] = useState<boolean>(false);
   const [incrementType, setIncrementType] = useState<
@@ -132,35 +123,7 @@ function EditProductModal(props: EditProductModalProps) {
   >([]);
 
   const [loanTermError, setLoanTermError] = useState<string>("");
-  const [amortizationTypesList, setAmortizationTypesList] = useState<
-    SelectOption[]
-  >([
-    {
-      id: "1",
-      value: "cuota_integral_fija",
-      label: "Cuota integral fija",
-    },
-    {
-      id: "2",
-      value: "abonos_fijos_capital",
-      label: "Abonos fijos a capital",
-    },
-    {
-      id: "3",
-      value: "Pagos valor de incremento",
-      label: "Pagos valor de incremento",
-    },
-    {
-      id: "4",
-      value: "Pagos con porcentaje de incremento",
-      label: "Pagos con porcentaje de incremento",
-    },
-  ]);
-  const [isLoadingAmortizationTypes, setIsLoadingAmortizationTypes] =
-    useState(false);
   const [interestRateError, setInterestRateError] = useState<string>("");
-  const [rateTypesList, setRateTypesList] = useState<SelectOption[]>([]);
-  const [isLoadingRateTypes, setIsLoadingRateTypes] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const isMobile = useMediaQuery("(max-width: 550px)");
@@ -216,108 +179,27 @@ function EditProductModal(props: EditProductModalProps) {
     initialValues.creditLine,
     lang,
   ]);
+  const amortizationTypesList = useMemo(() => {
+    if (!enums?.RepaymentStructure) return [];
 
-  useEffect(() => {
-    const loadAmortizationTypes = async () => {
-      setIsLoadingAmortizationTypes(true);
+    return enums.RepaymentStructure.map((item) => ({
+      id: item.code,
+      value: item.code,
+      label: item.i18n[lang] || item.description || item.code,
+    }));
+  }, [enums, lang]);
 
-      if (!moneyDestination) return;
-      setIsLoadingAmortizationTypes(true);
+  const rateTypesList = useMemo(() => {
+    if (!enums?.InterestRateType) return [];
 
-      try {
-        const payload: IBusinessUnitRules = {
-          ruleName: "RepaymentStructure",
-          conditions: [],
-        };
+    return enums.InterestRateType.map((item) => ({
+      id: item.code,
+      value: item.code,
+      label: item.i18n[lang] || item.description || item.code,
+    }));
+  }, [enums, lang]);
 
-        const response = await postBusinessUnitRules(
-          businessUnitPublicCode,
-          businessManagerCode,
-          payload,
-          eventData.token || "",
-        );
-
-        const decisions = response as unknown as IRuleDecision[];
-
-        if (decisions && Array.isArray(decisions) && decisions.length > 0) {
-          const options = decisions
-            .filter((decision) => typeof decision.value === "string")
-            .map((decision, index) => ({
-              id: decision.decisionId || `${index}`,
-              value: decision.value as string,
-              label:
-                repaymentStructureMap[decision.value as string] ||
-                (decision.value as string),
-            }));
-          setAmortizationTypesList(options);
-        } else {
-          setAmortizationTypesList(amortizationTypeOptions);
-        }
-      } catch (error) {
-        setAmortizationTypesList(amortizationTypeOptions);
-      } finally {
-        setIsLoadingAmortizationTypes(false);
-        isLoadingAmortizationTypes;
-      }
-    };
-
-    loadAmortizationTypes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, businessManagerCode, moneyDestination]);
-
-  useEffect(() => {
-    const loadRateTypes = async () => {
-      setIsLoadingRateTypes(true);
-
-      try {
-        const payload: IBusinessUnitRules = {
-          ruleName: "InterestRateType",
-          conditions: [
-            {
-              condition: "MoneyDestination",
-              value: moneyDestination,
-            },
-          ],
-        };
-
-        const response = await postBusinessUnitRules(
-          businessUnitPublicCode,
-          businessManagerCode,
-          payload,
-          eventData.token || "",
-        );
-
-        const decisions = response as unknown as IRuleDecision[];
-
-        if (decisions && Array.isArray(decisions) && decisions.length > 0) {
-          const options = decisions
-            .filter((decision) => typeof decision.value === "string")
-            .map((decision, index) => ({
-              id: decision.decisionId || `${index}`,
-              value: decision.value as string,
-              label:
-                interestRateTypeMap[decision.value as string] ||
-                (decision.value as string),
-            }));
-          setRateTypesList(options);
-        } else {
-          setRateTypesList(rateTypeOptions);
-        }
-      } catch (error) {
-        console.error("Error cargando tipos de tasa:", error);
-        setRateTypesList(rateTypeOptions);
-      } finally {
-        setIsLoadingRateTypes(false);
-      }
-    };
-
-    loadRateTypes();
-  }, [
-    businessUnitPublicCode,
-    businessManagerCode,
-    moneyDestination,
-    eventData.token,
-  ]);
+  const isLoading = !enums;
 
   const isCreditAmountDisabled = (): boolean => {
     return termInMonthsModified;
@@ -771,6 +653,7 @@ function EditProductModal(props: EditProductModalProps) {
   } else {
     incrementValuesStatus = undefined;
   }
+
   return (
     <>
       <Formik
@@ -892,7 +775,7 @@ function EditProductModal(props: EditProductModalProps) {
                   onChange={(name, value) =>
                     handleAmortizationTypeChange(formik, name, value)
                   }
-                  disabled={isLoadingAmortizationTypes}
+                  disabled={isLoading}
                   value={formik.values.amortizationType}
                   fullwidth
                 />
@@ -993,7 +876,7 @@ function EditProductModal(props: EditProductModalProps) {
                   onFocus={() => handleSelectFocus("rateType")}
                   value={formik.values.rateType}
                   fullwidth
-                  disabled={isLoadingRateTypes}
+                  disabled={isLoading}
                 />
                 <Textfield
                   label={simulationFormLabels.installmentAmountLabel.i18n["es"]}

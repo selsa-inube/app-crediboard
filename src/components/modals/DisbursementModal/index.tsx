@@ -47,7 +47,7 @@ export function DisbursementModal(
   } = props;
 
   const [error] = useState(false);
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
 
   const availableTabs = dataTabsEnum
     .filter((tab) => {
@@ -182,6 +182,7 @@ export function DisbursementModal(
                 isMobile={isMobile}
                 data={data.external}
                 lang={lang}
+                enums={enums}
               />
             )}
             {currentTab === "CheckEntity" && (

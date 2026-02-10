@@ -207,7 +207,7 @@ function AppPage() {
 
   return (
     <StyledAppPage>
-      <Grid templateRows="auto auto 1fr" height="100vh" justifyContent="unset">
+      <Grid templateRows="auto 1fr" height="100vh" justifyContent="unset">
         <StyledPrint>
           <StyledHeaderContainer>
             <Header

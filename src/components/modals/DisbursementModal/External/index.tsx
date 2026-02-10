@@ -3,19 +3,29 @@ import { Stack, Grid } from "@inubekit/inubekit";
 import { currencyFormat } from "@utils/formatData/currency";
 import { CardGray } from "@components/cards/CardGray";
 import { formatPrimaryDate } from "@utils/formatData/date";
+import { IAllEnumsResponse } from "@services/enumerators/types";
 
-import { formatObservation, formatYesNo, formatBiologicalSex, capitalizeFirstLetter } from "../EditDisburment/utils";
-import { disbursementGeneralEnum, disbursemenOptionAccountEnum } from "../config";
+import {
+  formatObservation,
+  formatYesNo,
+  formatBiologicalSex,
+  capitalizeFirstLetter,
+} from "../EditDisburment/utils";
+import {
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum,
+} from "../config";
 import { dataTabsDisbursement } from "../types";
 
 export interface IDisbursement {
   isMobile: boolean;
   data: dataTabsDisbursement;
   lang: "es" | "en";
+  enums: IAllEnumsResponse | null;
 }
 
 export function DisbursementExternal(props: IDisbursement) {
-  const { isMobile, data, lang } = props;
+  const { isMobile, data, lang, enums } = props;
   return (
     <Stack
       direction="column"
@@ -78,7 +88,10 @@ export function DisbursementExternal(props: IDisbursement) {
         />
         <CardGray
           label={disbursemenOptionAccountEnum.labelAccountType.i18n[lang]}
-          placeHolder={data.accountType}
+          placeHolder={
+            enums?.AccountType?.find((item) => item.code === data.accountType)
+              ?.i18n[lang] ?? data.accountType
+          }
         />
         <CardGray
           label={disbursemenOptionAccountEnum.labelAccountNumber.i18n[lang]}
