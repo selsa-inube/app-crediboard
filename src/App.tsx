@@ -17,8 +17,8 @@ import { initializeDataDB } from "@mocks/utils/initializeDataDB";
 import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
 import { useIAuth } from "@inube/iauth-react";
-import { EnumProvider } from "@context/enumContext";
 import { AuthProvider } from "@pages/AuthProvider";
+import { EnumProvider } from "@context/enumProvider";
 
 function LogOut() {
   sessionStorage.clear();
@@ -83,8 +83,8 @@ const router = createBrowserRouter(
       <Route path="login/*" element={<LoginRoutes />} />
       <Route path="/*" element={<BoardRoutes />} />
       <Route path="logout" element={<LogOut />} />
-    </>
-  )
+    </>,
+  ),
 );
 
 function App() {
