@@ -1,5 +1,5 @@
-import { useContext } from "react";
 import { EnumContext } from "@context/enumContext";
+import { useContext } from "react";
 
 export type EnumType = "en" | "es";
 
@@ -10,4 +10,3 @@ export function useEnum() {
   }
   return context;
 }
- 

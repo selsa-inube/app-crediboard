@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useContext } from "react";
-import { Text, useFlag } from "@inubekit/inubekit";
+import { Tag, Text, useFlag } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { Fieldset } from "@components/data/Fieldset";
@@ -28,6 +28,7 @@ import { useEnum } from "@hooks/useEnum";
 
 import { errorObserver, errorMessagesEnum } from "../config";
 import { dataInfoApprovalsEnum } from "./config";
+import { appearanceTag } from "../PromissoryNotes/config";
 
 interface IApprovalsProps {
   user: string;
@@ -39,7 +40,7 @@ interface IApprovalsProps {
 
 export const Approvals = (props: IApprovalsProps) => {
   const { isMobile, id, setApprovalsEntries, approvalsEntries } = props;
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -97,11 +98,29 @@ export const Approvals = (props: IApprovalsProps) => {
       );
       if (data && Array.isArray(data)) {
         const entries: IEntries[] = entriesApprovals(data, lang).map(
-          (entry) => ({
-            ...entry,
-            error: entry.concept === "Pendiente",
-          }),
+          (entry) => {
+            const originalCode = entry.concept;
+
+            const conceptEnum = enums?.DmConceptos?.find(
+              (item) => item.code === originalCode,
+            );
+
+            const resolvedValue = conceptEnum?.i18n[lang] ?? entry.concept;
+
+            return {
+              ...entry,
+              concept: resolvedValue,
+              tag: (
+                <Tag
+                  label={resolvedValue}
+                  appearance={appearanceTag(originalCode)}
+                />
+              ),
+              error: originalCode === "Pendiente",
+            };
+          },
         );
+
         setApprovalsEntries(entries);
       }
     } catch (error) {
@@ -115,7 +134,12 @@ export const Approvals = (props: IApprovalsProps) => {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessUnitPublicCode, requests?.creditRequestId, businessManagerCode]);
+  }, [
+    businessUnitPublicCode,
+    requests?.creditRequestId,
+    businessManagerCode,
+    enums,
+  ]);
 
   useEffect(() => {
     fetchApprovalsData();
@@ -174,7 +198,6 @@ export const Approvals = (props: IApprovalsProps) => {
       setShowNotificationModal(false);
     } catch (error) {
       setShowNotificationModal(false);
-
       setErrorMessage(dataInfoApprovalsEnum.error.i18n[lang]);
       setErrorModal(true);
     }
