@@ -6,8 +6,12 @@ import { IDisbursementFlowManagerProps } from ".";
 export const mapModeDataToForm = (modeData: IModeOfDisbursement) => {
   return {
     ...modeData,
-    amount: modeData.disbursementAmount ? Number(modeData.disbursementAmount) : 0,
-    toggle: modeData.isInTheNameOfBorrower === "Y" || modeData.isInTheNameOfBorrower === "true",
+    amount: modeData.disbursementAmount
+      ? Number(modeData.disbursementAmount)
+      : 0,
+    toggle:
+      modeData.isInTheNameOfBorrower === "Y" ||
+      modeData.isInTheNameOfBorrower === "true",
     check: Number(modeData.disbursementAmount) > 0,
     name: modeData.payeeName || "",
     lastName: modeData.payeeSurname || "",
@@ -26,9 +30,8 @@ export const mapModeDataToForm = (modeData: IModeOfDisbursement) => {
 };
 
 export const mapModesToFormikInitialValues = (
-  modes: IDisbursementFlowManagerProps["initialDisbursementData"]
+  modes: IDisbursementFlowManagerProps["initialDisbursementData"],
 ): IDisbursementGeneral => {
-
   const getAmount = (data: IModeOfDisbursement | null) =>
     data && data.disbursementAmount ? Number(data.disbursementAmount) : 0;
 
@@ -43,8 +46,12 @@ export const mapModesToFormikInitialValues = (
     amount: totalAmount,
     Internal_account: modes.internal ? mapModeDataToForm(modes.internal) : {},
     External_account: modes.external ? mapModeDataToForm(modes.external) : {},
-    Certified_check: modes.checkEntity ? mapModeDataToForm(modes.checkEntity) : {},
-    Business_check: modes.checkManagement ? mapModeDataToForm(modes.checkManagement) : {},
+    Certified_check: modes.checkEntity
+      ? mapModeDataToForm(modes.checkEntity)
+      : {},
+    Business_check: modes.checkManagement
+      ? mapModeDataToForm(modes.checkManagement)
+      : {},
     Cash: modes.cash ? mapModeDataToForm(modes.cash) : {},
   } as IDisbursementGeneral;
 };
@@ -57,11 +64,9 @@ export const DataToTabIdMap: Record<string, string> = {
   Cash: "Cash",
 };
 
-
 export const formatYesNo = (value: string | undefined | null): string => {
   return value === "Y" ? "Sí" : "No";
 };
-
 
 export const formatObservation = (value: string | undefined | null): string => {
   if (!value || value.trim() === "") {
@@ -70,7 +75,16 @@ export const formatObservation = (value: string | undefined | null): string => {
   return value;
 };
 
-export const formatBiologicalSex = (value: string | undefined | null): string => {
+export const formatNoData = (value: string | undefined | null): string => {
+  if (!value || value.trim() === "") {
+    return "No se ha generado ";
+  }
+  return value;
+};
+
+export const formatBiologicalSex = (
+  value: string | undefined | null,
+): string => {
   if (value === "F") return "Femenino";
   if (value === "M") return "Masculino";
   return value || "";
@@ -79,7 +93,7 @@ export const formatBiologicalSex = (value: string | undefined | null): string =>
 export const capitalizeFirstLetter = (string: string): string => {
   if (!string) return string;
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
+};
 
 export const mapDataIdToTabId = (dataId: string): string => {
   const map: Record<string, string> = {

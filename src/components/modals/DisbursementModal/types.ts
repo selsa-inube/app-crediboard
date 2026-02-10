@@ -10,6 +10,8 @@ export interface dataTabsDisbursement {
   payeePhoneNumber: string;
   payeeEmail: string;
   payeeCityOfResidence: string;
+  paymentOrderReference: string;
+  disbursementReference: string;
   accountBankName: string;
   accountType: string;
   accountNumber: string;
@@ -17,13 +19,16 @@ export interface dataTabsDisbursement {
 }
 
 export type FormAccountType =
-  | IDisbursementGeneral['Internal_account']
-  | IDisbursementGeneral['External_account']
-  | IDisbursementGeneral['Cash']
-  | IDisbursementGeneral['Certified_check']
-  | IDisbursementGeneral['Business_check'];
+  | IDisbursementGeneral["Internal_account"]
+  | IDisbursementGeneral["External_account"]
+  | IDisbursementGeneral["Cash"]
+  | IDisbursementGeneral["Certified_check"]
+  | IDisbursementGeneral["Business_check"];
 
-export type DisbursementAccountKeys = Exclude<keyof IDisbursementGeneral, "amount">;
+export type DisbursementAccountKeys = Exclude<
+  keyof IDisbursementGeneral,
+  "amount"
+>;
 
 export interface IDisbursementGeneral {
   amount: number;

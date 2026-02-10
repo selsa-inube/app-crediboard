@@ -314,6 +314,8 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     accountType: "",
     accountNumber: "",
     observation: "",
+    paymentOrderReference: "",
+    disbursementReference: "",
   };
 
   const onChangesReportCredit = (name: string, newValue: string) => {
@@ -553,7 +555,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       ) || [],
     ),
   ];
-
+  console.log(disbursementData, "disbursementData");
   return (
     <>
       <Fieldset

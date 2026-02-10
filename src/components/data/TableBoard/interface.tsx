@@ -1,8 +1,4 @@
-import {
-  MdOutlineInfo,
-  MdOutlineHowToReg,
-  MdWarningAmber,
-} from "react-icons/md";
+import { MdOutlineInfo, MdWarningAmber } from "react-icons/md";
 import { Icon, Text, SkeletonLine, Stack } from "@inubekit/inubekit";
 
 import { InfoModal } from "@components/modals/InfoModal";
@@ -110,7 +106,7 @@ const actionsLoading = (numberActions: number) => {
     cellsOfActionsLoading.push(
       <StyledTd key={cellAction}>
         <SkeletonLine animated />
-      </StyledTd>
+      </StyledTd>,
     );
   }
   return cellsOfActionsLoading;
@@ -127,7 +123,7 @@ const dataLoading = (filteredTitles: ITitle[], numberActions: number) => {
           </StyledTd>
         ))}
         {actionsLoading(numberActions)}
-      </StyledTr>
+      </StyledTr>,
     );
   }
   return rowsLoading;
@@ -200,7 +196,6 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
     isFirstTable,
     infoItems,
     hideSecondColumnOnMobile = true,
-    showUserIconOnTablet = true,
     enableStickyActions = true,
     showPendingWarningIcon = false,
     isModalOpen,
@@ -315,17 +310,6 @@ export const TableBoardUI = (props: ITableBoardUIProps) => {
                                 )}
                             </Stack>
                           )}
-                          <Stack padding="0px 4px">
-                            {titleIndex === 1 && showUserIconOnTablet && (
-                              <Icon
-                                appearance="gray"
-                                size="32px"
-                                spacing="compact"
-                                variant="empty"
-                                icon={<MdOutlineHowToReg />}
-                              />
-                            )}
-                          </Stack>
                         </Stack>
                       </Stack>
                     </StyledTd>
