@@ -518,7 +518,6 @@ const generateTag = (value: string, lang: EnumType): JSX.Element => {
     "FAILED_SYSTEM_VALIDATION",
     "FAILED_DOCUMENT_VALIDATION",
     "FAILED_HUMAN_VALIDATION",
-    "UNVALIDATED_SYSTEM_VALIDATION",
   ].includes(value);
 
   if (isPassed)
