@@ -90,7 +90,7 @@ export function DocumentValidationApprovalModal(
     () =>
       Object.values(optionsAnswerEnum).map((option) => ({
         id: option.id,
-        value: option.value,
+        value: option.i18n[lang],
         label: option.i18n[lang],
       })),
     [lang],
