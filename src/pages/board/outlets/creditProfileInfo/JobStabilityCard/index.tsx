@@ -45,6 +45,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
         businessUnitPublicCode,
         businessManagerCode,
         requests.clientIdentificationNumber,
+        requests.creditRequestId || "",
         eventData.token || "",
       );
       setLaborStabilityByCustomerId(data);

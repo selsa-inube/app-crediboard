@@ -62,6 +62,7 @@ export function RiskScoring(props: RiskScoringProps) {
         businessUnitPublicCode,
         businessManagerCode,
         requests.clientIdentificationNumber,
+        requests.creditRequestId || "",
         eventData.token,
       );
       setData(response);
@@ -82,6 +83,7 @@ export function RiskScoring(props: RiskScoringProps) {
           businessUnitPublicCode,
           businessManagerCode,
           requests.clientIdentificationNumber,
+          requests.creditRequestId || "",
           eventData.token,
         );
         setData(response);
@@ -99,6 +101,7 @@ export function RiskScoring(props: RiskScoringProps) {
     businessUnitPublicCode,
     requests.clientIdentificationNumber,
     businessManagerCode,
+    requests.creditRequestId,
     eventData.token,
   ]);
 

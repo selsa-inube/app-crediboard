@@ -300,7 +300,6 @@ export const CreditProfileInfo = () => {
             businessUnitPublicCode={businessUnitPublicCode}
             businessManagerCode={businessManagerCode}
             creditRequestId={requests.creditRequestId!}
-            prospectCode={requests.creditRequestCode!}
             eventData={eventData}
           />
           <CreditBehavior

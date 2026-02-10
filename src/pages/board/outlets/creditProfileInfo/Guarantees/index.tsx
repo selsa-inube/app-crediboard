@@ -10,14 +10,17 @@ import { getGuaranteesSummary } from "@services/creditRequest/query/guaranteesSu
 import { IGuaranteesSummary } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 
-import { dataGuaranteesEnum, guaranteesLabelsEnum } from "./config";
+import {
+  dataGuaranteesEnum,
+  guaranteesLabelsEnum,
+  getGuaranteesTranslations,
+} from "./config";
 import { ICrediboardData } from "@context/AppContext/types";
 
 interface GuaranteesProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
   creditRequestId: string;
-  prospectCode: string;
   eventData: ICrediboardData;
   isMobile?: boolean;
 }
@@ -27,7 +30,6 @@ export function Guarantees(props: GuaranteesProps) {
     businessUnitPublicCode,
     businessManagerCode,
     creditRequestId,
-    prospectCode,
     eventData,
     isMobile,
   } = props;
@@ -44,7 +46,6 @@ export function Guarantees(props: GuaranteesProps) {
         businessUnitPublicCode,
         businessManagerCode,
         creditRequestId,
-        prospectCode,
         eventData.token || "",
       );
       setGuaranteesSummary(data);
@@ -97,7 +98,10 @@ export function Guarantees(props: GuaranteesProps) {
               size={isMobile ? "small" : "medium"}
               weight="bold"
             >
-              {guaranteesSummary?.requiredGuarantees}
+              {getGuaranteesTranslations(
+                guaranteesSummary?.requiredGuarantees || [],
+                lang,
+              ).join(", ")}
             </Text>
           </Stack>
           <StyledDivider />
@@ -111,7 +115,10 @@ export function Guarantees(props: GuaranteesProps) {
               size={isMobile ? "small" : "medium"}
               weight="bold"
             >
-              {guaranteesSummary?.offeredGuarantees}
+              {getGuaranteesTranslations(
+                guaranteesSummary?.offeredGuarantees || [],
+                lang,
+              ).join(", ")}
             </Text>
           </Stack>
           <StyledDivider />
@@ -125,7 +132,10 @@ export function Guarantees(props: GuaranteesProps) {
               size={isMobile ? "small" : "medium"}
               weight="bold"
             >
-              {guaranteesSummary?.activeGuarantees}
+              {getGuaranteesTranslations(
+                guaranteesSummary?.activeGuarantees || [],
+                lang,
+              ).join(", ")}
             </Text>
           </Stack>
         </Stack>
