@@ -8,7 +8,8 @@ import { ICreditRepayamentBehavior } from "../types";
 export const getCreditRepayamentBehavior = async (
   businessUnitPublicCode: string,
   customerIdentificationNumber: string,
-  token: string
+  creditRequestId: string,
+  token: string,
 ): Promise<ICreditRepayamentBehavior | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -22,13 +23,13 @@ export const getCreditRepayamentBehavior = async (
           "X-Action": "GetCreditRepayamentBehavior",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          Authorization: token
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/${customerIdentificationNumber}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/repayment-behavior/${customerIdentificationNumber}/${creditRequestId}`,
         options,
       );
 

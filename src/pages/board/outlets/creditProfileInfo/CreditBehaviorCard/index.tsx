@@ -36,6 +36,7 @@ export function CreditBehavior(props: CreditBehaviorProps) {
     const response = await getCreditRepayamentBehavior(
       businessUnitPublicCode,
       requests.clientIdentificationNumber,
+      requests.creditRequestId || "",
       eventData.token,
     );
 

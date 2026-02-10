@@ -9,6 +9,7 @@ const getLaborStabilityByCustomerId = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   customerIdentificationNumber: string,
+  creditRequestId: string,
   token: string,
 ): Promise<ILaborStabilityByCustomerId[]> => {
   const maxRetries = maxRetriesServices;
@@ -32,7 +33,7 @@ const getLaborStabilityByCustomerId = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/labor-stability/${customerIdentificationNumber}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/labor-stability/${customerIdentificationNumber}/${creditRequestId}`,
         options,
       );
 

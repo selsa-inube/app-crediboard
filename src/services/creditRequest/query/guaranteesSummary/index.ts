@@ -9,7 +9,6 @@ export const getGuaranteesSummary = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   creditRequestId: string,
-  prospectCode: string,
   token: string,
 ): Promise<IGuaranteesSummary | null> => {
   const maxRetries = maxRetriesServices;
@@ -32,7 +31,7 @@ export const getGuaranteesSummary = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/guarantees-summary/${creditRequestId}/${prospectCode}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/guarantees-summary/${creditRequestId}`,
         options,
       );
 

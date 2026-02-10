@@ -25,7 +25,7 @@ interface PaymentCapacityProps {
   retryDelay?: number;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
-   eventData: ICrediboardData;
+  eventData: ICrediboardData;
 }
 
 export function PaymentCapacity(props: PaymentCapacityProps) {
@@ -52,7 +52,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
 
   const fetchPaymentCapacity = async (
     currentRetryCount = 0,
-    requestId = currentRequestId + 1
+    requestId = currentRequestId + 1,
   ) => {
     if (!requests.clientIdentificationNumber) return;
 
@@ -65,7 +65,8 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
         businessUnitPublicCode,
         businessManagerCode,
         requests.clientIdentificationNumber,
-        eventData.token
+        requests.creditRequestId || "",
+        eventData.token,
       );
 
       if (requestId !== currentRequestId + 1) return;
@@ -106,7 +107,7 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
       businessUnitPublicCode,
       requests.clientIdentificationNumber,
       businessManagerCode,
-    ]
+    ],
   );
 
   const availablePercentageDecimal = data?.availablePaymentPercentageRate ?? 0;
@@ -123,8 +124,12 @@ export function PaymentCapacity(props: PaymentCapacityProps) {
         <ItemNotFound
           image={userNotFound}
           title={dataPaymentCapacityEnum.itemNotFoundTitle.i18n[lang]}
-          description={dataPaymentCapacityEnum.itemNotFoundDescription.i18n[lang]}
-          buttonDescription={dataPaymentCapacityEnum.itemNotFoundButton.i18n[lang]}
+          description={
+            dataPaymentCapacityEnum.itemNotFoundDescription.i18n[lang]
+          }
+          buttonDescription={
+            dataPaymentCapacityEnum.itemNotFoundButton.i18n[lang]
+          }
           route="#"
           onRetry={handleRetry}
         />

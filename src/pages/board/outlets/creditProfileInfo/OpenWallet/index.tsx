@@ -61,6 +61,7 @@ export function OpenWallet(props: OpenWalletProps) {
         businessUnitPublicCode,
         businessManagerCode,
         requests.clientIdentificationNumber,
+        requests.creditRequestId || "",
         eventData.token,
       );
 
