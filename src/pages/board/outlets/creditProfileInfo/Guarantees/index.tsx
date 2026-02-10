@@ -71,8 +71,6 @@ export function Guarantees(props: GuaranteesProps) {
     [businessUnitPublicCode, businessManagerCode, creditRequestId],
   );
 
-  console.log("guaranteesSummary", guaranteesSummary);
-
   return (
     <CardInfoContainer
       title={guaranteesLabelsEnum.title.i18n[lang]}
