@@ -75,8 +75,8 @@ export function SystemValidationApprovalModal(
         const payload = {
           modifyJustification: "Status change",
           nextStatusValue: formik.values.toggleChecked
-            ? getRequirementCode("UNVALIDATED_SYSTEM_VALIDATION")
-            : getRequirementCode("IGNORED_BY_THE_USER_SYSTEM_VALIDATION"),
+            ? getRequirementCode("IGNORED_BY_THE_USER_SYSTEM_VALIDATION")
+            : getRequirementCode("UNVALIDATED_SYSTEM_VALIDATION"),
           packageId: rawRequirements[0].packageId,
           requirementByPackageId: requirementByPackageId,
           statusChangeJustification: formik.values.observations,
