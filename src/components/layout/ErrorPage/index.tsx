@@ -50,7 +50,7 @@ const ListContent = ({ items }: { items: string[] }) => (
 function ErrorPage(props: ErrorPageProps) {
   const {
     logo = selsaLogo,
-    logoAlt = "Sistemas Enlinea",
+    logoAlt = "Logo del Operador",
     heading = "¡Ups! Algo salió mal...",
     image = errorImage,
     imageAlt = "Ha surgido un error. Revisa la descripción",
@@ -65,12 +65,12 @@ function ErrorPage(props: ErrorPageProps) {
   const queriesMatches = matches["(max-width: 600px)"];
   const { lang } = useEnum();
 
- const errorEntry = errorCodesEnum[errorCode as keyof typeof errorCodesEnum];
+  const errorEntry = errorCodesEnum[errorCode as keyof typeof errorCodesEnum];
 
   const whatWentWrongItems = errorEntry?.whatWentWrong.i18n[lang] || [
     staticTranslations.fallbackError[lang],
   ];
-  
+
   const howToFixItems = errorEntry?.howToFix.i18n[lang] || [
     staticTranslations.fallbackFix[lang],
   ];

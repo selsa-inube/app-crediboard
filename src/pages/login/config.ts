@@ -19,8 +19,8 @@ export const loginLabels = {
     code: "Logo_alt",
     description: "Alt text for the company logo",
     i18n: {
-      en: "Sistemas Enlinea",
-      es: "Sistemas Enlinea",
+      en: "Logo del Operador",
+      es: "Logo del Operador",
     },
   },
 };

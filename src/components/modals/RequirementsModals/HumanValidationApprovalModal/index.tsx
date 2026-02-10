@@ -53,7 +53,7 @@ export function HumanValidationApprovalModal(
     () =>
       Object.values(optionsAnswerEnum).map((option) => ({
         id: option.id,
-        value: option.value,
+        value: option.i18n[lang],
         label: option.i18n[lang],
       })),
     [lang],

@@ -688,9 +688,9 @@ export const Requirements = (props: IRequirementsProps) => {
               }
 
               if (label === questionToBeAskedInModalText.notEvaluated)
-                return questionToBeAskedInModalText.questionForUnvalidated;
+                return "";
               if (label === questionToBeAskedInModalText.notCompliant)
-                return questionToBeAskedInModalText.questionForNotCompliant;
+                return "";
               return "";
             })()}
             businessUnitPublicCode={businessUnitPublicCode}
