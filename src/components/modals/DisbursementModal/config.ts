@@ -328,4 +328,20 @@ export const disbursemenOptionAccountEnum = {
       es: "Selecciona una opción",
     },
   },
+  paymentOrderReference: {
+    code: "payment_order_reference",
+    description: "payment order reference",
+    i18n: {
+      en: "payment order reference",
+      es: "Orden de pago",
+    },
+  },
+  disbursemerntRefernce: {
+    code: "disbursemernt_refernce",
+    description: "disbursemernt refernce",
+    i18n: {
+      en: "disbursemernt refernce",
+      es: "Referencia de desembolso",
+    },
+  },
 };

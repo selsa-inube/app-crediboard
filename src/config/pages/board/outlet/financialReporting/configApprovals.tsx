@@ -12,6 +12,7 @@ import { EnumType } from "@hooks/useEnum";
 
 import { approvalsConfigEnum } from "./configApprovalTexts";
 
+
 const handleData = (data: IEntries) => {
   console.log("function that receives data", data);
 };
