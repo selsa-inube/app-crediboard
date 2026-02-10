@@ -9,7 +9,8 @@ export const getUnconveredPortfolio = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   customerIdentificationNumber: string,
-  token: string
+  creditRequestId: string,
+  token: string,
 ): Promise<IUncoveredPortfolio | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -24,14 +25,14 @@ export const getUnconveredPortfolio = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
-          Authorization: token
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/uncovered-portfolio/${customerIdentificationNumber}`,
-        options
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/uncovered-portfolio/${customerIdentificationNumber}/${creditRequestId}`,
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -60,7 +61,7 @@ export const getUnconveredPortfolio = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener los datos."
+          "Todos los intentos fallaron. No se pudo obtener los datos.",
         );
       }
     }

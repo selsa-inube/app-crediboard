@@ -10,7 +10,8 @@ export const getCreditRiskScoreById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   customerIdentificationNumber: string,
-  token: string
+  creditRequestId: string,
+  token: string,
 ): Promise<ICreditRiskScoreResponse | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,14 +26,14 @@ export const getCreditRiskScoreById = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
-          Authorization: token
+          Authorization: token,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/credit-risk-score/${customerIdentificationNumber}`,
-        options
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-profiles/credit-risk-score/${customerIdentificationNumber}/${creditRequestId}`,
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -61,7 +62,7 @@ export const getCreditRiskScoreById = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener los creditos de riesgo."
+          "Todos los intentos fallaron. No se pudo obtener los creditos de riesgo.",
         );
       }
     }
