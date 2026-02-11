@@ -25,7 +25,7 @@ export interface IDisbursement {
 
 export function DisbursementInternal(props: IDisbursement) {
   const { isMobile, data, lang } = props;
-  console.log(data);
+
   return (
     <Stack
       direction="column"
