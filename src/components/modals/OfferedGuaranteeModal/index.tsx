@@ -22,7 +22,6 @@ import { dataTabsEnum, dataGuaranteeEnum } from "./config";
 import { ScrollableContainer } from "./styles";
 import { ErrorModal } from "../ErrorModal";
 
-
 export interface IOfferedGuaranteeModalProps {
   handleClose: () => void;
   isMobile: boolean;
@@ -47,7 +46,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
   const [isLoadingMortgage, setIsLoadingMortgage] = useState(false);
   const [isLoadingPledge, setIsLoadingPledge] = useState(false);
   const { eventData } = useContext(AppContext);
-  
+
   const onChange = (tabId: string) => {
     setCurrentTab(tabId);
   };
@@ -69,7 +68,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       setDataProperty(result);
     } catch (error) {
       setShowErrorModal(true);
-      setMessageError(dataGuaranteeEnum.errorCoDebtor.i18n[lang]);
+      setMessageError(dataGuaranteeEnum.errorPledge.i18n[lang]);
     }
   };
 
@@ -123,7 +122,77 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
     id: tab.id,
     label: tab.i18n[lang],
   }));
+  const renderBorrowerContent = () => {
+    if (!dataResponse?.borrowers || dataResponse.borrowers.length === 0) {
+      return (
+        <Fieldset>
+          <Stack justifyContent="center" alignItems="center" height="290px">
+            <ItemNotFound
+              image={userNotFound}
+              title={dataGuaranteeEnum.noBorrowersTitle.i18n[lang]}
+              description={dataGuaranteeEnum.noBorrowersDescription.i18n[lang]}
+              buttonDescription={dataGuaranteeEnum.retry.i18n[lang]}
+            />
+          </Stack>
+        </Fieldset>
+      );
+    }
 
+    const nonMainBorrowers = dataResponse.borrowers.filter(
+      (borrower) => borrower.borrowerType !== "MainBorrower",
+    );
+
+    if (nonMainBorrowers.length === 0) {
+      return (
+        <Fieldset>
+          <Stack justifyContent="center" alignItems="center" height="290px">
+            <ItemNotFound
+              image={userNotFound}
+              title={dataGuaranteeEnum.noBorrowersTitle.i18n[lang]}
+              description={dataGuaranteeEnum.noBorrowersDescription.i18n[lang]}
+              buttonDescription={dataGuaranteeEnum.retry.i18n[lang]}
+            />
+          </Stack>
+        </Fieldset>
+      );
+    }
+
+    return nonMainBorrowers.map((borrower, index) => (
+      <Stack key={index} justifyContent="center" margin="8px 0px" width="100%">
+        <CardBorrower
+          title={`${dataGuaranteeEnum.borrower.i18n[lang]} ${index + 1}`}
+          name={getPropertyValue(borrower.borrowerProperties, "name")}
+          lastName={getPropertyValue(borrower.borrowerProperties, "surname")}
+          email={getPropertyValue(borrower.borrowerProperties, "email")}
+          income={currencyFormat(
+            Number(
+              getPropertyValue(borrower.borrowerProperties, "PeriodicSalary") ||
+                0,
+            ) +
+              Number(
+                getPropertyValue(
+                  borrower.borrowerProperties,
+                  "OtherNonSalaryEmoluments",
+                ) || 0,
+              ) +
+              Number(
+                getPropertyValue(
+                  borrower.borrowerProperties,
+                  "PensionAllowances",
+                ) || 0,
+              ),
+            false,
+          )}
+          obligations={currencyFormat(
+            getTotalFinancialObligations(borrower.borrowerProperties),
+            false,
+          )}
+          showIcons={false}
+          lang={lang}
+        />
+      </Stack>
+    ));
+  };
   return (
     <BaseModal
       title={dataGuaranteeEnum.title.i18n[lang]}
@@ -144,76 +213,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       </Stack>
       <Stack width="100%">
         {currentTab === "borrower" && (
-          <ScrollableContainer>
-            {dataResponse?.borrowers && dataResponse.borrowers.length > 0 ? (
-              dataResponse.borrowers.map((borrower, index) => (
-                <Stack
-                  key={index}
-                  justifyContent="center"
-                  margin="8px 0px"
-                  width="100%"
-                >
-                  <CardBorrower
-                    key={index}
-                    title={`${dataGuaranteeEnum.borrower.i18n[lang]} ${index + 1}`}
-                    name={getPropertyValue(borrower.borrowerProperties, "name")}
-                    lastName={getPropertyValue(
-                      borrower.borrowerProperties,
-                      "surname",
-                    )}
-                    email={getPropertyValue(
-                      borrower.borrowerProperties,
-                      "email",
-                    )}
-                    income={currencyFormat(
-                      Number(
-                        getPropertyValue(
-                          borrower.borrowerProperties,
-                          "PeriodicSalary",
-                        ) || 0,
-                      ) +
-                        Number(
-                          getPropertyValue(
-                            borrower.borrowerProperties,
-                            "OtherNonSalaryEmoluments",
-                          ) || 0,
-                        ) +
-                        Number(
-                          getPropertyValue(
-                            borrower.borrowerProperties,
-                            "PensionAllowances",
-                          ) || 0,
-                        ),
-                      false,
-                    )}
-                    obligations={currencyFormat(
-                      getTotalFinancialObligations(borrower.borrowerProperties),
-                      false,
-                    )}
-                    showIcons={false}
-                    lang={lang}
-                  />
-                </Stack>
-              ))
-            ) : (
-              <Fieldset>
-                <Stack
-                  justifyContent="center"
-                  alignItems="center"
-                  height="290px"
-                >
-                  <ItemNotFound
-                    image={userNotFound}
-                    title={dataGuaranteeEnum.noBorrowersTitle.i18n[lang]}
-                    description={
-                      dataGuaranteeEnum.noBorrowersDescription.i18n[lang]
-                    }
-                    buttonDescription={dataGuaranteeEnum.retry.i18n[lang]}
-                  />
-                </Stack>
-              </Fieldset>
-            )}
-          </ScrollableContainer>
+          <ScrollableContainer>{renderBorrowerContent()}</ScrollableContainer>
         )}
         {currentTab === "mortgage" && (
           <Mortgage
