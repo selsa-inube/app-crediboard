@@ -555,7 +555,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       ) || [],
     ),
   ];
-  console.log(disbursementData, "disbursementData");
   return (
     <>
       <Fieldset

@@ -5,6 +5,7 @@ import { useEnum } from "@hooks/useEnum";
 
 import { BaseModal } from "../baseModal";
 import { errorModalConfigEnum } from "./config";
+import { StyledText } from "./styles";
 
 interface IErrorModalProps {
   isMobile?: boolean;
@@ -37,9 +38,11 @@ export function ErrorModal(props: IErrorModalProps) {
         <Text type="body" size="large" weight="bold">
           {errorModalConfigEnum.excuses.i18n[lang]}
         </Text>
-        <Text type="body" size="large" appearance="gray">
-          {message}
-        </Text>
+        <StyledText>
+          <Text type="body" size="large" appearance="gray">
+            {message}
+          </Text>
+        </StyledText>
       </Stack>
     </BaseModal>
   );
