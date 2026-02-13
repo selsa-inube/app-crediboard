@@ -462,8 +462,8 @@ function ToDo(props: ToDoProps) {
         ) : (
           <Stack
             direction="column"
-            gap={isMobile ? "4px" : "6px"}
-            height={isMobile ? "auto" : "205px"}
+            justifyContent="space-between"
+            height="100%"
           >
             <Stack direction={isMobile ? "column" : "row"}>
               {isMobile && (
@@ -542,7 +542,6 @@ function ToDo(props: ToDoProps) {
             </Stack>
             <Divider />
             <Stack
-              padding="16px 0"
               justifyContent="space-between"
               direction="row"
               alignItems="center"
