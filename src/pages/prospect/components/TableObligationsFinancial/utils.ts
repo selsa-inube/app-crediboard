@@ -3,28 +3,41 @@ import { useMemo } from "react";
 import { IDataInformationItem } from "./interface";
 import { ROWS_PER_PAGE } from "./config";
 
-export const usePagination = (dataInformation: IDataInformationItem[], setCurrentPage: React.Dispatch<React.SetStateAction<number>>, currentPage: number) => {
+export const usePagination = (
+  dataInformation: IDataInformationItem[],
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>,
+  currentPage: number,
+) => {
   const totalRecords = dataInformation.length;
 
-  if(totalRecords <= ROWS_PER_PAGE){
-    setCurrentPage(0)
+  if (totalRecords <= ROWS_PER_PAGE) {
+    setCurrentPage(0);
   }
-  
-  let paginatedData: IDataInformationItem[] = [];
 
   const totalPages = useMemo(() => {
     return Math.ceil(totalRecords / ROWS_PER_PAGE) || 1;
   }, [totalRecords]);
-  
+
   const handleStartPage = () => setCurrentPage(0);
   const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 0));
-  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+  const handleNextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
   const handleEndPage = () => setCurrentPage(totalPages - 1);
 
-  const startIndex = currentPage * ROWS_PER_PAGE; 
+  const startIndex = currentPage * ROWS_PER_PAGE;
   const endIndex = Math.min(startIndex + ROWS_PER_PAGE, totalRecords);
 
-  paginatedData = dataInformation.slice(startIndex, endIndex);
+  const realData = dataInformation.slice(startIndex, endIndex);
+
+  const paddingCount = ROWS_PER_PAGE - realData.length;
+  const paddingItems = Array.from({
+    length: paddingCount > 0 ? paddingCount : 0,
+  }).map((_, index) => ({
+    __isPadding: true,
+    id: `padding-${currentPage}-${index}`,
+  }));
+
+  const paginatedData = [...realData, ...paddingItems];
 
   return {
     setCurrentPage,
@@ -36,6 +49,6 @@ export const usePagination = (dataInformation: IDataInformationItem[], setCurren
     handleNextPage,
     handleEndPage,
     startIndex,
-    endIndex
+    endIndex,
   };
 };
