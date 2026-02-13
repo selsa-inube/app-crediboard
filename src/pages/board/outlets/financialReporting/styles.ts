@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle, css }  from "styled-components";
+import styled, { createGlobalStyle, css } from "styled-components";
 import { inube } from "@inubekit/inubekit";
 
 interface IGlobalPdfStylesProps {
@@ -109,7 +109,7 @@ export const StyledContainerSpinner = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  `;
+`;
 
 export const BlockPdfSection = styled.div`
   width: inherit;

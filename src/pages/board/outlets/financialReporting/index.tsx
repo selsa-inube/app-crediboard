@@ -532,7 +532,7 @@ export const FinancialReporting = () => {
                   </Stack>
                   <Stack
                     direction="column"
-                    height={isMobile ? "auto" : "340px"}
+                    height={isMobile ? "auto" : "290px"}
                   >
                     <StyledPageBreak />
                     <BlockPdfSection className="pdf-block">

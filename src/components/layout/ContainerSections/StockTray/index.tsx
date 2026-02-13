@@ -155,7 +155,11 @@ export const StockTray = (props: IStockTrayProps) => {
                   disabled={editCreditApplication}
                   onClick={actionButtons?.buttonsOutlined?.buttonAttach.OnClick}
                 >
-                  {configButtonsEnum.buttonsOutlined.buttonAttach.label.i18n[lang]}
+                  {
+                    configButtonsEnum.buttonsOutlined.buttonAttach.label.i18n[
+                      lang
+                    ]
+                  }
                 </Button>
                 {editCreditApplication && (
                   <Icon
@@ -175,7 +179,10 @@ export const StockTray = (props: IStockTrayProps) => {
                     actionButtons?.buttonsOutlined.buttonViewAttachments.OnClick
                   }
                 >
-                  {configButtonsEnum.buttonsOutlined.buttonViewAttachments.label.i18n[lang]}
+                  {
+                    configButtonsEnum.buttonsOutlined.buttonViewAttachments
+                      .label.i18n[lang]
+                  }
                 </Button>
               </Stack>
               <StyledHorizontalDivider />
@@ -187,7 +194,11 @@ export const StockTray = (props: IStockTrayProps) => {
                     actionButtons?.buttonsOutlined.buttonWarranty.OnClick
                   }
                 >
-                  {configButtonsEnum.buttonsOutlined.buttonWarranty.label.i18n[lang]}
+                  {
+                    configButtonsEnum.buttonsOutlined.buttonWarranty.label.i18n[
+                      lang
+                    ]
+                  }
                 </Button>
               </Stack>
             </Stack>
