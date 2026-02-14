@@ -26,6 +26,7 @@ import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { privilegeCrediboard } from "@config/privilege";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { EnumType } from "@hooks/useEnum";
+import { IAllEnumsResponse } from "@services/enumerators/types";
 
 import { usePagination } from "./utils";
 import { dataReportEnum, ROWS_PER_PAGE } from "./config";
@@ -56,7 +57,7 @@ interface UIProps {
   setIsModalOpenEdit: (value: boolean) => void;
   handleDelete: (id: number, borrowerIdentificationNumber: string) => void;
   handleUpdate: (
-    updatedDebtor: ITableFinancialObligationsProps
+    updatedDebtor: ITableFinancialObligationsProps,
   ) => Promise<void>;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
@@ -65,6 +66,7 @@ interface UIProps {
   showDeleteModal: boolean;
   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
   lang: EnumType;
+  enums: IAllEnumsResponse | null;
   setErrorModal?: React.Dispatch<React.SetStateAction<boolean>>;
   errorMessage?: string;
   errorModal?: boolean;
@@ -91,11 +93,12 @@ export const TableFinancialObligationsUI = ({
   setErrorModal,
   errorModal,
   errorMessage,
-  lang
+  lang,
+  enums,
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(
-    null
+    null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { disabledButton: editCreditApplication } = useValidateUseCase({
@@ -125,7 +128,7 @@ export const TableFinancialObligationsUI = ({
 
   const getValueFromProperty = (
     value: string | number | string[] | undefined,
-    index: number
+    index: number,
   ): number => {
     if (typeof value === "number") return value;
     if (typeof value === "string") {
@@ -141,11 +144,11 @@ export const TableFinancialObligationsUI = ({
 
   const totalBalance = dataInformation.reduce(
     (sum, item) => sum + getValueFromProperty(item.propertyValue, 1),
-    0
+    0,
   );
   const totalFee = dataInformation.reduce(
     (sum, item) => sum + getValueFromProperty(item.propertyValue, 2),
-    0
+    0,
   );
 
   const renderHeaders = () => {
@@ -163,7 +166,7 @@ export const TableFinancialObligationsUI = ({
         >
           {header.label}
         </Th>
-      )
+      ),
     );
   };
 
@@ -183,7 +186,7 @@ export const TableFinancialObligationsUI = ({
         colSpan={visibleHeaders.length}
         align="center"
         type="custom"
-        height={245}
+        height={200}
       >
         <Text size="large" type="label" appearance="gray" textAlign="center">
           {dataReportEnum.noData.i18n[lang]}
@@ -193,8 +196,21 @@ export const TableFinancialObligationsUI = ({
   );
 
   const renderDataRows = () =>
-    paginatedData.map((prop: IDataInformationItem, index: number) => {
+    paginatedData.map((prop, index: number) => {
       const rowIndex = (currentPage - 1) * ROWS_PER_PAGE + index;
+
+      if ("__isPadding" in prop) {
+        return (
+          <Tr key={rowIndex}>
+            {visibleHeaders.map((_, colIndex) => (
+              <Td key={colIndex} type="text">
+                {""}
+              </Td>
+            ))}
+          </Tr>
+        );
+      }
+
       let values: string[] = [];
 
       if (typeof prop.propertyValue === "string") {
@@ -211,17 +227,43 @@ export const TableFinancialObligationsUI = ({
         <Tr key={rowIndex}>
           {visibleHeaders.map((header, colIndex) => {
             let cellData = values[colIndex] || "";
+            if (header.key === "type") {
+              const translated = enums?.ObligationType?.find(
+                (item) =>
+                  item.code === cellData || item.description === cellData,
+              );
+              if (translated) cellData = translated.i18n[lang];
+            }
+            if (header.key === "payment") {
+              const translated = enums?.PaymentType?.find(
+                (item) =>
+                  item.code === cellData || item.description === cellData,
+              );
+              if (translated) cellData = translated.i18n[lang];
+            }
+
+            if (header.key === "feePaid") {
+              const installmentParts = values.slice(colIndex);
+              if (installmentParts.length >= 2) {
+                cellData = `${installmentParts[0]}/${installmentParts[1]}`;
+              }
+            }
+
+            const isNumeric = ["balance", "fee", "idUser", "feePaid"].includes(
+              header.key,
+            );
             const isCurrency = ["balance", "fee"].includes(header.key);
 
             if (isCurrency) {
-              cellData = isNaN(Number(cellData))
-                ? cellData
-                : currencyFormat(Number(cellData), false);
+              cellData = currencyFormat(Number(cellData), false);
             }
 
-            const isFromInitialValues = Boolean(prop.propertyName);
-            if (isFromInitialValues && colIndex === values.length - 2) {
-              cellData = `${values[colIndex]}/${values[colIndex + 1]}`.trim();
+            let cellAlignment: "left" | "center" | "right" = "left";
+
+            if (header.action) {
+              cellAlignment = "center";
+            } else if (isNumeric) {
+              cellAlignment = "right";
             }
 
             return (
@@ -229,7 +271,8 @@ export const TableFinancialObligationsUI = ({
                 key={colIndex}
                 appearance={"light"}
                 type={header.action ? "custom" : "text"}
-                align={isCurrency ? "right" : "center"}
+                align={cellAlignment}
+                style={{ whiteSpace: "nowrap" }}
               >
                 {header.action ? (
                   <Stack justifyContent="space-around">
@@ -243,7 +286,7 @@ export const TableFinancialObligationsUI = ({
                           : () =>
                               handleEdit(
                                 prop as ITableFinancialObligationsProps,
-                                prop.id as number
+                                prop.id as number,
                               )
                       }
                       cursorHover
@@ -275,7 +318,7 @@ export const TableFinancialObligationsUI = ({
   const renderTbodyContent = () => {
     if (loading) {
       return Array.from({ length: ROWS_PER_PAGE }).map((_, index) =>
-        renderLoadingRow(index)
+        renderLoadingRow(index),
       );
     }
 
@@ -286,7 +329,6 @@ export const TableFinancialObligationsUI = ({
     return renderDataRows();
   };
 
- 
   const handleDeleteModal = (itemToDelete: IDataInformationItem) => {
     setDataToDelete(itemToDelete);
     setShowDeleteModal(true);
@@ -295,14 +337,14 @@ export const TableFinancialObligationsUI = ({
   return (
     <>
       <Stack direction="column" width="100%" gap="16px">
-        <Table tableLayout="fixed">
+        <Table tableLayout="auto">
           <Thead>
             <Tr>{renderHeaders()}</Tr>
           </Thead>
           <Tbody>{renderTbodyContent()}</Tbody>
           {!loading && dataInformation.length > 0 && (
             <Tfoot>
-              <Tr border="bottom">
+              <Tr border="left">
                 <Td
                   colSpan={visibleHeaders.length}
                   type="custom"
@@ -361,7 +403,10 @@ export const TableFinancialObligationsUI = ({
           {loading ? (
             <SkeletonLine />
           ) : (
-            <NewPrice value={totalFee} label={dataReportEnum.descriptionTotalFee.i18n[lang]} />
+            <NewPrice
+              value={totalFee}
+              label={dataReportEnum.descriptionTotalFee.i18n[lang]}
+            />
           )}
         </Stack>
       </Stack>
@@ -372,7 +417,7 @@ export const TableFinancialObligationsUI = ({
             if (dataToDelete) {
               handleDelete(
                 dataToDelete.id as number,
-                dataToDelete.borrowerIdentificationNumber as string
+                dataToDelete.borrowerIdentificationNumber as string,
               );
             }
 

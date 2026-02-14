@@ -21,7 +21,6 @@ import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { restoreFinancialObligationsByBorrowerId } from "@services/prospect/restoreFinancialObligationsByBorrowerId";
-import { ScrollableContainer } from "@pages/prospect/components/modals/ProspectProductModal/styles";
 import { CardGray } from "@components/cards/CardGray";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
@@ -129,7 +128,12 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     };
 
     loadCompleteData();
-  }, [businessUnitPublicCode, businessManagerCode, creditRequestCode, eventData.token]);
+  }, [
+    businessUnitPublicCode,
+    businessManagerCode,
+    creditRequestCode,
+    eventData.token,
+  ]);
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -281,156 +285,151 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         nextButton={dataReportEnum.close.i18n[lang]}
         handleNext={handleClose}
         handleClose={handleClose}
-        width={!isMobile ? "1050px" : "320px"}
+        width={!isMobile ? "1300px" : "320px"}
         height={isMobile ? "auto" : "630px"}
       >
-        <ScrollableContainer
-          $smallScreen={isMobile}
-          $width={isMobile ? "270px" : "auto"}
-        >
-          <Stack direction="column" gap="16px">
-            {loading ? (
-              <></>
-            ) : (
-              <Stack
-                justifyContent="space-between"
-                direction={isMobile ? "column" : "row"}
-                gap="16px"
-              >
-                {optionsBorrowers && optionsBorrowers.length === 1 ? (
-                  <CardGray
-                    label={"borrower"}
-                    placeHolder={optionsBorrowers[0]?.label}
-                  />
-                ) : (
-                  <Select
-                    id="income"
-                    name={configSelectEnum.name.i18n[lang]}
-                    label={configSelectEnum.label.i18n[lang]}
-                    placeholder={configSelectEnum.placeholder.i18n[lang]}
-                    options={optionsBorrowers || []}
-                    value={selectedBorrower?.value || ""}
-                    onChange={(name, value) => onChangeSelect(name, value)}
-                    size="compact"
-                  />
-                )}
+        <Stack direction="column" gap="16px">
+          {loading ? (
+            <></>
+          ) : (
+            <Stack
+              justifyContent="space-between"
+              direction={isMobile ? "column" : "row"}
+              gap="16px"
+            >
+              {optionsBorrowers && optionsBorrowers.length === 1 ? (
+                <CardGray
+                  label={configSelectEnum.label.i18n[lang]}
+                  placeHolder={optionsBorrowers[0]?.label}
+                />
+              ) : (
+                <Select
+                  id="income"
+                  name={configSelectEnum.name.i18n[lang]}
+                  label={configSelectEnum.label.i18n[lang]}
+                  placeholder={configSelectEnum.placeholder.i18n[lang]}
+                  options={optionsBorrowers || []}
+                  value={selectedBorrower?.value || ""}
+                  onChange={(name, value) => onChangeSelect(name, value)}
+                  size="compact"
+                />
+              )}
 
-                <Stack
-                  direction={isMobile ? "column" : "row"}
-                  alignItems="center"
-                  gap="16px"
-                  width={isMobile ? "100%" : "auto"}
-                >
-                  <Stack gap="2px" width={isMobile ? "100%" : "auto"}>
+              <Stack
+                direction={isMobile ? "column" : "row"}
+                alignItems="center"
+                gap="16px"
+                width={isMobile ? "100%" : "auto"}
+              >
+                <Stack gap="2px" width={isMobile ? "100%" : "auto"}>
+                  <Button
+                    children={restoreDataEnum.label.i18n[lang]}
+                    iconBefore={<MdCached />}
+                    fullwidth={isMobile}
+                    variant="outlined"
+                    spacing="wide"
+                    disabled={
+                      editCreditApplication || availableEditCreditRequest
+                    }
+                    onClick={() => setIsOpenModal(true)}
+                  />
+                  <Stack alignItems="center">
+                    {editCreditApplication || availableEditCreditRequest ? (
+                      <Icon
+                        icon={<MdOutlineInfo />}
+                        appearance="primary"
+                        size="16px"
+                        cursorHover
+                        onClick={handleInfo}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </Stack>
+                </Stack>
+                <Stack gap="2px" width={isMobile ? "100%" : "auto"}>
+                  <Stack gap="16px" width={isMobile ? "100%" : "auto"}>
                     <Button
-                      children={restoreDataEnum.label.i18n[lang]}
-                      iconBefore={<MdCached />}
+                      children={dataReportEnum.addObligations.i18n[lang]}
+                      iconBefore={<MdAdd />}
                       fullwidth={isMobile}
-                      variant="outlined"
-                      spacing="wide"
                       disabled={
                         editCreditApplication || availableEditCreditRequest
                       }
-                      onClick={() => setIsOpenModal(true)}
+                      onClick={() => setOpenModal(true)}
                     />
-                    <Stack alignItems="center">
-                      {editCreditApplication || availableEditCreditRequest ? (
-                        <Icon
-                          icon={<MdOutlineInfo />}
-                          appearance="primary"
-                          size="16px"
-                          cursorHover
-                          onClick={handleInfo}
-                        />
-                      ) : (
-                        <></>
-                      )}
-                    </Stack>
                   </Stack>
-                  <Stack gap="2px" width={isMobile ? "100%" : "auto"}>
-                    <Stack gap="16px" width={isMobile ? "100%" : "auto"}>
-                      <Button
-                        children={dataReportEnum.addObligations.i18n[lang]}
-                        iconBefore={<MdAdd />}
-                        fullwidth={isMobile}
-                        disabled={
-                          editCreditApplication || availableEditCreditRequest
-                        }
-                        onClick={() => setOpenModal(true)}
+                  <Stack alignItems="center">
+                    {editCreditApplication || availableEditCreditRequest ? (
+                      <Icon
+                        icon={<MdOutlineInfo />}
+                        appearance="primary"
+                        size="16px"
+                        cursorHover
+                        onClick={handleInfo}
                       />
-                    </Stack>
-                    <Stack alignItems="center">
-                      {editCreditApplication || availableEditCreditRequest ? (
-                        <Icon
-                          icon={<MdOutlineInfo />}
-                          appearance="primary"
-                          size="16px"
-                          cursorHover
-                          onClick={handleInfo}
-                        />
-                      ) : (
-                        <></>
-                      )}
-                    </Stack>
+                    ) : (
+                      <></>
+                    )}
                   </Stack>
                 </Stack>
               </Stack>
-            )}
-            <Stack gap="16px" justifyContent="center">
-              {isOpenModal && (
-                <BaseModal
-                  title={dataReportEnum.restore.i18n[lang]}
-                  nextButton={dataReportEnum.restore.i18n[lang]}
-                  backButton={dataReportEnum.cancel.i18n[lang]}
-                  handleNext={handleRestore}
-                  handleClose={() => setIsOpenModal(false)}
-                  width={!isMobile ? "600px" : "290px"}
-                >
-                  <Text>{dataReportEnum.descriptionModal.i18n[lang]}</Text>
-                </BaseModal>
-              )}
-              {openModal && (
-                <FinancialObligationModal
-                  title={dataReportEnum.addObligations.i18n[lang]}
-                  onCloseModal={handleCloseModal}
-                  onConfirm={(values) =>
-                    handleSaveNewObligation(values as IFinancialObligation)
-                  }
-                  initialValues={initialValues}
-                  confirmButtonText={dataReportEnum.add.i18n[lang]}
-                />
-              )}
             </Stack>
-            <TableFinancialObligations
-              key={tableRefreshKey}
-              showActions={!availableEditCreditRequest}
-              selectedBorrower={selectedBorrower}
-              prospectId={localProspectData?.[0]?.prospectId || ""}
-              newObligation={newObligation}
-              businessUnitPublicCode={businessUnitPublicCode}
-              onObligationProcessed={handleObligationProcessed}
-              creditRequestCode={creditRequestCode}
-              businessManagerCode={businessManagerCode}
-              eventData={eventData}
-            />
-          </Stack>
-          {isModalOpen ? (
-            <InfoModal
-              onClose={handleInfoModalClose}
-              title={privilegeCrediboard.title}
-              subtitle={privilegeCrediboard.subtitle}
-              description={
-                availableEditCreditRequest
-                  ? optionsDisableStage.description
-                  : privilegeCrediboard.description
-              }
-              nextButtonText={privilegeCrediboard.nextButtonText}
-              isMobile={isMobile}
-            />
-          ) : (
-            <></>
           )}
-        </ScrollableContainer>
+          <Stack gap="16px" justifyContent="center">
+            {isOpenModal && (
+              <BaseModal
+                title={dataReportEnum.restore.i18n[lang]}
+                nextButton={dataReportEnum.restore.i18n[lang]}
+                backButton={dataReportEnum.cancel.i18n[lang]}
+                handleNext={handleRestore}
+                handleClose={() => setIsOpenModal(false)}
+                width={!isMobile ? "600px" : "290px"}
+              >
+                <Text>{dataReportEnum.descriptionModal.i18n[lang]}</Text>
+              </BaseModal>
+            )}
+            {openModal && (
+              <FinancialObligationModal
+                title={dataReportEnum.addObligations.i18n[lang]}
+                onCloseModal={handleCloseModal}
+                onConfirm={(values) =>
+                  handleSaveNewObligation(values as IFinancialObligation)
+                }
+                initialValues={initialValues}
+                confirmButtonText={dataReportEnum.add.i18n[lang]}
+              />
+            )}
+          </Stack>
+          <TableFinancialObligations
+            key={tableRefreshKey}
+            showActions={!availableEditCreditRequest}
+            selectedBorrower={selectedBorrower}
+            prospectId={localProspectData?.[0]?.prospectId || ""}
+            newObligation={newObligation}
+            businessUnitPublicCode={businessUnitPublicCode}
+            onObligationProcessed={handleObligationProcessed}
+            creditRequestCode={creditRequestCode}
+            businessManagerCode={businessManagerCode}
+            eventData={eventData}
+          />
+        </Stack>
+        {isModalOpen ? (
+          <InfoModal
+            onClose={handleInfoModalClose}
+            title={privilegeCrediboard.title}
+            subtitle={privilegeCrediboard.subtitle}
+            description={
+              availableEditCreditRequest
+                ? optionsDisableStage.description
+                : privilegeCrediboard.description
+            }
+            nextButtonText={privilegeCrediboard.nextButtonText}
+            isMobile={isMobile}
+          />
+        ) : (
+          <></>
+        )}
       </BaseModal>
       {errorModal && (
         <ErrorModal

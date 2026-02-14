@@ -271,7 +271,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     <>
       <Fieldset
         title={errorMessagesEnum.management.titleCard.i18n[lang]}
-        heightFieldset="340px"
+        heightFieldset="290px"
         aspectRatio={isMobile ? "auto" : "1"}
         hasError={error ? true : false}
       >
