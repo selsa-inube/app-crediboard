@@ -58,7 +58,7 @@ export const TableFinancialObligations = (
     onObligationProcessed,
     eventData,
   } = props;
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
 
   const [dataProspect, setDataProspect] = useState<IProspect[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -524,6 +524,7 @@ export const TableFinancialObligations = (
       errorMessage={errorMessage}
       errorModal={errorModal}
       lang={lang}
+      enums={enums}
     />
   );
 };
