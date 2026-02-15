@@ -225,7 +225,7 @@ export function DocumentValidationApprovalModal(
         businessManagerCode,
         eventData.token || "",
       );
-      const fileUrl = URL.createObjectURL(documentData);
+      const fileUrl = documentData.urlDocument;
       setSelectedFile(fileUrl);
       setFileName(name);
       setOpen(true);
