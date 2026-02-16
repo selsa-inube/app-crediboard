@@ -552,7 +552,15 @@ export const financialReportingLabelsEnum = {
     titleList: {
       code: "FinancialReporting_attachments_titleList",
       description: "Title for the attach documents modal",
-      i18n: { en: "Attach", es: "Adjuntar" },
+      i18n: { en: "Attach", es: "Adjuntos" },
+    },
+    errorModal: {
+      code: " FinancialReporting_attachments_errorModal",
+      description: "Error message for the attach documents modal",
+      i18n: {
+        en: "There are no attachments available for this request",
+        es: "No hay archivos adjuntos disponibles para esta solicitud",
+      },
     },
     titleView: {
       code: "FinancialReporting_attachments_titleView",
