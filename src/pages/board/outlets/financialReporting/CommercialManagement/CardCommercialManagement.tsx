@@ -47,6 +47,7 @@ interface CardCommercialManagementProps {
   prospectData?: IProspect;
   refreshProducts?: () => void;
   onProspectUpdate?: (prospect: IProspect) => void;
+  canAddProduct?: boolean;
 }
 
 export const CardCommercialManagement = (
@@ -61,6 +62,7 @@ export const CardCommercialManagement = (
     moneyDestination,
     clientIdentificationNumber,
     availableEditCreditRequest,
+    canAddProduct,
   } = props;
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     [],
@@ -108,7 +110,7 @@ export const CardCommercialManagement = (
     }
   }, [prospectData]);
   const isMobile = useMediaQuery("(max-width: 800px)");
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
   const { addFlag } = useFlag();
 
   const handleDelete = async () => {
@@ -280,9 +282,15 @@ export const CardCommercialManagement = (
                     : () => handleDeleteClick(entry.creditProductCode)
                 }
                 lang={lang}
+                canDelete={prospectProducts.length === 1}
+                installmentFrequency={
+                  enums?.Peridiocity?.find(
+                    (item) => item.code === entry.installmentFrequency,
+                  )?.i18n?.[lang] || ""
+                }
               />
             ))}
-            {!availableEditCreditRequest && (
+            {!availableEditCreditRequest && !canAddProduct && (
               <StyledPrint>
                 <NewCreditProductCard onClick={onClick} lang={lang} />
               </StyledPrint>

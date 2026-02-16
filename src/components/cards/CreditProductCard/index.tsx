@@ -14,6 +14,8 @@ interface CreditProductCardProps {
   onDelete: () => void;
   availableEditCreditRequest: boolean;
   lang: EnumType;
+  canDelete?: boolean;
+  installmentFrequency?: string;
 }
 
 function CreditProductCard(props: CreditProductCardProps) {
@@ -29,6 +31,8 @@ function CreditProductCard(props: CreditProductCardProps) {
     onDelete,
     availableEditCreditRequest,
     lang,
+    canDelete,
+    installmentFrequency,
   } = props;
 
   return (
@@ -44,6 +48,8 @@ function CreditProductCard(props: CreditProductCardProps) {
       onDelete={onDelete}
       availableEditCreditRequest={availableEditCreditRequest}
       lang={lang}
+      canDelete={canDelete}
+      installmentFrequency={installmentFrequency}
     />
   );
 }
