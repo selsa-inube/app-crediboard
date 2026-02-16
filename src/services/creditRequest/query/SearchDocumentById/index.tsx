@@ -9,7 +9,7 @@ export const getSearchDocumentById = async (
   userAccount: string,
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  token: string
+  token: string,
 ) => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -25,7 +25,7 @@ export const getSearchDocumentById = async (
           "X-Action": "SearchDocumentById",
           "X-Business-Unit": businessUnitPublicCode,
           "X-User-Name": userAccount,
-          "Content-Type": "application/pdf",
+          "Content-Type": "application/json",
           "X-Process-Manager": businessManagerCode,
           Authorization: token,
         },
@@ -33,8 +33,8 @@ export const getSearchDocumentById = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/documents/id/${documentId}?mode=file`,
-        options
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/documents/id/${documentId}`,
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -43,17 +43,16 @@ export const getSearchDocumentById = async (
         throw new Error("No hay documento disponible.");
       }
 
-      const blob = await res.blob();
-
       if (!res.ok) {
         throw {
           message: "Error al obtener el documento",
           status: res.status,
-          blob,
         };
       }
 
-      return blob;
+      const data = await res.json();
+
+      return data;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -63,13 +62,13 @@ export const getSearchDocumentById = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener el documento."
+          "Todos los intentos fallaron. No se pudo obtener el documento.",
         );
       }
     }
   }
 
   throw new Error(
-    "No se logró obtener el documento después de varios intentos."
+    "No se logró obtener el documento después de varios intentos.",
   );
 };
