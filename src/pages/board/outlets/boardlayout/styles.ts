@@ -72,6 +72,7 @@ const StyledBoardContainer = styled.div<IStyledBoardContainer>`
   padding-top: ${({ $isMobile }) => ($isMobile ? "0px" : "32px")};
   padding-right: ${({ $isMobile }) => ($isMobile ? "16px" : "8px")};
   padding-bottom: 16px;
+  height: 100%;
   padding-left: ${({ $isMobile }) => ($isMobile ? "16px" : "8px")};
   overflow: auto;
 `;
@@ -83,6 +84,7 @@ export const StyledContainerToCenter = styled.div`
   max-width: 1440px;
   width: 100%;
   align-items: center;
+  height: 100%;
 `;
 export const StyledMic = styled.div`
   position: relative;
