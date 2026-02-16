@@ -57,40 +57,38 @@ export const StyledNoPrint = styled.div`
 
 interface IStyledGrid {
   $isMobile?: boolean;
+  $isTablet?: boolean;
 }
-
 export const StyledGridPrint = styled.div<IStyledGrid>`
-  & > div {
-    max-width: 480px;
-  }
-
-  @media print {
-    & > div {
-      width: 400px;
-      zoom: 1.2;
-    }
-  }
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  margin: ${({ $isMobile }) => ($isMobile ? "20px 40px" : "20px")};
+  margin: ${({ $isTablet }) => ($isTablet ? "20px 40px" : "20px")};
+
+  & > div {
+    flex: ${({ $isMobile, $isTablet }) => {
+      if ($isMobile) return "1 1 100%";
+      if ($isTablet) return "1 1 calc(50% - 10px)";
+      return "1 1 calc(33.333% - 14px)";
+    }};
+    min-width: 0;
+    max-width: none;
+  }
 `;
 
 export const StylePrintListMobile = styled.div`
   @media print {
     display: none;
   }
-}
 `;
 
 export const StyledPrintListMobileShow = styled.div`
-  display: none;  
+  display: none;
 
   @media print {
     display: block;
     width: 2000px;
   }
-}
 `;
 
 export const StyledLi = styled.li`

@@ -328,6 +328,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
       <Stack
         direction="column"
         width={isMobile ? "-webkit-fill-available" : "min(100%,1500px)"}
+        height={BoardRequests.length > 0 ? "auto" : "100%"}
       >
         <StyledInputsContainer $isMobile={isMobile}>
           <Stack
