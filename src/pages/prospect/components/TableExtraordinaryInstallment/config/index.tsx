@@ -39,7 +39,9 @@ export const headersExtraordinaryInstallmentLabels = {
   },
 };
 
-export const getHeadersTableExtraordinaryInstallment = (lang: EnumType): IHeaders[] => [
+export const getHeadersTableExtraordinaryInstallment = (
+  lang: EnumType,
+): IHeaders[] => [
   {
     label: headersExtraordinaryInstallmentLabels.date.i18n[lang],
     key: "datePayment",
@@ -59,14 +61,15 @@ export const getHeadersTableExtraordinaryInstallment = (lang: EnumType): IHeader
 
 export const messageError = {
   removeExtraordinaryInstallments: {
-    description: "Error no se pudo eliminar los Pagos Extras."
-  }
-}
+    description: "Error no se pudo eliminar los Pagos Extras.",
+  },
+};
 
 export const dataTableExtraordinaryInstallmentEnum = {
   noData: {
     code: "DataTableExtraordinaryInstallment_noData",
-    description: "Message shown when no extraordinary installment records are found",
+    description:
+      "Message shown when no extraordinary installment records are found",
     i18n: {
       en: "Oops! No records found.",
       es: "¡Ups! No se encontraron registros.",
@@ -77,7 +80,7 @@ export const dataTableExtraordinaryInstallmentEnum = {
     description: "Label for deletion action",
     i18n: {
       en: "Deletion",
-      es: "Eliminación",
+      es: "¿Estás seguro de eliminar?",
     },
   },
   delete: {
@@ -93,7 +96,7 @@ export const dataTableExtraordinaryInstallmentEnum = {
     description: "Confirmation text for deleting an extraordinary installment",
     i18n: {
       en: "Do you really want to delete this extra payment?",
-      es: "¿Realmente desea eliminar este pago extra?",
+      es: "¿Realmente deseas eliminar este pago extra?",
     },
   },
   cancel: {
@@ -116,6 +119,5 @@ export const messageErrorEnum = {
     },
   },
 };
-
 
 export const pageLength = 5;

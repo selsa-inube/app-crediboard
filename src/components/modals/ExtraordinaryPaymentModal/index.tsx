@@ -176,6 +176,7 @@ export const ExtraordinaryPaymentModal = (
               moneyDestinationAbbreviatedName={
                 prospectData?.moneyDestinationAbbreviatedName || ""
               }
+              creditRequestCode={creditRequestCode || ""}
             />
           )}
           {isModalOpen && (
@@ -198,7 +199,6 @@ export const ExtraordinaryPaymentModal = (
         <ErrorModal
           handleClose={() => {
             handleCloseErrorModal();
-            handleClose();
           }}
           message={messageError}
         />
