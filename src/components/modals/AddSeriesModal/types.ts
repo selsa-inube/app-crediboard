@@ -9,4 +9,5 @@ export declare interface IOption {
 export interface ICycleOption extends IOptionInube {
   paymentDates: string[];
   extraordinaryCycleType: string;
+  payrollForDeductionAgreementCode: string;
 }
