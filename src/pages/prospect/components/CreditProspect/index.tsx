@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   MdOutlineAdd,
   MdOutlineInfo,
@@ -46,6 +46,7 @@ import { updateProspect } from "@services/prospect/updateProspect";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { getLinesOfCreditByMoneyDestination } from "@services/prospect/getLinesOfCreditByMoneyDestination";
 
 import { AddProductModal } from "../AddProductModal";
 import { dataCreditProspectEnum, errorMessage } from "./config";
@@ -130,6 +131,7 @@ export function CreditProspect(props: ICreditProspectProps) {
   const [messageError, setMessageError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isSendingData, setIsSendingData] = useState(false);
+  const [isAddProductDisabled, setIsAddProductDisabled] = useState(false);
 
   const { addFlag } = useFlag();
   const { lang } = useEnum();
@@ -191,6 +193,50 @@ export function CreditProspect(props: ICreditProspectProps) {
   ) => {
     setEditedApprovalObservations(event.target.value);
   };
+
+  const disableAddProduct = useCallback(async () => {
+    if (!dataProspect) return;
+
+    try {
+      const mainBorrower = dataProspect.borrowers?.find(
+        (borrower) => borrower.borrowerType === "MainBorrower",
+      );
+
+      const lineOfCreditValues = await getLinesOfCreditByMoneyDestination(
+        businessUnitPublicCode,
+        businessManagerCode,
+        dataProspect.moneyDestinationAbbreviatedName,
+        mainBorrower?.borrowerIdentificationNumber || "",
+        eventData.token,
+      );
+
+      if (Array.isArray(lineOfCreditValues)) {
+        setIsAddProductDisabled(
+          lineOfCreditValues.length === dataProspect.creditProducts.length,
+        );
+      }
+    } catch (error) {
+      const err = error as {
+        message?: string;
+        status: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description = code + err?.message + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
+    }
+  }, [
+    businessUnitPublicCode,
+    dataProspect,
+    businessManagerCode,
+    eventData.token,
+  ]);
+
+  useEffect(() => {
+    disableAddProduct();
+  }, [dataProspect, disableAddProduct]);
 
   const handleSaveApprovalObservations = async () => {
     if (!prospectData) return;
@@ -325,23 +371,25 @@ export function CreditProspect(props: ICreditProspectProps) {
       {!isMobile && (
         <StyledPrint>
           <Stack gap="10px" justifyContent="end" alignItems="center">
-            <Button
-              type="button"
-              appearance="primary"
-              spacing="compact"
-              disabled={editCreditApplication || availableEditCreditRequest}
-              iconBefore={
-                <Icon
-                  icon={<MdOutlineAdd />}
-                  appearance="light"
-                  size="18px"
-                  spacing="narrow"
-                />
-              }
-              onClick={() => handleOpenModal("editProductModal")}
-            >
-              {dataCreditProspectEnum.addProduct.i18n[lang]}
-            </Button>
+            {!isAddProductDisabled && (
+              <Button
+                type="button"
+                appearance="primary"
+                spacing="compact"
+                disabled={editCreditApplication || availableEditCreditRequest}
+                iconBefore={
+                  <Icon
+                    icon={<MdOutlineAdd />}
+                    appearance="light"
+                    size="18px"
+                    spacing="narrow"
+                  />
+                }
+                onClick={() => handleOpenModal("editProductModal")}
+              >
+                {dataCreditProspectEnum.addProduct.i18n[lang]}
+              </Button>
+            )}
             {editCreditApplication ||
               (availableEditCreditRequest && (
                 <Icon
@@ -428,6 +476,7 @@ export function CreditProspect(props: ICreditProspectProps) {
             prospectData={prospectData || undefined}
             onProspectUpdate={onProspectUpdate}
             availableEditCreditRequest={availableEditCreditRequest}
+            canAddProduct={isAddProductDisabled}
           />
         </Stack>
       </StyledPrintCardProspect>

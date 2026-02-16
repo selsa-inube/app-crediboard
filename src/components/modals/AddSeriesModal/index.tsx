@@ -76,6 +76,7 @@ export interface AddSeriesModalProps {
       paymentChannelAbbreviatedName: string;
     }>
   >;
+  creditRequestCode: string;
   isEdit?: boolean;
 }
 
@@ -95,6 +96,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     setMessageError,
     setShowErrorModal,
     toggleAddSeriesModal,
+    creditRequestCode,
   } = props;
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -209,25 +211,24 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   }, [isEdit, installmentState, formik]);
 
   useEffect(() => {
-    const businessManagerCode = eventData.businessManager.abbreviatedName;
-    const clientIdentificationNumber =
-      prospectData?.borrowers[0].borrowerIdentificationNumber;
+    const mainBorrower = prospectData?.borrowers.find(
+      (borrower) => borrower.borrowerType === "MainBorrower",
+    );
     const fetchCycles = async () => {
       if (
         service &&
-        clientIdentificationNumber &&
+        mainBorrower?.borrowerIdentificationNumber &&
         lineOfCreditAbbreviatedName &&
-        moneyDestinationAbbreviatedName &&
-        businessManagerCode
+        moneyDestinationAbbreviatedName
       ) {
         try {
           setIsLoading(true);
           const response =
             await searchExtraInstallmentPaymentCyclesByCustomerCode(
               businessUnitPublicCode,
-              businessManagerCode,
-              clientIdentificationNumber,
+              mainBorrower?.borrowerIdentificationNumber,
               lineOfCreditAbbreviatedName,
+              moneyDestinationAbbreviatedName,
             );
           if (response === null) {
             return;
@@ -240,6 +241,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
                 value: `${agreement.payrollForDeductionAgreementId}-${cycle.cycleName}`,
                 paymentDates: cycle.paymentDates,
                 extraordinaryCycleType: cycle.extraordinaryCycleType,
+                payrollForDeductionAgreementCode:
+                  agreement.payrollForDeductionAgreementCode,
               })),
           );
 
@@ -306,6 +309,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   const itemIdentifiersForUpdate: IExtraordinaryInstallmentsAddSeries = {
     creditProductCode:
       prospectData?.creditProducts?.[0]?.creditProductCode || "",
+    creditRequestCode: creditRequestCode,
     extraordinaryInstallments: [
       {
         installmentAmount: 0,
@@ -362,6 +366,9 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
     const count = parseInt(formik.values.value, 10);
     const frequency = formik.values.frequency;
+    const mainBorrower = prospectData?.borrowers.find(
+      (borrower) => borrower.borrowerType === "MainBorrower",
+    );
 
     if (
       !installmentAmount ||
@@ -369,19 +376,31 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       !paymentChannelAbbreviatedName ||
       isNaN(count) ||
       count < 1 ||
-      !frequency
+      !frequency ||
+      !mainBorrower?.borrowerIdentificationType
     )
       return;
 
     try {
       setIsLoading(true);
 
+      const selectedCycle = cycleOptions.find(
+        (option) => option.value === formik.values.cycleId,
+      );
+
+      const date = new Date(installmentDate);
+      const formattedDate = date.toISOString().split("T")[0].replace(/-/g, "/");
+
       const calculationBody = {
-        installmentAmount: installmentAmount,
-        installmentDate: installmentDate,
-        numberInstallments: count,
-        frequency: frequency,
+        amount: count,
+        customerCode: mainBorrower?.borrowerIdentificationType,
+        cycleName: selectedCycle?.label || "",
+        firstDayOfTheCycle: formattedDate,
+        installmentFrequency: frequency,
         paymentChannelAbbreviatedName: paymentChannelAbbreviatedName,
+        value: installmentAmount,
+        payrollForDeductionAgreementCode:
+          selectedCycle?.payrollForDeductionAgreementCode || "",
       };
 
       const calculatedSeries = await calculateSeriesForExtraordinaryInstallment(
@@ -406,6 +425,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         ...itemIdentifiersForUpdate,
         extraordinaryInstallments: installments,
       };
+
       await handleExtraordinaryInstallment(updatedValues);
     } catch (error) {
       setIsLoading(false);

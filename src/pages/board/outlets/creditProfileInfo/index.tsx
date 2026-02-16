@@ -48,7 +48,8 @@ export const CreditProfileInfo = () => {
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
-  const isMobile = useMediaQuery("(max-width:880px)");
+  const isMobile = useMediaQuery("(max-width:600px)");
+  const isTablet = useMediaQuery("(max-width:880px)");
 
   useEffect(() => {
     if (
@@ -263,7 +264,7 @@ export const CreditProfileInfo = () => {
             )}
           </Stack>
         </Stack>
-        <StyledGridPrint $isMobile={isMobile}>
+        <StyledGridPrint $isMobile={isMobile} $isTablet={isTablet}>
           <JobStabilityCard
             isMobile={isMobile}
             requests={requests}

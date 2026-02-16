@@ -66,6 +66,6 @@ export const DocumentViewer = (props: IDocumentViewerProps) => {
         )}
       </StyledModal>
     </Blanket>,
-    node
+    node,
   );
 };
