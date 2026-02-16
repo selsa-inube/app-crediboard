@@ -80,7 +80,7 @@ export const dataTableExtraordinaryInstallmentEnum = {
     description: "Label for deletion action",
     i18n: {
       en: "Deletion",
-      es: "¿Está seguro de eliminar?",
+      es: "¿Estás seguro de eliminar?",
     },
   },
   delete: {
@@ -96,7 +96,7 @@ export const dataTableExtraordinaryInstallmentEnum = {
     description: "Confirmation text for deleting an extraordinary installment",
     i18n: {
       en: "Do you really want to delete this extra payment?",
-      es: "¿Realmente desea eliminar este pago extra?",
+      es: "¿Realmente deseas eliminar este pago extra?",
     },
   },
   cancel: {
