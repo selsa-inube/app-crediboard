@@ -78,6 +78,7 @@ export function DocumentValidationApprovalModal(
   const { lang } = useEnum();
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [isShowModal, setIsShowModal] = useState(false);
@@ -155,6 +156,7 @@ export function DocumentValidationApprovalModal(
     validateOnMount: true,
     onSubmit: async (values) => {
       try {
+        setIsLoading(true);
         const requirementByPackageId = entryIdToRequirementMap[entryId];
 
         if (!requirementByPackageId) return;
@@ -225,6 +227,8 @@ export function DocumentValidationApprovalModal(
       } catch (error) {
         setShowErrorModal(true);
         setMessageError(approvalsConfigEnum.titleError.i18n[lang]);
+      } finally {
+        setIsLoading(false);
       }
     },
   });
@@ -243,6 +247,7 @@ export function DocumentValidationApprovalModal(
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
+        setIsLoading(true);
         const response = await getSearchAllDocumentsById(
           id,
           user,
@@ -254,6 +259,8 @@ export function DocumentValidationApprovalModal(
       } catch (error) {
         setShowErrorModal(true);
         setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[lang]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -353,6 +360,7 @@ export function DocumentValidationApprovalModal(
       backButton={approvalsConfigEnum.cancel.i18n[lang]}
       nextButton={approvalsConfigEnum.confirm.i18n[lang]}
       disabledNext={!formik.values.observations || !formik.isValid}
+      isSendingData={isLoading}
     >
       <Stack direction="column" gap="24px">
         <Text type="body" size="large">

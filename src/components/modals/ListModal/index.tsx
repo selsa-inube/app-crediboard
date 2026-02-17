@@ -115,6 +115,8 @@ export const ListModal = (props: IListModalProps) => {
   const businessManagerCode = eventData.businessManager.publicCode;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+
+  const [isLoading, setIsLoading] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<
     { id: string; name: string; file: File }[]
   >([]);
@@ -260,6 +262,7 @@ export const ListModal = (props: IListModalProps) => {
     let filesSaved = false;
 
     try {
+      setIsLoading(true);
       if (uploadedFiles!.length) {
         for (const fileData of uploadedFiles!) {
           const abbreviatedName = fileData.name
@@ -278,7 +281,7 @@ export const ListModal = (props: IListModalProps) => {
             eventData.user.identificationDocumentNumber || "",
             eventData.token || "",
           );
-          console.log("****response: ", response);
+
           const docData = response && response[0] ? response[0] : response;
 
           if (docData && (docData.documentId || docData.documentCode)) {
@@ -290,7 +293,6 @@ export const ListModal = (props: IListModalProps) => {
           }
         }
 
-        console.log("savedDocs: ", savedDocs);
         if (setUploadedFiles) {
           setUploadedFiles([]);
         }
@@ -315,6 +317,7 @@ export const ListModal = (props: IListModalProps) => {
       } else {
         handleClose();
       }
+      setIsLoading(false);
     }
   };
 
@@ -528,7 +531,10 @@ export const ListModal = (props: IListModalProps) => {
             >
               {cancelButton}
             </Button>
-            <Button onClick={onSubmit ?? (() => handleClose())}>
+            <Button
+              onClick={onSubmit ?? (() => handleClose())}
+              loading={isLoading}
+            >
               {buttonLabel}
             </Button>
           </Stack>
