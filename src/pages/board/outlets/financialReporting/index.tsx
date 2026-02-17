@@ -162,10 +162,12 @@ export const FinancialReporting = () => {
     eventData.token,
     eventData.user.identificationDocumentNumber,
   ]);
+  const [showNoDocumentsModal, setShowNoDocumentsModal] = useState(false);
+  const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
 
   const fetchAndShowDocuments = async () => {
     if (!data?.creditRequestId || !user?.id || !businessUnitPublicCode) return;
-
+    setIsLoadingDocuments(true);
     try {
       const documents = await getSearchAllDocumentsById(
         data.creditRequestId,
@@ -175,17 +177,32 @@ export const FinancialReporting = () => {
         eventData.token || "",
       );
 
+      if (!documents) {
+        setShowNoDocumentsModal(true);
+        return;
+      }
+
       const dataToMap = Array.isArray(documents) ? documents : documents.value;
+
+      if (!dataToMap || dataToMap.length === 0) {
+        setShowNoDocumentsModal(true);
+        return;
+      }
+
       const documentsUser = dataToMap.map(
         (dataListDocument: IDocumentData) => ({
           id: dataListDocument.documentId,
           name: dataListDocument.fileName,
         }),
       );
+
       setDocument(documentsUser);
       setAttachDocuments(true);
     } catch (error) {
       console.error(error);
+      setShowNoDocumentsModal(true);
+    } finally {
+      setIsLoadingDocuments(false);
     }
   };
 
@@ -298,7 +315,9 @@ export const FinancialReporting = () => {
       }
     },
     buttonAttach: () => setShowAttachments(true),
-    buttonViewAttachments: () => fetchAndShowDocuments(),
+    buttonViewAttachments: async () => {
+      await fetchAndShowDocuments();
+    },
     buttonWarranty: () => setShowGuarantee(true),
     menuIcon: () => setShowMenu(true),
   });
@@ -347,7 +366,7 @@ export const FinancialReporting = () => {
   };
 
   const handleOnViewAttachments = () => {
-    setAttachDocuments(true);
+    fetchAndShowDocuments();
     setShowMenu(false);
   };
 
@@ -713,6 +732,24 @@ export const FinancialReporting = () => {
             <Text size="large" weight="bold" appearance="dark">
               {errorMessagesEnum.share.spinner.i18n[lang]}
             </Text>
+          </StyledContainerSpinner>
+        </BaseModal>
+      )}
+      {showNoDocumentsModal && (
+        <ErrorModal
+          message={
+            financialReportingLabelsEnum.attachments.errorModal.i18n[lang]
+          }
+          handleClose={() => setShowNoDocumentsModal(false)}
+        />
+      )}
+      {isLoadingDocuments && (
+        <BaseModal
+          title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
+          width={isMobile ? "300px" : "450px"}
+        >
+          <StyledContainerSpinner>
+            <Spinner size="large" appearance="primary" />
           </StyledContainerSpinner>
         </BaseModal>
       )}
