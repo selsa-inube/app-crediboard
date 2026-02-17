@@ -7,8 +7,6 @@ import { ICrediboardData } from "@context/AppContext/types";
 import { IPaymentConfiguration } from "./steps/config";
 import { ICustomerData } from "./types";
 
-
-
 export const messageNotFound = "No se encontraron resultados";
 
 export interface IAddProductModalProps {
@@ -121,7 +119,9 @@ export interface IAddProductModalUIProps {
     goBackText: string;
     goNextText: string;
     submitText: string;
-  }
+  };
+  eventData: ICrediboardData;
+  dataProspect: IProspect;
 }
 
 export interface IStep {
@@ -182,7 +182,7 @@ export const stepsAddProductEnum = {
       es: "Verificación",
     },
   },
-}
+};
 
 export const titleButtonTextAssistedEnum = {
   goBackText: {
@@ -239,7 +239,6 @@ export const noAvailablePaymentMethodsEnum = {
   },
 };
 
-
 export interface IFirstPaymentDate {
   id: string;
   value: string;
@@ -260,7 +259,7 @@ export interface IFormValues {
 export interface StepDetails {
   id: number | string;
   number: number;
-  name: string; 
+  name: string;
   description: string;
 }
 

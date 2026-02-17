@@ -3,6 +3,8 @@ import * as Yup from "yup";
 import { EnumType } from "@hooks/useEnum";
 
 import { stepsAddProductEnum } from "../config";
+import { IProspect } from "@services/prospect/types";
+import { ICrediboardData } from "@context/AppContext/types";
 
 export interface IResponsePaymentDatesChannel {
   creditLine: string;
@@ -63,6 +65,10 @@ export interface ITermSelection {
   quotaCapEnabled: boolean;
   maximumTermEnabled: boolean;
   isMobile: boolean;
+  dataProspect: IProspect;
+  businessUnitPublicCode: string;
+  businessManagerCode: string;
+  eventData: ICrediboardData;
   onChange: (values: {
     quotaCapValue: number;
     maximumTermValue: number;
@@ -168,7 +174,9 @@ export interface IAmountCaptureUI {
   isMobile: boolean;
 }
 
-export type PaymentChannelItem = IResponsePaymentDatesChannel | { paymentChannels: IResponsePaymentDatesChannel[] };
+export type PaymentChannelItem =
+  | IResponsePaymentDatesChannel
+  | { paymentChannels: IResponsePaymentDatesChannel[] };
 
 export const amountCaptureTexts = {
   label: "Valor que el cliente espera recibir.",
@@ -242,7 +250,7 @@ export const paymentConfigurationEnum = {
       i18n: { en: "First payment cycle", es: "Primer ciclo de pago" },
     },
   },
-    paymentDate: {
+  paymentDate: {
     label: {
       id: "paymentDate",
       code: "PaymentConfig_firstDateLabel",
@@ -319,7 +327,7 @@ export const loanDataEnum = {
       es: "Ej: 12",
     },
   },
-    quotaCapTitle: {
+  quotaCapTitle: {
     id: "maximumTermPlaceholder",
     code: "maximumTermPlaceholder",
     description: "Máximo sobre el tope de cuota",
@@ -363,7 +371,6 @@ export const loanDataEnum = {
   },
 };
 
-
 export const getVerificationAddProductConfig = (lang: EnumType) => ({
   creditLineInfo: {
     title: stepsAddProductEnum.creditLineSelection.i18n[lang],
@@ -377,7 +384,8 @@ export const getVerificationAddProductConfig = (lang: EnumType) => ({
     fields: {
       paymentMethod: dataAmountEnum.ordinaryPayment.i18n[lang],
       paymentCycle: paymentConfigurationEnum.paymentCycle.label.i18n[lang],
-      firstPaymentDate: paymentConfigurationEnum.firstPaymentDate.label.i18n[lang],
+      firstPaymentDate:
+        paymentConfigurationEnum.firstPaymentDate.label.i18n[lang],
     },
   },
   termInfo: {
