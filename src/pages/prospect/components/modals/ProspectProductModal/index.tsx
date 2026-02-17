@@ -13,17 +13,11 @@ import { useState, useEffect, useContext, useMemo } from "react";
 import { BaseModal } from "@components/modals/baseModal";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { getPaymentMethods } from "@services/creditLimit/getPaymentMethods";
-import { IBusinessUnitRules } from "@services/businessUnitRules/types";
-import {
-  IPaymentMethod,
-  IPaymentCycle,
-  IFirstPaymentCycle,
-} from "@services/creditLimit/getPaymentMethods/types";
+import { IPaymentMethod } from "@services/creditLimit/getPaymentMethods/types";
 import {
   handleChangeWithCurrency,
   validateCurrencyField,
 } from "@utils/formatData/currency";
-import { getEffectiveInterestRate } from "@services/lineOfCredit/getEffectiveInterestRate";
 import { IProspect } from "@services/prospect/types";
 import { updateCreditProduct } from "@services/prospect/updateCreditProduct";
 import { validateIncrement } from "@services/prospect/validateIncrement";
@@ -34,6 +28,8 @@ import { useEnum } from "@hooks/useEnum";
 import { validateCurrencyFieldTruncate } from "@utils/formatData/currency";
 import { CardGray } from "@components/cards/CardGray";
 import { capitalizeFirstLetter } from "@utils/formatData/text";
+import { getCreditLineGeneralTerms } from "@services/lineOfCredit/generalTerms/getCreditLineGeneralTerms";
+import { CreditLineGeneralTerms } from "@services/lineOfCredit/types";
 
 import { ScrollableContainer } from "./styles";
 import { areValuesEqual } from "./utils";
@@ -67,18 +63,6 @@ interface EditProductModalProps {
   iconAfter?: React.JSX.Element;
   clientIdentificationNumber: string;
   creditProductCode: string;
-}
-
-interface IRuleDecision {
-  decisionId?: string;
-  typeDecision?: string;
-  value?: string | { from: number; to: number };
-  ruleDataType?: "Alphabetical" | "Numerical" | "Range" | "Monetary";
-  ruleName?: string;
-  howToSetTheDecision?: string;
-  coverage?: number;
-  effectiveFrom?: string;
-  validUntil?: string;
 }
 
 function EditProductModal(props: EditProductModalProps) {
@@ -117,58 +101,66 @@ function EditProductModal(props: EditProductModalProps) {
   const [paymentMethodsList, setPaymentMethodsList] = useState<
     IPaymentMethod[]
   >([]);
-  const [paymentCyclesList, setPaymentCyclesList] = useState<IPaymentCycle[]>(
-    [],
-  );
-  const [firstPaymentCyclesList, setFirstPaymentCyclesList] = useState<
-    IFirstPaymentCycle[]
-  >([]);
 
   const [loanTermError, setLoanTermError] = useState<string>("");
   const [interestRateError, setInterestRateError] = useState<string>("");
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [generalTerms, setGeneralTerms] =
+    useState<CreditLineGeneralTerms | null>(null);
+  const [allowedRateCodes, setAllowedRateCodes] = useState<string[]>([]);
+
   const isMobile = useMediaQuery("(max-width: 550px)");
 
   useEffect(() => {
     const loadPaymentOptions = async () => {
       try {
-        const response = await getPaymentMethods(
-          businessUnitPublicCode,
-          businessManagerCode,
-          clientIdentificationNumber,
-          eventData.token,
-        );
+        const [paymentResponse, terms, rateDecisions] = await Promise.all([
+          getPaymentMethods(
+            businessUnitPublicCode,
+            businessManagerCode,
+            clientIdentificationNumber,
+            eventData.token,
+          ),
+          getCreditLineGeneralTerms(
+            businessUnitPublicCode,
+            businessManagerCode,
+            clientIdentificationNumber,
+            eventData.token,
+            initialValues.creditLine,
+            moneyDestination,
+          ),
+          postBusinessUnitRules(
+            businessUnitPublicCode,
+            businessManagerCode,
+            {
+              ruleName: "InterestRateType",
+              conditions: [
+                { condition: "LineOfCredit", value: initialValues.creditLine },
+              ],
+            },
+            eventData.token || "",
+          ),
+        ]);
 
-        if (!response) {
-          throw new Error(
-            editProductModalLabels.validationMessages.genericFetchError.i18n[
-              lang
-            ],
-          );
+        if (paymentResponse) {
+          setPaymentMethodsList(paymentResponse.paymentMethods);
         }
 
-        setPaymentMethodsList(response.paymentMethods);
-        const mappedPaymentCycles = response.paymentCycles.map((cycle) => ({
-          ...cycle,
-          label: paymentCycleMap[cycle.value] || cycle.label,
-        }));
-        setPaymentCyclesList(mappedPaymentCycles);
-        paymentCyclesList;
+        if (terms) {
+          setGeneralTerms(terms);
+        }
 
-        const mappedFirstPaymentCycles = response.firstPaymentCycles.map(
-          (cycle) => ({
-            ...cycle,
-            label: paymentCycleMap[cycle.value] || cycle.label,
-          }),
-        );
-        setFirstPaymentCyclesList(mappedFirstPaymentCycles);
-        firstPaymentCyclesList;
+        if (
+          Array.isArray(rateDecisions) &&
+          rateDecisions[0]?.value &&
+          typeof rateDecisions[0].value === "string"
+        ) {
+          setAllowedRateCodes(rateDecisions[0].value.split(","));
+        }
       } catch (error) {
         setPaymentMethodsList(defaultPaymentOptions);
         paymentMethodsList;
-        setPaymentCyclesList(defaultPaymentOptions);
-        setFirstPaymentCyclesList(defaultPaymentOptions);
       }
     };
 
@@ -181,25 +173,31 @@ function EditProductModal(props: EditProductModalProps) {
     initialValues.creditLine,
     lang,
   ]);
-  const amortizationTypesList = useMemo(() => {
-    if (!enums?.RepaymentStructure) return [];
 
-    return enums.RepaymentStructure.map((item) => ({
+  const amortizationTypesList = useMemo(() => {
+    if (!enums?.RepaymentStructure || !generalTerms) return [];
+
+    return enums.RepaymentStructure.filter((item) =>
+      generalTerms.amortizationType.includes(item.code),
+    ).map((item) => ({
       id: item.code,
       value: item.code,
       label: item.i18n[lang] || item.description || item.code,
     }));
-  }, [enums, lang]);
+  }, [enums, lang, generalTerms]);
 
   const rateTypesList = useMemo(() => {
     if (!enums?.InterestRateType) return [];
 
-    return enums.InterestRateType.map((item) => ({
+    return enums.InterestRateType.filter(
+      (item) =>
+        allowedRateCodes.length === 0 || allowedRateCodes.includes(item.code),
+    ).map((item) => ({
       id: item.code,
       value: item.code,
       label: item.i18n[lang] || item.description || item.code,
     }));
-  }, [enums, lang]);
+  }, [enums, lang, allowedRateCodes]);
 
   const isLoading = !enums;
 
@@ -218,23 +216,13 @@ function EditProductModal(props: EditProductModalProps) {
     value: string,
   ) => {
     formik.setFieldValue(name, value);
-
-    const initialValue = initialValues[name];
     if (fieldName === "termInMonths") {
-      if (value === initialValue) {
+      if (value !== initialValues[name]) {
+        setTermInMonthsModified(true);
+        validateLoanTerm(Number(value));
+      } else {
         setTermInMonthsModified(false);
         setLoanTermError("");
-      } else {
-        setTermInMonthsModified(true);
-
-        const numericValue = Number(value);
-        const currentAmount = Number(formik.values.creditAmount) || 0;
-
-        if (numericValue >= 0 && currentAmount >= 0) {
-          validateLoanTerm(numericValue, currentAmount);
-        } else {
-          setLoanTermError("");
-        }
       }
     }
   };
@@ -269,171 +257,46 @@ function EditProductModal(props: EditProductModalProps) {
     }
   };
 
-  const validateLoanAmount = async (amount: number): Promise<void> => {
-    try {
-      setLoanAmountError("");
+  const validateLoanAmount = (amount: number): void => {
+    if (!generalTerms) return;
+    setLoanAmountError("");
 
-      const payload: IBusinessUnitRules = {
-        ruleName: "LoanAmountLimit",
-        conditions: [
-          {
-            condition: "MoneyDestination",
-            value: moneyDestination,
-          },
-        ],
-      };
-
-      const response = await postBusinessUnitRules(
-        businessUnitPublicCode,
-        businessManagerCode,
-        payload,
-        eventData.token || "",
-      );
-
-      const decisions = response as unknown as IRuleDecision[];
-
-      if (decisions && Array.isArray(decisions) && decisions.length > 0) {
-        const decision = decisions[0];
-
-        if (typeof decision.value === "object" && decision.value !== null) {
-          const { from, to } = decision.value;
-
-          if (amount < from || amount > to) {
-            const message =
-              editProductModalLabels.validationMessages.loanAmountRange.i18n[
-                lang
-              ]
-                .replace("{amount}", amount.toLocaleString())
-                .replace("{from}", from.toLocaleString())
-                .replace("{to}", to.toLocaleString());
-
-            setLoanAmountError(message);
-          }
-        } else if (typeof decision.value === "string") {
-          const maxAmount = Number(decision.value);
-
-          if (!isNaN(maxAmount) && amount > maxAmount) {
-            const message =
-              editProductModalLabels.validationMessages.loanAmountMax.i18n[lang]
-                .replace("{amount}", amount.toLocaleString())
-                .replace("{max}", maxAmount.toLocaleString());
-
-            setLoanAmountError(message);
-          }
-        }
-      } else {
-        setLoanAmountError(
-          editProductModalLabels.validationMessages.genericFetchError.i18n[
-            lang
-          ],
-        );
-      }
-    } catch (error) {
-      console.error("Error validando monto del crédito:", error);
-      setLoanAmountError(
-        editProductModalLabels.validationMessages.genericFetchError.i18n[lang],
-      );
+    const { minAmount, maxAmount } = generalTerms;
+    if (amount < minAmount || amount > maxAmount) {
+      const message =
+        editProductModalLabels.validationMessages.loanAmountRange.i18n[lang]
+          .replace("{amount}", amount.toLocaleString())
+          .replace("{from}", minAmount.toLocaleString())
+          .replace("{to}", maxAmount.toLocaleString());
+      setLoanAmountError(message);
     }
   };
 
-  const validateLoanTerm = async (
-    term: number,
-    loanAmount: number,
-  ): Promise<void> => {
-    try {
-      setLoanTermError("");
+  const validateLoanTerm = (term: number): void => {
+    if (!generalTerms) return;
+    setLoanTermError("");
 
-      const payload: IBusinessUnitRules = {
-        ruleName: "LoanTerm",
-        conditions: [
-          {
-            condition: "MoneyDestination",
-            value: moneyDestination,
-          },
-          { condition: "LoanAmount", value: loanAmount },
-        ],
-      };
-
-      const response = await postBusinessUnitRules(
-        businessUnitPublicCode,
-        businessManagerCode,
-        payload,
-        eventData.token || "",
-      );
-
-      const decisions = response as unknown as IRuleDecision[];
-
-      if (decisions && Array.isArray(decisions) && decisions.length > 0) {
-        const decision = decisions[0];
-
-        if (typeof decision.value === "object" && decision.value !== null) {
-          const { from, to } = decision.value;
-
-          if (term < from || term > to) {
-            const message = validationMessagesEnum.loanTermOutOfRange.i18n[lang]
-              .replace("{min}", from.toLocaleString())
-              .replace("{max}", to.toLocaleString())
-              .replace("{term}", term.toLocaleString());
-
-            setLoanTermError(message);
-          }
-        } else if (typeof decision.value === "string") {
-          const rangeParts = decision.value.split("-");
-          if (rangeParts.length === 2) {
-            const [min, max] = rangeParts.map(Number);
-            if (!isNaN(min) && !isNaN(max) && (term < min || term > max)) {
-              const message = validationMessagesEnum.loanTermOutOfRange.i18n[
-                lang
-              ]
-                .replace("{min}", min.toLocaleString())
-                .replace("{max}", max.toLocaleString())
-                .replace("{term}", term.toLocaleString());
-
-              setLoanTermError(message);
-            }
-          }
-        }
-      } else {
-        setLoanTermError(
-          validationMessagesEnum.loanTermValidationFailed.i18n[lang],
-        );
-      }
-    } catch (error) {
-      console.error("Error validando plazo:", error);
-      setLoanTermError(
-        validationMessagesEnum.loanTermValidationFailed.i18n[lang],
-      );
+    const { minTerm, maxTerm } = generalTerms;
+    if (term < minTerm || term > maxTerm) {
+      const message = validationMessagesEnum.loanTermOutOfRange.i18n[lang]
+        .replace("{min}", minTerm.toString())
+        .replace("{max}", maxTerm.toString())
+        .replace("{term}", term.toString());
+      setLoanTermError(message);
     }
   };
 
-  const validateInterestRate = async (rate: number): Promise<void> => {
-    try {
-      setInterestRateError("");
+  const validateInterestRate = (rate: number): void => {
+    if (!generalTerms) return;
+    setInterestRateError("");
 
-      const response = await getEffectiveInterestRate(
-        businessUnitPublicCode,
-        businessManagerCode,
-        initialValues.creditLine,
-        clientIdentificationNumber,
-        eventData?.token || "",
-      );
-
-      const periodicInterestRateMin = response?.periodicInterestRateMin || 0;
-      const periodicInterestRateMax = response?.periodicInterestRateMax || 2;
-
-      if (rate <= periodicInterestRateMin || rate >= periodicInterestRateMax) {
-        const message = validationMessagesEnum.interestRateOutOfRange.i18n[lang]
-          .replace("{min}", periodicInterestRateMin.toLocaleString())
-          .replace("{max}", periodicInterestRateMax.toLocaleString())
-          .replace("{rate}", rate.toLocaleString());
-
-        setInterestRateError(message);
-      }
-    } catch (error) {
-      console.error("Error validando tasa de interés:", error);
-      setInterestRateError(
-        validationMessagesEnum.interestRateValidationError.i18n[lang],
-      );
+    const { minEffectiveInterestRate, maxEffectiveInterestRate } = generalTerms;
+    if (rate < minEffectiveInterestRate || rate > maxEffectiveInterestRate) {
+      const message = validationMessagesEnum.interestRateOutOfRange.i18n[lang]
+        .replace("{min}", minEffectiveInterestRate.toString())
+        .replace("{max}", maxEffectiveInterestRate.toString())
+        .replace("{rate}", rate.toString());
+      setInterestRateError(message);
     }
   };
 
@@ -442,27 +305,18 @@ function EditProductModal(props: EditProductModalProps) {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     handleChangeWithCurrency(formik, event);
-
     const rawValue = event.target.value
-      .replace(/\$/g, "")
-      .replace(/\./g, "")
+      .replace(/[$. ]/g, "")
       .replace(/,/g, ".")
       .trim();
-
     const numericValue = Number(rawValue);
 
-    const initialAmount = initialValues.creditAmount;
-    if (numericValue === initialAmount || rawValue === "") {
+    if (numericValue !== initialValues.creditAmount && numericValue > 0) {
+      setCreditAmountModified(true);
+      validateLoanAmount(numericValue);
+    } else {
       setCreditAmountModified(false);
       setLoanAmountError("");
-    } else {
-      setCreditAmountModified(true);
-
-      if (numericValue > 0) {
-        validateLoanAmount(numericValue);
-      } else {
-        setLoanAmountError("");
-      }
     }
   };
 
