@@ -285,7 +285,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
         nextButton={dataReportEnum.close.i18n[lang]}
         handleNext={handleClose}
         handleClose={handleClose}
-        width={!isMobile ? "1300px" : "320px"}
+        width={!isMobile ? "1064px" : "320px"}
         height={isMobile ? "auto" : "630px"}
       >
         <Stack direction="column" gap="16px">
