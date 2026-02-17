@@ -74,7 +74,7 @@ export const frcConfigEnum = {
     description: "Total score label",
     i18n: {
       en: "Total score",
-      es: "Puntaje total",
+      es: "Score de riesgo",
     },
   },
   seniorityLabel: {

@@ -26,6 +26,7 @@ import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
 import { optionFlagsEnum } from "@pages/board/outlets/financialReporting/config";
 import { useEnum } from "@hooks/useEnum";
 
+import { IUploadedFileReturn } from "../RequirementsModals/DocumentValidationApprovalModal/config";
 import { ErrorModal } from "../ErrorModal";
 import { DocumentViewer } from "../DocumentViewer";
 import {
@@ -69,7 +70,9 @@ export interface IListModalProps {
   isViewing?: boolean;
   uploadedFiles?: IDocumentUpload[];
   onlyDocumentReceived?: boolean;
-  handleClose: (filesSaved?: boolean) => void;
+  handleClose: (
+    uploadedDocs?: IUploadedFileReturn[] | undefined,
+  ) => void | Promise<void>;
   handleSubmit?: () => void;
   onSubmit?: () => void;
   setUploadedFiles?: React.Dispatch<React.SetStateAction<IDocumentUpload[]>>;
@@ -112,6 +115,8 @@ export const ListModal = (props: IListModalProps) => {
   const businessManagerCode = eventData.businessManager.publicCode;
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+
+  const [isLoading, setIsLoading] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<
     { id: string; name: string; file: File }[]
   >([]);
@@ -249,13 +254,15 @@ export const ListModal = (props: IListModalProps) => {
 
   const handleUpload = async () => {
     if (uploadMode === "local") {
-      handleClose(false);
+      handleClose();
       return;
     }
 
+    const savedDocs: IUploadedFileReturn[] = [];
     let filesSaved = false;
 
     try {
+      setIsLoading(true);
       if (uploadedFiles!.length) {
         for (const fileData of uploadedFiles!) {
           const abbreviatedName = fileData.name
@@ -265,7 +272,7 @@ export const ListModal = (props: IListModalProps) => {
             .replace(/[^a-zA-Z0-9]/g, "")
             .substring(0, 10);
 
-          await saveDocument(
+          const response = await saveDocument(
             businessUnitPublicCode,
             businessManagerCode,
             id,
@@ -274,6 +281,16 @@ export const ListModal = (props: IListModalProps) => {
             eventData.user.identificationDocumentNumber || "",
             eventData.token || "",
           );
+
+          const docData = response && response[0] ? response[0] : response;
+
+          if (docData && (docData.documentId || docData.documentCode)) {
+            savedDocs.push({
+              documentId: docData.documentId,
+              documentCode: docData.documentCode,
+              abbreviatedName: abbreviatedName,
+            });
+          }
         }
 
         if (setUploadedFiles) {
@@ -295,7 +312,12 @@ export const ListModal = (props: IListModalProps) => {
         optionFlagsEnum.appearanceError.i18n[lang] as FlagAppearance,
       );
     } finally {
-      handleClose(filesSaved);
+      if (filesSaved) {
+        handleClose(savedDocs);
+      } else {
+        handleClose();
+      }
+      setIsLoading(false);
     }
   };
 
@@ -354,7 +376,7 @@ export const ListModal = (props: IListModalProps) => {
           <Text type="headline" size="small">
             {title}
           </Text>
-          <StyledContainerClose onClick={() => handleClose(false)}>
+          <StyledContainerClose onClick={() => handleClose()}>
             <Stack alignItems="center" gap="8px">
               <Text>{listModalDataEnum.close.i18n[lang]}</Text>
               <Icon
@@ -496,7 +518,7 @@ export const ListModal = (props: IListModalProps) => {
           </>
         ) : (
           <Stack justifyContent="flex-end" margin="16px 0 0 0" gap="16px">
-            <Button onClick={() => handleClose(false)}>{buttonLabel}</Button>
+            <Button onClick={() => handleClose()}>{buttonLabel}</Button>
           </Stack>
         )}
         {cancelButton && optionButtons && (
@@ -509,7 +531,10 @@ export const ListModal = (props: IListModalProps) => {
             >
               {cancelButton}
             </Button>
-            <Button onClick={onSubmit ?? (() => handleClose(false))}>
+            <Button
+              onClick={onSubmit ?? (() => handleClose())}
+              loading={isLoading}
+            >
               {buttonLabel}
             </Button>
           </Stack>

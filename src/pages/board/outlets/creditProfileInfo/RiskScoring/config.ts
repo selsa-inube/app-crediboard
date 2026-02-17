@@ -4,7 +4,7 @@ export const dataRiskScoringEnum = {
     description: "Label for the total risk scoring point",
     i18n: {
       en: "Total score",
-      es: "Puntaje total",
+      es: "Score de riesgo",
     },
   },
   score: {
@@ -12,7 +12,7 @@ export const dataRiskScoringEnum = {
     description: "Label for the total risk scoring point",
     i18n: {
       en: "Risk score",
-      es: "Puntaje total",
+      es: "Score de riesgo",
     },
   },
   noData: {

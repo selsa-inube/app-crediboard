@@ -670,6 +670,14 @@ export const simulationFormLabels = {
   },
 };
 
+export interface IUpdateProductPayload {
+  creditProductCode: string;
+  creditRequestCode: string;
+  interestRate?: number;
+  loanTerm?: number;
+  loanAmount?: number;
+}
+
 export {
   creditLineOptions,
   paymentMethodOptions,

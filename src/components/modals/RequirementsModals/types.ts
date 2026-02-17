@@ -24,6 +24,7 @@ export interface DocumentItem {
   documentManagmentReference: string;
   abbreviatedName: string;
   fileName: string;
+  documentCode?: string;
 }
 
 export interface IApprovalHuman {

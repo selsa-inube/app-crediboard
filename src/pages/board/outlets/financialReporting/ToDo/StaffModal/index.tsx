@@ -22,6 +22,7 @@ import { useEnum } from "@hooks/useEnum";
 
 import { changeUsersByCreditRequest } from "./utils";
 import { txtFlagsEnum, errorMessages } from "../config";
+import { traceObserver } from "../../config";
 
 export interface StaffModalProps {
   commercialManager: string;
@@ -244,6 +245,7 @@ export function StaffModal(props: StaffModalProps) {
         appearance: "success",
         duration: 5000,
       });
+      traceObserver.notify({});
     } catch (error) {
       setErrorMessage(
         errorMessages.patchChangeUsersByCreditRequest.description,
@@ -254,7 +256,6 @@ export function StaffModal(props: StaffModalProps) {
       handleToggleModal();
     }
   };
-
   const handleToggleModal = () => {
     if (handleRetry) {
       handleRetry();

@@ -140,6 +140,7 @@ export const Requirements = (props: IRequirementsProps) => {
           creditRequestCode,
           eventData.token || "",
         );
+
         setRawRequirements(data);
 
         if (!Array.isArray(data) || data.length === 0) {
@@ -437,8 +438,8 @@ export const Requirements = (props: IRequirementsProps) => {
   });
 
   const initialValues = createInitialRequirementValues({
-    requirementCatalogName: requirementName,
-    descriptionUse: descriptionUseValue,
+    requirementCatalogName: descriptionUseValue,
+    descriptionUse: requirementName,
     typeOfRequirementToEvaluate: typeOfRequirementToEvaluated,
     rawRequirements,
     creditRequestCode,
@@ -735,6 +736,7 @@ export const Requirements = (props: IRequirementsProps) => {
             rawRequirements={rawRequirements}
             entryIdToRequirementMap={entryIdToRequirementMap}
             businessManagerCode={businessManagerCode}
+            handleClose={() => {}}
           />
         )}
       {showAprovalsModal &&
