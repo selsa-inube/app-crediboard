@@ -10,6 +10,7 @@ import {
   formatYesNo,
   formatBiologicalSex,
   capitalizeFirstLetter,
+  formatNoData,
 } from "../EditDisburment/utils";
 import {
   disbursementGeneralEnum,
@@ -96,6 +97,14 @@ export function DisbursementExternal(props: IDisbursement) {
         <CardGray
           label={disbursemenOptionAccountEnum.labelAccountNumber.i18n[lang]}
           placeHolder={data.accountNumber}
+        />
+        <CardGray
+          label={disbursemenOptionAccountEnum.paymentOrderReference.i18n[lang]}
+          placeHolder={formatNoData(data.paymentOrderReference)}
+        />
+        <CardGray
+          label={disbursemenOptionAccountEnum.disbursemerntRefernce.i18n[lang]}
+          placeHolder={formatNoData(data.disbursementReference)}
         />
       </Grid>
       <CardGray
