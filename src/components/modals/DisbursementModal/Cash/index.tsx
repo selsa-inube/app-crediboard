@@ -4,8 +4,17 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { CardGray } from "@components/cards/CardGray";
 import { formatPrimaryDate } from "@utils/formatData/date";
 
-import { formatObservation, formatYesNo, formatBiologicalSex, capitalizeFirstLetter } from "../EditDisburment/utils";
-import { disbursementGeneralEnum, disbursemenOptionAccountEnum } from "../config";
+import {
+  formatObservation,
+  formatYesNo,
+  formatBiologicalSex,
+  capitalizeFirstLetter,
+  formatNoData,
+} from "../EditDisburment/utils";
+import {
+  disbursementGeneralEnum,
+  disbursemenOptionAccountEnum,
+} from "../config";
 import { dataTabsDisbursement } from "../types";
 
 export interface IDisbursement {
@@ -71,6 +80,14 @@ export function DisbursementCash(props: IDisbursement) {
         <CardGray
           label={disbursemenOptionAccountEnum.labelCity.i18n[lang]}
           placeHolder={capitalizeFirstLetter(data.payeeCityOfResidence)}
+        />
+        <CardGray
+          label={disbursemenOptionAccountEnum.paymentOrderReference.i18n[lang]}
+          placeHolder={formatNoData(data.paymentOrderReference)}
+        />
+        <CardGray
+          label={disbursemenOptionAccountEnum.disbursemerntRefernce.i18n[lang]}
+          placeHolder={formatNoData(data.disbursementReference)}
         />
       </Grid>
       <CardGray
