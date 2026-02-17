@@ -140,7 +140,7 @@ export const Requirements = (props: IRequirementsProps) => {
           creditRequestCode,
           eventData.token || "",
         );
-        console.log("getAllPackagesOfRequirementsById: ", data);
+
         setRawRequirements(data);
 
         if (!Array.isArray(data) || data.length === 0) {
@@ -215,7 +215,7 @@ export const Requirements = (props: IRequirementsProps) => {
 
           return "";
         };
-        console.log("data: ", data);
+
         data.forEach((item) => {
           item.requirementsByPackage.forEach((req) => {
             const type = req.typeOfRequirementToEvaluate;
@@ -438,8 +438,8 @@ export const Requirements = (props: IRequirementsProps) => {
   });
 
   const initialValues = createInitialRequirementValues({
-    requirementCatalogName: requirementName,
-    descriptionUse: descriptionUseValue,
+    requirementCatalogName: descriptionUseValue,
+    descriptionUse: requirementName,
     typeOfRequirementToEvaluate: typeOfRequirementToEvaluated,
     rawRequirements,
     creditRequestCode,
