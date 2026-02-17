@@ -52,7 +52,9 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
     setCurrentStep,
     isSendingData,
     lang,
-    assistedControls
+    assistedControls,
+    dataProspect,
+    eventData,
   } = props;
 
   return (
@@ -149,7 +151,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                                 description={lineName}
                                 disabled={false}
                                 isSelected={formData.selectedProducts.includes(
-                                  lineName
+                                  lineName,
                                 )}
                                 onSelect={() => {
                                   handleFormChange({
@@ -160,7 +162,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                                 lang={lang}
                               />
                             </Stack>
-                          )
+                          ),
                         )
                       ) : (
                         <Text type="body" size="medium">
@@ -207,7 +209,8 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                 stepsAddProductEnum.paymentConfiguration.id &&
                 loading && <SkeletonLine animated width="100%" height="60px" />}
 
-              {currentStepsNumber.id === stepsAddProductEnum.amountCapture.id && (
+              {currentStepsNumber.id ===
+                stepsAddProductEnum.amountCapture.id && (
                 <AmountCapture
                   creditLine={formData.creditLine}
                   amount={formData.creditAmount}
@@ -222,7 +225,8 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                 />
               )}
 
-              {currentStepsNumber.id === stepsAddProductEnum.termSelection.id && (
+              {currentStepsNumber.id ===
+                stepsAddProductEnum.termSelection.id && (
                 <TermSelection
                   quotaCapValue={formData.quotaCapValue}
                   maximumTermValue={formData.maximumTermValue}
@@ -238,9 +242,14 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
                     });
                   }}
                   onFormValid={setIsCurrentFormValid}
+                  dataProspect={dataProspect}
+                  businessUnitPublicCode={businessUnitPublicCode}
+                  businessManagerCode={businessManagerCode}
+                  eventData={eventData}
                 />
               )}
-              {currentStepsNumber.id === stepsAddProductEnum.verification.id && (
+              {currentStepsNumber.id ===
+                stepsAddProductEnum.verification.id && (
                 <VerificationDebtorAddModal
                   formData={formData}
                   creditLineTerms={creditLineTerms}

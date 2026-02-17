@@ -177,6 +177,8 @@ export const ExtraordinaryPaymentModal = (
                 prospectData?.moneyDestinationAbbreviatedName || ""
               }
               creditRequestCode={creditRequestCode || ""}
+              businessManagerCode={businessManagerCode}
+              maxLoanTerm={prospectData?.creditProducts[0]?.loanTerm || 0}
             />
           )}
           {isModalOpen && (
