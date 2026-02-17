@@ -8,6 +8,7 @@ import {
   inube,
   useMediaQuery,
 } from "@inubekit/inubekit";
+import * as Yup from "yup";
 
 import { BaseModal } from "@components/modals/baseModal";
 import {
@@ -29,6 +30,8 @@ import { calculateSeriesForExtraordinaryInstallment } from "@services/creditLimi
 
 import { defaultFrequency, dataAddSeriesModal, frequencyTypes } from "./config";
 import { IOption, ICycleOption } from "./types";
+import { IPayrollSpecialBenefitAvailable } from "@services/creditLimit/types";
+import { getPayrollSpecialBenefitAvailableValue } from "@services/creditLimit/getPayrollSpecialBenefitAvailableValue";
 
 export interface AddSeriesModalProps {
   setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -78,6 +81,8 @@ export interface AddSeriesModalProps {
   >;
   creditRequestCode: string;
   isEdit?: boolean;
+  maxLoanTerm: number;
+  businessManagerCode: string;
 }
 
 export function AddSeriesModal(props: AddSeriesModalProps) {
@@ -97,6 +102,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     setShowErrorModal,
     toggleAddSeriesModal,
     creditRequestCode,
+    maxLoanTerm,
+    businessManagerCode,
   } = props;
 
   const { businessUnitSigla, eventData } = useContext(AppContext);
@@ -106,13 +113,29 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [dateOptions, setDateOptions] = useState<IOption[]>([]);
   const [cycleOptions, setCycleOptions] = useState<ICycleOption[]>([]);
+  const [payrollSpecial, setPayrollSpecial] = useState<
+    IPayrollSpecialBenefitAvailable[] | null
+  >(null);
 
   const frequencyOptions: IOption[] = [
     { id: defaultFrequency, label: defaultFrequency, value: defaultFrequency },
   ];
 
+  const years = Math.floor(maxLoanTerm / 12);
+  const maxValue = payrollSpecial?.[0]?.availableValue ?? 0;
+
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
+
+  const validationSchema = Yup.object({
+    value: Yup.number()
+      .required("")
+      .positive(dataAddSeriesModal.valueGreater.i18n[lang])
+      .max(years, `El valor no puede exceder ${years} Años`),
+    installmentAmount: Yup.number()
+      .required("")
+      .max(maxValue, `El valor no puede exceder ${currencyFormat(maxValue)}`),
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -123,10 +146,38 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       value: "",
       frequency: "",
     },
+    validationSchema,
     onSubmit: (values) => {
       onSubmit?.(values);
     },
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!cycleOptions) return;
+      try {
+        const data = await getPayrollSpecialBenefitAvailableValue(
+          businessUnitPublicCode,
+          businessManagerCode,
+          cycleOptions[0].extraordinaryCycleType,
+          prospectData?.borrowers[0]?.borrowerIdentificationNumber || "",
+          years.toString(),
+          lineOfCreditAbbreviatedName,
+          moneyDestinationAbbreviatedName,
+        );
+        setPayrollSpecial(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    cycleOptions,
+    lineOfCreditAbbreviatedName,
+    moneyDestinationAbbreviatedName,
+  ]);
 
   const handleFieldChange = useCallback(
     (name: string, value: string) => {
@@ -297,7 +348,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
   const handleInstallmentAmountChange = (name: string, value: string) => {
     const parsed = parseCurrencyString(value);
-    formik.setFieldValue(name, currencyFormat(parsed, false));
+    formik.setFieldValue(name, parsed);
     if (!isNaN(parsed) && setInstallmentState) {
       setInstallmentState((prev) => ({
         ...prev,
@@ -575,6 +626,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             label={dataAddSeriesModal.labelAmount.i18n[lang]}
             placeholder={dataAddSeriesModal.placeHolderAmount.i18n[lang]}
             type="number"
+            message={formik.errors.value}
+            status={formik.errors.value ? "invalid" : "pending"}
             onChange={formik.handleChange}
             value={formik.values.value}
             fullwidth
@@ -594,6 +647,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
               event.target.value,
             )
           }
+          message={formik.errors.installmentAmount}
+          status={formik.errors.installmentAmount ? "invalid" : "pending"}
           value={
             installmentState?.installmentAmount
               ? currencyFormat(installmentState.installmentAmount, false)

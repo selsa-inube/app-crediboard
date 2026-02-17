@@ -1,8 +1,14 @@
 import * as Yup from "yup";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { currencyFormat } from "@utils/formatData/currency";
 import { useEnum } from "@hooks/useEnum";
+import {
+  IPaymentCapacity,
+  IPaymentCapacityResponse,
+} from "@services/creditLimit/types";
+import { getBorrowerPaymentCapacityById } from "@services/creditLimit/getBorrowePaymentCapacity";
+import { getPropertyValue } from "@utils/mappingData/mappings";
 
 import { TermSelectionUI } from "./interface";
 import {
@@ -18,9 +24,16 @@ export function TermSelection(props: ITermSelection) {
     quotaCapEnabled,
     maximumTermEnabled,
     isMobile,
+    dataProspect,
+    businessManagerCode,
+    businessUnitPublicCode,
+    eventData,
     onChange,
     onFormValid,
   } = props;
+
+  const [paymentCapacityData, setPaymentCapacityData] =
+    useState<IPaymentCapacityResponse | null>(null);
 
   const { lang } = useEnum();
 
@@ -42,7 +55,7 @@ export function TermSelection(props: ITermSelection) {
         maximumTermEnabled: false,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initialValues: ITermSelectionValuesMain = {
@@ -55,11 +68,32 @@ export function TermSelection(props: ITermSelection) {
     maximumTermValue: maximumTermEnabled ? maximumTermValue : "",
   };
 
+  const paymentCapacity = paymentCapacityData?.paymentCapacity || 0;
+
   const validationSchema = Yup.object().shape({
     quotaCapValue: Yup.string().when(
       "toggles.quotaCapToggle",
       (quotaCapToggle, schema) =>
-        quotaCapToggle ? schema.required("") : schema,
+        quotaCapToggle
+          ? schema
+              .required("Campo requerido")
+              .test("is-number", "Debe ser un número válido", (value) => {
+                const numericValue = Number(
+                  String(value).replace(VALIDATED_NUMBER_REGEX, ""),
+                );
+                return !isNaN(numericValue);
+              })
+              .test(
+                "max-limit",
+                `El valor no puede exceder ${currencyFormat(paymentCapacity)}`,
+                (value) => {
+                  const numericValue = Number(
+                    String(value).replace(VALIDATED_NUMBER_REGEX, ""),
+                  );
+                  return numericValue <= paymentCapacity;
+                },
+              )
+          : schema,
     ),
     maximumTermValue: Yup.string().when(
       "toggles.maximumTermToggle",
@@ -117,7 +151,7 @@ export function TermSelection(props: ITermSelection) {
     rawValue: string,
     setFieldValue: (field: string, value: string | number) => void,
   ) => {
-    const numericValue = Number(rawValue.replace(VALIDATED_NUMBER_REGEX, ""));
+    const numericValue = Number(rawValue.replace(/\D/g, ""));
     const formattedValue = currencyFormat(numericValue);
 
     setFieldValue("quotaCapValue", formattedValue);
@@ -168,6 +202,69 @@ export function TermSelection(props: ITermSelection) {
     });
   };
 
+  const borrower = dataProspect?.borrowers[0];
+
+  useEffect(() => {
+    const fetchCapacityAnalysis = async () => {
+      if (!borrower) {
+        return;
+      }
+      const data: IPaymentCapacity = {
+        clientIdentificationNumber: borrower.borrowerIdentificationNumber,
+        dividends: parseFloat(
+          getPropertyValue(borrower.borrowerProperties, "Dividends") || "0",
+        ),
+        financialIncome: parseFloat(
+          getPropertyValue(borrower.borrowerProperties, "FinancialIncome") ||
+            "0",
+        ),
+        leases: parseFloat(
+          getPropertyValue(borrower.borrowerProperties, "Leases") || "0",
+        ),
+        otherNonSalaryEmoluments: parseFloat(
+          getPropertyValue(
+            borrower.borrowerProperties,
+            "OtherNonSalaryEmoluments",
+          ) || "0",
+        ),
+        pensionAllowances: parseFloat(
+          getPropertyValue(borrower.borrowerProperties, "PensionAllowances") ||
+            "0",
+        ),
+        periodicSalary: parseFloat(
+          getPropertyValue(borrower.borrowerProperties, "PeriodicSalary") ||
+            "0",
+        ),
+        personalBusinessUtilities: parseFloat(
+          getPropertyValue(
+            borrower.borrowerProperties,
+            "PersonalBusinessUtilities",
+          ) || "0",
+        ),
+        professionalFees: parseFloat(
+          getPropertyValue(borrower.borrowerProperties, "ProfessionalFees") ||
+            "0",
+        ),
+        livingExpenseToIncomeRatio: 0,
+      };
+
+      try {
+        const paymentCapacity = await getBorrowerPaymentCapacityById(
+          businessUnitPublicCode,
+          businessManagerCode,
+          data,
+          eventData.token,
+        );
+        setPaymentCapacityData(paymentCapacity ?? null);
+      } catch (error: unknown) {
+        console.log(error);
+      }
+    };
+
+    fetchCapacityAnalysis();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <TermSelectionUI
       isMobile={isMobile}
@@ -178,7 +275,7 @@ export function TermSelection(props: ITermSelection) {
       handleQuotaCapValueChange={handleQuotaCapValueChange}
       handleMaximumTermToggleChange={handleMaximumTermToggleChange}
       handleMaximumTermValueChange={handleMaximumTermValueChange}
-      lang={lang} 
+      lang={lang}
     />
   );
 }

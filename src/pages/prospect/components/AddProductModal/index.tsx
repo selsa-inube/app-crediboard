@@ -303,6 +303,8 @@ function AddProductModal(props: IAddProductModalProps) {
       isSendingData={isSendingData}
       lang={lang}
       assistedControls={assistedControls}
+      dataProspect={dataProspect}
+      eventData={eventData}
     />
   );
 }

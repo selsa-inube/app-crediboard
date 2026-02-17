@@ -1,7 +1,7 @@
 import { Formik, Form, Field } from "formik";
 import { Stack, Text, Divider, Toggle, Textfield } from "@inubekit/inubekit";
 
-import { Fieldset } from "@components/data/Fieldset"; 
+import { Fieldset } from "@components/data/Fieldset";
 
 import { ITermSelectionUI, loanDataEnum } from "../config";
 
@@ -15,7 +15,7 @@ export function TermSelectionUI(props: ITermSelectionUI) {
     handleQuotaCapValueChange,
     handleMaximumTermToggleChange,
     handleMaximumTermValueChange,
-    lang
+    lang,
   } = props;
 
   return (
@@ -28,39 +28,24 @@ export function TermSelectionUI(props: ITermSelectionUI) {
       validateOnMount={true}
       onSubmit={() => {}}
     >
-      {({ values, handleBlur, setFieldValue }) => (
+      {({ values, errors, handleBlur, setFieldValue }) => (
         <Form>
-          <Stack
-            direction="column"
-            gap="16px"
-            padding="0px 16px"
-            height="auto"
-          >
-            <Fieldset
-              borderColor="none"
-              >
+          <Stack direction="column" gap="16px" padding="0px 16px" height="auto">
+            <Fieldset borderColor="none">
               <Stack direction="column" gap="16px" padding="16px">
                 <Stack direction="column" gap="16px">
                   <Text
                     type="body"
                     size="medium"
                     appearance={
-                      !values.toggles.maximumTermToggle 
-                      ? "dark" 
-                      : "gray"
+                      !values.toggles.maximumTermToggle ? "dark" : "gray"
                     }
                   >
                     {loanDataEnum.quotaCapTitle.i18n[lang]}
                   </Text>
                   <Stack
-                    alignItems={
-                      isMobile 
-                      ? "initial" 
-                      : "center"}
-                    direction={
-                      isMobile 
-                      ? "column" 
-                      : "row"}
+                    alignItems={isMobile ? "initial" : "center"}
+                    direction={isMobile ? "column" : "row"}
                     gap="16px"
                   >
                     <Stack gap="8px" alignItems="center">
@@ -82,9 +67,7 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         size="large"
                         weight="bold"
                         appearance={
-                          values.toggles.quotaCapToggle 
-                          ? "success" 
-                          : "danger"
+                          values.toggles.quotaCapToggle ? "success" : "danger"
                         }
                       >
                         {values.toggles.quotaCapToggle
@@ -93,11 +76,7 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                       </Text>
                     </Stack>
 
-                    <Stack width={
-                      isMobile 
-                      ? "100%" 
-                      : "auto"
-                      }>
+                    <Stack width={isMobile ? "100%" : "auto"}>
                       <Textfield
                         id="quotaCap"
                         name="quotaCapValue"
@@ -108,6 +87,8 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         fullwidth={isMobile}
                         disabled={!values.toggles.quotaCapToggle}
                         value={values.quotaCapValue}
+                        status={errors.quotaCapValue ? "invalid" : "pending"}
+                        message={errors.quotaCapValue}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           handleQuotaCapValueChange(
                             e.target.value,
@@ -128,25 +109,15 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                       type="body"
                       size="medium"
                       appearance={
-                        !values.toggles.quotaCapToggle 
-                        ? "dark" 
-                        : "gray"
+                        !values.toggles.quotaCapToggle ? "dark" : "gray"
                       }
                     >
                       {loanDataEnum.maximumTermTitle.i18n[lang]}
                     </Text>
                     <Stack
                       gap="16px"
-                      alignItems={
-                        isMobile 
-                        ? "initial" 
-                        : "center"
-                      }
-                      direction={
-                        isMobile 
-                        ? "column" 
-                        : "row"
-                      }
+                      alignItems={isMobile ? "initial" : "center"}
+                      direction={isMobile ? "column" : "row"}
                     >
                       <Stack gap="8px" alignItems="center">
                         <Field
@@ -186,7 +157,9 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                           id="maximumTerm"
                           name="maximumTermValue"
                           label={loanDataEnum.maximumTermLabel.i18n[lang]}
-                          placeholder={loanDataEnum.maximumTermPlaceholder.i18n[lang]}
+                          placeholder={
+                            loanDataEnum.maximumTermPlaceholder.i18n[lang]
+                          }
                           size="compact"
                           type="number"
                           disabled={!values.toggles.maximumTermToggle}
