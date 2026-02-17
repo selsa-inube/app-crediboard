@@ -10,6 +10,18 @@ export const optionButtons: IOptionButtons = {
   onClick: () => {},
 };
 
+export interface IUploadedFileReturn {
+  documentId: string;
+  documentCode: string;
+  abbreviatedName: string;
+}
+
+export interface IUploadedFileReturn {
+  documentId: string;
+  documentCode: string;
+  abbreviatedName: string;
+}
+
 export const optionButtonsEnum = {
   attachFile: {
     id: "attachFile",
@@ -20,7 +32,7 @@ export const optionButtonsEnum = {
       es: "Adjuntar archivo",
     },
   },
-}
+};
 
 export const approvalsConfigEnum = {
   title: {
@@ -100,8 +112,8 @@ export const approvalsConfigEnum = {
       es: "No se pudo obtener el documento. Intenta de nuevo.",
     },
     maxLength: {
-    code: "Approvals_titleErrorDocument",
-    value: 200,
+      code: "Approvals_titleErrorDocument",
+      value: 200,
     },
   },
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useFormik } from "formik";
 import { MdOutlineFileUpload } from "react-icons/md";
 import * as Yup from "yup";
@@ -27,6 +27,7 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
 
+import { IUploadedFileReturn } from "./config";
 import { DocumentItem, IApprovalDocumentaries } from "../types";
 import {
   approvalsConfigEnum,
@@ -51,6 +52,7 @@ interface IDocumentValidationApprovalModalsProps {
   onConfirm?: (values: IApprovalDocumentaries) => void;
   onCloseModal?: () => void;
   eventData: ICrediboardData;
+  handleClose: (uploadedDocs?: IUploadedFileReturn[]) => void;
 }
 
 export function DocumentValidationApprovalModal(
@@ -74,7 +76,10 @@ export function DocumentValidationApprovalModal(
     onCloseModal,
   } = props;
   const { lang } = useEnum();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [isShowModal, setIsShowModal] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<
@@ -85,6 +90,9 @@ export function DocumentValidationApprovalModal(
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [newlyUploadedDocumentCodes, setNewlyUploadedDocumentCodes] = useState<
+    string[]
+  >([]);
 
   const optionsAnswer = useMemo(
     () =>
@@ -106,14 +114,41 @@ export function DocumentValidationApprovalModal(
     observations: Yup.string()
       .max(200, validationMessages.limitedTxt)
       .required(validationMessages.required),
-    selectedDocumentIds: Yup.object().test(
-      (value) => value && Object.values(value).some(Boolean),
-    ),
+    selectedDocumentIds: Yup.object().test((value) => {
+      const hasSelected = value && Object.values(value).some(Boolean);
+      const hasUploaded = newlyUploadedDocumentCodes.length > 0;
+      return hasSelected || hasUploaded;
+    }),
   });
 
   const getRequirementCode = (codeKey: string) => {
     return requirementStatus.find((item) => item.Code === codeKey)?.Code || "";
   };
+
+  const fetchDocuments = useCallback(async () => {
+    try {
+      const response = await getSearchAllDocumentsById(
+        id,
+        user,
+        businessUnitPublicCode,
+        businessManagerCode,
+        eventData.token || "",
+      );
+      setDocuments(response);
+      return response;
+    } catch (error) {
+      setShowErrorModal(true);
+      setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[lang]);
+      return [];
+    }
+  }, [
+    id,
+    user,
+    businessUnitPublicCode,
+    businessManagerCode,
+    eventData.token,
+    lang,
+  ]);
 
   const formik = useFormik({
     initialValues: initialValues || {},
@@ -121,15 +156,25 @@ export function DocumentValidationApprovalModal(
     validateOnMount: true,
     onSubmit: async (values) => {
       try {
+        setIsLoading(true);
         const requirementByPackageId = entryIdToRequirementMap[entryId];
 
         if (!requirementByPackageId) return;
 
         const selectedIds = values.selectedDocumentIds || {};
-        const selectedDocuments = documents.filter(
+        const selectedExistingDocuments = documents.filter(
           (doc) => selectedIds[doc.documentId],
         );
 
+        const existingCodes = selectedExistingDocuments.map(
+          (doc: DocumentItem) => doc.documentCode || doc.documentId,
+        );
+
+        const allDocumentCodesToRelate = [
+          ...existingCodes,
+          ...newlyUploadedDocumentCodes,
+        ];
+        console.log("allDocumentCodesToRelate: ", allDocumentCodesToRelate);
         let nextStatusValue = "";
         if (formik.values.answer === optionsAnswer[0].label) {
           nextStatusValue = getRequirementCode("DOCUMENT_STORED_AND_VALIDATED");
@@ -143,6 +188,14 @@ export function DocumentValidationApprovalModal(
           nextStatusValue = getRequirementCode("DOCUMENT_IGNORED_BY_THE_USER");
         }
 
+        const documentsByRequirementPayload = allDocumentCodesToRelate.map(
+          (code) => ({
+            documentCode: code,
+            requirementByPackageId: requirementByPackageId,
+            transactionOperation: "PartialUpdate",
+          }),
+        );
+
         const payload = {
           modifyJustification: "Status change",
           nextStatusValue,
@@ -150,13 +203,7 @@ export function DocumentValidationApprovalModal(
           requirementByPackageId,
           statusChangeJustification: values.observations,
           transactionOperation: "PartialUpdate",
-          documentsByRequirement: [
-            {
-              documentCode: "",
-              requirementByPackageId: "",
-              transactionOperation: "PartialUpdate",
-            },
-          ],
+          documentsByRequirement: documentsByRequirementPayload,
         };
 
         await approveRequirementById(
@@ -170,7 +217,7 @@ export function DocumentValidationApprovalModal(
         if (onConfirm) {
           onConfirm({
             ...values,
-            selectedDocuments,
+            selectedDocuments: selectedExistingDocuments,
           });
         }
 
@@ -180,6 +227,8 @@ export function DocumentValidationApprovalModal(
       } catch (error) {
         setShowErrorModal(true);
         setMessageError(approvalsConfigEnum.titleError.i18n[lang]);
+      } finally {
+        setIsLoading(false);
       }
     },
   });
@@ -198,6 +247,7 @@ export function DocumentValidationApprovalModal(
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
+        setIsLoading(true);
         const response = await getSearchAllDocumentsById(
           id,
           user,
@@ -209,12 +259,33 @@ export function DocumentValidationApprovalModal(
       } catch (error) {
         setShowErrorModal(true);
         setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[lang]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchDocuments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, user, businessUnitPublicCode]);
+
+  useEffect(() => {
+    if (shouldScrollToBottom && documents.length > 0) {
+      const timer = setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        }
+      }, 100);
+      setShouldScrollToBottom(false);
+      return () => clearTimeout(timer);
+    }
+  }, [documents, shouldScrollToBottom]);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
   const handlePreview = async (id: string, name: string) => {
     try {
@@ -236,6 +307,50 @@ export function DocumentValidationApprovalModal(
     }
   };
 
+  const handleCloseListModal = async (uploadedDocs?: IUploadedFileReturn[]) => {
+    setIsShowModal(false);
+
+    if (
+      uploadedDocs &&
+      uploadedDocs.length > 0 &&
+      typeof uploadedDocs[0] !== "string"
+    ) {
+      const docs = uploadedDocs as IUploadedFileReturn[];
+
+      const newCodes = docs.map((doc) => doc.documentCode || doc.documentId);
+      setNewlyUploadedDocumentCodes((prev) => [...prev, ...newCodes]);
+
+      const optimisticDocs: DocumentItem[] = docs.map((doc) => ({
+        documentId: doc.documentId,
+        abbreviatedName: doc.abbreviatedName,
+        documentCode: doc.documentCode || "",
+        urlDocument: "",
+        date: new Date().toISOString(),
+        creditRequestId: id,
+        documentManagmentReference: "",
+        fileName: doc.abbreviatedName,
+      }));
+
+      setDocuments((prev) => {
+        const existingIds = new Set(prev.map((d) => d.documentId));
+        const uniqueNewDocs = optimisticDocs.filter(
+          (doc) => !existingIds.has(doc.documentId),
+        );
+        return [...prev, ...uniqueNewDocs];
+      });
+
+      const currentSelection = { ...formik.values.selectedDocumentIds };
+      docs.forEach((doc) => {
+        currentSelection[doc.documentId] = true;
+      });
+
+      await formik.setFieldValue("selectedDocumentIds", currentSelection);
+      setShouldScrollToBottom(true);
+      formik.validateForm();
+      await fetchDocuments();
+    }
+  };
+
   return (
     <BaseModal
       title={`${approvalsConfigEnum.title.i18n[lang]} ${title}`}
@@ -245,13 +360,14 @@ export function DocumentValidationApprovalModal(
       backButton={approvalsConfigEnum.cancel.i18n[lang]}
       nextButton={approvalsConfigEnum.confirm.i18n[lang]}
       disabledNext={!formik.values.observations || !formik.isValid}
+      isSendingData={isLoading}
     >
       <Stack direction="column" gap="24px">
         <Text type="body" size="large">
           {approvalsConfigEnum.selectDocument.i18n[lang]}
         </Text>
         <Fieldset heightFieldset="210px" borderColor="gray" hasOverflow>
-          <StyledScroll>
+          <StyledScroll ref={scrollRef}>
             <Stack direction="column" gap="8px" height="145px">
               {documents.map((doc, index) => (
                 <Stack key={doc.documentId} direction="column" gap="8px">
@@ -349,7 +465,7 @@ export function DocumentValidationApprovalModal(
           <ListModal
             title="Cargar documento nuevo"
             buttonLabel="Cargar"
-            handleClose={() => setIsShowModal(false)}
+            handleClose={handleCloseListModal}
             uploadedFiles={uploadedFiles}
             setUploadedFiles={setUploadedFiles}
             isViewing={false}
