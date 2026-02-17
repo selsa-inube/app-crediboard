@@ -140,6 +140,7 @@ export const Requirements = (props: IRequirementsProps) => {
           creditRequestCode,
           eventData.token || "",
         );
+        console.log("getAllPackagesOfRequirementsById: ", data);
         setRawRequirements(data);
 
         if (!Array.isArray(data) || data.length === 0) {
@@ -214,7 +215,7 @@ export const Requirements = (props: IRequirementsProps) => {
 
           return "";
         };
-
+        console.log("data: ", data);
         data.forEach((item) => {
           item.requirementsByPackage.forEach((req) => {
             const type = req.typeOfRequirementToEvaluate;
@@ -735,6 +736,7 @@ export const Requirements = (props: IRequirementsProps) => {
             rawRequirements={rawRequirements}
             entryIdToRequirementMap={entryIdToRequirementMap}
             businessManagerCode={businessManagerCode}
+            handleClose={() => {}}
           />
         )}
       {showAprovalsModal &&

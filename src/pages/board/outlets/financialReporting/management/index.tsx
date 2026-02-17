@@ -352,7 +352,12 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
             {showAttachments && (
               <ListModal
                 title="Adjuntar"
-                handleClose={handleAttachmentsClose}
+                handleClose={(uploadedDocs) => {
+                  const wasSaved = Boolean(
+                    uploadedDocs && uploadedDocs.length > 0,
+                  );
+                  return handleAttachmentsClose(wasSaved);
+                }}
                 optionButtons={optionButtons}
                 buttonLabel="Guardar"
                 id={creditRequest.creditRequestId}

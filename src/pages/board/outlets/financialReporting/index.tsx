@@ -591,7 +591,12 @@ export const FinancialReporting = () => {
                       lang
                     ]
                   }
-                  handleClose={handleAttachmentsClose}
+                  handleClose={(uploadedDocs) => {
+                    const wasSaved = Boolean(
+                      uploadedDocs && uploadedDocs.length > 0,
+                    );
+                    return handleAttachmentsClose(wasSaved);
+                  }}
                   optionButtons={optionButtons}
                   buttonLabel={
                     financialReportingLabelsEnum.attachments.saveButton.i18n[

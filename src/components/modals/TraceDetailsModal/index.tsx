@@ -68,6 +68,7 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
       });
     }
   };
+  console.log("documents data: ", data);
   return (
     <BaseModal
       title={dataTraceEnum.title.i18n[lang]}
