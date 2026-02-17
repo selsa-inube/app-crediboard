@@ -36,6 +36,7 @@ import { CardGray } from "@components/cards/CardGray";
 import { capitalizeFirstLetter } from "@utils/formatData/text";
 
 import { ScrollableContainer } from "./styles";
+import { areValuesEqual } from "./utils";
 import {
   termInMonthsOptions,
   paymentCycleMap,
@@ -47,6 +48,7 @@ import {
   fieldPlaceholdersEnum,
   errorMessagesEnum,
   simulationFormLabels,
+  IUpdateProductPayload,
 } from "./config";
 import { AppContext } from "@context/AppContext";
 
@@ -483,12 +485,34 @@ function EditProductModal(props: EditProductModalProps) {
     }
 
     try {
-      const payload = {
+      const payload: IUpdateProductPayload = {
         creditProductCode: creditProductCode,
-        interestRate: values.interestRate,
-        loanTerm: Number(values.termInMonths),
         creditRequestCode: creditRequestCode,
       };
+
+      let hasChanges = false;
+
+      if (!areValuesEqual(values.interestRate, initialValues.interestRate, 4)) {
+        payload.interestRate = Number(values.interestRate);
+        hasChanges = true;
+      }
+
+      if (!areValuesEqual(values.termInMonths, initialValues.termInMonths, 0)) {
+        payload.loanTerm = Number(values.termInMonths);
+        hasChanges = true;
+      }
+
+      if (!areValuesEqual(values.creditAmount, initialValues.creditAmount, 2)) {
+        payload.loanAmount = Number(values.creditAmount);
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        onCloseModal();
+        return;
+      }
+
+      setIsUsingServices(true);
 
       setIsUsingServices(true);
       const updatedProspect = await updateCreditProduct(
