@@ -428,13 +428,15 @@ export const FinancialReporting = () => {
   const handleDeleteCreditRequest = async () => {
     const creditRequests: IDeleteCreditRequest = {
       creditRequestId: data?.creditRequestId ?? "",
-      removalJustification,
+      humanDecision: "ANULAR_SOLICITUD",
+      justification: removalJustification,
     };
     await deleteCreditRequest(
       businessUnitPublicCode,
       businessManagerCode,
       creditRequests,
       eventData.token,
+      eventData.user.identificationDocumentNumber || "",
     )
       .then(() => {
         addFlag({
