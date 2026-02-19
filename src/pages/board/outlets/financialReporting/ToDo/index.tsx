@@ -405,11 +405,7 @@ function ToDo(props: ToDoProps) {
         s.role === taskRole && s.userId === eventData?.user?.staff?.staffId,
     );
 
-    const isVerificationWithAccount =
-      requests?.stage === "VERIFICACION_APROBACION" &&
-      Boolean(eventData?.user?.userAccount);
-
-    setHasPermitSend(hasStaffPermission || isVerificationWithAccount);
+    setHasPermitSend(hasStaffPermission);
   }, [staff, eventData, taskData, taskRole, requests]);
 
   const hasSingleDecision = taskDecisions.length === 1;
@@ -570,7 +566,7 @@ function ToDo(props: ToDoProps) {
                 width="100%"
               >
                 <Stack justifyContent="space-between" width="50%">
-                  <Stack direction="column" alignItems="flex-start" gap="16px">
+                  <Stack direction="column" alignItems="flex-start" gap="12px">
                     <StyledTextField>
                       <Text
                         type="body"
