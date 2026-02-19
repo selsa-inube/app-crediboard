@@ -405,11 +405,7 @@ function ToDo(props: ToDoProps) {
         s.role === taskRole && s.userId === eventData?.user?.staff?.staffId,
     );
 
-    const isVerificationWithAccount =
-      requests?.stage === "VERIFICACION_APROBACION" &&
-      Boolean(eventData?.user?.userAccount);
-
-    setHasPermitSend(hasStaffPermission || isVerificationWithAccount);
+    setHasPermitSend(hasStaffPermission);
   }, [staff, eventData, taskData, taskRole, requests]);
 
   const hasSingleDecision = taskDecisions.length === 1;
