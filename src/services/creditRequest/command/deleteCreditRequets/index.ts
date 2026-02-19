@@ -1,27 +1,27 @@
 import { environment } from "@config/environment";
 import { IDeleteCreditRequest } from "../types";
 
-import { mapRolesDeleteCreditRequestToApi } from "./mappers";
-
 const deleteCreditRequests = async (
-  creditRequest: IDeleteCreditRequest,
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  token: string
+  payload: IDeleteCreditRequest,
+  token: string,
+  userName: string,
 ): Promise<IDeleteCreditRequest | undefined> => {
   const requestUrl = `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`;
 
   try {
     const options: RequestInit = {
-      method: "DELETE",
+      method: "PATCH",
       headers: {
-        "X-Action": "RemoveCreditRequest",
+        "X-Action": "CancelCreditRequest",
         "X-Business-Unit": businessUnitPublicCode,
+        "X-User-Name": userName,
         "Content-type": "application/json; charset=UTF-8",
         "X-Process-Manager": businessManagerCode,
         Authorization: token,
       },
-      body: JSON.stringify(mapRolesDeleteCreditRequestToApi(creditRequest)),
+      body: JSON.stringify(payload),
     };
 
     const res = await fetch(requestUrl, options);

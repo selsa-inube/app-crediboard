@@ -9,7 +9,9 @@ export interface IMakeDecisionsCreditRequestResponse {
 }
 export interface IDeleteCreditRequest {
   creditRequestId: string;
-  removalJustification: string;
+  creditRequestCode?: string;
+  humanDecision: string;
+  justification: string;
 }
 
 export interface IMakeDecisionsCreditRequest {
