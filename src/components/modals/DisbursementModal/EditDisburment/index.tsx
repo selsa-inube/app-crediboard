@@ -267,10 +267,12 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
       payeePhoneNumber: formData.phone || "",
       payeeEmail: formData.mail || "",
       payeeCityOfResidence: formData.city || "",
-      observation: formData.description || "",
+      observation: formData.observation || "",
       accountBankName: "",
       accountType: "",
       accountNumber: "",
+      disbursementReference: formData.disbursementReference || "",
+      paymentOrderReference: formData.paymentOrderReference || "",
     };
 
     if ("bank" in formData) {

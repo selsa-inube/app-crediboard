@@ -43,7 +43,6 @@ export interface IPersonData {
   amount: number;
   check: boolean;
   toggle: boolean;
-  description: string;
   name: string;
   lastName: string;
   sex: string;
@@ -54,6 +53,9 @@ export interface IPersonData {
   mail: string;
   city: string;
   accountNumber?: string;
+  disbursementReference: string;
+  paymentOrderReference: string;
+  observation: string;
 }
 
 export interface IInternalAccount extends IPersonData {

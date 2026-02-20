@@ -428,7 +428,7 @@ export const FinancialReporting = () => {
   const handleDeleteCreditRequest = async () => {
     const creditRequests: IDeleteCreditRequest = {
       creditRequestId: data?.creditRequestId ?? "",
-      humanDecision: "ANULAR_SOLICITUD",
+      humanDecision: "CANCELAR_SOLICITUD",
       justification: removalJustification,
     };
     await deleteCreditRequest(
@@ -738,12 +738,14 @@ export const FinancialReporting = () => {
         </BaseModal>
       )}
       {showNoDocumentsModal && (
-        <ErrorModal
-          message={
-            financialReportingLabelsEnum.attachments.errorModal.i18n[lang]
-          }
+        <BaseModal
           handleClose={() => setShowNoDocumentsModal(false)}
-        />
+          title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
+        >
+          <Text>
+            {financialReportingLabelsEnum.attachments.errorModal.i18n[lang]}
+          </Text>
+        </BaseModal>
       )}
       {isLoadingDocuments && (
         <BaseModal
