@@ -13,19 +13,19 @@ import { TableBoard } from "@components/data/TableBoard";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { TraceDetailsModal } from "@components/modals/TraceDetailsModal";
 import { IAction, IEntries, ITitle } from "@components/data/TableBoard/types";
-import {
-  AddRequirementMock,
-  AddRequirementMockSistemValidations,
-} from "@mocks/addRequirement";
+
 import { getAllPackagesOfRequirementsById } from "@services/requirementsPackages/packagesOfRequirements";
 import { AddSystemValidation } from "@components/modals/RequirementsModals/AddSystemValidation";
 import {
   IPackagesOfRequirementsById,
   IPatchOfRequirements,
+  IRequirementsByBusinessUnit,
 } from "@services/requirementsPackages/types";
-import { useEnum } from "@hooks/useEnum";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { ICrediboardData } from "@context/AppContext/types";
+import { IAllEnumsResponse } from "@services/enumerators/types";
+import { getSearchAllRequirementsByBusinessUnit } from "@services/requirementsPackages/searchAllRequirementsByBusinessUnit";
+import { AddRequirementMock } from "@mocks/addRequirement";
 
 import {
   infoItems,
@@ -55,6 +55,8 @@ export interface IRequirementsProps {
   creditRequestCode: string;
   eventData: ICrediboardData;
   isMobile: boolean;
+  enums: IAllEnumsResponse;
+  lang: "es" | "en";
 }
 
 export const Requirements = (props: IRequirementsProps) => {
@@ -66,8 +68,9 @@ export const Requirements = (props: IRequirementsProps) => {
     businessManagerCode,
     creditRequestCode,
     eventData,
+    lang,
+    enums,
   } = props;
-  const { lang } = useEnum();
 
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
@@ -121,6 +124,9 @@ export const Requirements = (props: IRequirementsProps) => {
   const [justificationRequirement, setJustificationRequirement] = useState(
     dataAddRequirementEnum.descriptionJustification.i18n[lang],
   );
+  const [requirement, setRequirement] = useState<
+    IRequirementsByBusinessUnit[] | null
+  >(null);
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
   const { addFlag } = useFlag();
   const [showAddSystemValidationModal, setShowAddSystemValidationModal] =
@@ -290,6 +296,24 @@ export const Requirements = (props: IRequirementsProps) => {
     fetchRequirements();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creditRequestCode, sentData]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getSearchAllRequirementsByBusinessUnit(
+          businessUnitPublicCode,
+          businessManagerCode,
+          eventData.token || "",
+        );
+        setRequirement(data);
+      } catch (error) {
+        console.error("Error fetching requirements:", error);
+        setError(true);
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleAprovalsModal = () => setShowAprovalsModal(!showAprovalsModal);
 
@@ -547,6 +571,43 @@ export const Requirements = (props: IRequirementsProps) => {
     }
   };
 
+  const requirementOptions = Array.from(
+    new Map(
+      (requirement ?? [])
+        .filter(
+          (req) =>
+            req.requirementType === "HUMAN_VALIDATION" ||
+            req.requirementType === "DOCUMENT",
+        )
+        .map((req) => {
+          const mockItem = AddRequirementMock.find(
+            (mock) => mock.id === req.requirementType,
+          );
+
+          return [
+            req.requirementType,
+            {
+              id: req.requirementType,
+              label: mockItem?.label ?? req.requirementName,
+              value: mockItem?.value ?? req.requirementName,
+            },
+          ] as [string, { id: string; label: string; value: string }];
+        }),
+    ).values(),
+  );
+
+  const systemValidationOptions = (requirement ?? [])
+    .filter((req) => req.requirementType === "SYSTEM_VALIDATION")
+    .map((req) => {
+      const enumItem = enums.Requirement?.find(
+        (e) => e.code === req.validationCode,
+      );
+      return {
+        id: req.requirementByBusinessUnitId,
+        label: enumItem?.i18n?.[lang] ?? req.requirementName,
+        value: enumItem?.i18n?.[lang] ?? req.requirementName,
+      };
+    });
   return (
     <>
       <Fieldset
@@ -768,7 +829,9 @@ export const Requirements = (props: IRequirementsProps) => {
         <AddRequirement
           title={dataAddRequirementEnum.title.i18n[lang]}
           buttonText={dataAddRequirementEnum.add.i18n[lang]}
-          optionsRequirement={AddRequirementMock}
+          optionsRequirement={requirementOptions}
+          allRequirements={requirement ?? []}
+          enums={enums}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}
           setSentData={setSentData}
@@ -784,7 +847,7 @@ export const Requirements = (props: IRequirementsProps) => {
         <AddSystemValidation
           title={dataAddRequirementEnum.title.i18n[lang]}
           buttonText={dataAddRequirementEnum.add.i18n[lang]}
-          optionsRequirement={AddRequirementMockSistemValidations}
+          optionsRequirement={systemValidationOptions}
           onCloseModal={closeAdd}
           creditRequestCode={creditRequestCode}
           setSentData={setSentData}

@@ -72,6 +72,7 @@ import { IDocumentData, IErrorService, IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
 import { ComercialManagement } from "./CommercialManagement";
 import { IEntries } from "@components/data/TableBoard/types";
+import { IAllEnumsResponse } from "@services/enumerators/types";
 
 interface IListdataProps {
   data: { id: string; name: string }[];
@@ -118,7 +119,7 @@ export const FinancialReporting = () => {
   const { user } = useIAuth();
 
   const navigation = useNavigate();
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
 
   const isMobile: boolean = useMediaQuery("(max-width: 880px)");
 
@@ -565,6 +566,8 @@ export const FinancialReporting = () => {
                         creditRequestCode={data.creditRequestCode!}
                         businessManagerCode={businessManagerCode}
                         eventData={eventData}
+                        enums={enums as IAllEnumsResponse}
+                        lang={lang}
                       />
                     </BlockPdfSection>
                   </Stack>
