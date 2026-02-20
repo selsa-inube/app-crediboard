@@ -428,7 +428,7 @@ export const FinancialReporting = () => {
   const handleDeleteCreditRequest = async () => {
     const creditRequests: IDeleteCreditRequest = {
       creditRequestId: data?.creditRequestId ?? "",
-      humanDecision: "ANULAR_SOLICITUD",
+      humanDecision: "CANCELAR_SOLICITUD",
       justification: removalJustification,
     };
     await deleteCreditRequest(

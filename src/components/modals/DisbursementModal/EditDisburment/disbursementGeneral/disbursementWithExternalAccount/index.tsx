@@ -286,11 +286,11 @@ export function DisbursementWithExternalAccount(
           />
         </Stack>
         <Textarea
-          id={"description"}
-          name={`${optionNameForm}.description`}
+          id={"observation"}
+          name={`${optionNameForm}.observation`}
           label={disbursemenOptionAccountEnum.observation.i18n[lang]}
           placeholder={disbursemenOptionAccountEnum.placeObservation.i18n[lang]}
-          value={formik.values[optionNameForm]?.description || ""}
+          value={formik.values[optionNameForm]?.observation || ""}
           onChange={(event) => {
             const value = event.target.value;
             if (value.length <= 100) {

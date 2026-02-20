@@ -518,10 +518,12 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   );
 
   let normalizedStageTitle: string = "";
-
-  const matchingState = eventData.creditRequestStates?.find(
-    (state) => state.stage === data.stage,
-  );
+  const matchingState = eventData.creditRequestStates?.find((state) => {
+    return (
+      state.stage === data.stage &&
+      state.abbreviatedName === data.creditRequestStateAbbreviatedName
+    );
+  });
   if (matchingState) {
     normalizedStageTitle = matchingState.descriptionUse;
   } else {
