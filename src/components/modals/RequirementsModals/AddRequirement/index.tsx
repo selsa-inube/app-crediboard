@@ -7,17 +7,24 @@ import {
   Select,
   Textfield,
   Textarea,
+  Autosuggest,
 } from "@inubekit/inubekit";
 
-import { IPatchOfRequirements } from "@services/requirementsPackages/types";
+import {
+  IPatchOfRequirements,
+  IRequirementsByBusinessUnit,
+} from "@services/requirementsPackages/types";
 import { BaseModal } from "@components/modals/baseModal";
 import { dataAddRequirementEnum } from "@pages/board/outlets/financialReporting/Requirements/config";
 import { useEnum } from "@hooks/useEnum";
+import { IAllEnumsResponse } from "@services/enumerators/types";
 
 import { IOptionsSelect } from "../types";
 
 export interface IRequirement {
   optionsRequirement: IOptionsSelect[];
+  allRequirements: IRequirementsByBusinessUnit[];
+  enums: IAllEnumsResponse;
   creditRequestCode: string;
   title: string;
   setTypeOfRequirementToEvaluated: React.Dispatch<React.SetStateAction<string>>;
@@ -46,6 +53,8 @@ export function AddRequirement(props: IRequirement) {
     onCloseModal,
     onSecondaryButtonClick,
     optionsRequirement,
+    allRequirements,
+    enums,
     setTypeOfRequirementToEvaluated,
     setDescriptionUseValue,
     setRequirementName,
@@ -63,7 +72,7 @@ export function AddRequirement(props: IRequirement) {
 
   const getOptionLabel = (options: IOptionsSelect[], value: string) => {
     const option = options?.find(
-      (opt) => opt.id === value || opt.value === value
+      (opt) => opt.id === value || opt.value === value,
     );
     return option?.label || option?.value || value;
   };
@@ -80,7 +89,7 @@ export function AddRequirement(props: IRequirement) {
       requirementCatalogName: string;
       descriptionUse: string;
     },
-    isSubmitting: boolean
+    isSubmitting: boolean,
   ): boolean => {
     return (
       !values.typeOfRequirementToEvaluated ||
@@ -90,26 +99,29 @@ export function AddRequirement(props: IRequirement) {
     );
   };
 
-  const handleRequirementChange = (
-    name: string,
-    value: string,
-    setFieldValue: (field: string, value: string) => void
-  ) => {
-    setFieldValue(name, value);
-    const selectedOption = options.Requirement.find(
-      (option) => option.value === value
-    );
-    if (selectedOption) {
-      setTypeOfRequirementToEvaluated(selectedOption.id);
-    }
-  };
-
   const options = {
     Requirement: optionsRequirement.map((official) => ({
       id: official.id,
       label: official.label,
       value: official.value,
     })),
+  };
+
+  const handleRequirementChange = (
+    name: string,
+    value: string,
+    setFieldValue: (field: string, value: string) => void,
+  ) => {
+    setFieldValue(name, value);
+    setFieldValue("requirementCatalogName", "");
+    setFieldValue("descriptionUse", "");
+    setDescriptionUseValue("");
+    const selectedOption = options.Requirement.find(
+      (option) => option.value === value,
+    );
+    if (selectedOption) {
+      setTypeOfRequirementToEvaluated(selectedOption.id);
+    }
   };
 
   useEffect(() => {
@@ -134,80 +146,110 @@ export function AddRequirement(props: IRequirement) {
         setSubmitting(false);
       }}
     >
-      {({ isSubmitting, setFieldValue, values }) => (
-        <BaseModal
-          title={title}
-          nextButton={buttonText}
-          backButton={secondaryButtonText}
-          handleNext={handleNext ?? (() => {})}
-          handleBack={onSecondaryButtonClick}
-          handleClose={onCloseModal}
-          width={isMobile ? "300px" : "500px"}
-          disabledNext={isButtonDisabled(values, isSubmitting) && !readOnly}
-        >
-          <Form>
-            <Stack direction="column" gap="24px">
-              {options.Requirement && options.Requirement.length === 1 ? (
-                <Textfield
-                  name="typeOfRequirementToEvaluated"
-                  id="typeOfRequirementToEvaluated"
-                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[lang]}
-                  value={getOptionLabel(
-                    options.Requirement,
-                    values.typeOfRequirementToEvaluated
-                  )}
-                  disabled
-                  fullwidth
-                />
-              ) : (
-                <Select
-                  name="typeOfRequirementToEvaluated"
-                  id="typeOfRequirementToEvaluated"
-                  label={dataAddRequirementEnum.labelPaymentMethod.i18n[lang]}
+      {({ isSubmitting, setFieldValue, values }) => {
+
+        const autosuggestOptions = (() => {
+          const currentType = options.Requirement.find(
+            (opt) => opt.value === values.typeOfRequirementToEvaluated,
+          )?.id;
+
+          if (!currentType) return [];
+
+          return allRequirements
+            .filter((req) => req.requirementType === currentType)
+            .map((req) => {
+              const backCode = req.documentCode ?? req.humanValidationCode;
+              const enumItem = enums.Requirement?.find(
+                (e) => e.code === backCode,
+              );
+              return {
+                id: req.requirementByBusinessUnitId,
+                label: enumItem?.i18n?.[lang] ?? req.requirementName,
+                value: enumItem?.i18n?.[lang] ?? req.requirementName,
+              };
+            });
+        })();
+
+        return (
+          <BaseModal
+            title={title}
+            nextButton={buttonText}
+            backButton={secondaryButtonText}
+            handleNext={handleNext ?? (() => {})}
+            handleBack={onSecondaryButtonClick}
+            handleClose={onCloseModal}
+            width={isMobile ? "300px" : "500px"}
+            disabledNext={isButtonDisabled(values, isSubmitting) && !readOnly}
+          >
+            <Form>
+              <Stack direction="column" gap="24px">
+                {options.Requirement && options.Requirement.length === 1 ? (
+                  <Textfield
+                    name="typeOfRequirementToEvaluated"
+                    id="typeOfRequirementToEvaluated"
+                    label={dataAddRequirementEnum.labelPaymentMethod.i18n[lang]}
+                    value={getOptionLabel(
+                      options.Requirement,
+                      values.typeOfRequirementToEvaluated,
+                    )}
+                    disabled
+                    fullwidth
+                  />
+                ) : (
+                  <Select
+                    name="typeOfRequirementToEvaluated"
+                    id="typeOfRequirementToEvaluated"
+                    label={dataAddRequirementEnum.labelPaymentMethod.i18n[lang]}
+                    placeholder={
+                      options.Requirement.length > 0
+                        ? "Selecciona una opción"
+                        : "No hay disponibles"
+                    }
+                    options={options.Requirement}
+                    onChange={(name, value) =>
+                      handleRequirementChange(name, value, setFieldValue)
+                    }
+                    value={values.typeOfRequirementToEvaluated}
+                    fullwidth
+                    disabled={options.Requirement.length === 0}
+                  />
+                )}
+                <Autosuggest
+                  key={values.typeOfRequirementToEvaluated}
+                  name="requirementCatalogName"
+                  id="requirementCatalogName"
+                  label={dataAddRequirementEnum.labelName.i18n[lang]}
                   placeholder={
-                    options.Requirement.length > 0
-                      ? "Selecciona una opción"
-                      : "No hay disponibles"
+                    dataAddRequirementEnum.placeHolderDate.i18n[lang]
                   }
-                  options={options.Requirement}
-                  onChange={(name, value) =>
-                    handleRequirementChange(name, value, setFieldValue)
-                  }
-                  value={values.typeOfRequirementToEvaluated}
+                  options={autosuggestOptions}
+                  value={values.requirementCatalogName}
+                  onChange={(name, value) => {
+                    setDescriptionUseValue(value);
+                    setFieldValue(name, value);
+                  }}
                   fullwidth
-                  disabled={options.Requirement.length === 0}
+                  disabled={!values.typeOfRequirementToEvaluated}
                 />
-              )}
-              <Textfield
-                name="descriptionUse"
-                id="descriptionUse"
-                label={dataAddRequirementEnum.labelName.i18n[lang]}
-                placeholder={dataAddRequirementEnum.placeHolderDate.i18n[lang]}
-                onChange={(event) => {
-                  setDescriptionUseValue(event.target.value);
-                  setFieldValue("descriptionUse", event.target.value);
-                }}
-                value={values.descriptionUse}
-                size="wide"
-                fullwidth
-                required
-              />
-              <Textarea
-                id={"requirementCatalogName"}
-                name={"requirementCatalogName"}
-                label={dataAddRequirementEnum.labelTextarea.i18n[lang]}
-                placeholder={dataAddRequirementEnum.placeHolderTextarea.i18n[lang]}
-                value={values.requirementCatalogName}
-                onChange={(event) => {
-                  setRequirementName(event.target.value);
-                  setFieldValue("requirementCatalogName", event.target.value);
-                }}
-                fullwidth
-              />
-            </Stack>
-          </Form>
-        </BaseModal>
-      )}
+                <Textarea
+                  id={"descriptionUse"}
+                  name={"descriptionUse"}
+                  label={dataAddRequirementEnum.labelTextarea.i18n[lang]}
+                  placeholder={
+                    dataAddRequirementEnum.placeHolderTextarea.i18n[lang]
+                  }
+                  value={values.descriptionUse}
+                  onChange={(event) => {
+                    setRequirementName(event.target.value);
+                    setFieldValue("descriptionUse", event.target.value);
+                  }}
+                  fullwidth
+                />
+              </Stack>
+            </Form>
+          </BaseModal>
+        );
+      }}
     </Formik>
   );
 }
