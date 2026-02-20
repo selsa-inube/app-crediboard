@@ -1,4 +1,4 @@
-import { IDisbursementGeneral } from "../types"
+import { IDisbursementGeneral } from "../types";
 
 export const initialValuesForm: IDisbursementGeneral = {
   amount: 0,
@@ -7,7 +7,7 @@ export const initialValuesForm: IDisbursementGeneral = {
     amount: 0,
     check: false,
     toggle: false,
-    description: "",
+    observation: "",
     name: "",
     lastName: "",
     sex: "",
@@ -17,6 +17,8 @@ export const initialValuesForm: IDisbursementGeneral = {
     phone: "",
     mail: "",
     city: "",
+    disbursementReference: "",
+    paymentOrderReference: "",
   },
   External_account: {
     bank: "",
@@ -25,7 +27,7 @@ export const initialValuesForm: IDisbursementGeneral = {
     amount: 0,
     check: false,
     toggle: false,
-    description: "",
+    observation: "",
     name: "",
     lastName: "",
     sex: "",
@@ -35,12 +37,14 @@ export const initialValuesForm: IDisbursementGeneral = {
     phone: "",
     mail: "",
     city: "",
+    disbursementReference: "",
+    paymentOrderReference: "",
   },
   Certified_check: {
     amount: 0,
     check: false,
     toggle: false,
-    description: "",
+    observation: "",
     name: "",
     lastName: "",
     sex: "",
@@ -50,12 +54,14 @@ export const initialValuesForm: IDisbursementGeneral = {
     phone: "",
     mail: "",
     city: "",
+    disbursementReference: "",
+    paymentOrderReference: "",
   },
   Business_check: {
     amount: 0,
     check: false,
     toggle: false,
-    description: "",
+    observation: "",
     name: "",
     lastName: "",
     sex: "",
@@ -65,12 +71,14 @@ export const initialValuesForm: IDisbursementGeneral = {
     phone: "",
     mail: "",
     city: "",
+    disbursementReference: "",
+    paymentOrderReference: "",
   },
   Cash: {
     amount: 0,
     check: false,
     toggle: false,
-    description: "",
+    observation: "",
     name: "",
     lastName: "",
     sex: "",
@@ -80,8 +88,10 @@ export const initialValuesForm: IDisbursementGeneral = {
     phone: "",
     mail: "",
     city: "",
+    disbursementReference: "",
+    paymentOrderReference: "",
   },
-}
+};
 
 export const flagSucessDisbursementEdited = {
   flagSucessDisbursementEdited: {
@@ -99,5 +109,5 @@ export const flagSucessDisbursementEdited = {
       en: "The disbursement has been successfully edited.",
       es: "El desembolso ha sido editado exitosamente.",
     },
-  }
-}
+  },
+};
