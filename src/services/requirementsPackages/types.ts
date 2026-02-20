@@ -37,6 +37,14 @@ export interface IPackagesOfRequirementsById {
   packageDescription: string;
   requirementsByPackage: IRequirementByPackage[];
 }
+export interface IRequirementsByBusinessUnit {
+  requirementByBusinessUnitId: string;
+  requirementName: string;
+  validationCode: string;
+  requirementType: string;
+  humanValidationCode: string;
+  documentCode: string;
+}
 
 export interface IPatchOfRequirements {
   packageId: string;

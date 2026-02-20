@@ -119,7 +119,7 @@ export function AddSystemValidation(props: IRequirements) {
     })),
   };
 
-  // Auto-select single requirement option
+
   useEffect(
     () => {
       if (options.Requirement.length === 1) {
