@@ -738,12 +738,14 @@ export const FinancialReporting = () => {
         </BaseModal>
       )}
       {showNoDocumentsModal && (
-        <ErrorModal
-          message={
-            financialReportingLabelsEnum.attachments.errorModal.i18n[lang]
-          }
+        <BaseModal
           handleClose={() => setShowNoDocumentsModal(false)}
-        />
+          title={financialReportingLabelsEnum.attachments.titleList.i18n[lang]}
+        >
+          <Text>
+            {financialReportingLabelsEnum.attachments.errorModal.i18n[lang]}
+          </Text>
+        </BaseModal>
       )}
       {isLoadingDocuments && (
         <BaseModal
