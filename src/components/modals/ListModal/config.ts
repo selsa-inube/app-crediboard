@@ -43,8 +43,8 @@ export const listModalDataEnum = {
     code: "ListModal_maximum",
     description: "Maximum file size",
     i18n: {
-      en: "Maximum file size: 2.5MB",
-      es: "Peso máximo por archivo: 2.5MB",
+      en: "Maximum file size: ",
+      es: "Peso máximo por archivo: ",
     },
   },
   attachments: {
@@ -59,8 +59,8 @@ export const listModalDataEnum = {
     code: "ListModal_exceedSize",
     description: "File size exceeded",
     i18n: {
-      en: "The file exceeds the maximum allowed size of 2.5MB.",
-      es: "El archivo supera el tamaño máximo permitido de 2.5MB.",
+      en: "The file exceeds the maximum allowed size of ",
+      es: "El archivo supera el tamaño máximo permitido de ",
     },
   },
   onlypdf: {
