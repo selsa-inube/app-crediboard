@@ -208,6 +208,7 @@ function AppPage() {
   return (
     <StyledAppPage>
       <Grid templateRows="auto 1fr" height="100vh" justifyContent="unset">
+   
         <StyledPrint>
           <StyledHeaderContainer>
             <Header
@@ -234,10 +235,8 @@ function AppPage() {
               cursorHover
             />
           </StyledCollapseIcon>
-        </StyledPrint>
 
-        {collapse && (
-          <StyledPrint>
+          {collapse && (
             <StyledCollapse ref={businessUnitChangeRef}>
               <BusinessUnitChange
                 businessUnits={businessUnitsToTheStaff}
@@ -245,8 +244,8 @@ function AppPage() {
                 onLogoClick={handleLogoClick}
               />
             </StyledCollapse>
-          </StyledPrint>
-        )}
+          )}
+        </StyledPrint>
 
         <StyledContainer>
           {showUserMenu && (
