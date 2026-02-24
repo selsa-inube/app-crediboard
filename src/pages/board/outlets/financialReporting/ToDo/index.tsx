@@ -323,17 +323,43 @@ function ToDo(props: ToDoProps) {
     handleToggleStaffModal();
   };
 
+  const isIndividualConceptOfAproval = () => {
+    {
+      return (
+        requests?.creditRequestStateAbbreviatedName ===
+        "VALIDACION_INSTANCIA_APRUEBA"
+      );
+    }
+  };
   const isRepresentativeButNotApprover = () => {
-    const isApprover = validationIsApprover();
-    const isRepresentative = representablePersons.includes(
-      eventData?.user?.userAccount || "",
-    );
+    const currentUserId = eventData?.user?.identificationDocumentNumber;
 
-    return isRepresentative && !isApprover;
+    if (approvalsEntries.length > 0) {
+      return !approvalsEntries.some(
+        (approval) => approval.identificationNumber === currentUserId,
+      );
+    } else {
+      return true;
+    }
   };
 
-  const handleSend = () => {
+  let userIdentificationNumber =
+    eventData?.user?.identificationDocumentNumber || "";
+
+  if (isIndividualConceptOfAproval()) {
     if (isRepresentativeButNotApprover()) {
+      const matchedEntry = approvalsEntries.find(
+        (entry) =>
+          String(entry.id) === selectedRepresentative ||
+          String(entry.name) === selectedRepresentative,
+      );
+      userIdentificationNumber = String(
+        matchedEntry?.identificationNumber || selectedRepresentative || "",
+      );
+    }
+  }
+  const handleSend = () => {
+    if (isIndividualConceptOfAproval() && isRepresentativeButNotApprover()) {
       setIsModalConfirm(true);
     } else {
       setIsModalOpen(true);
@@ -349,17 +375,6 @@ function ToDo(props: ToDoProps) {
     setIsModalOpen(true);
   };
 
-  const validationIsApprover = () => {
-    if (requests?.stage !== "VERIFICACION_APROBACION") {
-      return false;
-    }
-    const currentUserId = eventData?.user?.identificationDocumentNumber;
-    const isUserInApprovals = approvalsEntries.some(
-      (approval) => approval.identificationNumber === currentUserId,
-    );
-    return isUserInApprovals;
-  };
-
   const data = {
     makeDecision: {
       concept: selectedDecision?.code || "",
@@ -368,10 +383,10 @@ function ToDo(props: ToDoProps) {
       justification: "",
     },
     businessUnit: businessUnitPublicCode,
-    user: eventData.user.identificationDocumentNumber || "",
-    xAction: isRepresentativeButNotApprover()
+    user: userIdentificationNumber,
+    xAction: isIndividualConceptOfAproval()
       ? "RegisterIndividualConceptOfApproval"
-      : getXAction(selectedDecision?.code || "", validationIsApprover()),
+      : getXAction(selectedDecision?.code),
     humanDecisionDescription: selectedDecision?.label || "",
   };
 
@@ -520,7 +535,7 @@ function ToDo(props: ToDoProps) {
                     type="submit"
                     fullwidth={isMobile}
                     spacing="compact"
-                    disabled={!hasPermitSend}
+                    disabled={!hasPermitSend || !decisionValue.decision}
                   >
                     {button?.label || txtLabelsEnum.buttonText.i18n[lang]}
                   </Button>
@@ -682,11 +697,7 @@ function ToDo(props: ToDoProps) {
         >
           <Stack direction="column" gap="16px">
             <Text>
-              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} ${selectedDecision?.label || "procesando"} ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} ${
-                representablePersons.length === 1
-                  ? representablePersons[0]
-                  : selectedRepresentative || "..."
-              }, ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
+              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} "${selectedDecision?.label || txtConfirmRepresentativeEnum.processingDefault.i18n[lang]}" ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} "${representablePersons[0] || "..."}", ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
             </Text>
             {representablePersons.length > 1 && (
               <Select
@@ -707,7 +718,7 @@ function ToDo(props: ToDoProps) {
                   label: person,
                   value: person,
                 }))}
-                value={selectedRepresentative}
+                value={selectedRepresentative || representablePersons[0]}
                 onChange={(_id, value) => setSelectedRepresentative(value)}
               />
             )}

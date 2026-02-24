@@ -175,6 +175,7 @@ export function DisbursementModal(
                 isMobile={isMobile}
                 data={data.internal}
                 lang={lang}
+                enums={enums}
               />
             )}
             {currentTab === "External" && (
