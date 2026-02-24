@@ -21,6 +21,26 @@ export interface IConsolidatedCredit {
   borrowerIdentificationNumber: string;
 }
 
+export interface IAddCreditProduct {
+  creditProducts: [
+    {
+      lineOfCreditAbbreviatedName: string;
+    },
+  ];
+  prospectId: string;
+}
+
+export interface IAddProduct {
+  prospectId: string;
+  paymentChannelAbbreviatedName: string;
+  paymentCycle: string;
+  firstPaymentCycleDate: string | Date;
+  lineOfCreditAbbreviatedName: string;
+  termLimit?: number;
+  installmentLimit?: number;
+  additionalAmount: number;
+}
+
 export interface IOrdinaryInstallmentsForPrincipal {
   numberOfInstallments: number;
   installmentFrequency: string;

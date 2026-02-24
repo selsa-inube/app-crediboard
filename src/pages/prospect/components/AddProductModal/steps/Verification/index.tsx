@@ -34,11 +34,13 @@ export const VerificationDebtorAddModal = (
 
   const paymentConfigAttributes = [
     createAttribute(
-      getVerificationAddProductConfig(lang).paymentConfiguration.fields.paymentMethod,
+      getVerificationAddProductConfig(lang).paymentConfiguration.fields
+        .paymentMethod,
       formData.paymentConfiguration.paymentMethod,
     ),
     createAttribute(
-      getVerificationAddProductConfig(lang).paymentConfiguration.fields.paymentCycle,
+      getVerificationAddProductConfig(lang).paymentConfiguration.fields
+        .paymentCycle,
       formData.paymentConfiguration.paymentCycle,
     ),
     createAttribute(
@@ -46,8 +48,8 @@ export const VerificationDebtorAddModal = (
         .firstPaymentDate,
       formData.paymentConfiguration.firstPaymentDate
         ? formatPrimaryDate(
-          new Date(formData.paymentConfiguration.firstPaymentDate),
-        )
+            new Date(formData.paymentConfiguration.firstPaymentDate),
+          )
         : "",
     ),
   ].filter((attr) => attr.value);
@@ -55,19 +57,19 @@ export const VerificationDebtorAddModal = (
   const termAttributes = [
     ...(formData.quotaCapEnabled
       ? [
-        createAttribute(
-          getVerificationAddProductConfig(lang).termInfo.fields.quotaCap,
-          currencyFormat(formData.quotaCapValue),
-        ),
-      ]
+          createAttribute(
+            getVerificationAddProductConfig(lang).termInfo.fields.quotaCap,
+            currencyFormat(formData.quotaCapValue),
+          ),
+        ]
       : []),
     ...(formData.maximumTermEnabled
       ? [
-        createAttribute(
-          getVerificationAddProductConfig(lang).termInfo.fields.maximumTerm,
-          `${formData.maximumTermValue} meses`,
-        ),
-      ]
+          createAttribute(
+            getVerificationAddProductConfig(lang).termInfo.fields.maximumTerm,
+            `${formData.maximumTermValue} meses`,
+          ),
+        ]
       : []),
   ];
 
@@ -85,21 +87,22 @@ export const VerificationDebtorAddModal = (
           title: getVerificationAddProductConfig(lang).creditLineInfo.title,
           attributes: [],
           stepNumber: 1,
-          customComponent: selectedCreditLineData ? ( 
+          customComponent: selectedCreditLineData ? (
             <CardProductSelection
               amount={selectedCreditLineData.LoanAmountLimit}
               rate={selectedCreditLineData.RiskFreeInterestRate}
               term={selectedCreditLineData.LoanTermLimit}
               description={formData.creditLine}
-              viewOnly={true}
               isMobile={isMobile}
               isSelected={false}
               disabled
+              lang={"en"}
             />
           ) : null,
         },
         paymentConfiguration: {
-          title: getVerificationAddProductConfig(lang).paymentConfiguration.title,
+          title:
+            getVerificationAddProductConfig(lang).paymentConfiguration.title,
           attributes: paymentConfigAttributes,
           stepNumber: 2,
         },

@@ -1,24 +1,21 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as Yup from "yup";
+
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { getLinesOfCreditByMoneyDestination } from "@services/prospect/getLinesOfCreditByMoneyDestination";
 import { GetSearchAllPaymentChannels } from "@services/prospect/searchAllPaymentChannelsByIdentificationNumber/SearchAllPaymentChannelsByIdentificationNumber";
-import { useEnum } from "@hooks/useEnum";
-
-import { ILinesOfCreditByMoneyDestination } from "./types";
-import { AddProductModalUI } from "./interface";
 import {
   IAddProductModalProps,
   TCreditLineTerms,
   IFormValues,
-  stepsAddProductEnum,
-  errorMessagesEnum,
   extractBorrowerIncomeData,
-  titleButtonTextAssistedEnum,
-  StepDetails,
+  stepsAddProduct,
+  errorMessages,
 } from "./config";
-
+import { AddProductModalUI } from "./interface";
+import { ILinesOfCreditByMoneyDestination } from "./types";
+import { IResponsePaymentDatesChannel } from "./steps/config";
 function AddProductModal(props: IAddProductModalProps) {
   const {
     onCloseModal,
@@ -30,20 +27,19 @@ function AddProductModal(props: IAddProductModalProps) {
     iconAfter,
     moneyDestination,
     businessUnitPublicCode,
-    identificationDocumentNumber,
+    customerData,
     businessManagerCode,
-    identificationDocumentType,
     dataProspect,
-    isSendingData,
+    lang,
+    isLoading,
     eventData,
   } = props;
-
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [creditLineTerms, setCreditLineTerms] = useState<TCreditLineTerms>({});
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(
-    stepsAddProductEnum.creditLineSelection.id,
+    stepsAddProduct.creditLineSelection.id,
   );
   const [isCurrentFormValid, setIsCurrentFormValid] = useState(false);
   const [formData, setFormData] = useState<IFormValues>({
@@ -62,28 +58,42 @@ function AddProductModal(props: IAddProductModalProps) {
     selectedProducts: [],
   });
 
-  const { lang } = useEnum();
-
   useEffect(() => {
     (async () => {
-      try {
-        setLoading(true);
-        const lineOfCreditValues = await getLinesOfCreditByMoneyDestination(
-          businessUnitPublicCode,
-          businessManagerCode,
-          moneyDestination,
-          identificationDocumentNumber,
-          eventData.token || "",
-        );
+      if (
+        !customerData?.clientIdinteficationNumber ||
+        customerData === undefined
+      )
+        return;
 
-        const linesArray = Array.isArray(lineOfCreditValues)
-          ? lineOfCreditValues
-          : [lineOfCreditValues];
+      setLoading(true);
 
-        const result: TCreditLineTerms = {};
+      const lineOfCreditValues = await getLinesOfCreditByMoneyDestination(
+        businessUnitPublicCode,
+        businessManagerCode,
+        moneyDestination,
+        customerData.clientIdinteficationNumber,
+        eventData.token,
+      );
 
-        linesArray.forEach((line: ILinesOfCreditByMoneyDestination) => {
-          if (line && line.abbreviateName) {
+      const linesArray = Array.isArray(lineOfCreditValues)
+        ? lineOfCreditValues
+        : [lineOfCreditValues];
+
+      const existingAbbreviatedNames: string[] =
+        dataProspect?.creditProducts?.map(
+          (product) => product.lineOfCreditAbbreviatedName,
+        ) ?? [];
+
+      const result: TCreditLineTerms = {};
+
+      linesArray.forEach((line: ILinesOfCreditByMoneyDestination) => {
+        if (line?.abbreviateName) {
+          const isAlreadyPresent = existingAbbreviatedNames.includes(
+            line.abbreviateName,
+          );
+
+          if (!isAlreadyPresent) {
             result[line.abbreviateName] = {
               LoanAmountLimit: line.maxAmount,
               LoanTermLimit: line.maxTerm,
@@ -92,62 +102,65 @@ function AddProductModal(props: IAddProductModalProps) {
               description: line.description,
             };
           }
-        });
+        }
+      });
 
-        setLoading(false);
-        setCreditLineTerms(result);
-      } catch (error) {
-        setErrorMessage(errorMessagesEnum.linesOfCredit.i18n[lang]);
-        setErrorModal(true);
-        setLoading(false);
+      setLoading(false);
+      setCreditLineTerms(result);
+
+      const availableLines = Object.keys(result);
+      if (availableLines.length === 1) {
+        const singleLine = availableLines[0];
+        setFormData((prev) => ({
+          ...prev,
+          creditLine: singleLine,
+          selectedProducts: [singleLine],
+        }));
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    businessUnitPublicCode,
-    moneyDestination,
-    identificationDocumentNumber,
-    businessManagerCode,
-  ]);
+  }, [businessUnitPublicCode]);
 
   useEffect(() => {
-    if (currentStep !== stepsAddProductEnum.paymentConfiguration.id) return;
+    if (currentStep !== stepsAddProduct.paymentConfiguration.id) return;
     const loadPaymentOptions = async () => {
-      if (!formData.creditLine) return;
+      if (!formData.creditLine || !customerData) return;
 
       try {
         const incomeData = extractBorrowerIncomeData(dataProspect);
 
         const paymentChannelRequest = {
-          clientIdentificationNumber: identificationDocumentNumber,
-          clientIdentificationType: identificationDocumentType,
+          clientIdentificationNumber: customerData.clientIdinteficationNumber,
+          clientIdentificationType: customerData.clientIdinteficationType,
           moneyDestination: moneyDestination,
           ...incomeData,
           linesOfCredit: formData.selectedProducts,
         };
 
         setLoading(true);
+
         const response = await GetSearchAllPaymentChannels(
           businessUnitPublicCode,
           businessManagerCode,
           paymentChannelRequest,
-          eventData.token || "",
+          eventData.token,
           eventData.user.identificationDocumentNumber || "",
         );
 
         if (!response || response.length === 0) {
-          throw new Error(errorMessagesEnum.getPaymentMethods.i18n[lang]);
+          throw new Error(errorMessages.getPaymentMethods.i18n[lang]);
         }
         setLoading(false);
         setFormData((prev) => ({
           ...prev,
           paymentConfiguration: {
             ...prev.paymentConfiguration,
-            paymentChannelData: response as [],
+            paymentChannelData:
+              response as unknown as IResponsePaymentDatesChannel[],
           },
         }));
       } catch (error) {
-        setErrorMessage(errorMessagesEnum.getPaymentMethods.i18n[lang]);
+        setErrorMessage(errorMessages.getPaymentMethods.i18n[lang]);
         setErrorModal(true);
         setLoading(false);
       }
@@ -159,10 +172,10 @@ function AddProductModal(props: IAddProductModalProps) {
 
   useEffect(() => {
     const validateCurrentStep = () => {
-      if (currentStep === stepsAddProductEnum.creditLineSelection.id) {
+      if (currentStep === stepsAddProduct.creditLineSelection.id) {
         const isValid = formData.selectedProducts.length > 0;
         setIsCurrentFormValid(isValid);
-      } else if (currentStep === stepsAddProductEnum.paymentConfiguration.id) {
+      } else if (currentStep === stepsAddProduct.paymentConfiguration.id) {
         const isValid =
           Boolean(formData.paymentConfiguration.paymentMethod) &&
           Boolean(formData.paymentConfiguration.paymentCycle) &&
@@ -176,26 +189,36 @@ function AddProductModal(props: IAddProductModalProps) {
 
   const isMobile = useMediaQuery("(max-width: 550px)");
 
-  const steps = Object.values(stepsAddProductEnum);
+  const steps = useMemo(() => {
+    return Object.values(stepsAddProduct).map((step) => ({
+      ...step,
+      name: step.name.i18n[lang],
+      description: step.description.i18n[lang],
+    }));
+  }, [lang]);
 
-  const handleNextStep = useCallback(() => {
-    if (currentStep === stepsAddProductEnum.creditLineSelection.id) {
-      setCurrentStep(stepsAddProductEnum.paymentConfiguration.id);
+  const currentStepsNumber = steps.find(
+    (step: { number: number }) => step.number === currentStep,
+  ) || { id: 0, number: 0, name: "", description: "" };
+
+  const handleNextStep = () => {
+    if (currentStep === stepsAddProduct.creditLineSelection.id) {
+      setCurrentStep(stepsAddProduct.paymentConfiguration.id);
     } else if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
-  }, [currentStep, steps.length]);
+  };
 
-  const handlePreviousStep = useCallback(() => {
+  const handlePreviousStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
     setIsCurrentFormValid(true);
-  }, [currentStep]);
+  };
 
-  const handleSubmitClick = useCallback(() => {
+  const handleSubmitClick = () => {
     onConfirm(formData);
-  }, [onConfirm, formData]);
+  };
 
   const handleFormChange = (updatedValues: Partial<IFormValues>) => {
     setFormData((prev) => ({
@@ -219,54 +242,6 @@ function AddProductModal(props: IAddProductModalProps) {
       .required(),
   });
 
-  const assistedControls = useMemo(
-    () => ({
-      goBackText: titleButtonTextAssistedEnum.goBackText.i18n[lang],
-      goNextText: titleButtonTextAssistedEnum.goNextText.i18n[lang],
-      submitText: titleButtonTextAssistedEnum.submitText.i18n[lang],
-    }),
-    [lang],
-  );
-
-  const stepsMap: StepDetails[] = useMemo(
-    () => [
-      {
-        ...stepsAddProductEnum.creditLineSelection,
-        name: stepsAddProductEnum.creditLineSelection.i18n[lang],
-      },
-      {
-        ...stepsAddProductEnum.paymentConfiguration,
-        name: stepsAddProductEnum.paymentConfiguration.i18n[lang],
-      },
-      {
-        ...stepsAddProductEnum.termSelection,
-        name: stepsAddProductEnum.termSelection.i18n[lang],
-      },
-      {
-        ...stepsAddProductEnum.amountCapture,
-        name: stepsAddProductEnum.amountCapture.i18n[lang],
-      },
-      {
-        ...stepsAddProductEnum.verification,
-        name: stepsAddProductEnum.verification.i18n[lang],
-      },
-    ],
-    [lang],
-  );
-
-  const stepsList: StepDetails[] = useMemo(
-    () =>
-      Object.values(stepsAddProductEnum).map((step) => ({
-        id: step.id,
-        number: step.number,
-        name: step.i18n[lang],
-        description: step.description,
-      })),
-    [lang],
-  );
-
-  const currentStepsNumberReference = stepsList[currentStep - 1];
-
   return (
     <AddProductModalUI
       title={title}
@@ -279,9 +254,9 @@ function AddProductModal(props: IAddProductModalProps) {
       iconAfter={iconAfter}
       creditLineTerms={creditLineTerms}
       isMobile={isMobile}
-      steps={stepsMap}
+      steps={steps}
       currentStep={currentStep}
-      currentStepsNumber={currentStepsNumberReference}
+      currentStepsNumber={currentStepsNumber}
       isCurrentFormValid={isCurrentFormValid}
       formData={formData}
       setIsCurrentFormValid={setIsCurrentFormValid}
@@ -299,12 +274,11 @@ function AddProductModal(props: IAddProductModalProps) {
       errorMessage={errorMessage}
       setErrorModal={setErrorModal}
       errorModal={errorModal}
-      setCurrentStep={setCurrentStep}
-      isSendingData={isSendingData}
+      isLoading={isLoading}
       lang={lang}
-      assistedControls={assistedControls}
       dataProspect={dataProspect}
       eventData={eventData}
+      setCurrentStep={setCurrentStep}
     />
   );
 }

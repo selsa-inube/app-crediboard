@@ -3,17 +3,16 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IProspect } from "@services/prospect/types";
 
-import { IAddCreditProduct } from "./types";
+import { IProspect } from "../types";
+import { IAddCreditProduct, IAddProduct } from "./types";
 
-export const addCreditProductService = async (
+export const addCreditProduct = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  payload: IAddCreditProduct,
-  token: string,
-  xUserName: string,
-): Promise<IProspect | undefined> => {
+  payload: IAddCreditProduct | IAddProduct,
+  authorizationToken: string,
+): Promise<IProspect | IAddProduct | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -28,15 +27,14 @@ export const addCreditProductService = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
-          "X-User-Name": xUserName,
-          Authorization: token,
+          Authorization: `${authorizationToken}`,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
         options,
       );
 

@@ -1,34 +1,34 @@
-export const selectDataEnum = {
+export const selectData = {
   amount: {
-    code: "Select_amount",
-    description: "Max amount",
+    code: "Amount",
+    description: "Maximum loan amount",
     i18n: {
-      en: "Max amount",
+      en: "Max. amount",
       es: "Monto máx.",
     },
   },
   rate: {
-    code: "Select_rate",
-    description: "Max rate",
+    code: "Rate",
+    description: "Maximum interest rate",
     i18n: {
-      en: "Max rate",
+      en: "Max. rate",
       es: "Tasa máx.",
     },
   },
   term: {
-    code: "Select_term",
-    description: "Max term",
+    code: "Term",
+    description: "Maximum term",
     i18n: {
-      en: "Max term",
+      en: "Max. term",
       es: "Plazo máx.",
     },
   },
   months: {
-    code: "Select_months",
-    description: "Months",
+    code: "Months",
+    description: "Label for months",
     i18n: {
       en: "Months",
-      es: "Meses",
+      es: "meses",
     },
   },
 };

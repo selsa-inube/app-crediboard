@@ -12,13 +12,14 @@ import {
   optionsSelect,
   IFinancialObligation,
 } from "@components/modals/ReportCreditsModal/index.tsx";
+import { ICrediboardData } from "@context/AppContext/types";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { useEnum } from "@hooks/useEnum";
 
 import { headers, ROWS_PER_PAGE, errorMessages } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
 import { IProperty } from "./types";
-import { ICrediboardData } from "@context/AppContext/types";
+
 
 export interface ITableFinancialObligationsProps {
   eventData?: ICrediboardData;

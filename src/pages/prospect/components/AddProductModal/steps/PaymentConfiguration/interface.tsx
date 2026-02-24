@@ -2,7 +2,9 @@ import { Stack, Select } from "@inubekit/inubekit";
 
 import { CardGray } from "@components/cards/CardGray";
 
-import { IPaymentConfigurationUI, dataAmountEnum, paymentConfigurationEnum } from "../config";
+
+import { IPaymentConfigurationUI } from "../config";
+import { dataAmount } from "./config/config";
 
 export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
   const {
@@ -10,6 +12,7 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
     firstPaymentDateOptions,
     paymentCycleOptions,
     paymentMethodOptions,
+    lang,
     paymentConfiguration,
     handlePaymentMethodChange,
     handlePaymentCycleChange,
@@ -17,19 +20,20 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
     hasOnlyOneFirstPaymentDate,
     hasOnlyOnePaymentCycle,
     hasOnlyOnePaymentMethod,
-    lang
   } = props;
 
   return (
     <Stack direction="column" gap="24px" padding="0px 16px">
       {hasOnlyOnePaymentMethod ? (
         <CardGray
-          label={dataAmountEnum.ordinaryPayment.i18n[lang]}
-          placeHolder={paymentMethodOptions[0]?.label || ""}
+          label={dataAmount.ordinaryPayment.i18n[lang]}
+          placeHolder={
+            paymentMethodOptions[0]?.label || "No hay opciones disponibles."
+          }
         />
       ) : (
         <Select
-          label={dataAmountEnum.ordinaryPayment.i18n[lang]}
+          label={dataAmount.ordinaryPayment.i18n[lang]}
           name="paymentMethod"
           id="paymentMethod"
           size="compact"
@@ -48,12 +52,14 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
         <>
           {hasOnlyOnePaymentCycle ? (
             <CardGray
-              label={paymentConfigurationEnum.paymentCycle.label.i18n[lang]}
-              placeHolder={paymentCycleOptions[0]?.label || ""}
+              label={dataAmount.paymentCycle.i18n[lang]}
+              placeHolder={
+                paymentCycleOptions[0]?.label || "No hay opciones disponibles."
+              }
             />
           ) : (
             <Select
-              label={paymentConfigurationEnum.paymentCycle.label.i18n[lang]}
+              label={dataAmount.paymentCycle.i18n[lang]}
               name="paymentCycle"
               id="paymentCycle"
               size="compact"
@@ -74,12 +80,15 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
         <>
           {hasOnlyOneFirstPaymentDate ? (
             <CardGray
-              label={paymentConfigurationEnum.firstPaymentDate.label.i18n[lang]}
-              placeHolder={firstPaymentDateOptions[0]?.label || ""}
+              label={dataAmount.paymentDate.i18n[lang]}
+              placeHolder={
+                firstPaymentDateOptions[0]?.label ||
+                "No hay opciones disponibles."
+              }
             />
           ) : (
             <Select
-              label={paymentConfigurationEnum.paymentDate.label.i18n[lang]}
+              label={dataAmount.paymentDate.i18n[lang]}
               name="firstPaymentDate"
               id="firstPaymentDate"
               size="compact"
