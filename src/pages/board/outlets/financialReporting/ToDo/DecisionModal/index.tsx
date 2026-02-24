@@ -17,6 +17,7 @@ import { validationMessages } from "@validations/validationMessages";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { IMakeDecisionsCreditRequest } from "@services/creditRequest/command/types";
 
 import {
   IMakeDecisionsCreditRequestWithXAction,
@@ -28,7 +29,6 @@ import {
   txtFlagsEnum,
   txtOthersOptionsEnum,
 } from "./../config";
-import { IMakeDecisionsCreditRequest } from "@services/creditRequest/command/types";
 
 interface FormValues {
   textarea: string;
@@ -140,7 +140,7 @@ export function DecisionModal(props: DecisionModalProps) {
       const response = await makeDecisions(
         data.businessUnit,
         businessManagerCode,
-        eventData.user.identificationDocumentNumber || "",
+        data.user || eventData.user.identificationDocumentNumber || "",
         makeDecisionsPayload as IMakeDecisionsCreditRequest,
         data.xAction,
         eventData.token,

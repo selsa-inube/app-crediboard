@@ -3,6 +3,7 @@ import { Stack, Grid } from "@inubekit/inubekit";
 import { currencyFormat } from "@utils/formatData/currency";
 import { CardGray } from "@components/cards/CardGray";
 import { formatPrimaryDate } from "@utils/formatData/date";
+import { IAllEnumsResponse } from "@services/enumerators/types";
 
 import {
   formatObservation,
@@ -21,10 +22,11 @@ export interface IDisbursement {
   isMobile: boolean;
   data: dataTabsDisbursement;
   lang: "es" | "en";
+  enums: IAllEnumsResponse | null;
 }
 
 export function DisbursementInternal(props: IDisbursement) {
-  const { isMobile, data, lang } = props;
+  const { isMobile, data, lang, enums } = props;
 
   return (
     <Stack
@@ -85,7 +87,7 @@ export function DisbursementInternal(props: IDisbursement) {
         />
         <CardGray
           label={disbursemenOptionAccountEnum.labelAccount.i18n[lang]}
-          placeHolder={`${data.accountNumber} - ${data.accountType} - ${data.accountBankName}`}
+          placeHolder={`${data.accountNumber} - ${enums?.AccountType?.find((item) => item.code === data.accountType)?.i18n[lang] ?? data.accountType} - ${data.accountBankName}`}
         />
         <CardGray
           label={disbursemenOptionAccountEnum.paymentOrderReference.i18n[lang]}

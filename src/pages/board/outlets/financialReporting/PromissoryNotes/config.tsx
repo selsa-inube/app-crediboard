@@ -68,58 +68,86 @@ export const actionsFinancialReportingEnum = {
 };
 
 export const getTitlesFinancialReporting = (lang: "es" | "en") =>
-  Object.values(titlesFinancialReportingEnum).map(item => ({
+  Object.values(titlesFinancialReportingEnum).map((item) => ({
     id: item.id,
     titleName: item.i18n[lang],
-    priority: item.priority
+    priority: item.priority,
   }));
 
-export const appearanceTag = (tag: string): "success" | "warning" | "danger" => {
-  if (tag === statusFinancialReportingEnum.signed.value) return "success";
-  if (tag === statusFinancialReportingEnum.inProcess.value) return "warning";
-  return "danger";
+export const appearanceTag = (
+  code: string,
+): "success" | "warning" | "danger" | "help" => {
+  if (code === "ANALISIS_RIESGO" || code === "GESTION_COMERCIAL") return "help";
+  if (code === "SIN_CONCEPTO") return "warning";
+  if (code === "RECHAZO_HUMANO" || code === "RECHAZAR_SOLICITUD")
+    return "danger";
+  return "success";
 };
 
 export const getTableBoardActions = (
   entrySelection: (data: IEntries) => void,
-  lang: "es" | "en"
+  lang: "es" | "en",
 ) => [
-    {
-      id: actionsFinancialReportingEnum.resend.id,
-      actionName: actionsFinancialReportingEnum.resend.i18n[lang],
-      content: (data: IEntries) => (
-        <Icon
-          appearance="primary"
-          cursorHover
-          size="22px"
-          icon={<MdOutlineShare />}
-          onClick={() => entrySelection(data)}
-        />
-      ),
-    },
-    {
-      id: actionsFinancialReportingEnum.viewImage.id,
-      actionName: actionsFinancialReportingEnum.viewImage.i18n[lang],
-      content: (data: IEntries) => (
-        <Icon
-          appearance="primary"
-          size="22px"
-          icon={<MdOutlineRemoveRedEye />}
-          onClick={() => entrySelection(data)}
-        />
-      ),
-    },
-  ];
+  {
+    id: actionsFinancialReportingEnum.resend.id,
+    actionName: actionsFinancialReportingEnum.resend.i18n[lang],
+    content: (data: IEntries) => (
+      <Icon
+        appearance="primary"
+        cursorHover
+        size="22px"
+        icon={<MdOutlineShare />}
+        onClick={() => entrySelection(data)}
+      />
+    ),
+  },
+  {
+    id: actionsFinancialReportingEnum.viewImage.id,
+    actionName: actionsFinancialReportingEnum.viewImage.i18n[lang],
+    content: (data: IEntries) => (
+      <Icon
+        appearance="primary"
+        size="22px"
+        icon={<MdOutlineRemoveRedEye />}
+        onClick={() => entrySelection(data)}
+      />
+    ),
+  },
+];
 
-const getIconByTagStatus = (tagElement: React.ReactElement, lang: "es" | "en") => {
+const getIconByTagStatus = (
+  tagElement: React.ReactElement,
+  lang: "es" | "en",
+) => {
   const label = tagElement.props.label;
 
   if (label === statusFinancialReportingEnum.signed.value) {
-    return <img src={check} alt={statusFinancialReportingEnum.signed.i18n[lang]} width={14} height={14} />;
+    return (
+      <img
+        src={check}
+        alt={statusFinancialReportingEnum.signed.i18n[lang]}
+        width={14}
+        height={14}
+      />
+    );
   } else if (label === statusFinancialReportingEnum.inProcess.value) {
-    return <img src={remove} alt={statusFinancialReportingEnum.inProcess.i18n[lang]} width={14} height={14} />;
+    return (
+      <img
+        src={remove}
+        alt={statusFinancialReportingEnum.inProcess.i18n[lang]}
+        width={14}
+        height={14}
+      />
+    );
   } else if (label === statusFinancialReportingEnum.withError.value) {
-    return <img src={close} alt={statusFinancialReportingEnum.withError.i18n[lang]} width={14} height={14} />;
+    return (
+      <img
+        src={close}
+        alt={statusFinancialReportingEnum.withError.i18n[lang]}
+        width={14}
+        height={14}
+      />
+    );
   }
   return null;
 };
@@ -142,7 +170,6 @@ export const getActionsMobileIcon = (lang: "es" | "en") => [
     },
   },
 ];
-
 
 export const actionsFinanacialReporting = [
   {
@@ -220,7 +247,7 @@ export const actionMobile = [
 export const firstWord = (text: string) => text.split(" ")[0];
 
 export const getTableBoardActionMobile = (
-  entrySelection: (data: IEntries) => void
+  entrySelection: (data: IEntries) => void,
 ) =>
   actionMobile.map((action) => ({
     id: action.id,
