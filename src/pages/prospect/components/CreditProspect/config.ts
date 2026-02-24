@@ -1,7 +1,7 @@
 export const errorMessage = {
   addCreditProduct: {
     description: "Error al agregar el producto de crédito. ",
-  }
+  },
 };
 
 export const dataCreditProspectEnum = {
@@ -150,7 +150,71 @@ export const dataCreditProspectEnum = {
     },
   },
 };
-
+export const configModal = {
+  observations: {
+    title: {
+      code: "ModalObservations_Title",
+      description: "Title of observations modal",
+      i18n: { en: "Observations", es: "Observaciones" },
+    },
+    label: {
+      code: "ModalObservations_Label",
+      description: "Label for observations input",
+      i18n: { en: "Observations", es: "Observaciones" },
+    },
+    cancel: {
+      code: "ModalObservations_Cancel",
+      description: "Cancel button in observations modal",
+      i18n: { en: "Cancel", es: "Cancelar" },
+    },
+    modify: {
+      code: "ModalObservations_Modify",
+      description: "Button to modify observations",
+      i18n: { en: "Modify observations", es: "Modificar observaciones" },
+    },
+    labelTextarea: {
+      code: "ModalObservations_LabelTextarea",
+      description: "Textarea label for observations",
+      i18n: { en: "Prospect observations", es: "Observaciones del prospecto" },
+    },
+    preApproval: {
+      code: "ModalObservations_PreApproval",
+      description: "Label for pre-approval comments",
+      i18n: {
+        en: "Pre-approval comments",
+        es: "Comentarios de la pre-aprobación",
+      },
+    },
+    errorMessage: {
+      code: "ModalObservations_ErrorMessage",
+      description: "Error message when saving observations",
+      i18n: {
+        en: "Error saving observations",
+        es: "Error al guardar las observaciones",
+      },
+    },
+  },
+  success: {
+    title: {
+      code: "ModalSuccess_Title",
+      description: "Title of success modal",
+      i18n: { en: "Changes", es: "Cambios" },
+    },
+    text: {
+      code: "ModalSuccess_Text",
+      description: "Text in success modal",
+      i18n: {
+        en: "Changes were saved successfully.",
+        es: "Se guardó con éxito los cambios.",
+      },
+    },
+    close: {
+      code: "ModalSuccess_Close",
+      description: "Close button in success modal",
+      i18n: { en: "Close", es: "Cerrar" },
+    },
+  },
+};
 export const errorMessageEnum = {
   addCreditProduct: {
     code: "ErrorMessage_addCreditProduct",

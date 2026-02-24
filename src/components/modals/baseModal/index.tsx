@@ -39,10 +39,11 @@ export interface IBaseModalProps {
   finalDivider?: boolean;
   portalId?: string;
   $height?: string;
-  isSendingData?: boolean
-  internalWidth?: string
+  isSendingData?: boolean;
+  internalWidth?: string;
   marginTop?: string;
   marginBottom?: string;
+  isLoading?: boolean;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -68,10 +69,10 @@ export function BaseModal(props: IBaseModalProps) {
     finalDivider = false,
     portalId = "portal",
     $height,
-    isSendingData,
     internalWidth,
+    isLoading = false,
     marginBottom,
-    marginTop
+    marginTop,
   } = props;
 
   const { lang } = useEnum();
@@ -90,9 +91,7 @@ export function BaseModal(props: IBaseModalProps) {
       <StyledContainer
         $height={$height}
         $width={width}
-        $margin={
-            `${marginTop || 0} 0 ${marginBottom || 0} 0`
-          }
+        $margin={`${marginTop || 0} 0 ${marginBottom || 0} 0`}
       >
         <Stack
           direction="column"
@@ -143,7 +142,7 @@ export function BaseModal(props: IBaseModalProps) {
                 iconBefore={iconBeforeNext}
                 appearance={apparenceNext}
                 variant={variantNext}
-                loading={isSendingData}
+                loading={isLoading}
               >
                 {nextButton}
               </Button>
@@ -152,6 +151,6 @@ export function BaseModal(props: IBaseModalProps) {
         </Stack>
       </StyledContainer>
     </Blanket>,
-    node
+    node,
   );
 }

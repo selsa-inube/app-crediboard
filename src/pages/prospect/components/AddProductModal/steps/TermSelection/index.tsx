@@ -2,7 +2,6 @@ import * as Yup from "yup";
 import { useEffect, useState } from "react";
 
 import { currencyFormat } from "@utils/formatData/currency";
-import { useEnum } from "@hooks/useEnum";
 import {
   IPaymentCapacity,
   IPaymentCapacityResponse,
@@ -24,6 +23,7 @@ export function TermSelection(props: ITermSelection) {
     quotaCapEnabled,
     maximumTermEnabled,
     isMobile,
+    lang,
     dataProspect,
     businessManagerCode,
     businessUnitPublicCode,
@@ -34,8 +34,6 @@ export function TermSelection(props: ITermSelection) {
 
   const [paymentCapacityData, setPaymentCapacityData] =
     useState<IPaymentCapacityResponse | null>(null);
-
-  const { lang } = useEnum();
 
   useEffect(() => {
     if (!quotaCapEnabled && !maximumTermEnabled) {
@@ -201,7 +199,6 @@ export function TermSelection(props: ITermSelection) {
       maximumTermEnabled: isChecked,
     });
   };
-
   const borrower = dataProspect?.borrowers[0];
 
   useEffect(() => {
@@ -262,7 +259,7 @@ export function TermSelection(props: ITermSelection) {
     };
 
     fetchCapacityAnalysis();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

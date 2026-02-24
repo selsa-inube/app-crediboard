@@ -18,12 +18,13 @@ import { IProspect, IBorrower } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
-import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { restoreFinancialObligationsByBorrowerId } from "@services/prospect/restoreFinancialObligationsByBorrowerId";
 import { CardGray } from "@components/cards/CardGray";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 
 import { FinancialObligationModal } from "../financialObligationModal";
 import {

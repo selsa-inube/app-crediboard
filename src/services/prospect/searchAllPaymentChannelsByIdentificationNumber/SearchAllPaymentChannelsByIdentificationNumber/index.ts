@@ -4,13 +4,16 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IPaymentDatesChannel, IResponsePaymentDatesChannel } from "./types";
+import {
+  IPaymentDatesChannel,
+  IResponsePaymentDatesChannel,
+} from "../SearchAllPaymentChannelsByIdentificationNumber/types";
 
 export const GetSearchAllPaymentChannels = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   paymentChannel: IPaymentDatesChannel,
-  token: string,
+  authorizationToken: string,
   xUserName: string,
 ): Promise<IResponsePaymentDatesChannel[] | undefined> => {
   const maxRetries = maxRetriesServices;
@@ -29,7 +32,7 @@ export const GetSearchAllPaymentChannels = async (
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
           "X-User-Name": xUserName,
-          Authorization: token,
+          Authorization: `${authorizationToken}`,
         },
         body: JSON.stringify(paymentChannel),
         signal: controller.signal,

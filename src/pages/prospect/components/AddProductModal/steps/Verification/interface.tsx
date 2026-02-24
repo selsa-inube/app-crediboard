@@ -5,6 +5,7 @@ import { BoxAttribute } from "@components/data/BoxAttirbute";
 import { AccordionValidations } from "@components/data/AccordionValidations";
 
 import { IDataVerificationStep } from "./types";
+import { ScrollableContainer } from "../../styles";
 
 interface IVerificationAddProductUIProps {
   dataVerificationStep: IDataVerificationStep[];
@@ -19,7 +20,11 @@ export const VerificationAddProductUI = (
   const { dataVerificationStep, keySections, isMobile, setCurrentStep } = props;
 
   return (
-    <Stack gap="8px" direction="column" margin="0 6px 0 0">
+    <ScrollableContainer
+      $smallScreen={isMobile}
+      $height="200px"
+      $width={isMobile ? "280px" : "auto"}
+    >
       {dataVerificationStep.map((dataStept) =>
         keySections.map((keySection) => {
           const section = dataStept.sections[keySection];
@@ -75,6 +80,6 @@ export const VerificationAddProductUI = (
           ) : null;
         }),
       )}
-    </Stack>
+    </ScrollableContainer>
   );
 };

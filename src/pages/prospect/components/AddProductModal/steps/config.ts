@@ -2,9 +2,10 @@ import * as Yup from "yup";
 
 import { EnumType } from "@hooks/useEnum";
 
-import { stepsAddProductEnum } from "../config";
 import { IProspect } from "@services/prospect/types";
 import { ICrediboardData } from "@context/AppContext/types";
+
+import { stepsAddProduct } from "../config";
 
 export interface IResponsePaymentDatesChannel {
   creditLine: string;
@@ -64,6 +65,7 @@ export interface ITermSelection {
   maximumTermValue: number;
   quotaCapEnabled: boolean;
   maximumTermEnabled: boolean;
+  lang: EnumType;
   isMobile: boolean;
   dataProspect: IProspect;
   businessUnitPublicCode: string;
@@ -151,6 +153,7 @@ export interface IPaymentConfigurationUI {
 
 export interface IPaymentConfigurationMain {
   paymentConfig: IPaymentConfiguration;
+  lang: EnumType;
   onChange: (config: Partial<IPaymentConfiguration>) => void;
   onFormValid: (isValid: boolean) => void;
 }
@@ -163,7 +166,7 @@ export interface IAmountCaptureProps {
   businessManagerCode: string;
   onChange: (amount: number) => void;
   onFormValid: (isValid: boolean) => void;
-  isMobile: boolean;
+  isMobile?: boolean;
 }
 
 export interface IAmountCaptureUI {
@@ -171,7 +174,7 @@ export interface IAmountCaptureUI {
   loanAmountError: string;
   amountCaptureTexts: typeof amountCaptureTexts;
   handleCurrencyChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  isMobile: boolean;
+  isMobile?: boolean;
 }
 
 export type PaymentChannelItem =
@@ -201,21 +204,6 @@ export const amountCaptureTexts = {
       })}`,
     validationFailed: "No se pudo validar el monto con las reglas de negocio",
     validationError: "Error al validar el monto del crédito",
-  },
-};
-
-export const paymentConfiguration = {
-  paymentMethod: {
-    placeholder: "Selecciona una opcion",
-    label: "Medio de pago",
-  },
-  paymentCycle: {
-    placeholder: "Selecciona una opcion",
-    label: "Ciclo de pagos",
-  },
-  firstPaymentDate: {
-    placeholder: "Selecciona una opcion",
-    label: "Primer ciclo de pago",
   },
 };
 
@@ -373,14 +361,14 @@ export const loanDataEnum = {
 
 export const getVerificationAddProductConfig = (lang: EnumType) => ({
   creditLineInfo: {
-    title: stepsAddProductEnum.creditLineSelection.i18n[lang],
+    title: stepsAddProduct.creditLineSelection.name.i18n[lang],
     fields: {
       creditLine: lang === "en" ? "Credit line" : "Línea de crédito",
       products: lang === "en" ? "Selected products" : "Productos seleccionados",
     },
   },
   paymentConfiguration: {
-    title: stepsAddProductEnum.paymentConfiguration.i18n[lang],
+    title: stepsAddProduct.paymentConfiguration.name.i18n[lang],
     fields: {
       paymentMethod: dataAmountEnum.ordinaryPayment.i18n[lang],
       paymentCycle: paymentConfigurationEnum.paymentCycle.label.i18n[lang],
@@ -389,14 +377,14 @@ export const getVerificationAddProductConfig = (lang: EnumType) => ({
     },
   },
   termInfo: {
-    title: stepsAddProductEnum.termSelection.i18n[lang],
+    title: stepsAddProduct.termSelection.name.i18n[lang],
     fields: {
       quotaCap: loanDataEnum.quotaCapTitle.i18n[lang],
       maximumTerm: loanDataEnum.maximumTermTitle.i18n[lang],
     },
   },
   amountInfo: {
-    title: stepsAddProductEnum.amountCapture.i18n[lang],
+    title: stepsAddProduct.amountCapture.name.i18n[lang],
     fields: {
       creditAmount: amountCaptureTextsEnum.label.i18n[lang],
     },

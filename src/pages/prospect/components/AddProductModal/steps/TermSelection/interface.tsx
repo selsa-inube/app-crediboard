@@ -3,19 +3,21 @@ import { Stack, Text, Divider, Toggle, Textfield } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
 
-import { ITermSelectionUI, loanDataEnum } from "../config";
+
+import { ITermSelectionUI } from "../config";
+import { loanData } from "./config/config";
 
 export function TermSelectionUI(props: ITermSelectionUI) {
   const {
     isMobile,
     initialValues,
     validationSchema,
+    lang,
     handleValidationsForm,
     handleQuotaCapToggleChange,
     handleQuotaCapValueChange,
     handleMaximumTermToggleChange,
     handleMaximumTermValueChange,
-    lang,
   } = props;
 
   return (
@@ -28,10 +30,10 @@ export function TermSelectionUI(props: ITermSelectionUI) {
       validateOnMount={true}
       onSubmit={() => {}}
     >
-      {({ values, errors, handleBlur, setFieldValue }) => (
+      {({ values, handleBlur, setFieldValue, errors }) => (
         <Form>
-          <Stack direction="column" gap="16px" padding="0px 16px" height="auto">
-            <Fieldset borderColor="none">
+          <Stack direction="column" gap="16px" padding="0px 16px">
+            <Fieldset>
               <Stack direction="column" gap="16px" padding="16px">
                 <Stack direction="column" gap="16px">
                   <Text
@@ -41,7 +43,7 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                       !values.toggles.maximumTermToggle ? "dark" : "gray"
                     }
                   >
-                    {loanDataEnum.quotaCapTitle.i18n[lang]}
+                    {loanData.quotaCapTitle.i18n[lang]}
                   </Text>
                   <Stack
                     alignItems={isMobile ? "initial" : "center"}
@@ -54,9 +56,11 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         type="checkbox"
                         as={Toggle}
                         checked={values.toggles.quotaCapToggle}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>,
+                        ) => {
                           handleQuotaCapToggleChange(
-                            e.target.checked,
+                            event.target.checked,
                             setFieldValue,
                             values,
                           );
@@ -71,8 +75,8 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         }
                       >
                         {values.toggles.quotaCapToggle
-                          ? loanDataEnum.yes.i18n[lang]
-                          : loanDataEnum.no.i18n[lang]}
+                          ? loanData.yes.i18n[lang]
+                          : loanData.no.i18n[lang]}
                       </Text>
                     </Stack>
 
@@ -80,23 +84,25 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                       <Textfield
                         id="quotaCap"
                         name="quotaCapValue"
-                        label={loanDataEnum.quotaCapLabel.i18n[lang]}
-                        placeholder={loanDataEnum.quotaCapLabel.i18n[lang]}
+                        label={loanData.quotaCapLabel.i18n[lang]}
+                        placeholder={loanData.quotaCapPlaceholder.i18n[lang]}
                         size="compact"
                         type="text"
-                        fullwidth={isMobile}
-                        disabled={!values.toggles.quotaCapToggle}
-                        value={values.quotaCapValue}
                         status={errors.quotaCapValue ? "invalid" : "pending"}
                         message={errors.quotaCapValue}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        disabled={!values.toggles.quotaCapToggle}
+                        fullwidth={isMobile}
+                        value={values.quotaCapValue}
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>,
+                        ) => {
                           handleQuotaCapValueChange(
-                            e.target.value,
+                            event.target.value,
                             setFieldValue,
                           );
                         }}
-                        onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          handleBlur(e)
+                        onBlur={(event: React.ChangeEvent<HTMLInputElement>) =>
+                          handleBlur(event)
                         }
                       />
                     </Stack>
@@ -112,7 +118,7 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         !values.toggles.quotaCapToggle ? "dark" : "gray"
                       }
                     >
-                      {loanDataEnum.maximumTermTitle.i18n[lang]}
+                      {loanData.maximumTermTitle.i18n[lang]}
                     </Text>
                     <Stack
                       gap="16px"
@@ -127,10 +133,10 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                           checked={values.toggles.maximumTermToggle}
                           disabled={values.toggles.quotaCapToggle}
                           onChange={(
-                            e: React.ChangeEvent<HTMLInputElement>,
+                            event: React.ChangeEvent<HTMLInputElement>,
                           ) => {
                             handleMaximumTermToggleChange(
-                              e.target.checked,
+                              event.target.checked,
                               setFieldValue,
                               values,
                             );
@@ -147,8 +153,8 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                           }
                         >
                           {values.toggles.maximumTermToggle
-                            ? loanDataEnum.yes.i18n[lang]
-                            : loanDataEnum.no.i18n[lang]}
+                            ? loanData.yes.i18n[lang]
+                            : loanData.no.i18n[lang]}
                         </Text>
                       </Stack>
 
@@ -156,9 +162,9 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                         <Textfield
                           id="maximumTerm"
                           name="maximumTermValue"
-                          label={loanDataEnum.maximumTermLabel.i18n[lang]}
+                          label={loanData.maximumTermLabel.i18n[lang]}
                           placeholder={
-                            loanDataEnum.maximumTermPlaceholder.i18n[lang]
+                            loanData.maximumTermPlaceholder.i18n[lang]
                           }
                           size="compact"
                           type="number"
@@ -166,16 +172,16 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                           fullwidth={isMobile}
                           value={values.maximumTermValue}
                           onChange={(
-                            e: React.ChangeEvent<HTMLInputElement>,
+                            event: React.ChangeEvent<HTMLInputElement>,
                           ) => {
                             handleMaximumTermValueChange(
-                              Number(e.target.value),
+                              Number(event.target.value),
                               setFieldValue,
                             );
                           }}
-                          onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            handleBlur(e)
-                          }
+                          onBlur={(
+                            event: React.ChangeEvent<HTMLInputElement>,
+                          ) => handleBlur(event)}
                         />
                       </Stack>
                     </Stack>

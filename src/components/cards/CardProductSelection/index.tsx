@@ -4,10 +4,10 @@ import { Fieldset } from "@components/data/Fieldset";
 import { currencyFormat } from "@utils/formatData/currency";
 import { EnumType } from "@hooks/useEnum";
 
-import { selectDataEnum } from "./config";
+import { selectData } from "./config";
 
 export interface ICardProductSelectionProps {
-  lang?: EnumType;
+  lang: EnumType;
   amount?: number;
   rate?: number;
   term?: number;
@@ -17,11 +17,12 @@ export interface ICardProductSelectionProps {
   onSelect?: () => void;
   typeCheck?: string;
   isMobile?: boolean;
-  viewOnly?: boolean;
+  withCheckbox?: boolean;
 }
 
 export function CardProductSelection(props: ICardProductSelectionProps) {
   const {
+    lang,
     amount = 10000000,
     rate = 1,
     term = 12,
@@ -31,20 +32,20 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
     isSelected,
     typeCheck,
     isMobile,
-    viewOnly = false,
-    lang = "es",
+    withCheckbox,
   } = props;
 
   return (
-    <Stack width={isMobile ? "250px" : "455px"} direction="column">
+    <Stack width={isMobile ? "80vw" : "455px"} direction="column">
       <Stack gap="4px">
-        {!viewOnly && (
+        {withCheckbox && (
           <input
             type={typeCheck ? typeCheck : "checkbox"}
             disabled={disabled}
             checked={isSelected}
             onChange={onSelect}
             name="productSelection"
+            style={{ cursor: disabled ? "not-allowed" : "pointer" }}
           />
         )}
         <Text
@@ -56,9 +57,9 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
         </Text>
       </Stack>
       <Fieldset
-        isClickable={!disabled}
-        selectedState={isSelected}
-        onSelectionChange={viewOnly ? undefined : onSelect}
+        isClickable={!disabled && withCheckbox}
+        selectedState={withCheckbox && isSelected}
+        onSelectionChange={withCheckbox ? onSelect : undefined}
       >
         <Stack direction="column" gap="16px" padding="4px 16px">
           <Stack justifyContent="space-between">
@@ -68,7 +69,7 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
               size="large"
               weight="bold"
             >
-              {selectDataEnum.amount.i18n[lang]}
+              {selectData.amount.i18n[lang]}
             </Text>
             <Text appearance="gray" size="medium">
               <Text as="span" appearance="primary" size="small" weight="bold">
@@ -84,7 +85,7 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
               size="large"
               weight="bold"
             >
-              {selectDataEnum.rate.i18n[lang]}
+              {selectData.rate.i18n[lang]}
             </Text>
             <Text appearance="gray" size="medium">
               {rate.toFixed(3)} % M.V
@@ -97,10 +98,10 @@ export function CardProductSelection(props: ICardProductSelectionProps) {
               size="large"
               weight="bold"
             >
-              {selectDataEnum.term.i18n[lang]}
+              {selectData.term.i18n[lang]}
             </Text>
             <Text appearance="gray" size="medium">
-              {term} {selectDataEnum.months.i18n[lang]}
+              {term} {selectData.months.i18n[lang]}
             </Text>
           </Stack>
         </Stack>
