@@ -47,6 +47,8 @@ const getXAction = (humanDecision?: string, isApprover?: boolean): string => {
     return "CreatePortfolioObligations";
   } else if (humanDecision === "DESEMBOLSO_DECLINADO") {
     return "ConfirmDisbursementDeclined";
+  } else if (humanDecision === "RESTART_DISBURSEMENT_PROCESS") {
+    return "StartDisbursementWorkflow";
   }
 
   return "";
