@@ -418,6 +418,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                 {dataCreditProspectEnum.addProduct.i18n[lang]}
               </Button>
             )}
+            
             {editCreditApplication ||
               (availableEditCreditRequest && (
                 <Icon
