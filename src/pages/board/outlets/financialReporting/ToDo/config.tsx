@@ -342,29 +342,21 @@ export const txtConfirmRepresentativeEnum = {
     },
   },
   confirmationMessage: {
-    code: "TxtConfirmRepresentative_confirmationMessage",
-    description: "Message confirming action on behalf of representative",
     i18n: {
-      en: "You are ",
-      es: "Estás",
+      en: "You are about to register the decision",
+      es: "Vas a registrar la decisión",
     },
   },
-
+  decisionLabel: {
+    i18n: {
+      en: "on behalf of",
+      es: "en representación de",
+    },
+  },
   decisionPlaceholder: {
-    code: "TxtConfirmRepresentative_decisionPlaceholder",
-    description: "Placeholder for decision selector",
     i18n: {
       en: "Do you want to continue?",
       es: "¿Deseas continuar?",
-    },
-  },
-
-  decisionLabel: {
-    code: "TxtConfirmRepresentative_decisionLabel",
-    description: "Label for decision selector",
-    i18n: {
-      en: "the decision on behalf of",
-      es: "la solicitud en representación de",
     },
   },
 

@@ -1,4 +1,4 @@
-import { useRef, useState, useContext } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import { createPortal } from "react-dom";
 import {
   MdClear,
@@ -25,6 +25,7 @@ import { formatFileSize } from "@utils/size";
 import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
 import { optionFlagsEnum } from "@pages/board/outlets/financialReporting/config";
 import { useEnum } from "@hooks/useEnum";
+import { getMaximumNotificationDocumentSize } from "@services/lineOfCredit/getMaximumNotificationDocumentSize";
 
 import { IUploadedFileReturn } from "../RequirementsModals/DocumentValidationApprovalModal/config";
 import { ErrorModal } from "../ErrorModal";
@@ -107,7 +108,7 @@ export const ListModal = (props: IListModalProps) => {
     node.style.zIndex = "3";
   }
   const { addFlag } = useFlag();
-  const MAX_FILE_SIZE = 2.5 * 1024 * 1024;
+  const { lang } = useEnum();
   const isMobile = useMediaQuery("(max-width: 700px)");
   const dragCounter = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -126,8 +127,38 @@ export const ListModal = (props: IListModalProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
+  const [maxFileSize, setMaxFileSize] = useState<number>(2.5 * 1024 * 1024);
 
-  const { lang } = useEnum();
+  useEffect(() => {
+    const fetchMaxFileSize = async () => {
+      try {
+        const response = await getMaximumNotificationDocumentSize(
+          businessUnitPublicCode,
+          eventData.token,
+        );
+
+        if (response && response.maximumNotificationDocumentSize) {
+          setMaxFileSize(
+            response.maximumNotificationDocumentSize * 1024 * 1024,
+          );
+        }
+      } catch (error) {
+        const err = error as {
+          message?: string;
+          status: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + err?.message + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
+      }
+    };
+
+    fetchMaxFileSize();
+  }, [businessUnitPublicCode, eventData.token]);
 
   interface IListdataProps {
     data: { id: string; name: string }[] | null | undefined;
@@ -202,24 +233,40 @@ export const ListModal = (props: IListModalProps) => {
   };
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (!setUploadedFiles) return;
+    if (!setUploadedFiles || !files) return;
 
-    if (files && files.length > 0) {
-      const newFiles = Array.from(files).map((file) => ({
-        id: crypto.randomUUID(),
-        name: file.name,
-        file: file,
-      }));
-      setUploadedFiles((prev: IDocumentUpload[]) => [
-        ...(prev || []),
-        ...newFiles,
-      ]);
-    } else {
-      setUploadedFiles([]);
+    const validFiles: IDocumentUpload[] = [];
+    let hasError = false;
+
+    Array.from(files).forEach((file) => {
+      if (file.size <= maxFileSize) {
+        validFiles.push({
+          id: crypto.randomUUID(),
+          name: file.name,
+          file: file,
+        });
+      } else {
+        hasError = true;
+      }
+    });
+
+    if (hasError) {
+      setMessageError(
+        `${listModalDataEnum.exceedSize.i18n[lang]} ${maxFileSize / 1024 / 1024}MB`,
+      );
+      setShowErrorModal(true);
     }
+
+    setUploadedFiles((prev: IDocumentUpload[]) => [
+      ...(prev || []),
+      ...validFiles,
+    ]);
+
+    event.target.value = "";
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
     e.preventDefault();
     dragCounter.current = 0;
     setIsDragging(false);
@@ -232,23 +279,36 @@ export const ListModal = (props: IListModalProps) => {
       "image/jpeg",
       "image/png",
       "image/jpg",
-      "image/JPG",
     ];
-    const validFiles = files.filter(
-      (file) =>
-        validMimeTypes.includes(file.type) && file.size <= MAX_FILE_SIZE,
-    );
 
-    const newFiles = validFiles.map((file) => ({
-      id: crypto.randomUUID(),
-      name: file.name,
-      file,
-    }));
+    const validFiles: IDocumentUpload[] = [];
+    let hasSizeError = false;
+
+    files.forEach((file) => {
+      if (validMimeTypes.includes(file.type)) {
+        if (file.size <= maxFileSize) {
+          validFiles.push({
+            id: crypto.randomUUID(),
+            name: file.name,
+            file,
+          });
+        } else {
+          hasSizeError = true;
+        }
+      }
+    });
+
+    if (hasSizeError) {
+      setMessageError(
+        `${listModalDataEnum.exceedSize.i18n[lang]} ${maxFileSize / 1024 / 1024}MB`,
+      );
+      setShowErrorModal(true);
+    }
+
     setUploadedFiles((prev: IDocumentUpload[]) => [
       ...(prev || []),
-      ...newFiles,
+      ...validFiles,
     ]);
-
     e.dataTransfer.clearData();
   };
 
@@ -442,6 +502,7 @@ export const ListModal = (props: IListModalProps) => {
             </StyledAttachContainer>
             <Text size="medium" appearance="gray">
               {listModalDataEnum.maximum.i18n[lang]}
+              {maxFileSize / 1024 / 1024}MB
             </Text>
             {Array.isArray(pendingFiles) && pendingFiles.length > 0 ? (
               <>
