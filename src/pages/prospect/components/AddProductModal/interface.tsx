@@ -93,7 +93,7 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
         }
         iconAfterNext={iconAfter}
         finalDivider={true}
-        width={isMobile ? "280px" : "500px"}
+        width={isMobile ? "280px" : "520px"}
         height="100%"
         isLoading={isLoading}
       >
