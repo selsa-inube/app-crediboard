@@ -1,7 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { IBusinessUnitRules } from "@services/businessUnitRules/types";
+import { AppContext } from "@context/AppContext";
 
 import { AmountCaptureUI } from "./interface";
 import {
@@ -9,7 +10,6 @@ import {
   VALIDATED_NUMBER_REGEX,
   amountCaptureTexts,
 } from "../config";
-import { AppContext } from "@context/AppContext";
 
 export function AmountCapture(props: IAmountCaptureProps) {
   const {
@@ -20,12 +20,12 @@ export function AmountCapture(props: IAmountCaptureProps) {
     businessManagerCode,
     onChange,
     onFormValid,
-    isMobile
   } = props;
+
+  const { eventData } = useContext(AppContext);
 
   const [loanAmountError, setLoanAmountError] = useState<string>("");
   const [displayValue, setDisplayValue] = useState<string>("");
-  const { eventData } = useContext(AppContext);
 
   const validateLoanAmount = async (amountValue: number): Promise<void> => {
     try {
@@ -48,7 +48,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
         businessUnitPublicCode,
         businessManagerCode,
         payload,
-        eventData.token
+        eventData.token,
       );
 
       if (decisions && Array.isArray(decisions) && decisions.length > 0) {
@@ -90,7 +90,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
     } else {
       setDisplayValue("");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCurrencyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +124,6 @@ export function AmountCapture(props: IAmountCaptureProps) {
       loanAmountError={loanAmountError}
       amountCaptureTexts={amountCaptureTexts}
       handleCurrencyChange={handleCurrencyChange}
-      isMobile={isMobile}
     />
   );
 }

@@ -33,7 +33,7 @@ import {
   textFlagsRejectEnum,
   textFlagsUsersEnum,
 } from "@config/pages/staffModal/addFlag";
-import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+
 import {
   IProspect,
   IExtraordinaryInstallmentsAddSeries,
@@ -43,6 +43,9 @@ import { ShareModal } from "@components/modals/ShareModal";
 import { BaseModal } from "@components/modals/baseModal";
 import { shareModalConfigEnum } from "@components/modals/ShareModal/config";
 import { useEnum } from "@hooks/useEnum";
+import { IEntries } from "@components/data/TableBoard/types";
+import { IAllEnumsResponse } from "@services/enumerators/types";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -71,8 +74,6 @@ import { Postingvouchers } from "./Postingvouchers";
 import { IDocumentData, IErrorService, IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
 import { ComercialManagement } from "./CommercialManagement";
-import { IEntries } from "@components/data/TableBoard/types";
-import { IAllEnumsResponse } from "@services/enumerators/types";
 
 interface IListdataProps {
   data: { id: string; name: string }[];

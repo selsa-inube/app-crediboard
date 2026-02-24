@@ -23,7 +23,7 @@ import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
-import { IAddCreditProduct } from "@services/prospect/addCreditProduct/types";
+import { IAddProduct } from "@services/prospect/addCreditProduct/types";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
 import { IProspect } from "@services/prospect/types";
 import {
@@ -39,7 +39,7 @@ import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
-import { addCreditProductService } from "@services/prospect/addCreditProduct";
+
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
 import { updateProspect } from "@services/prospect/updateProspect";
@@ -47,9 +47,12 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
 import { getLinesOfCreditByMoneyDestination } from "@services/prospect/getLinesOfCreditByMoneyDestination";
+import { documentClientNumber } from "@utils/documentClientNumber";
+import { addCreditProduct } from "@services/prospect/addCreditProduct";
+import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 
 import { AddProductModal } from "../AddProductModal";
-import { dataCreditProspectEnum, errorMessage } from "./config";
+import { configModal, dataCreditProspectEnum, errorMessage } from "./config";
 import { StyledPrint, StyledPrintCardProspect } from "./styles";
 import { IIncomeSources } from "./types";
 import { IncomeModal } from "../modals/IncomeModal";
@@ -130,18 +133,17 @@ export function CreditProspect(props: ICreditProspectProps) {
     useState("");
   const [messageError, setMessageError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [isSendingData, setIsSendingData] = useState(false);
+  const [loadingTasks, setLoadingTasks] = useState(0);
   const [isAddProductDisabled, setIsAddProductDisabled] = useState(false);
-
   const { addFlag } = useFlag();
   const { lang } = useEnum();
-
+  const [showMessageSuccessModal, setShowMessageSuccessModal] = useState(false);
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
 
   const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
-
+  const generalLoading = loadingTasks > 0;
   useEffect(() => {
     if (creditRequestCode) {
       const foundProspect = mockProspectCredit.find(
@@ -164,7 +166,25 @@ export function CreditProspect(props: ICreditProspectProps) {
       }
     }
   }, [creditRequestCode]);
+  useEffect(() => {
+    if (showMessageSuccessModal) {
+      addFlag({
+        title: configModal.success.title.i18n[lang],
+        description: configModal.success.text.i18n[lang],
+        appearance: "success",
+        duration: 5000,
+      });
 
+      const timeoutId = setTimeout(() => {
+        setShowMessageSuccessModal(false);
+      }, 5000);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showMessageSuccessModal]);
   const [form, setForm] = useState({
     borrower: "",
     monthlySalary: 0,
@@ -257,7 +277,7 @@ export function CreditProspect(props: ICreditProspectProps) {
 
       if (setDataProspect) {
         setDataProspect((prevProspects) =>
-          prevProspects.map((prospect) =>
+          prevProspects.map((prospect: IProspect) =>
             prospect.prospectId === prospectData.prospectId
               ? {
                   ...prospect,
@@ -294,45 +314,42 @@ export function CreditProspect(props: ICreditProspectProps) {
     }
 
     try {
-      const payload: IAddCreditProduct = {
-        creditRequestCode: creditRequestCode || "",
-        creditProducts: [
-          {
-            lineOfCreditAbbreviatedName: values.selectedProducts[0],
-          },
-        ],
+      setGeneralLoading(true);
+      const payload: IAddProduct = {
+        prospectId: prospectData.prospectId,
+        paymentChannelAbbreviatedName:
+          values.paymentConfiguration.paymentMethod,
+        paymentCycle: values.paymentConfiguration.paymentCycle,
+        firstPaymentCycleDate: values.paymentConfiguration.firstPaymentDate,
+        lineOfCreditAbbreviatedName: values.selectedProducts[0],
+        termLimit: Number(values.maximumTermValue) || 0,
+        installmentLimit: Number(values.quotaCapValue) || 0,
+        additionalAmount: Number(values.creditAmount),
       };
-      setIsSendingData(true);
-      const updatedProspect = await addCreditProductService(
+
+      await addCreditProduct(
         businessUnitPublicCode,
         businessManagerCode,
         payload,
-        eventData.token || "",
-        eventData.user.identificationDocumentNumber || "",
+        eventData.token,
       );
 
-      const normalizedProspect = {
-        ...updatedProspect,
-        creditProducts: updatedProspect!.creditProducts?.map((product) => ({
-          ...product,
-          schedule: product.schedule || product.installmentFrequency,
-        })),
-      };
-
-      const refreshedProspect = normalizedProspect as IProspect;
-
-      if (setDataProspect && refreshedProspect) {
-        setDataProspect([refreshedProspect as IProspect]);
+      if (prospectData?.prospectId) {
+        const updatedProspect = await getSearchProspectByCode(
+          businessUnitPublicCode,
+          businessManagerCode,
+          creditRequestCode || "",
+          eventData.token,
+        );
+        setDataProspect?.([updatedProspect]);
+        if (onProspectUpdate) {
+          onProspectUpdate(updatedProspect);
+        }
       }
-
-      if (onProspectUpdate && refreshedProspect) {
-        onProspectUpdate(refreshedProspect as IProspect);
-      }
-
       handleCloseModal();
-      setIsSendingData(false);
+      setShowMessageSuccessModal(true);
     } catch (error) {
-      setIsSendingData(false);
+      setGeneralLoading(false);
       setMessageError(`${errorMessage.addCreditProduct.description}`);
       setShowErrorModal(true);
     }
@@ -341,6 +358,17 @@ export function CreditProspect(props: ICreditProspectProps) {
   const handlePdfGeneration = () => {
     print();
   };
+
+  const setGeneralLoading = useCallback(
+    (isLoading: boolean | ((prev: boolean) => boolean)) => {
+      setLoadingTasks((prev) => {
+        const isNowLoading =
+          typeof isLoading === "function" ? isLoading(prev > 0) : isLoading;
+        return isNowLoading ? prev + 1 : Math.max(0, prev - 1);
+      });
+    },
+    [],
+  );
 
   const borrower = dataProspect?.borrowers?.[0];
 
@@ -506,24 +534,20 @@ export function CreditProspect(props: ICreditProspectProps) {
       )}
       {currentModal === "editProductModal" && (
         <AddProductModal
-          title={dataCreditProspectEnum.addProduct.i18n[lang]}
-          confirmButtonText={dataCreditProspectEnum.save.i18n[lang]}
+          title="Agregar productos"
+          confirmButtonText="Guardar"
           initialValues={initialValues}
-          eventData={eventData}
           iconBefore={<MdOutlineAdd />}
           onCloseModal={handleCloseModal}
           onConfirm={handleConfirm}
-          moneyDestination={dataMaximumCreditLimitService.moneyDestination}
+          moneyDestination={prospectData!.moneyDestinationAbbreviatedName}
           businessUnitPublicCode={businessUnitPublicCode}
+          customerData={documentClientNumber(dataProspect)}
           businessManagerCode={businessManagerCode}
-          isSendingData={isSendingData}
-          identificationDocumentNumber={
-            dataMaximumCreditLimitService.identificationDocumentNumber
-          }
-          identificationDocumentType={
-            dataMaximumCreditLimitService.identificationDocumentType
-          }
-          dataProspect={dataProspect as IProspect}
+          dataProspect={prospectData as IProspect}
+          isLoading={generalLoading}
+          lang={lang}
+          eventData={eventData}
         />
       )}
       {currentModal === "IncomeModal" && (

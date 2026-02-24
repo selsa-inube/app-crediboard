@@ -96,7 +96,6 @@ export const SummaryProspectCreditEnum = [
   },
 ];
 
-
 export const incomeOptions = [
   { id: "user1", label: "Camilo Rincón", value: "camilo-rincon" },
   {
@@ -157,7 +156,7 @@ export const menuOptionsEnum = {
 export const menuOptions = (
   handleOpenModal: (modalName: string) => void,
   visibleExtraPayments: boolean,
-  lang: EnumType
+  lang: EnumType,
 ): IOptions[] => [
   {
     title: menuOptionsEnum.creditLimit.i18n[lang],
