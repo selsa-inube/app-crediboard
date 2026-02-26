@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Text,
   Stack,
@@ -6,32 +6,32 @@ import {
   Divider,
   useMediaQuery,
   Button,
-  Icon,
   useFlag,
+  Icon,
 } from "@inubekit/inubekit";
-import { MdOutlineInfo } from "react-icons/md";
 
 import { currencyFormat } from "@utils/formatData/currency";
-import { InvestmentCreditCard } from "@components/cards/InvestmentCreditCard";
 import { BaseModal } from "@components/modals/baseModal";
-import { CardConsolidatedCredit } from "@components/cards/CardConsolidatedCredit";
-import { IProspect, IConsolidatedCredit } from "@services/prospect/types";
+import { IProspect } from "@services/prospect/types";
 import { getCreditPayments } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment";
 import { IPayment } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
 import { paymentOptionValues } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
-import { updateConsolidatedCredits } from "@services/prospect/updateConsolidatedCredits";
-import { ErrorModal } from "@components/modals/ErrorModal";
-import { useEnum } from "@hooks/useEnum";
+import { IConsolidatedCredit } from "@services/prospect/types";
+import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { InvestmentCreditCard } from "@components/cards/InvestmentCreditCard";
+import { CardConsolidatedCredit } from "@components/cards/CardConsolidatedCredit";
+import { updateConsolidatedCredits } from "@services/prospect/updateConsolidatedCredits";
 
 import { ScrollableContainer } from "./styles";
-import { feedbackEnum, ModalConfigEnum } from "./config";
+import { feedback, ModalConfig } from "./config";
+import { ICustomerData } from "../../AddProductModal/config";
+import { MdOutlineInfo } from "react-icons/md";
 
 export interface ConsolidatedCreditsProps {
   handleClose: () => void;
-  handleInfo: () => void;
-  availableEditCreditRequest: boolean;
   businessUnitPublicCode: string;
+  custumerData: ICustomerData;
   businessManagerCode: string;
   loading?: boolean;
   prospectData?: IProspect;
@@ -39,10 +39,12 @@ export interface ConsolidatedCreditsProps {
     React.SetStateAction<IConsolidatedCredit[]>
   >;
   consolidatedCredits: IConsolidatedCredit[];
-  clientIdentificationNumber: string;
-  creditRequestCode: string;
+  lang: EnumType;
+  handleInfo: () => void;
+  availableEditCreditRequest: boolean;
   eventData: ICrediboardData;
-  onProspectUpdated?: () => void;
+  showEdit?: boolean;
+  onProspectRefreshData?: () => void;
 }
 
 export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
@@ -51,77 +53,43 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
     prospectData,
     businessUnitPublicCode,
     businessManagerCode,
-    eventData,
+    lang,
     setConsolidatedCredits,
     consolidatedCredits,
-    onProspectUpdated,
-    clientIdentificationNumber,
-    creditRequestCode,
+    showEdit = true,
+    onProspectRefreshData,
+    eventData,
+    custumerData,
     availableEditCreditRequest,
     handleInfo,
   } = props;
-
   const isMobile = useMediaQuery("(max-width:880px)");
-  const { addFlag } = useFlag();
 
   const [editOpen, setEditOpen] = useState(true);
   const [obligationPayment, setObligationPayment] = useState<IPayment[] | null>(
     null,
   );
+  const [isLoading, setLoading] = useState(false);
   const [sortedObligationPayment, setSortedObligationPayment] = useState<
     IPayment[]
   >([]);
-  const [totalCollected, setTotalCollected] = useState(0);
-  const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
+  const [totalCollected, setTotalCollected] = useState(0);
   const initialConsolidatedCreditsRef = useRef<IConsolidatedCredit[]>([]);
   const isInitializedRef = useRef(false);
-  const { lang } = useEnum();
 
-  const initialValuesMap = useMemo(
-    () =>
-      consolidatedCredits.reduce(
-        (acc, credit) => {
-          acc[credit.creditProductCode] = {
-            amount: credit.consolidatedAmount,
-            type: credit.consolidatedAmountType,
-          };
-          return acc;
-        },
-        {} as Record<string, { amount: number; type: string }>,
-      ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isInitializedRef.current],
-  );
-
-  useEffect(() => {
-    if (
-      !isInitializedRef.current &&
-      consolidatedCredits &&
-      consolidatedCredits.length >= 0
-    ) {
-      initialConsolidatedCreditsRef.current = JSON.parse(
-        JSON.stringify(consolidatedCredits),
-      );
-
-      const sumOfInitialsConsolidatedCredit = consolidatedCredits.reduce(
-        (sum, credit) => sum + credit.consolidatedAmount,
-        0,
-      );
-      setTotalCollected(sumOfInitialsConsolidatedCredit);
-
-      isInitializedRef.current = true;
-    }
-  }, [consolidatedCredits]);
+  const { addFlag } = useFlag();
 
   const fetchDataObligationPayment = async () => {
+    if (!custumerData.clientIdinteficationNumber) {
+      return;
+    }
     try {
       const data = await getCreditPayments(
-        clientIdentificationNumber,
+        custumerData.clientIdinteficationNumber,
         businessUnitPublicCode,
         businessManagerCode,
-        eventData.token || "",
+        eventData.token,
       );
       setObligationPayment(data ?? null);
     } catch (error) {
@@ -133,12 +101,47 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       const description = code + err?.message + (err?.data?.description || "");
 
-      setErrorMessage(
-        `${feedbackEnum.fetchDataObligationPayment.i18n[lang]} ${description}`,
-      );
-      setErrorModal(true);
+      addFlag({
+        title: feedback.fetchDataObligationPayment.title.i18n[lang],
+        description:
+          description ||
+          feedback.fetchDataObligationPayment.description.i18n[lang],
+        appearance: "danger",
+        duration: 5000,
+      });
     }
   };
+
+  useEffect(() => {
+    if (
+      !isInitializedRef.current &&
+      consolidatedCredits &&
+      consolidatedCredits.length >= 0
+    ) {
+      initialConsolidatedCreditsRef.current = JSON.parse(
+        JSON.stringify(consolidatedCredits),
+      );
+
+      let sumOfInitialsConsolidatedCredit = 0;
+      for (const credit of consolidatedCredits) {
+        sumOfInitialsConsolidatedCredit += credit.consolidatedAmount;
+      }
+      setTotalCollected(sumOfInitialsConsolidatedCredit);
+
+      isInitializedRef.current = true;
+    }
+  }, [consolidatedCredits]);
+
+  const initialValuesMap = consolidatedCredits.reduce(
+    (acc, credit) => {
+      acc[credit.creditProductCode] = {
+        amount: credit.consolidatedAmount,
+        type: credit.consolidatedAmountType,
+      };
+      return acc;
+    },
+    {} as Record<string, { amount: number; type: string }>,
+  );
 
   useEffect(() => {
     fetchDataObligationPayment();
@@ -156,6 +159,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
         const bHasValue = (initialValuesMap[b.id]?.amount || 0) > 0;
 
         if (aHasValue && !bHasValue) return -1;
+
         if (!aHasValue && bHasValue) return 1;
         return 0;
       });
@@ -243,19 +247,12 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       return prev;
     });
   };
-
   const handleRemoveCredit = (code: string) => {
-    const creditToRemove = consolidatedCredits.find(
-      (item) => item.creditProductCode === code,
-    );
+    setConsolidatedCredits((prev) => {
+      const updated = prev.filter((item) => item.creditProductCode !== code);
 
-    if (creditToRemove) {
-      setTotalCollected((prev) => prev - creditToRemove.consolidatedAmount);
-    }
-
-    setConsolidatedCredits((prev) =>
-      prev.filter((item) => item.creditProductCode !== code),
-    );
+      return updated;
+    });
   };
 
   const hasRealChanges = useMemo(() => {
@@ -329,80 +326,97 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
     }
 
     try {
+      setLoading(true);
+
       await updateConsolidatedCredits(
         businessUnitPublicCode,
-        creditRequestCode,
+        prospectData.prospectId,
         consolidatedCredits,
-        eventData?.token || "",
-        eventData?.user.identificationDocumentNumber || "",
+        eventData.token,
+        eventData.user.identificationDocumentNumber || "",
       );
 
-      if (onProspectUpdated) {
-        onProspectUpdated();
+      if (onProspectRefreshData) {
+        onProspectRefreshData();
       }
 
       handleClose();
 
       addFlag({
-        title: feedbackEnum.handleSaveChanges.success.i18n[lang],
-        description: feedbackEnum.handleSaveChanges.success.i18n[lang],
+        title: feedback.handleSaveChanges.success.title.i18n[lang],
+        description: feedback.handleSaveChanges.success.description.i18n[lang],
         appearance: "success",
         duration: 4000,
       });
+      setLoading(false);
     } catch (error) {
-      setConsolidatedCredits([]);
-      setErrorMessage(feedbackEnum.handleSaveChanges.error.i18n[lang]);
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+      setLoading(false);
+      addFlag({
+        title: feedback.handleSaveChanges.error.title.i18n[lang],
+        description:
+          description ||
+          feedback.handleSaveChanges.error.description.i18n[lang],
+        appearance: "danger",
+        duration: 5000,
+      });
     }
   };
 
   return (
-    <>
-      <BaseModal
-        title={ModalConfigEnum.title.i18n[lang]}
-        nextButton={ModalConfigEnum.keep.i18n[lang]}
-        disabledNext={!hasRealChanges}
-        handleNext={handleSaveChanges}
-        width={isMobile ? "370px" : "690px"}
-        height={isMobile ? "auto" : "688px"}
-        handleBack={handleClose}
-        finalDivider={true}
-        backButton={ModalConfigEnum.close.i18n[lang]}
-        $height="calc(100vh - 64px)"
-      >
-        <Stack direction="column" gap="24px" margin="0 8px 0 0">
-          <Stack
-            direction={isMobile ? "column" : "row"}
-            alignItems="center"
-            justifyContent={isMobile ? "center" : "space-between"}
-            gap={isMobile ? "10px" : "0px"}
-          >
-            <Stack direction="column">
-              <Text
-                appearance="primary"
-                weight="bold"
-                type="headline"
-                size="large"
-              >
-                ${currencyFormat(totalCollected, false)}
-              </Text>
-              <Text
-                type="body"
-                appearance="gray"
-                size="small"
-                textAlign="center"
-              >
-                {ModalConfigEnum.collectedValue.i18n[lang]}
-              </Text>
-            </Stack>
-            <Stack
-              direction="row"
-              gap="8px"
-              justifyContent="center"
-              alignContent="center"
-              alignItems="center"
-              width={isMobile ? "100%" : "auto"}
+    <BaseModal
+      title={ModalConfig.title.i18n[lang]}
+      nextButton={
+        showEdit ? ModalConfig.keep.i18n[lang] : ModalConfig.close.i18n[lang]
+      }
+      disabledNext={showEdit ? !hasRealChanges : false}
+      handleNext={showEdit ? handleSaveChanges : handleClose}
+      width={isMobile ? "300px" : "640px"}
+      height={isMobile ? "auto" : "688px"}
+      handleBack={handleClose}
+      finalDivider={true}
+      backButton={showEdit ? ModalConfig.close.i18n[lang] : undefined}
+      isLoading={isLoading}
+    >
+      <Stack direction="column" gap="24px">
+        <Stack
+          direction={isMobile ? "column" : "row"}
+          alignItems="center"
+          justifyContent={isMobile ? "center" : "space-between"}
+          gap={isMobile ? "10px" : "0px"}
+        >
+          <Stack direction="column">
+            <Text
+              appearance="primary"
+              weight="bold"
+              type="headline"
+              size="large"
             >
+              ${currencyFormat(totalCollected, false)}
+            </Text>
+            <Text
+              type="body"
+              appearance="gray"
+              size="small"
+              textAlign="center"
+            ></Text>
+          </Stack>
+          <Stack
+            direction="row"
+            gap="8px"
+            justifyContent="center"
+            alignContent="center"
+            alignItems="center"
+            width={isMobile ? "100%" : "auto"}
+          >
+            {showEdit && (
               <Button
                 onClick={() => setEditOpen(false)}
                 variant="outlined"
@@ -411,183 +425,165 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
                 fullwidth={isMobile}
                 disabled={!editOpen || availableEditCreditRequest}
               >
-                {ModalConfigEnum.edit.i18n[lang]}
+                {ModalConfig.edit.i18n[lang]}
               </Button>
-              {availableEditCreditRequest && (
-                <Icon
-                  icon={<MdOutlineInfo />}
-                  appearance="primary"
-                  size="16px"
-                  cursorHover
-                  onClick={handleInfo}
-                />
-              )}
-            </Stack>
+            )}
+            {availableEditCreditRequest && (
+              <Icon
+                icon={<MdOutlineInfo />}
+                appearance="primary"
+                size="16px"
+                cursorHover
+                onClick={handleInfo}
+              />
+            )}
           </Stack>
-          <Divider dashed />
-          <ScrollableContainer>
-            <Stack
-              direction="column"
-              gap="16px"
-              height={`calc(100vh - ${isMobile ? "460px" : "400px"})`}
-              padding="0px 0px 0px 2px"
-              margin="0 8px 0 0"
-            >
-              {editOpen ? (
-                <>
-                  <Text
-                    type="body"
-                    appearance="gray"
-                    size="small"
-                    weight="bold"
-                  >
-                    {ModalConfigEnum.selectedText.i18n[lang]}
-                  </Text>
-                  <Grid
-                    autoRows="auto"
-                    templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
-                    gap="16px"
-                    width="100%"
-                  >
-                    {consolidatedCredits.map((item) => (
-                      <InvestmentCreditCard
-                        key={item.creditProductCode}
-                        codeValue={item.creditProductCode}
-                        expired={ModalConfigEnum.terminated.i18n[lang]}
-                        expiredValue={item.consolidatedAmount}
-                        title={item.lineOfCreditDescription}
-                        lang={lang}
-                      />
-                    ))}
-                  </Grid>
-                </>
-              ) : (
-                <>
-                  <Text
-                    type="body"
-                    appearance="gray"
-                    size="small"
-                    weight="bold"
-                  >
-                    {ModalConfigEnum.newObligations.i18n[lang]}
-                  </Text>
-                  <Grid
-                    autoRows="auto"
-                    templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
-                    gap="16px"
-                    width="100%"
-                    margin="0 20px 0 0"
-                  >
-                    {sortedObligationPayment.map((creditData) => (
-                      <CardConsolidatedCredit
-                        key={creditData.id}
-                        title={creditData.title}
-                        code={creditData.id}
-                        expiredValue={
-                          creditData.options.find(
-                            (option) =>
-                              option.label === paymentOptionValues.EXPIREDVALUE,
-                          )?.value ?? 0
-                        }
-                        nextDueDate={
-                          creditData.options.find(
-                            (option) =>
-                              option.label === paymentOptionValues.NEXTVALUE,
-                          )?.value ?? 0
-                        }
-                        fullPayment={
-                          creditData.options.find(
-                            (option) =>
-                              option.label === paymentOptionValues.TOTALVALUE,
-                          )?.value ?? 0
-                        }
-                        date={
-                          creditData.options.find((option) => option.date)
-                            ?.date ?? new Date()
-                        }
-                        onUpdateTotal={(
+        </Stack>
+        <Divider dashed />
+        <ScrollableContainer>
+          <Stack
+            direction="column"
+            gap="16px"
+            height={isMobile ? "auto" : "420px"}
+            padding="0px 0px 0px 2px"
+            margin="0 10px 0 0"
+          >
+            {editOpen ? (
+              <>
+                <Text type="body" appearance="gray" size="small" weight="bold">
+                  {ModalConfig.selectedText.i18n[lang]}
+                </Text>
+                <Grid
+                  autoRows="auto"
+                  templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
+                  gap="16px"
+                  width={consolidatedCredits.length === 0 ? "100%" : "0%"}
+                >
+                  {consolidatedCredits.length === 0 && (
+                    <Text type="body" size="small">
+                      {ModalConfig.noSelected.i18n[lang]}
+                    </Text>
+                  )}
+                  {consolidatedCredits.map((item) => (
+                    <InvestmentCreditCard
+                      codeValue={item.creditProductCode}
+                      expired={ModalConfig.terminated.i18n[lang]}
+                      expiredValue={item.consolidatedAmount}
+                      title={item.lineOfCreditDescription}
+                      lang={lang}
+                    />
+                  ))}
+                </Grid>
+              </>
+            ) : (
+              <>
+                <Text type="body" appearance="gray" size="small" weight="bold">
+                  {ModalConfig.newObligations.i18n[lang]}
+                </Text>
+                <Grid
+                  autoRows="auto"
+                  templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
+                  gap="16px"
+                  width="100%"
+                  margin="0 20px 0 0"
+                >
+                  {sortedObligationPayment.length === 0 && (
+                    <Text type="body" size="small">
+                      {ModalConfig.newObligationsEmpty.i18n[lang]}
+                    </Text>
+                  )}
+                  {sortedObligationPayment.map((creditData) => (
+                    <CardConsolidatedCredit
+                      key={creditData.id}
+                      title={creditData.title}
+                      code={creditData.id}
+                      expiredValue={
+                        creditData.options.find(
+                          (option) =>
+                            option.label === paymentOptionValues.EXPIREDVALUE,
+                        )?.value ?? 0
+                      }
+                      nextDueDate={
+                        creditData.options.find(
+                          (option) =>
+                            option.label === paymentOptionValues.NEXTVALUE,
+                        )?.value ?? 0
+                      }
+                      fullPayment={
+                        creditData.options.find(
+                          (option) =>
+                            option.label === paymentOptionValues.TOTALVALUE,
+                        )?.value ?? 0
+                      }
+                      description={
+                        creditData.options.find(
+                          (option) =>
+                            option.description ===
+                            paymentOptionValues.INMEDIATE,
+                        )?.description ?? ""
+                      }
+                      date={
+                        creditData.options.find((option) => option.date)
+                          ?.date ?? new Date()
+                      }
+                      onUpdateTotal={(
+                        oldValue,
+                        newValue,
+                        label,
+                        title,
+                        selectedDate,
+                      ) =>
+                        handleUpdateTotal(
                           oldValue,
                           newValue,
                           label,
+                          creditData.id,
+                          creditData.id,
                           title,
                           selectedDate,
-                          code = creditData.id,
-                        ) =>
-                          handleUpdateTotal(
-                            oldValue,
-                            newValue,
-                            label,
-                            code || creditData.id,
-                            creditData.id,
-                            title,
-                            selectedDate,
-                          )
-                        }
-                        initialValue={
-                          initialValuesMap[creditData.id]?.amount || 0
-                        }
-                        isMobile={isMobile}
-                        initialType={initialValuesMap[creditData.id]?.type}
-                        handleRemoveCredit={handleRemoveCredit}
-                        tags={creditData.tags}
-                        description={
-                          creditData.options.find(
-                            (option) =>
-                              option.description ===
-                              paymentOptionValues.INMEDIATE,
-                          )?.description ?? ""
-                        }
-                        allowCustomValue={creditData.allowCustomValue}
-                        lang={lang}
-                      />
-                    ))}
-                  </Grid>
-                  <Text
-                    type="body"
-                    appearance="gray"
-                    size="small"
-                    weight="bold"
-                  >
-                    {ModalConfigEnum.selectedText.i18n[lang]}
-                  </Text>
-                  <Grid
-                    autoRows="auto"
-                    templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
-                    gap="16px"
-                    width="100%"
-                  >
-                    {consolidatedCredits.length === 0 && (
-                      <Text type="body" size="small">
-                        {ModalConfigEnum.noSelected.i18n[lang]}
-                      </Text>
-                    )}
-                    {consolidatedCredits.map((item) => (
-                      <InvestmentCreditCard
-                        key={item.creditProductCode}
-                        codeValue={item.creditProductCode}
-                        expired={ModalConfigEnum.terminated.i18n[lang]}
-                        expiredValue={item.consolidatedAmount}
-                        title={item.lineOfCreditDescription}
-                        lang={lang}
-                      />
-                    ))}
-                  </Grid>
-                </>
-              )}
-            </Stack>
-          </ScrollableContainer>
-        </Stack>
-      </BaseModal>
-      {errorModal && (
-        <ErrorModal
-          isMobile={isMobile}
-          message={errorMessage}
-          handleClose={() => {
-            setErrorModal(false);
-            handleClose();
-          }}
-        />
-      )}
-    </>
+                        )
+                      }
+                      tags={creditData.tags}
+                      initialValue={
+                        initialValuesMap[creditData.id]?.amount || 0
+                      }
+                      isMobile={isMobile}
+                      allowCustomValue={creditData.allowCustomValue}
+                      initialType={initialValuesMap[creditData.id]?.type}
+                      handleRemoveCredit={handleRemoveCredit}
+                      lang={lang}
+                    />
+                  ))}
+                </Grid>
+                <Text type="body" appearance="gray" size="small" weight="bold">
+                  {ModalConfig.selectedText.i18n[lang]}
+                </Text>
+                <Grid
+                  autoRows="auto"
+                  templateColumns={isMobile ? "1fr" : "repeat(2, 1fr)"}
+                  gap="16px"
+                  width="100%"
+                >
+                  {consolidatedCredits.length === 0 && (
+                    <Text type="body" size="small">
+                      {ModalConfig.noSelected.i18n[lang]}
+                    </Text>
+                  )}
+                  {consolidatedCredits.map((item) => (
+                    <InvestmentCreditCard
+                      codeValue={item.creditProductCode}
+                      expired={ModalConfig.terminated.i18n[lang]}
+                      expiredValue={item.consolidatedAmount}
+                      title={item.lineOfCreditDescription}
+                      lang={lang}
+                    />
+                  ))}
+                </Grid>
+              </>
+            )}
+          </Stack>
+        </ScrollableContainer>
+      </Stack>
+    </BaseModal>
   );
 }

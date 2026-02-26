@@ -1,43 +1,44 @@
 import { MdOutlineAdd } from "react-icons/md";
-import { Stack, Icon, Text, useMediaQuery } from "@inubekit/inubekit";
 import { useState } from "react";
+import { Stack, Icon, Text, useMediaQuery } from "@inubekit/inubekit";
 
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
-import InfoModal from "@pages/prospect/components/modals/InfoModal";
-import { privilegeCrediboard } from "@config/privilege";
 import { EnumType } from "@hooks/useEnum";
+import InfoModal from "@pages/prospect/components/modals/InfoModal";
+import { privilegeCrediboard } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 
-import { dataNewCardEnum } from "./config";
-import { StyledCreditProductCard, StyledPrint } from "../styles";
+import { dataNewCard } from "./config";
+import { StyledCreditProductCard } from "../styles";
 
 interface INewCreditProductCardProps {
-  onClick: () => void;
   lang: EnumType;
+  onClick: () => void;
 }
+
 export function NewCreditProductCard(props: INewCreditProductCardProps) {
-  const { onClick, lang = "es"} = props;
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { lang, onClick } = props;
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
-  const handleInfoModalClose = () => {
-    setIsModalOpen(false);
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width:880px)");
   const handleInfo = () => {
     setIsModalOpen(true);
   };
-  const isMobile = useMediaQuery("(max-width:880px)");
+  const handleInfoModalClose = () => {
+    setIsModalOpen(false);
+  };
   return (
-    <StyledPrint>
     <Stack gap="6px">
       <StyledCreditProductCard
-        onClick={editCreditApplication ? handleInfo : onClick}
+        onClick={() => (editCreditApplication ? handleInfo() : onClick())}
         $new={true}
+        $showIcons={true}
       >
         <Stack direction="column" alignItems="center" margin="auto">
           <Icon icon={<MdOutlineAdd />} appearance="gray" size="45px" />
           <Text type="body" size="large" appearance="gray">
-            {dataNewCardEnum.add.i18n[lang]}
+            {dataNewCard.add.i18n[lang]}
           </Text>
         </Stack>
       </StyledCreditProductCard>
@@ -52,6 +53,5 @@ export function NewCreditProductCard(props: INewCreditProductCardProps) {
         />
       )}
     </Stack>
-    </StyledPrint>
   );
 }

@@ -1,3 +1,4 @@
+import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
 import { EnumType } from "@hooks/useEnum";
 
 import { CreditProductCardUI } from "./interface";
@@ -9,11 +10,12 @@ interface CreditProductCardProps {
   interestRate: number;
   termMonths: number;
   periodicFee: number;
-  schedule: string;
+  schedule: Schedule | string;
+  lang: EnumType;
+  availableEditCreditRequest: boolean;
+  showIcons?: boolean;
   onEdit: () => void;
   onDelete: () => void;
-  availableEditCreditRequest: boolean;
-  lang: EnumType;
   canDelete?: boolean;
   installmentFrequency?: string;
 }
@@ -27,12 +29,13 @@ function CreditProductCard(props: CreditProductCardProps) {
     termMonths,
     periodicFee,
     schedule,
+    lang,
+    showIcons = true,
     onEdit,
     onDelete,
-    availableEditCreditRequest,
-    lang,
     canDelete,
     installmentFrequency,
+    availableEditCreditRequest,
   } = props;
 
   return (
@@ -44,10 +47,11 @@ function CreditProductCard(props: CreditProductCardProps) {
       termMonths={termMonths}
       periodicFee={periodicFee}
       schedule={schedule}
+      lang={lang}
+      showIcons={showIcons}
+      availableEditCreditRequest={availableEditCreditRequest}
       onEdit={onEdit}
       onDelete={onDelete}
-      availableEditCreditRequest={availableEditCreditRequest}
-      lang={lang}
       canDelete={canDelete}
       installmentFrequency={installmentFrequency}
     />

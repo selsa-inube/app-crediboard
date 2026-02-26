@@ -13,3 +13,20 @@ export interface IIncomeSources {
   surname: string;
   edited?: boolean;
 }
+export interface IValidateRequirement {
+  descriptionEvaluationRequirement: string;
+  requirementName: string;
+  requirementStatus: string;
+}
+
+export interface IIncomeDetails {
+  incomeType: string;
+  incomeValue: number;
+}
+export interface IIncomeSourceBorrowers {
+  borrowerType: string;
+  borrowerIdentificationNumber: string;
+  totalIncome: number;
+  primaryIncomeType: string;
+  income: IIncomeDetails[];
+}

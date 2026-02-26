@@ -353,6 +353,7 @@ export const TableExtraordinaryInstallment = (
             handleExtraordinaryInstallment(itemIdentifiersForUpdate)
           }
           TextDelete={dataTableExtraordinaryInstallmentEnum.deletion.i18n[lang]}
+          lang={lang}
         />
       )}
       {errorModal && (

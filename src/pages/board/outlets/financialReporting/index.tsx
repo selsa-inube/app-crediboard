@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext } from "react";
+import { useEffect, useRef, useState, useContext, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Stack,
@@ -166,7 +166,7 @@ export const FinancialReporting = () => {
   ]);
   const [showNoDocumentsModal, setShowNoDocumentsModal] = useState(false);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
-
+  const [loadingTasks, setLoadingTasks] = useState(0);
   const fetchAndShowDocuments = async () => {
     if (!data?.creditRequestId || !user?.id || !businessUnitPublicCode) return;
     setIsLoadingDocuments(true);
@@ -207,29 +207,39 @@ export const FinancialReporting = () => {
       setIsLoadingDocuments(false);
     }
   };
+  const generalLoading = loadingTasks > 0;
+  const setGeneralLoading = useCallback(
+    (isLoading: boolean | ((prev: boolean) => boolean)) => {
+      setLoadingTasks((prev) => {
+        const isNowLoading =
+          typeof isLoading === "function" ? isLoading(prev > 0) : isLoading;
+        return isNowLoading ? prev + 1 : Math.max(0, prev - 1);
+      });
+    },
+    [],
+  );
+  const fetchData = async () => {
+    if (!creditRequestCode) return;
 
+    try {
+      setGeneralLoading(true);
+      const result = await getSearchProspectByCode(
+        businessUnitPublicCode,
+        businessManagerCode,
+        creditRequestCode,
+        eventData.token || "",
+      );
+      setDataProspect(Array.isArray(result) ? result[0] : result);
+    } catch (error) {
+      setErrorMessage(errorMessagesEnum.searchProspect.description.i18n[lang]);
+      setErrorModal(true);
+      setErrorGetProspects(true);
+      console.error("Error al obtener los prospectos:", error);
+    } finally {
+      setGeneralLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      if (!creditRequestCode) return;
-
-      try {
-        const result = await getSearchProspectByCode(
-          businessUnitPublicCode,
-          businessManagerCode,
-          creditRequestCode,
-          eventData.token || "",
-        );
-        setDataProspect(Array.isArray(result) ? result[0] : result);
-      } catch (error) {
-        setErrorMessage(
-          errorMessagesEnum.searchProspect.description.i18n[lang],
-        );
-        setErrorModal(true);
-        setErrorGetProspects(true);
-        console.error("Error al obtener los prospectos:", error);
-      }
-    };
-
     idProspect && businessUnitPublicCode && fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -522,6 +532,9 @@ export const FinancialReporting = () => {
                         errorGetProspects={errorGetProspects}
                         setErrorModal={setErrorModal}
                         setErrorMessage={setErrorMessage}
+                        fetchProspectData={fetchData}
+                        generalLoading={generalLoading}
+                        setGeneralLoading={setGeneralLoading}
                       />
                     </BlockPdfSection>
                   </Stack>
