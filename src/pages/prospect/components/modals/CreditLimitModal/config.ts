@@ -8,8 +8,7 @@ export const dataCreditLimitModal = {
   close: "Cerrar",
   error: {
     title: "Error cargando datos",
-    message:
-      "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
+    message: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
   },
 };
 

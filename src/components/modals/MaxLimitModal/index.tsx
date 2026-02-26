@@ -3,17 +3,17 @@ import { useMediaQuery } from "@inubekit/inubekit";
 
 import { getMaximumCreditLimitByLineOfCreditRegulation } from "@services/creditLimit/getMaximumCreditLimitByLineOfCreditRegulation";
 import { IMaximumCreditLimit } from "@services/creditLimit/types";
+import { EnumType } from "@hooks/useEnum";
 import { IdataMaximumCreditLimitService } from "@pages/simulateCredit/CreditLimitCard/types";
-import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
 
 import { MaxLimitModalUI } from "./interface";
-
 
 export interface PaymentCapacityProps {
   businessUnitPublicCode: string;
   businessManagerCode: string;
   dataMaximumCreditLimitService: IdataMaximumCreditLimitService;
+  lang: EnumType;
   iconVisible?: boolean;
   loading?: boolean;
   handleClose: () => void;
@@ -24,12 +24,14 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
     businessUnitPublicCode,
     businessManagerCode,
     dataMaximumCreditLimitService,
+    lang,
     loading = false,
     handleClose,
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
   const { eventData } = useContext(AppContext);
+
   const [error, setError] = useState(false);
   const [dataMaximumCreditLimit, setDataMaximumCreditLimit] =
     useState<IMaximumCreditLimit>({
@@ -37,8 +39,6 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
       customerTotalObligationsInLineOfCredit: 0,
       lineOfCreditLoanAmountLimitRegulation: 0,
     });
-
-  const { lang } = useEnum();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +51,7 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
           dataMaximumCreditLimitService.identificationDocumentNumber,
           dataMaximumCreditLimitService.moneyDestination,
           dataMaximumCreditLimitService.primaryIncomeType,
-          eventData.token
+          eventData.token,
         );
 
         if (data) {
@@ -63,12 +63,12 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
     };
 
     fetchData();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
     businessManagerCode,
     dataMaximumCreditLimitService,
     error,
-    eventData.token
   ]);
 
   useEffect(() => {
@@ -85,6 +85,9 @@ export const MaxLimitModal = (props: PaymentCapacityProps) => {
       isMobile={isMobile}
       dataMaximumCreditLimitService={dataMaximumCreditLimit}
       lang={lang}
+      creditLineTxt={
+        dataMaximumCreditLimitService.lineOfCreditAbbreviatedName || ""
+      }
     />
   );
 };

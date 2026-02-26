@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MdInfoOutline } from "react-icons/md";
 import { Stack, Icon, Text, Divider } from "@inubekit/inubekit";
 
@@ -25,6 +25,7 @@ export interface CreditLimitProps {
   setError: React.Dispatch<React.SetStateAction<boolean>>;
   error: boolean;
   incomeData: ISourcesOfIncomeState;
+  userAccount: string;
 }
 
 export function CreditLimitCard(props: CreditLimitProps) {
@@ -37,22 +38,15 @@ export function CreditLimitCard(props: CreditLimitProps) {
     isMobile,
     error,
     setError,
-    incomeData
+    incomeData,
+    userAccount,
   } = props;
 
   const [creditModal, setCreditModal] = useState(false);
   const [loadingCredit, setLoadingCredit] = useState(false);
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [localIncomeData, setLocalIncomeData] = useState<ISourcesOfIncomeState | null>(null);
-
   const { lang } = useEnum();
-
-    useEffect(() => {
-    if (incomeData) {
-      setLocalIncomeData(incomeData);
-    }
-  }, [incomeData]);
 
   const handleOpenModal = () => {
     setCreditModal(true);
@@ -106,9 +100,10 @@ export function CreditLimitCard(props: CreditLimitProps) {
             dataMaximumCreditLimitService.identificationDocumentNumber
           }
           lang={lang}
+          incomeData={incomeData}
+          creditLine={creditLineTxt}
         />
       )}
-
       {openModal === "maxLimitModal" && (
         <MaxLimitModal
           loading={loading}
@@ -120,6 +115,7 @@ export function CreditLimitCard(props: CreditLimitProps) {
             ...dataMaximumCreditLimitService,
             lineOfCreditAbbreviatedName: creditLineTxt,
           }}
+          lang={lang}
         />
       )}
 
@@ -141,6 +137,7 @@ export function CreditLimitCard(props: CreditLimitProps) {
           handleClose={() => setOpenModal(null)}
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
+          userAccount={userAccount}
           dataMaximumCreditLimitService={{
             ...dataMaximumCreditLimitService,
             lineOfCreditAbbreviatedName: creditLineTxt,
@@ -149,7 +146,9 @@ export function CreditLimitCard(props: CreditLimitProps) {
           setLoading={setLoading}
           error={error}
           loading={loading}
-          incomeData={localIncomeData as ISourcesOfIncomeState}
+          incomeData={incomeData}
+          lang={lang}
+          creditLineTxt={creditLineTxt}
         />
       )}
 

@@ -31,4 +31,12 @@ export const dataCreditProspectEnum = {
       es: "No se han encontrado fuentes de ingreso.",
     },
   },
+  borrower: {
+    code: "Borrower",
+    description: "Borrower",
+    i18n: {
+      en: "Borrower",
+      es: "Deudor",
+    },
+  },
 };

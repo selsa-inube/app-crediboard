@@ -1,142 +1,150 @@
-export const incomeModalConfigEnum = {
+export const incomeModalConfig = {
   title: {
-    id: "title",
-    code: "IncomeModal_title",
-    description: "Título principal del modal de crédito vacacional",
+    code: "Income_modal_title",
+    description: "Maximum limit for vacation credit",
     i18n: {
-      en: "Max limit for Vacation Credit",
-      es: "Tope máx. para Crédito vacacional",
+      en: "Maximum limit per credit line",
+      es: "Tope máx. por línea de crédito",
     },
   },
+
   loading: {
-    id: "loading",
-    code: "IncomeModal_loading",
-    description: "Texto de carga general",
+    code: "Loading_state",
+    description: "Loading indicator",
     i18n: {
       en: "Loading...",
       es: "Cargando...",
     },
   },
-  errorTitle: {
-    id: "errorTitle",
-    code: "IncomeModal_errorTitle",
-    description: "Título del mensaje de error",
-    i18n: {
-      en: "Error loading data",
-      es: "Error cargando datos",
+
+  closeButton: {
+    text: {
+      code: "Close_button",
+      description: "Close button text",
+      i18n: {
+        en: "Close",
+        es: "Cerrar",
+      },
     },
   },
-  errorMessage: {
-    id: "errorMessage",
-    code: "IncomeModal_errorMessage",
-    description: "Mensaje detallado de error",
-    i18n: {
-      en: "The data could not be loaded. Please try again later.",
-      es: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
+
+  error: {
+    title: {
+      code: "Error_title",
+      description: "Error loading data title",
+      i18n: {
+        en: "Error loading data",
+        es: "Error cargando datos",
+      },
+    },
+    message: {
+      code: "Error_message",
+      description: "Error loading data message",
+      i18n: {
+        en: "The data could not be loaded. Please try again later.",
+        es: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
+      },
     },
   },
-  incomeSourcesLabel: {
-    id: "incomeSourcesLabel",
-    code: "IncomeModal_incomeSourcesLabel",
-    description: "Etiqueta para el total de fuentes de ingreso",
-    i18n: {
-      en: "Total reported income sources",
-      es: "Total fuentes de ingreso reportadas",
+
+  incomeSources: {
+    label: {
+      code: "Income_sources_label",
+      description: "Total reported income sources",
+      i18n: {
+        en: "Total reported income sources",
+        es: "Total fuentes de ingreso reportadas",
+      },
     },
   },
-  financialObligationsLabel: {
-    id: "financialObligationsLabel",
-    code: "IncomeModal_financialObligationsLabel",
-    description: "Etiqueta para el tope máximo de la línea",
-    i18n: {
-      en: "(+) Maximum limit for the credit line",
-      es: "(+) Tope máximo para la línea de crédito",
+
+  financialObligations: {
+    label: {
+      code: "Financial_obligations_label",
+      description: "Maximum credit line limit",
+      i18n: {
+        en: "(+) Maximum limit for the credit line",
+        es: "(+) Tope máximo para la línea de crédito",
+      },
     },
   },
-  subsistenceReserveLabel: {
-    id: "subsistenceReserveLabel",
-    code: "IncomeModal_subsistenceReserveLabel",
-    description: "Etiqueta para la cartera vigente",
-    i18n: {
-      en: "(-) Current portfolio in the credit line",
-      es: "(-) Cartera vigente en la línea de crédito",
+
+  subsistenceReserve: {
+    label: {
+      code: "Subsistence_reserve_label",
+      description: "Current portfolio in credit line",
+      i18n: {
+        en: "(-) Current portfolio in the credit line",
+        es: "(-) Cartera vigente en la línea de crédito",
+      },
     },
   },
-  availableCommitmentsLabel: {
-    id: "availableCommitmentsLabel",
-    code: "IncomeModal_availableCommitmentsLabel",
-    description: "Etiqueta para el neto disponible",
-    i18n: {
-      en: "Net available for new commitments",
-      es: "Neto disponible para nuevos compromisos",
+
+  availableCommitments: {
+    label: {
+      code: "Available_commitments_label",
+      description: "Net available for new commitments",
+      i18n: {
+        en: "Net available for new commitments",
+        es: "Neto disponible para nuevos compromisos",
+      },
     },
   },
-  maxVacationTermLabel: {
-    id: "maxVacationTermLabel",
-    code: "IncomeModal_maxVacationTermLabel",
-    description: "Etiqueta para el plazo máximo",
-    i18n: {
-      en: "Max term in 'vacation'",
-      es: "Plazo máx. en ‘vacaciones’",
+
+  maxVacationTerm: {
+    label: {
+      code: "Max_vacation_term_label",
+      description: "Maximum vacation term",
+      i18n: {
+        en: "Maximum vacation term",
+        es: "Plazo máx. en ‘vacaciones’",
+      },
     },
   },
-  textfieldLabel: {
-    id: "textfieldLabel",
-    code: "IncomeModal_textfieldLabel",
-    description: "Etiqueta para el campo de monto máximo",
-    i18n: {
-      en: "Maximum amount",
-      es: "Monto máximo",
+
+  textfield: {
+    label: {
+      code: "Max_amount_label",
+      description: "Maximum amount label",
+      i18n: {
+        en: "Maximum amount",
+        es: "Monto máximo",
+      },
+    },
+    placeholder: {
+      code: "Max_amount_placeholder",
+      description: "Maximum amount placeholder",
+      i18n: {
+        en: "Enter the amount",
+        es: "Ingrese la cantidad",
+      },
     },
   },
-  textfieldPlaceholder: {
-    id: "textfieldPlaceholder",
-    code: "IncomeModal_textfieldPlaceholder",
-    description: "Placeholder para el campo de monto",
-    i18n: {
-      en: "Enter the amount",
-      es: "Ingrese la cantidad",
+
+  buttons: {
+    close: {
+      code: "Close_action",
+      description: "Close action",
+      i18n: {
+        en: "Close",
+        es: "Cerrar",
+      },
+    },
+    recalculate: {
+      code: "Recalculate_action",
+      description: "Recalculate action",
+      i18n: {
+        en: "Recalculate",
+        es: "Recalcular",
+      },
     },
   },
-  btnClose: {
-    id: "btnClose",
-    code: "IncomeModal_btnClose",
-    description: "Texto para el botón de cerrar",
-    i18n: {
-      en: "Close",
-      es: "Cerrar",
-    },
-  },
-  btnRecalculate: {
-    id: "btnRecalculate",
-    code: "IncomeModal_btnRecalculate",
-    description: "Texto para el botón de recalcular",
-    i18n: {
-      en: "Recalculate",
-      es: "Recalcular",
-    },
-  },
-  maxAmountDescription: {
-    id: "maxAmountDescription",
-    code: "IncomeModal_maxAmountDescription",
-    description: "Descripción del monto máximo disponible",
-    i18n: {
-      en: "Maximum amount available for the credit line",
-      es: "Monto máximo disponible para la línea de crédito",
-    },
-  },
+
   maxAmountQuote: {
-    id: "maxAmountQuote",
-    code: "IncomeModal_maxAmountQuote",
-    description: "Informativo con formato sobre el monto máximo calculado",
+    code: "Max_amount_quote",
+    description: "Calculated maximum amount quote",
     i18n: {
-      en: (
-        <>
-          Maximum amount calculated for a fee of
-          <strong> $1,500,000 </strong> and a term of <strong>60 </strong>
-          months.
-        </>
-      ),
+      en: "Calculated maximum amount for selected installment and term.",
       es: (
         <>
           Monto máximo calculado para una cuota de
@@ -144,6 +152,15 @@ export const incomeModalConfigEnum = {
           meses.
         </>
       ),
+    },
+  },
+
+  maxAmount: {
+    code: "Max_amount_available",
+    description: "Maximum available amount for credit line",
+    i18n: {
+      en: "Maximum available amount for the credit line",
+      es: "Monto máximo disponible para la línea de crédito",
     },
   },
 };

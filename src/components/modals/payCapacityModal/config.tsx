@@ -1,256 +1,211 @@
-import { EnumType } from "@hooks/useEnum";
-
-export const dataTabsEnum = {
-  ordinary: {
+export const dataTabs = [
+  {
     id: "ordinary",
-    code: "PaymentTabs_ordinary",
-    description: "Ordinary installments tab",
-    i18n: {
-      en: "Ordinary installments",
-      es: "Cuotas ordinarias",
+    label: {
+      code: "Ordinary_installments_tab",
+      description: "Ordinary installments tab",
+      i18n: {
+        en: "Ordinary installments",
+        es: "Cuotas ordinarias",
+      },
     },
   },
-  extraordinary: {
+  {
     id: "extraordinary",
-    code: "PaymentTabs_extraordinary",
-    description: "Extraordinary installments tab",
-    i18n: {
-      en: "Extraordinary installments",
-      es: "Cuotas extraordinarias",
+    label: {
+      code: "Extraordinary_installments_tab",
+      description: "Extraordinary installments tab",
+      i18n: {
+        en: "Extraordinary installments",
+        es: "Cuotas extraordinarias",
+      },
     },
   },
-};
-
-export const headers = [
-  { label: "Concepto", key: "concept" },
-  { label: "Valor", key: "value" },
-  { label: "Fecha", key: "date" },
 ];
 
-export const headersEnum = {
-  concept: {
-    key: "concept",
-    code: "PaymentHeaders_concept",
-    description: "Concept column",
-    i18n: {
-      en: "Concept",
-      es: "Concepto",
+export const headers = [
+  {
+    key: "paymentChannelAbbreviatedName",
+    label: {
+      code: "Concept_header",
+      description: "Concept column header",
+      i18n: {
+        en: "Concept",
+        es: "Concepto",
+      },
+    },
+    mobile: true,
+  },
+  {
+    key: "installmentAmount",
+    label: {
+      code: "Amount_header",
+      description: "Amount column header",
+      i18n: {
+        en: "Amount",
+        es: "Valor",
+      },
+    },
+    mobile: true,
+  },
+  {
+    key: "installmentDate",
+    label: {
+      code: "Date_header",
+      description: "Date column header",
+      i18n: {
+        en: "Date",
+        es: "Fecha",
+      },
     },
   },
-  value: {
-    key: "value",
-    code: "PaymentHeaders_value",
-    description: "Value column",
-    i18n: {
-      en: "Value",
-      es: "Valor",
-    },
-  },
-  date: {
-    key: "date",
-    code: "PaymentHeaders_date",
-    description: "Date column",
-    i18n: {
-      en: "Date",
-      es: "Fecha",
-    },
-  },
-};
+];
 
-export const paymentCapacityDataEnum = {
+export const paymentCapacityData = {
   incomeSources: {
-    id: "incomeSources",
-    code: "PaymentCapacity_incomeSources",
-    description: "Total de fuentes de ingreso reportadas",
+    code: "Income_sources_total",
+    description: "Total reported income sources",
     i18n: {
       en: "(+) Total reported income sources",
       es: "(+) Total fuentes de ingreso reportadas",
     },
   },
+
+  currentObligations: {
+    code: "Current_obligations_installment",
+    description: "Current obligations installment",
+    i18n: {
+      en: "(-) Current obligations installment",
+      es: "(-) Cuota por obligaciones vigentes",
+    },
+  },
+
   subsistenceReserve: {
-    id: "subsistenceReserve",
-    code: "PaymentCapacity_subsistenceReserve",
-    description: "Reserva mínima de subsistencia",
+    code: "Subsistence_reserve_minimum",
+    description: "Minimum subsistence reserve",
     i18n: {
       en: "(-) Minimum subsistence reserve",
       es: "(-) Reserva mínima de subsistencia",
     },
   },
+
   newPromises: {
-    id: "newPromises",
-    code: "PaymentCapacity_newPromises",
-    description: "Neto disponible para nuevos compromisos",
+    code: "New_commitments_net",
+    description: "Net available for new commitments",
     i18n: {
       en: "(=) Net available for new commitments",
       es: "(=) Neto disponible para nuevos compromisos",
     },
   },
-  lineOfCredit: {
-    id: "lineOfCredit",
-    code: "PaymentCapacity_lineOfCredit",
-    description: "Texto base para el plazo máximo en la línea de crédito",
-    i18n: {
-      en: "(x) Max term in",
-      es: "(x) Plazo máx. en",
-    },
-  },
-  maxValue: {
-    id: "maxValue",
-    code: "PaymentCapacity_maxValue",
-    description: "Cita informativa del monto máximo calculado con formato",
-    i18n: {
-      en: (
-        <>
-          Maximum amount calculated for an installment of <strong>2,000,000</strong> and a term of <strong>20</strong> months.
-        </>
-      ),
-      es: (
-        <>
-          Monto máximo calculado para una cuota de <strong>2.000.000</strong> y plazo de <strong>20</strong> meses.
-        </>
-      ),
-    },
-  },
+
+  getLineOfCredit: (nombreLinea: string) => `(x) Plazo máx. en ${nombreLinea}`,
+
   maxValueDescription: {
-    id: "maxValueDescription",
-    code: "PaymentCapacity_maxValueDescription",
-    description: "Descripción del monto máximo con cuotas ordinarias",
+    code: "Max_value_ordinary_description",
+    description: "Maximum value with ordinary installments",
     i18n: {
       en: "Maximum amount with ordinary installments",
       es: "Monto máximo con cuotas ordinarias",
     },
   },
+
   maxValueAmount: {
-    id: "maxValueAmount",
-    code: "PaymentCapacity_maxValueAmount",
-    description: "Monto máximo calculado para un plazo específico",
+    code: "Max_value_amount",
+    description: "Maximum calculated amount description",
     i18n: {
       en: "Maximum amount calculated for a 24-month term.",
       es: "Monto máximo calculado para un plazo de 24 meses.",
     },
   },
+
   maxAmountOridinary: {
-    id: "maxAmountOridinary",
-    code: "PaymentCapacity_maxAmountOrdinary",
-    description: "Monto máximo con cuotas ordinarias",
+    code: "Max_amount_ordinary",
+    description: "Maximum amount with ordinary installments",
     i18n: {
       en: "Maximum amount with ordinary installments",
       es: "Monto máximo con cuotas ordinarias",
     },
   },
+
   maxAmountExtraordinary: {
-    id: "maxAmountExtraordinary",
-    code: "PaymentCapacity_maxAmountExtraordinary",
-    description: "Monto máximo sumando ordinarias y extraordinarias",
+    code: "Max_amount_extraordinary",
+    description: "Maximum amount with ordinary and extraordinary installments",
     i18n: {
       en: "Maximum amount including ordinary and extraordinary installments",
       es: "Monto máximo sumando cuotas ordinarias y extraordinarias.",
     },
   },
+
   maxTotal: {
-    id: "maxTotal",
-    code: "PaymentCapacity_maxTotal",
-    description: "Etiqueta para el monto máximo total",
+    code: "Max_total_amount",
+    description: "Maximum total amount",
     i18n: {
-      en: "Total maximum amount",
+      en: "Maximum total amount",
       es: "Monto máximo total",
     },
   },
-  noExtraordinaryInstallmentsAvailable: {
-    id: "noExtraordinaryInstallmentsAvailable",
-    code: "PaymentCapacity_noExtraordinaryInstallments",
-    description: "Aviso de no disponibilidad de cuotas extraordinarias",
+
+  noExtraordinary: {
+    code: "No_extraordinary_installments",
+    description: "No extraordinary installments available",
     i18n: {
       en: "No extraordinary installments available",
       es: "No hay cuotas extraordinarias disponibles",
     },
   },
-  errorLoadingData: {
-    id: "errorLoadingData",
-    code: "PaymentCapacity_errorLoadingData",
-    description: "Título de error al cargar datos",
+
+  errorDate: {
+    code: "Error_loading_data",
+    description: "Error loading data",
     i18n: {
       en: "Error loading data",
       es: "Error al cargar datos",
     },
   },
+
   errorNoData: {
-    id: "errorNoData",
-    code: "PaymentCapacity_errorNoData",
-    description: "Mensaje descriptivo de falta de información de capacidad",
+    code: "Error_no_capacity_data",
+    description: "Error retrieving payment capacity data",
     i18n: {
-      en: "Could not retrieve payment capacity information. Please try again.",
+      en: "Payment capacity information could not be retrieved. Please try again.",
       es: "No se pudo obtener la información de capacidad de pago. Por favor, intenta nuevamente.",
     },
   },
-  months: {
-    id: "months",
-    code: "PaymentCapacity_months",
-    description: "Sufijo para meses",
-    i18n: {
-      en: " months",
-      es: " meses",
-    },
+};
+export const analysisLabel = {
+  code: "Analysis_for_label",
+  description: "Label for analysis",
+  i18n: {
+    en: "Analysis for ",
+    es: "Análisis para ",
   },
 };
 
 export const getMaxValueText = (
   maxAmount: number,
   maxTerm: number,
-  lang: EnumType
-) => {
-  const locale = lang === "es" ? "es-CO" : "en-US";
-  const formattedAmount = maxAmount.toLocaleString(locale);
+  isExtraordinary: boolean,
+) => (
+  <>
+    {!isExtraordinary && (
+      <>
+        Monto máximo calculado para una cuota de{" "}
+        <strong>{maxAmount.toLocaleString("es-CO")}</strong> y plazo de{" "}
+        <strong>{maxTerm}</strong> meses.
+      </>
+    )}
+    {isExtraordinary && (
+      <>
+        Monto máximo calculado para un plazo de <strong>{maxTerm}</strong>{" "}
+        meses.
+      </>
+    )}
+  </>
+);
 
-  return lang === "es" ? (
-    <>
-      Monto máximo calculado para una cuota de{" "}
-      <strong>{formattedAmount}</strong> y plazo de{" "}
-      <strong>{maxTerm}</strong> meses.
-    </>
-  ) : (
-    <>
-      Maximum amount calculated for a fee of{" "}
-      <strong>{formattedAmount}</strong> and a term of{" "}
-      <strong>{maxTerm}</strong> months.
-    </>
-  );
-};
-export const detailsExtraordinaryInstallmentsEnum = {
-  title: {
-    id: "title",
-    code: "ExtraordinaryInstallments_title",
-    description: "Título del modal de detalles de cuotas extraordinarias",
-    i18n: {
-      en: "Details",
-      es: "Detalles",
-    },
-  },
-  close: {
-    id: "close",
-    code: "ExtraordinaryInstallments_close",
-    description: "Etiqueta para el botón de cerrar",
-    i18n: {
-      en: "Close",
-      es: "Cerrar",
-    },
-  },
-  value: {
-    id: "value",
-    code: "ExtraordinaryInstallments_value",
-    description: "Etiqueta para mostrar el valor",
-    i18n: {
-      en: "Value",
-      es: "Valor",
-    },
-  },
-  date: {
-    id: "date",
-    code: "ExtraordinaryInstallments_date",
-    description: "Etiqueta para mostrar la fecha",
-    i18n: {
-      en: "Date",
-      es: "Fecha",
-    },
-  },
+export const detailsExtraordinaryInstallments = {
+  title: "Detalles",
+  close: "Cerrar",
+  value: "Valor",
+  date: "Fecha",
 };

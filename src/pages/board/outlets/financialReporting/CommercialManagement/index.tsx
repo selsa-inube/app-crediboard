@@ -961,6 +961,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 incomeData={incomeData}
                 moneyDestination={data.moneyDestinationAbreviatedName}
                 setRequestValue={setRequestValue}
+                userAccount={userAccount}
               />
             )}
             {currentModal === "IncomeModal" && (

@@ -12,7 +12,7 @@ export const incomeCardDataEnum = {
     description: "Borrower",
     i18n: {
       en: "Borrower",
-      es: "borrower",
+      es: "Deudor",
     },
   },
   income: {

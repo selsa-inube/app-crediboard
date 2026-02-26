@@ -13,7 +13,7 @@ export const getMaximumCreditLimitByLineOfCreditRegulation = async (
   identificationDocumentNumber: string,
   moneyDestination: string,
   primaryIncomeType: string,
-  token: string
+  authorizationToken: string,
 ): Promise<IMaximumCreditLimit | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -33,14 +33,14 @@ export const getMaximumCreditLimitByLineOfCreditRegulation = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
-          Authorization: token,
+          Authorization: `${authorizationToken}`,
         },
         signal: controller.signal,
       };
-      
+
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/${lineOfCreditAbbreviatedName}/${identificationDocumentType}/${identificationDocumentNumber}/?${queryParams.toString()}`,
-        options
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/by-line-of-credit-regulation/${lineOfCreditAbbreviatedName}/${identificationDocumentType}/${identificationDocumentNumber}/?${queryParams.toString()}`,
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -69,7 +69,7 @@ export const getMaximumCreditLimitByLineOfCreditRegulation = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener el portafolio de obligaciones."
+          "Todos los intentos fallaron. No se pudo obtener el portafolio de obligaciones.",
         );
       }
     }
