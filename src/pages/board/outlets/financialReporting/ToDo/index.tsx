@@ -344,7 +344,7 @@ function ToDo(props: ToDoProps) {
     }
   };
 
-  const isApprover = () => {
+  const isCurrentUserApprover = () => {
     const currentUserId = eventData?.user?.identificationDocumentNumber;
 
     if (approvalsEntries.length > 0) {
@@ -487,7 +487,7 @@ function ToDo(props: ToDoProps) {
       !(
         isAuthorizedToTakeDecision ||
         (isCreditRequestInIndividualConceptOnApproval() &&
-          (isApprover || representablePersons.length > 0))
+          (isCurrentUserApprover || representablePersons.length > 0))
       )
     );
   };
@@ -581,7 +581,8 @@ function ToDo(props: ToDoProps) {
                   {!(
                     isAuthorizedToTakeDecision ||
                     (isCreditRequestInIndividualConceptOnApproval() &&
-                      (isApprover() || representablePersons.length > 0))
+                      (isCurrentUserApprover() ||
+                        representablePersons.length > 0))
                   ) && (
                     <Icon
                       icon={<MdOutlineInfo />}
