@@ -6,6 +6,7 @@ import {
   MdOutlineEdit,
   MdOutlineRemoveRedEye,
   MdOutlineMessage,
+  MdOutlineSpeed,
 } from "react-icons/md";
 
 import { IOptions } from "@components/navigation/MenuProspect/types";
@@ -198,6 +199,14 @@ export const menuOptions = (
     title: menuOptionsEnum.financialObligations.i18n[lang],
     onClick: () => handleOpenModal("reportCreditsModal"),
     icon: <MdOutlineMonetizationOn />,
+    visible: true,
+  },
+  {
+    title: "Score de riesgo",
+    onClick: () => {
+      handleOpenModal("scores");
+    },
+    icon: <MdOutlineSpeed />,
     visible: true,
   },
   {

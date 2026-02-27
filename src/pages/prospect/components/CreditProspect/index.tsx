@@ -58,6 +58,7 @@ import { IncomeModal } from "../modals/IncomeModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
 import InfoModal from "../modals/InfoModal";
 import { ICustomerData } from "../AddProductModal/config";
+import { ScoreModalProspect } from "../ScoreModalProspect";
 
 interface ICreditProspectProps {
   borrowersProspect: IProspect | undefined;
@@ -422,8 +423,9 @@ export function CreditProspect(props: ICreditProspectProps) {
               </Button>
             )}
 
-            {editCreditApplication ||
-              (availableEditCreditRequest && !isAddProductDisabled && (
+            {(editCreditApplication || availableEditCreditRequest) &&
+              !isAddProductDisabled &&
+              !generalLoading && (
                 <Icon
                   icon={<MdOutlineInfo />}
                   appearance="primary"
@@ -431,7 +433,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                   cursorHover
                   onClick={handleInfo}
                 />
-              ))}
+              )}
             {prospectData?.creditProducts?.some(
               (product) =>
                 Array.isArray(product.extraordinaryInstallments) &&
@@ -678,7 +680,21 @@ export function CreditProspect(props: ICreditProspectProps) {
           </BaseModal>
         </>
       )}
-
+      {currentModal === "scores" && (
+        <ScoreModalProspect
+          isMobile={isMobile}
+          handleClose={handleCloseModal}
+          lang={lang}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          setShowMessageSuccessModal={setShowMessageSuccessModal}
+          setMessageError={setMessageError}
+          eventData={eventData}
+          setShowErrorModal={setShowErrorModal}
+          prospectData={prospectData as IProspect}
+          onProspectRefreshData={onProspectRefreshData}
+        />
+      )}
       {showEditApprovalModal && (
         <BaseModal
           width={isMobile ? "300px" : "500px"}
