@@ -73,7 +73,6 @@ const DecisionModal = (props: IDecisionModal) => {
     <BaseModal
       portalId={portalId}
       width={isMobile ? "335px" : "450px"}
-      isMobile={isMobile}
       labelActionButton={actionText}
       labelCloseButton="Cancelar"
       labelCloseModal="Cerrar"
