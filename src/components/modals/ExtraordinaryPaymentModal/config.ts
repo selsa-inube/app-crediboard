@@ -1,14 +1,14 @@
-export const TextLabelsEnum = {
+export const TextLabels = {
   addSeries: {
-    code: "TextLabels_add_series",
+    code: "Add_series",
     description: "Add series",
     i18n: {
       en: "Add series",
-      es: "Agregar serie",
+      es: "Agregar pago extra",
     },
   },
   close: {
-    code: "TextLabels_close",
+    code: "Close",
     description: "Close",
     i18n: {
       en: "Close",
@@ -16,42 +16,42 @@ export const TextLabelsEnum = {
     },
   },
   extraPayments: {
-    code: "TextLabels_extra_payments",
-    description: "Extra payments",
+    code: "Extra_payments",
+    description: "Extraordinary installments",
     i18n: {
       en: "Extraordinary installments",
       es: "Pagos extras",
     },
   },
   titleSuccess: {
-    code: "TextLabels_title_success",
-    description: "Changes saved successfully!",
+    code: "Success_title",
+    description: "Success title",
     i18n: {
       en: "Changes saved successfully!",
       es: "¡Cambios guardados con éxito!",
     },
   },
   descriptionSuccess: {
-    code: "TextLabels_description_success",
-    description: "The data was saved correctly.",
+    code: "Success_description",
+    description: "Success description",
     i18n: {
-      en: "The data was saved correctly.",
-      es: "Los datos se guardaron correctamente.",
+      en: "The comment was successfully recorded.",
+      es: "Hemos creado el campo exitosamente.",
     },
   },
   titleError: {
-    code: "TextLabels_title_error",
-    description: "Oops, something went wrong!",
+    code: "Error_title",
+    description: "Error title",
     i18n: {
       en: "Oops, something went wrong!",
       es: "¡Uy, algo ha salido mal!",
     },
   },
   descriptionError: {
-    code: "TextLabels_description_error",
-    description: "Unable to save changes.",
+    code: "Error_description",
+    description: "Error description",
     i18n: {
-      en: "Unable to save changes.",
+      en: "Changes could not be saved.",
       es: "No se han podido guardar los cambios.",
     },
   },

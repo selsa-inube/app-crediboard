@@ -9,7 +9,7 @@ import {
 } from "./types";
 
 export const mapperProspectResponseToIProspect = (
-  response: IProspect
+  response: IProspect,
 ): IProspect => {
   const prospect: IProspect = {
     prospectId: response.prospectId,
@@ -41,9 +41,9 @@ export const mapperProspectResponseToIProspect = (
             propertyName: property.propertyName,
             propertyValue: property.propertyValue,
             borrowerIdentificationNumber: property.borrowerIdentificationNumber,
-          })
+          }),
         ),
-      })
+      }),
     ),
 
     creditProducts: response.creditProducts.map(
@@ -58,7 +58,7 @@ export const mapperProspectResponseToIProspect = (
         ordinaryInstallmentsForPrincipal:
           product.ordinaryInstallmentsForPrincipal.map(
             (
-              installment: IOrdinaryInstallmentsForPrincipal
+              installment: IOrdinaryInstallmentsForPrincipal,
             ): IOrdinaryInstallmentsForPrincipal => ({
               numberOfInstallments: installment.numberOfInstallments,
               schedule:
@@ -73,11 +73,11 @@ export const mapperProspectResponseToIProspect = (
               gradientSchedule: installment.gradientSchedule,
               firstGradientDate: installment.firstGradientDate,
               installmentFrequency: installment.installmentFrequency,
-            })
+            }),
           ),
         extraordinaryInstallments: product.extraordinaryInstallments?.map(
           (
-            extraordinary: IExtraordinaryInstallment
+            extraordinary: IExtraordinaryInstallment,
           ): IExtraordinaryInstallment => ({
             installmentAmount: extraordinary.installmentAmount,
             installmentDate: extraordinary.installmentDate,
@@ -85,25 +85,21 @@ export const mapperProspectResponseToIProspect = (
               extraordinary.paymentChannelAbbreviatedName,
             humanChannelPaymentDay: extraordinary.humanChannelPaymentDay,
             id: extraordinary.id,
-            creditProductCode: extraordinary.creditProductCode,
-            extraordinaryInstallments: extraordinary.extraordinaryInstallments,
-            prospectId: extraordinary.prospectId,
-            creditRequestCode: extraordinary.creditRequestCode,
-          })
+          }),
         ),
         installmentsForInterest: product.installmentsForInterest,
         acquiredCashFlows: product.acquiredCashFlows,
         referenceIndexForVariableInterestRate:
           product.referenceIndexForVariableInterestRate,
         fixedPoints: product.fixedPoints,
-      })
+      }),
     ),
 
     outlays: response.outlays.map(
       (outlay: IOutlay): IOutlay => ({
         date: outlay.date,
         amount: outlay.amount,
-      })
+      }),
     ),
 
     consolidatedCredits: response.consolidatedCredits || [],

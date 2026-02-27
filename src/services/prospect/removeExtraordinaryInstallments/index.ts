@@ -3,19 +3,14 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import {
-  IExtraordinaryInstallments,
-  IExtraordinaryInstallmentsAddSeries,
-} from "@services/prospect/types";
 
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
+import { IExtraordinaryInstallments } from "../types";
 
 export const removeExtraordinaryInstallments = async (
-  extraordinaryInstallments:
-    | IExtraordinaryInstallments
-    | IExtraordinaryInstallmentsAddSeries,
+  extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string,
-  token: string,
+  authorizationToken: string,
 ): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -30,7 +25,7 @@ export const removeExtraordinaryInstallments = async (
           "X-Action": "RemoveExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          Authorization: token,
+          Authorization: `${authorizationToken}`,
         },
         body: JSON.stringify(
           mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),
@@ -39,7 +34,7 @@ export const removeExtraordinaryInstallments = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
         options,
       );
 
@@ -53,7 +48,7 @@ export const removeExtraordinaryInstallments = async (
 
       if (!res.ok) {
         throw {
-          message: "Ha ocurrido un error: ",
+          message: "Error al eliminar cuotas extraordinarias. : ",
           status: res.status,
           data,
         };

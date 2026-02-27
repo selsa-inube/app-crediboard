@@ -34,7 +34,6 @@ import {
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { DisbursementFlowManager } from "@components/modals/DisbursementModal/EditDisburment";
 import { Fieldset } from "@components/data/Fieldset";
-import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { currencyFormat } from "@utils/formatData/currency";
 import { IProspect, ICreditProduct } from "@services/prospect/types";
@@ -993,15 +992,13 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
             )}
             {currentModal === "extraPayments" && (
               <ExtraordinaryPaymentModal
-                dataTable={extraordinaryInstallmentMock}
                 handleClose={handleCloseModal}
                 prospectData={prospectData}
                 sentData={sentData}
                 setSentData={setSentData}
-                creditRequestCode={creditRequestCode}
                 businessUnitPublicCode={businessUnitPublicCode}
-                businessManagerCode={businessManagerCode}
-                availableEditCreditRequest={availableEditCreditRequest}
+                lang={lang}
+                customerData={documentClientNumber(dataProspect[0])}
               />
             )}
             {openModal === "IncomeModalEdit" && (
