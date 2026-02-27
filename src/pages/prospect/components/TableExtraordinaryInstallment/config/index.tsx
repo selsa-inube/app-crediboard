@@ -59,13 +59,25 @@ export const getHeadersTableExtraordinaryInstallment = (
   },
 ];
 
+export const headersTableExtraordinaryInstallment: IHeaders[] = [
+  { label: "Fecha", key: "datePayment" },
+  {
+    label: "Valor",
+    key: "value",
+    mask: (value: string | number) => {
+      return currencyFormat(value as number);
+    },
+  },
+  { label: "Medio de pago", key: "paymentMethod" },
+];
+
 export const messageError = {
   removeExtraordinaryInstallments: {
     description: "Error no se pudo eliminar los Pagos Extras.",
   },
 };
 
-export const dataTableExtraordinaryInstallmentEnum = {
+export const dataTableExtraordinaryInstallment = {
   noData: {
     code: "DataTableExtraordinaryInstallment_noData",
     description:
