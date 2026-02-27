@@ -4,22 +4,13 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import {
-  IExtraordinaryInstallments,
-  IExtraordinaryInstallmentAddSeries,
-  IExtraordinaryInstallmentsAddSeries,
-} from "@services/prospect/types";
-
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
+import { IExtraordinaryInstallments } from "../types";
 
 export const addExtraordinaryInstallments = async (
-  extraordinaryInstallments:
-    | IExtraordinaryInstallmentAddSeries
-    | IExtraordinaryInstallmentsAddSeries
-    | IExtraordinaryInstallments,
+  extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string,
-  token: string,
-  xUserName: string,
+  authorizationToken: string,
 ): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -34,8 +25,7 @@ export const addExtraordinaryInstallments = async (
           "X-Action": "AddExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": xUserName,
-          Authorization: token,
+          Authorization: `${authorizationToken}`,
         },
         body: JSON.stringify(
           mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),
@@ -44,7 +34,7 @@ export const addExtraordinaryInstallments = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
         options,
       );
 
@@ -58,7 +48,7 @@ export const addExtraordinaryInstallments = async (
 
       if (!res.ok) {
         throw {
-          message: "Ha ocurrido un error: ",
+          message: "Error al crear cuotas extraordinarias",
           status: res.status,
           data,
         };

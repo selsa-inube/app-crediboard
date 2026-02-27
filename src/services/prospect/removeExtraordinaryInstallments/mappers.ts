@@ -1,15 +1,12 @@
-import {
-  IExtraordinaryInstallment,
-  IExtraordinaryInstallmentsAddSeries,
-} from "@services/prospect/types";
+import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 const mapExtraordinaryInstallmentsEntity = (
-  data: IExtraordinaryInstallment | IExtraordinaryInstallmentsAddSeries,
-): IExtraordinaryInstallment => {
-  const creditRequest: IExtraordinaryInstallment = {
+  data: IExtraordinaryInstallments,
+): IExtraordinaryInstallments => {
+  const creditRequest: IExtraordinaryInstallments = {
     creditProductCode: String(data.creditProductCode || ""),
     extraordinaryInstallments: Object(data.extraordinaryInstallments || ""),
-    creditRequestCode: String(data.creditRequestCode || ""),
+    prospectId: String(data.prospectId || ""),
   };
   return creditRequest;
 };

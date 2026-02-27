@@ -22,7 +22,6 @@ import { ScoreModal } from "@components/modals/FrcModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
-import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { IAddProduct } from "@services/prospect/addCreditProduct/types";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
 import { IProspect, IProspectSummaryById } from "@services/prospect/types";
@@ -608,15 +607,13 @@ export function CreditProspect(props: ICreditProspectProps) {
       )}
       {currentModal === "extraPayments" && (
         <ExtraordinaryPaymentModal
-          dataTable={extraordinaryInstallmentMock}
           handleClose={handleCloseModal}
           prospectData={prospectData}
           sentData={sentData}
           setSentData={setSentData}
-          creditRequestCode={creditRequestCode || ""}
           businessUnitPublicCode={businessUnitPublicCode}
-          businessManagerCode={businessManagerCode}
-          availableEditCreditRequest={availableEditCreditRequest}
+          lang={lang}
+          customerData={customerData}
         />
       )}
       {showShareModal && (

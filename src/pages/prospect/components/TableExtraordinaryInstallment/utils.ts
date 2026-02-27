@@ -1,20 +1,15 @@
 import { removeExtraordinaryInstallments } from "@services/prospect/removeExtraordinaryInstallments";
-import {
-  IExtraordinaryInstallments,
-  IExtraordinaryInstallmentsAddSeries,
-} from "@services/prospect/types";
+import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 const removeExtraordinaryInstallment = (
   businessUnitPublicCode: string,
-  extraordinaryInstallments:
-    | IExtraordinaryInstallments
-    | IExtraordinaryInstallmentsAddSeries,
-  token: string,
+  extraordinaryInstallments: IExtraordinaryInstallments,
+  authorizationToken: string,
 ) => {
   return removeExtraordinaryInstallments(
     extraordinaryInstallments,
     businessUnitPublicCode,
-    token,
+    authorizationToken,
   );
 };
 

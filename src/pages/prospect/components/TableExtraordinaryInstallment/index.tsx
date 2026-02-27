@@ -1,49 +1,41 @@
-import { useContext, useEffect, useState } from "react";
-import {
-  Text,
-  SkeletonLine,
-  useMediaQuery,
-  Pagination,
-  Table,
-  Tbody,
-  Td,
-  Tfoot,
-  Th,
-  Thead,
-  Tr,
-} from "@inubekit/inubekit";
+import { useEffect, useState, useContext } from "react";
+import { useMediaQuery } from "@inubekit/inubekit";
 
-import { formatPrimaryDate } from "@utils/formatData/date";
-import { IProspect } from "@services/prospect/types";
-import { DeleteModal } from "@components/modals/DeleteModal";
-import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
-import { useEnum } from "@hooks/useEnum";
+import {
+  IExtraordinaryInstallments,
+  IProspect,
+} from "@services/prospect/types";
+import { EnumType } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
-
-import { Detail } from "./Detail";
+import { searchExtraInstallmentPaymentCyclesByCustomerCode } from "@services/creditLimit/extraInstallmentPaymentCyles/searchExtraInstallmentPaymentCyclesByCustomerCode";
 import {
-  getHeadersTableExtraordinaryInstallment,
+  IExtraordinaryAgreement,
+  IExtraordinaryCycle,
+} from "@services/creditLimit/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+
+import { removeExtraordinaryInstallment } from "./utils";
+import {
+  headersTableExtraordinaryInstallment,
   rowsVisbleMobile,
   rowsActions,
-  dataTableExtraordinaryInstallmentEnum,
-  messageError,
 } from "./config";
-import { removeExtraordinaryInstallment } from "./utils";
+import { TableExtraordinaryInstallmentUI } from "./interface";
 
 export interface TableExtraordinaryInstallmentProps {
-  [key: string]: unknown;
-  businessUnitPublicCode?: string;
-  businessManagerCode?: string;
+  [key: string]: unknown | string | number;
   prospectData?: IProspect;
-  handleClose?: (() => void) | undefined;
   refreshKey?: number;
-  id?: string;
+  businessUnitPublicCode?: string;
+  extraordinary?: TableExtraordinaryInstallmentProps[];
+  service?: boolean;
+  lang?: EnumType;
+  businessManagerCode?: string;
   setSentData?: React.Dispatch<
     React.SetStateAction<IExtraordinaryInstallmentsAddSeries | null>
   >;
-  creditRequestCode?: string | undefined;
-  availableEditCreditRequest?: boolean;
+  handleClose?: () => void;
+  handleDelete?: (id: string) => void;
 }
 
 const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
@@ -63,6 +55,15 @@ const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
 
   const currentData = data.slice(firstEntryInPage, lastEntryInPage);
 
+  const paddingCount = pageLength - currentData.length;
+  const paddingItems = Array.from({
+    length: paddingCount > 0 ? paddingCount : 0,
+  }).map((_, i) => ({
+    __isPadding: true,
+    id: `padding-${i}`,
+  }));
+
+  const paddedCurrentData = [...currentData, ...paddingItems];
   return {
     currentPage,
     totalRecords,
@@ -73,7 +74,7 @@ const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
     handleEndPage,
     firstEntryInPage,
     lastEntryInPage,
-    currentData,
+    paddedCurrentData,
   };
 };
 
@@ -83,68 +84,170 @@ export const TableExtraordinaryInstallment = (
   const {
     refreshKey,
     prospectData,
-    handleClose,
-    setSentData,
     businessUnitPublicCode,
-    creditRequestCode,
-    availableEditCreditRequest,
+    extraordinary,
+    lang,
+    service = true,
+    setSentData,
+    handleClose,
+    handleDelete,
   } = props;
-  const { lang } = useEnum();
 
-  const headers = getHeadersTableExtraordinaryInstallment(lang);
+  const { eventData } = useContext(AppContext);
+  const headers = headersTableExtraordinaryInstallment;
+  const isMobile = useMediaQuery("(max-width:880px)");
+
+  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+  const [paymentCycles, setPaymentCycles] = useState<IExtraordinaryCycle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
+  const [isOpenModalView, setIsOpenModalView] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+
+  const visbleHeaders = isMobile
+    ? headers.filter((header) => rowsVisbleMobile.includes(header.key))
+    : headers;
+  const visbleActions = isMobile
+    ? rowsActions.filter((action) => rowsVisbleMobile.includes(action.key))
+    : rowsActions;
 
   const [extraordinaryInstallments, setExtraordinaryInstallments] = useState<
     TableExtraordinaryInstallmentProps[]
   >([]);
   const [selectedDebtor, setSelectedDebtor] =
-    useState<TableExtraordinaryInstallmentProps>(
-      {} as TableExtraordinaryInstallmentProps,
-    );
+    useState<TableExtraordinaryInstallmentProps>({});
+  const [installmentState, setInstallmentState] = useState<{
+    installmentAmount: number;
+    installmentDate: string;
+    paymentChannelAbbreviatedName: string;
+  }>({
+    installmentAmount: 0,
+    installmentDate: "",
+    paymentChannelAbbreviatedName: "",
+  });
 
-  const [loading, setLoading] = useState(true);
-  const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
-  const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const { eventData } = useContext(AppContext);
+  const paginationProps = usePagination(extraordinaryInstallments);
 
-  const isMobile = useMediaQuery("(max-width:880px)");
+  const itemIdentifiersForUpdate: IExtraordinaryInstallments = {
+    creditProductCode: (selectedDebtor?.creditProductCode as string) || "",
+    prospectId: prospectData?.prospectId || "",
+    extraordinaryInstallments: selectedDebtor?.id
+      ? [
+          {
+            installmentDate:
+              typeof selectedDebtor.datePayment === "string"
+                ? selectedDebtor.datePayment
+                : new Date(
+                    selectedDebtor.datePayment as string | number | Date,
+                  ).toISOString(),
+            installmentAmount: Number(selectedDebtor.value),
+            paymentChannelAbbreviatedName: String(selectedDebtor.paymentMethod),
+            payrollForDeductionAgreementCode: String(
+              selectedDebtor.payrollForDeductionAgreementCode || "",
+            ),
+          },
+        ]
+      : [],
+  };
 
-  const visbleHeaders = isMobile
-    ? headers.filter((header) => rowsVisbleMobile.includes(header.key))
-    : headers;
+  useEffect(() => {
+    const fetchPaymentCycles = async () => {
+      if (
+        !eventData?.user.identificationDocumentNumber ||
+        !businessUnitPublicCode ||
+        prospectData === undefined
+      )
+        return;
 
-  let visbleActions = isMobile
-    ? rowsActions.filter((action) => rowsVisbleMobile.includes(action.key))
-    : rowsActions;
+      try {
+        const product = prospectData.creditProducts?.[0];
 
-  visbleActions = availableEditCreditRequest
-    ? visbleActions.filter((action) => action.key !== "actions")
-    : visbleActions;
+        const clientIdentificationName = prospectData?.borrowers?.map(
+          (borrower) => {
+            if (borrower?.borrowerType === "MainBorrower") {
+              return borrower?.borrowerIdentificationNumber;
+            }
+          },
+        );
 
-  const {
-    totalRecords,
-    handleStartPage,
-    handlePrevPage,
-    handleNextPage,
-    handleEndPage,
-    firstEntryInPage,
-    lastEntryInPage,
-  } = usePagination(extraordinaryInstallments);
+        const response: IExtraordinaryAgreement[] | null =
+          await searchExtraInstallmentPaymentCyclesByCustomerCode(
+            businessUnitPublicCode,
+            clientIdentificationName[0] || "",
+            product?.lineOfCreditAbbreviatedName || "",
+            prospectData?.moneyDestinationAbbreviatedName || "",
+            eventData.token,
+          );
+
+        if (response && response.length > 0) {
+          const allCycles = response.flatMap((agreement) =>
+            agreement.extraordinaryCycles.map((cycle) => ({
+              ...cycle,
+              payrollForDeductionAgreementCode:
+                agreement.payrollForDeductionAgreementCode,
+            })),
+          );
+
+          setPaymentCycles(allCycles);
+        }
+      } catch (error) {
+        const err = error as {
+          message?: string;
+          status: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + err?.message + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
+      }
+    };
+
+    if (service) {
+      fetchPaymentCycles();
+    }
+  }, [
+    prospectData,
+    businessUnitPublicCode,
+    eventData.token,
+    service,
+    eventData.user.identificationDocumentNumber,
+  ]);
 
   useEffect(() => {
     if (prospectData?.creditProducts) {
       const extraordinaryInstallmentsFlat = prospectData.creditProducts.flatMap(
-        (product) =>
-          Array.isArray(product.extraordinaryInstallments)
-            ? product.extraordinaryInstallments.map((installment) => ({
-                id: `${product.creditProductCode},${installment.installmentDate},${installment.paymentChannelAbbreviatedName}`,
-                datePayment: installment.installmentDate,
-                value: installment.installmentAmount,
-                paymentMethod: installment.paymentChannelAbbreviatedName,
-                creditProductCode: product.creditProductCode,
-              }))
-            : [],
+        (product) => {
+          const installments = product.extraordinaryInstallments;
+
+          if (!Array.isArray(installments)) return [];
+
+          return installments.map((installment) => {
+            const matchingCycle = paymentCycles.find(
+              (cycle) =>
+                cycle.extraordinaryCycleType ===
+                installment.paymentChannelAbbreviatedName,
+            );
+            return {
+              id: `${product.creditProductCode},${installment.installmentDate},${installment.paymentChannelAbbreviatedName}`,
+              datePayment: installment.installmentDate,
+              value: installment.installmentAmount,
+              paymentMethod: installment.paymentChannelAbbreviatedName,
+              creditProductCode: product.creditProductCode,
+              cycleName: matchingCycle
+                ? matchingCycle.extraordinaryCycleType
+                : "",
+              payrollForDeductionAgreementCode:
+                matchingCycle?.payrollForDeductionAgreementCode || "",
+            };
+          });
+        },
       );
+
       const installmentsByUniqueKey = extraordinaryInstallmentsFlat.reduce(
         (
           installmentsAccumulator: Record<
@@ -156,9 +259,10 @@ export const TableExtraordinaryInstallment = (
           const uniqueKey = `${currentInstallment.creditProductCode}_${currentInstallment.datePayment}_${currentInstallment.paymentMethod}`;
 
           if (installmentsAccumulator[uniqueKey]) {
-            installmentsAccumulator[uniqueKey].value =
-              (installmentsAccumulator[uniqueKey].value as number) +
-              (currentInstallment.value as number);
+            const existingValue =
+              (installmentsAccumulator[uniqueKey].value as number) || 0;
+            const newValue = (currentInstallment.value as number) || 0;
+            installmentsAccumulator[uniqueKey].value = existingValue + newValue;
           } else {
             installmentsAccumulator[uniqueKey] = { ...currentInstallment };
           }
@@ -168,203 +272,109 @@ export const TableExtraordinaryInstallment = (
         {},
       );
 
-      const extraordinaryInstallmentsUpdate = Object.values(
-        installmentsByUniqueKey,
-      ).reverse() as TableExtraordinaryInstallmentProps[];
+      const extraordinaryInstallmentsUpdate = (
+        Object.values(
+          installmentsByUniqueKey,
+        ) as TableExtraordinaryInstallmentProps[]
+      ).sort((first, second) => {
+        const dateA = first.datePayment
+          ? new Date(first.datePayment as string).getTime()
+          : 0;
+        const dateB = second.datePayment
+          ? new Date(second.datePayment as string).getTime()
+          : 0;
+        return dateA - dateB;
+      });
 
       setExtraordinaryInstallments(extraordinaryInstallmentsUpdate);
     }
     setLoading(false);
-  }, [prospectData, refreshKey]);
+  }, [prospectData, refreshKey, paymentCycles]);
 
-  const itemIdentifiersForUpdate: IExtraordinaryInstallmentsAddSeries = {
-    creditProductCode: prospectData?.creditProducts[0].creditProductCode || "",
-    extraordinaryInstallments:
-      prospectData?.creditProducts[0]?.extraordinaryInstallments
-        ?.filter((ins) => {
-          const expectedId = `${prospectData?.creditProducts[0].creditProductCode},${ins.installmentDate},${ins.paymentChannelAbbreviatedName}`;
-          return expectedId === selectedDebtor?.id;
-        })
-        ?.map((installment) => ({
-          installmentDate:
-            typeof installment.installmentDate === "string"
-              ? installment.installmentDate
-              : new Date(installment.installmentDate || "").toISOString(),
-          installmentAmount: Number(installment.installmentAmount),
-          paymentChannelAbbreviatedName: String(
-            installment.paymentChannelAbbreviatedName,
-          ),
-        })) || [],
-    creditRequestCode: creditRequestCode || "",
-  };
+  useEffect(() => {
+    if (extraordinary && Array.isArray(extraordinary)) {
+      const sortedExtraordinary = extraordinary.sort((first, second) => {
+        const dateA = first.datePayment
+          ? new Date(first.datePayment as string).getTime()
+          : 0;
+        const dateB = second.datePayment
+          ? new Date(second.datePayment as string).getTime()
+          : 0;
+        return dateA - dateB;
+      });
+      setExtraordinaryInstallments(sortedExtraordinary);
+      setLoading(false);
+    }
+  }, [extraordinary]);
 
-  const handleExtraordinaryInstallment = async (
-    extraordinaryInstallments: IExtraordinaryInstallmentsAddSeries,
-  ) => {
-    try {
-      await removeExtraordinaryInstallment(
-        businessUnitPublicCode || "",
-        extraordinaryInstallments,
-        eventData.token || "",
-      );
-
-      setSentData?.(extraordinaryInstallments);
+  const handleDeleteAction = async () => {
+    if (handleDelete && selectedDebtor.id) {
+      handleDelete(selectedDebtor.id as string);
       setIsOpenModalDelete(false);
-      handleClose?.();
-    } catch (error: unknown) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
+    } else if (service) {
+      try {
+        setIsLoadingDelete(true);
 
-      setErrorMessage(
-        `${messageError.removeExtraordinaryInstallments.description} ${description}`,
-      );
-      setErrorModal(true);
+        await removeExtraordinaryInstallment(
+          businessUnitPublicCode ?? "",
+          itemIdentifiersForUpdate,
+          eventData.token,
+        );
+
+        setSentData?.(
+          itemIdentifiersForUpdate as IExtraordinaryInstallmentsAddSeries,
+        );
+        setIsLoadingDelete(false);
+        setIsOpenModalDelete(false);
+        handleClose?.();
+      } catch (error: unknown) {
+        setIsLoadingDelete(false);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+        setShowErrorModal(true);
+        setMessageError(description);
+      }
     }
   };
+
   return (
-    <Table>
-      <Thead>
-        <Tr>
-          {!loading &&
-            visbleHeaders.map((header) => (
-              <Th key={header.key} align="center">
-                {header.label}
-              </Th>
-            ))}
-          {!loading &&
-            visbleActions &&
-            visbleActions.length > 0 &&
-            visbleActions.map((action) => (
-              <Th key={action.key} action>
-                {action.label}
-              </Th>
-            ))}
-          {loading &&
-            visbleHeaders.map((header) => (
-              <Td key={header.key} align="left" type="custom">
-                <SkeletonLine />
-              </Td>
-            ))}
-          {loading &&
-            visbleActions.map((action) => (
-              <Td key={action.key} type="custom">
-                <SkeletonLine />
-              </Td>
-            ))}
-        </Tr>
-      </Thead>
-      <Tbody>
-        {loading && (
-          <Tr>
-            <Td
-              colSpan={visbleHeaders.length + visbleActions.length}
-              align="center"
-              type="custom"
-            >
-              <SkeletonLine />
-            </Td>
-          </Tr>
-        )}
-        {!loading &&
-          extraordinaryInstallments &&
-          extraordinaryInstallments.length > 0 &&
-          extraordinaryInstallments.map((row, indx) => (
-            <Tr key={indx} zebra={indx % 2 !== 0}>
-              {visbleHeaders.map((header) => (
-                <Td key={header.key} align="left">
-                  {(() => {
-                    if (header.key === "datePayment") {
-                      return formatPrimaryDate(
-                        new Date(row[header.key] as string),
-                      );
-                    }
-                    if (header.mask) {
-                      return header.mask(row[header.key] as string | number);
-                    }
-                    return row[header.key] as React.ReactNode;
-                  })()}
-                </Td>
-              ))}
-              {!availableEditCreditRequest &&
-                visbleActions &&
-                visbleActions.length > 0 &&
-                visbleActions.map((action) => (
-                  <Td key={action.key} type="custom">
-                    <Detail
-                      handleDelete={() => {
-                        setSelectedDebtor(row);
-                        setIsOpenModalDelete(true);
-                      }}
-                    />
-                  </Td>
-                ))}
-            </Tr>
-          ))}
-        {!loading && extraordinaryInstallments.length === 0 && (
-          <Tr>
-            <Td
-              colSpan={visbleHeaders.length + visbleActions.length}
-              align="center"
-              type="custom"
-            >
-              <Text
-                size="large"
-                type="label"
-                appearance="gray"
-                textAlign="center"
-              >
-                {dataTableExtraordinaryInstallmentEnum.noData.i18n[lang]}
-              </Text>
-            </Td>
-          </Tr>
-        )}
-      </Tbody>
-      {extraordinaryInstallments.length > 0 && !loading && (
-        <Tfoot>
-          <Tr border="bottom">
-            <Td
-              colSpan={visbleHeaders.length + visbleActions.length}
-              type="custom"
-              align="center"
-            >
-              <Pagination
-                firstEntryInPage={firstEntryInPage}
-                lastEntryInPage={lastEntryInPage}
-                totalRecords={totalRecords}
-                handleStartPage={handleStartPage}
-                handlePrevPage={handlePrevPage}
-                handleNextPage={handleNextPage}
-                handleEndPage={handleEndPage}
-              />
-            </Td>
-          </Tr>
-        </Tfoot>
-      )}
-      {isOpenModalDelete && (
-        <DeleteModal
-          handleClose={() => setIsOpenModalDelete(false)}
-          handleDelete={() =>
-            handleExtraordinaryInstallment(itemIdentifiersForUpdate)
-          }
-          TextDelete={dataTableExtraordinaryInstallmentEnum.deletion.i18n[lang]}
-          lang={lang}
-        />
-      )}
-      {errorModal && (
-        <ErrorModal
-          isMobile={isMobile}
-          message={errorMessage}
-          handleClose={() => {
-            setErrorModal(false);
-          }}
-        />
-      )}
-    </Table>
+    <>
+      <TableExtraordinaryInstallmentUI
+        loading={loading}
+        visbleHeaders={visbleHeaders}
+        visbleActions={visbleActions}
+        extraordinaryInstallments={extraordinaryInstallments}
+        isMobile={isMobile}
+        isOpenModalDelete={isOpenModalDelete}
+        businessUnitPublicCode={businessUnitPublicCode ?? ""}
+        prospectData={prospectData}
+        showErrorModal={showErrorModal}
+        messageError={messageError}
+        setShowErrorModal={setShowErrorModal}
+        setIsOpenModalDelete={setIsOpenModalDelete}
+        usePagination={paginationProps}
+        setSentData={setSentData ?? (() => {})}
+        handleClose={handleClose}
+        setSelectedDebtor={setSelectedDebtor}
+        setInstallmentState={setInstallmentState}
+        handleDelete={handleDelete}
+        service={service}
+        itemIdentifiersForUpdate={itemIdentifiersForUpdate}
+        handleDeleteAction={handleDeleteAction}
+        installmentState={installmentState}
+        isOpenModalView={isOpenModalView}
+        setIsOpenModalView={setIsOpenModalView}
+        setOpenMenuIndex={setOpenMenuIndex}
+        openMenuIndex={openMenuIndex}
+        isLoadingDelete={isLoadingDelete}
+        lang={lang as EnumType}
+      />
+    </>
   );
 };
