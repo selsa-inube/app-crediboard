@@ -1,6 +1,6 @@
-export const CREDIT_PRODUCT_TEXTS_ENUM = {
+export const CREDIT_PRODUCT_TEXTS = {
   paymentMethod: {
-    code: "Credit_payment_method",
+    code: "Payment_method",
     description: "Payment channel",
     i18n: {
       en: "Payment channel",
@@ -8,7 +8,7 @@ export const CREDIT_PRODUCT_TEXTS_ENUM = {
     },
   },
   loanAmount: {
-    code: "Credit_loan_amount",
+    code: "Loan_amount",
     description: "Loan amount",
     i18n: {
       en: "Loan amount",
@@ -16,7 +16,7 @@ export const CREDIT_PRODUCT_TEXTS_ENUM = {
     },
   },
   interestRate: {
-    code: "Credit_interest_rate",
+    code: "Interest_rate",
     description: "Interest rate",
     i18n: {
       en: "Interest rate",
@@ -24,23 +24,23 @@ export const CREDIT_PRODUCT_TEXTS_ENUM = {
     },
   },
   termMonths: {
-    code: "Credit_term_months",
-    description: "Term in months",
+    code: "Term_months",
+    description: "Term (months)",
     i18n: {
-      en: "Term in months",
+      en: "Term (months)",
       es: "Plazo en meses",
     },
   },
   periodicFee: {
-    code: "Credit_periodic_fee",
-    description: "Periodic installment (K + I)",
+    code: "Periodic fee K+I",
+    description: "Periodic fee K+I",
     i18n: {
-      en: "Periodic installment (K + I)",
+      en: "Periodic fee K+I",
       es: "Cuota periódica K+I",
     },
   },
   paymentCycle: {
-    code: "Credit_payment_cycle",
+    code: "Payment_cycle",
     description: "Payment cycle",
     i18n: {
       en: "Payment cycle",

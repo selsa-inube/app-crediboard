@@ -1,6 +1,6 @@
-export const dataNewCardEnum = {
+export const dataNewCard = {
   add: {
-    code: "NewCard_add",
+    code: "Add_product",
     description: "Add product",
     i18n: {
       en: "Add product",

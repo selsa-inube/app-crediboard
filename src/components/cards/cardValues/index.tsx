@@ -1,7 +1,8 @@
-import { Stack, Icon, Text } from "@inubekit/inubekit";
+import { Stack, Icon, Text, SkeletonLine } from "@inubekit/inubekit";
+
+import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { Container, IconWrapper, ContentWrapper, StyledPrint } from "./styles";
-
 export interface CardValuesProps {
   items: {
     title: string;
@@ -18,7 +19,7 @@ export interface CardValuesProps {
   firstIcon?: React.ReactNode;
   showIcon?: boolean;
   showMiniIcons?: boolean;
-  showSummaryFirstItem?: boolean;
+  isLoading?: boolean;
 }
 
 export function CardValues(props: CardValuesProps) {
@@ -31,18 +32,14 @@ export function CardValues(props: CardValuesProps) {
     handleView = () => {},
     showIcon = true,
     showMiniIcons = true,
-    showSummaryFirstItem = false,
+    isLoading = false,
   } = props;
 
   return (
     <Container $showIcon={showIcon}>
       <ContentWrapper>
         {items.map((item, index) => (
-          <Stack
-            alignItems="center"
-            key={index}
-            gap={showSummaryFirstItem ? "2vw" : "3vw"}
-          >
+          <Stack alignItems="center" key={index}>
             <Stack
               direction="column"
               margin="4px"
@@ -50,20 +47,33 @@ export function CardValues(props: CardValuesProps) {
               gap="2px"
               alignItems={showIcon ? "start" : "center"}
             >
-              <Text
-                size="small"
-                weight="bold"
-                type="body"
-                appearance="gray"
-                padding="0px 0px 4px"
-                ellipsis
-              >
-                {item.title}
-              </Text>
+              <Stack padding="0px 0px 4px">
+                <TruncatedText
+                  text={item.title}
+                  maxLength={27}
+                  size="small"
+                  weight="bold"
+                  type="body"
+                  appearance="gray"
+                />
+              </Stack>
               <Stack gap="8px" alignItems="center">
-                <Text size="large" weight="bold" appearance="dark" type="body">
-                  { Math.trunc(Number(item.amount)).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }) }
-                </Text>
+                {isLoading ? (
+                  <SkeletonLine animated width="100px" />
+                ) : (
+                  <Text
+                    size="large"
+                    weight="bold"
+                    appearance="dark"
+                    type="body"
+                  >
+                    {Math.trunc(Number(item.amount)).toLocaleString("es-CO", {
+                      style: "currency",
+                      currency: "COP",
+                      minimumFractionDigits: 0,
+                    })}
+                  </Text>
+                )}
                 {item.miniIcon && showMiniIcons && (
                   <StyledPrint>
                     <Icon

@@ -6,7 +6,7 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { StyledCreditProductCard, StyledDivider, StyledPrint } from "./styles";
-import { CREDIT_PRODUCT_TEXTS_ENUM } from "./config";
+import { CREDIT_PRODUCT_TEXTS } from "./config";
 import { CreditProductCardProps } from ".";
 
 function CreditProductCardUI(props: CreditProductCardProps) {
@@ -18,16 +18,16 @@ function CreditProductCardUI(props: CreditProductCardProps) {
     termMonths,
     periodicFee,
     schedule,
+    lang,
+    showIcons,
     onEdit,
     onDelete,
-    availableEditCreditRequest,
-    lang,
     canDelete,
     installmentFrequency,
+    availableEditCreditRequest,
   } = props;
-
   return (
-    <StyledCreditProductCard>
+    <StyledCreditProductCard $showIcons={showIcons}>
       <Stack direction="column" height="100%" padding="12px" gap="8px">
         <Stack margin="0px 0px 8px">
           <TruncatedText
@@ -41,7 +41,7 @@ function CreditProductCardUI(props: CreditProductCardProps) {
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.paymentMethod.i18n[lang]}
+            {CREDIT_PRODUCT_TEXTS.paymentMethod.i18n[lang]}
           </Text>
           <TruncatedText
             text={paymentMethod}
@@ -51,27 +51,28 @@ function CreditProductCardUI(props: CreditProductCardProps) {
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.loanAmount.i18n[lang]}
+            {CREDIT_PRODUCT_TEXTS.loanAmount.i18n[lang]}
           </Text>
           <Text>{loanAmount === 0 ? "$ 0" : currencyFormat(loanAmount)}</Text>
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.interestRate.i18n[lang]}
+            {CREDIT_PRODUCT_TEXTS.interestRate.i18n[lang]}
           </Text>
           <Text>
-            {interestRate.toFixed(4)} % {installmentFrequency}
+            {parseFloat(Number(interestRate).toFixed(4))} %{" "}
+            {installmentFrequency}
           </Text>
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.termMonths.i18n[lang]}
+            {CREDIT_PRODUCT_TEXTS.termMonths.i18n[lang]}
           </Text>
-          <Text>{termMonths}</Text>
+          <Text>{Number(Number(termMonths).toFixed(4))}</Text>
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.periodicFee.i18n[lang]}
+            {CREDIT_PRODUCT_TEXTS.periodicFee.i18n[lang]}
           </Text>
           <Text>
             {periodicFee === 0
@@ -81,7 +82,7 @@ function CreditProductCardUI(props: CreditProductCardProps) {
         </Stack>
         <Stack direction="column">
           <Text size="small" appearance="gray" weight="bold">
-            {CREDIT_PRODUCT_TEXTS_ENUM.paymentCycle.i18n[lang]}
+            {CREDIT_PRODUCT_TEXTS.paymentCycle.i18n[lang]}
           </Text>
           <TruncatedText
             text={schedule}
@@ -90,8 +91,8 @@ function CreditProductCardUI(props: CreditProductCardProps) {
           />
         </Stack>
       </Stack>
-      {!availableEditCreditRequest && (
-        <Stack direction="column" padding="0px 12px">
+      <Stack direction="column" padding="0px 12px">
+        {showIcons && !availableEditCreditRequest && (
           <StyledPrint>
             <StyledDivider />
             <Stack gap="8px" justifyContent="flex-end" padding="8px 0px">
@@ -113,8 +114,8 @@ function CreditProductCardUI(props: CreditProductCardProps) {
               )}
             </Stack>
           </StyledPrint>
-        </Stack>
-      )}
+        )}
+      </Stack>
     </StyledCreditProductCard>
   );
 }

@@ -92,19 +92,27 @@ export interface ICreditProduct {
   creditProductCode: string;
   loanAmount: number;
   lineOfCreditAbbreviatedName: string;
-  interestRate: number;
+  installmentFrequency: string;
   loanTerm: number;
-  schedule: string;
   ordinaryInstallmentsForPrincipal: IOrdinaryInstallmentsForPrincipal[];
+  interestRateDueType?: string;
+  selectedRegularPaymentSchedule?: string;
+  interestRate?: number;
+  prospectId?: string;
+  schedule?: string;
+  fixedPoints?: number;
   installmentsForInterest?: IInstallmentsForInterest[];
   extraordinaryInstallments?: IExtraordinaryInstallment[];
   acquiredCashFlows?: IAcquiredCashFlow[];
-  installmentFrequency?: string;
   referenceIndexForVariableInterestRate?: string;
-  fixedPoints?: number;
+  installmentAmount?: number;
+  repaymentStructure?: string;
+  interestRateType?: string;
   modeOfDisbursement?: string[];
 }
-
+export interface IBusinessUnitRuleResponse {
+  value?: string | { from: number; to: number };
+}
 export interface IOutlay {
   date: Date;
   amount: number;
@@ -146,10 +154,18 @@ export interface IProspectId {
 }
 
 export interface IUpdateCreditProduct {
-  creditProductCode: string;
-  interestRate: number;
-  loanTerm: number;
   creditRequestCode: string;
+  creditProductCode: string;
+  interestRate?: number;
+  loanTerm?: number;
+  loanAmount?: number;
+  paymentChannelAbbreviatedName?: string;
+  installmentAmount?: number;
+  firstPaymentDate?: string;
+  interestRateDueType?: string;
+  interestRateType?: string;
+  paymentChannelCyleName?: string;
+  repaymentStructure?: string;
 }
 export interface ILinesOfCreditByMoneyDestination {
   abbreviateName: string;

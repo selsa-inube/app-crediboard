@@ -1,34 +1,39 @@
 import { Text, useMediaQuery } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { useEnum } from "@hooks/useEnum";
+import { EnumType } from "@hooks/useEnum";
 
-import { DeleteDataEnum } from "./config";
+import { DeleteData } from "./config";
 
 export interface IDeleteModalProps {
-  TextDelete: string;
   handleClose: () => void;
-  handleDelete?: (id?: number, borrowerIdentificationNumber?: string) => void;
-  iconBefore?: React.JSX.Element;
-  isSendingData?: boolean;
+  handleDelete?: () => void;
+  TextDelete: string;
+  lang: EnumType;
+  isLoading?: boolean;
 }
 
 export function DeleteModal(props: IDeleteModalProps) {
-  const { handleClose, handleDelete = () => {}, TextDelete, isSendingData } = props;
+  const {
+    handleClose,
+    handleDelete = () => {},
+    TextDelete,
+    lang,
+    isLoading = false,
+  } = props;
 
   const isMobile = useMediaQuery("(max-width:880px)");
-  const { lang } = useEnum();
 
   return (
     <BaseModal
-      title={DeleteDataEnum.title.i18n[lang]}
-      nextButton={DeleteDataEnum.delate.i18n[lang]}
-      backButton={DeleteDataEnum.cancel.i18n[lang]}
+      title={DeleteData.title.i18n[lang]}
+      nextButton={DeleteData.delete.i18n[lang]}
+      backButton={DeleteData.cancel.i18n[lang]}
       handleNext={handleDelete}
       handleClose={handleClose}
       initialDivider={false}
       width={isMobile ? "287px" : "402px"}
-      isSendingData={isSendingData}
+      isLoading={isLoading}
     >
       <Text>{TextDelete}</Text>
     </BaseModal>

@@ -1,14 +1,14 @@
-export const DeleteDataEnum = {
+export const DeleteData = {
   title: {
     code: "Delete_title",
-    description: "Deletion",
+    description: "Delete",
     i18n: {
-      en: "Deletion",
+      en: "Delete",
       es: "Eliminación",
     },
   },
   close: {
-    code: "Delete_close",
+    code: "Close",
     description: "Close",
     i18n: {
       en: "Close",
@@ -16,23 +16,23 @@ export const DeleteDataEnum = {
     },
   },
   data: {
-    code: "Delete_confirmation",
-    description: "Do you really want to delete this product?",
+    code: "Delete_confirmation_message",
+    description: "Delete confirmation message",
     i18n: {
       en: "Do you really want to delete this product?",
       es: "¿Realmente deseas eliminar este producto?",
     },
   },
   cancel: {
-    code: "Delete_cancel",
+    code: "Cancel",
     description: "Cancel",
     i18n: {
       en: "Cancel",
       es: "Cancelar",
     },
   },
-  delate: {
-    code: "Delete_delete",
+  delete: {
+    code: "Delete_action",
     description: "Delete",
     i18n: {
       en: "Delete",

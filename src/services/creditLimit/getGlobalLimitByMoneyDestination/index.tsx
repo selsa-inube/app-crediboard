@@ -3,6 +3,8 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
+
 import { IMaximumCreditLimitByMoneyDestination } from "../types";
 
 export const getGlobalLimitByMoneyDestination = async (
@@ -10,7 +12,8 @@ export const getGlobalLimitByMoneyDestination = async (
   businessManagerCode: string,
   moneyDestination: string,
   clientIdentificationNumber: string,
-  token: string,
+  authorizationToken: string,
+  incomeSources: IIncomeSources,
 ): Promise<IMaximumCreditLimitByMoneyDestination[] | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -18,7 +21,50 @@ export const getGlobalLimitByMoneyDestination = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+      const queryParams = new URLSearchParams();
 
+      if (incomeSources.PeriodicSalary) {
+        queryParams.set(
+          "periodicSalary",
+          incomeSources.PeriodicSalary.toString(),
+        );
+      }
+      if (incomeSources.OtherNonSalaryEmoluments) {
+        queryParams.set(
+          "otherNonSalaryEmoluments",
+          incomeSources.OtherNonSalaryEmoluments.toString(),
+        );
+      }
+      if (incomeSources.PensionAllowances) {
+        queryParams.set(
+          "pensionAllowances",
+          incomeSources.PensionAllowances.toString(),
+        );
+      }
+      if (incomeSources.ProfessionalFees) {
+        queryParams.set(
+          "professionalFees",
+          incomeSources.ProfessionalFees.toString(),
+        );
+      }
+      if (incomeSources.Leases) {
+        queryParams.set("leases", incomeSources.Leases.toString());
+      }
+      if (incomeSources.Dividends) {
+        queryParams.set("dividends", incomeSources.Dividends.toString());
+      }
+      if (incomeSources.FinancialIncome) {
+        queryParams.set(
+          "financialIncome",
+          incomeSources.FinancialIncome.toString(),
+        );
+      }
+      if (incomeSources.PersonalBusinessUtilities) {
+        queryParams.set(
+          "personalBusinessUtilities",
+          incomeSources.PersonalBusinessUtilities.toString(),
+        );
+      }
       const options: RequestInit = {
         method: "GET",
         headers: {
@@ -26,20 +72,22 @@ export const getGlobalLimitByMoneyDestination = async (
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
-          Authorization: token,
+          Authorization: `${authorizationToken}`,
         },
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/${moneyDestination}/${clientIdentificationNumber}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-limits/by-money-destination/${moneyDestination}/${clientIdentificationNumber}?${queryParams.toString()}`,
         options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return null;
+        throw new Error(
+          "No content: No se encontraron datos para los parámetros proporcionados.",
+        );
       }
 
       const data = await res.json();

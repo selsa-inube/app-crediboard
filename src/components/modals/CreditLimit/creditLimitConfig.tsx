@@ -2,65 +2,57 @@ import { Stack, SkeletonLine } from "@inubekit/inubekit";
 
 import { StyledList } from "./styles";
 
-export const creditLimitTextsEnum = {
+export const creditLimitTexts = {
   close: {
-    code: "CreditLimitTexts_close",
-    description: "Close button text",
+    code: "Close",
+    description: "Close",
     i18n: {
       en: "Close",
       es: "Cerrar",
     },
   },
   maxPaymentCapacity: {
-    code: "CreditLimitTexts_maxPaymentCapacity",
-    description: "Maximum payment capacity for vacation credit",
+    code: "Max_payment_capacity_vacation_credit",
+    description: "Max payment capacity for vacation credit",
     i18n: {
-      en: "Max limit for Vacation Credit",
-      es: "Tope máx. para Crédito vacacional",
+      en: "Maximum limit per credit line",
+      es: "Tope máx. por línea de crédito",
     },
   },
   maxReciprocity: {
-    code: "CreditLimitTexts_maxReciprocity",
-    description: "Maximum amount according to reciprocity",
+    code: "Max_amount_by_reciprocity",
+    description: "Max amount by reciprocity",
     i18n: {
-      en: "Max amount according to reciprocity",
+      en: "Max amount by reciprocity",
       es: "Monto máx. según reciprocidad",
     },
   },
   maxDebtFRC: {
-    code: "CreditLimitTexts_maxDebtFRC",
-    description: "Maximum amount according to payment capacity",
+    code: "max_amount_by_payment_capacity",
+    description: "Max amount by payment capacity",
     i18n: {
-      en: "Max amount according to payment capacity",
+      en: "Max amount by payment capacity",
       es: "Monto máx. según capacidad de pago",
     },
   },
   maxIndebtedness: {
-    code: "CreditLimitTexts_maxIndebtedness",
-    description: "Maximum indebtedness by risk analysis",
+    code: "Max_indebtedness_risk_analysis",
+    description: "Max indebtedness by risk analysis",
     i18n: {
       en: "Max indebtedness by risk analysis",
       es: "Endeudamiento máx. x análisis de riesgo",
     },
   },
-  maxAmount: {
-    code: "CreditLimitTexts_maxAmount",
-    description: "Maximum usable amount",
-    i18n: {
-      en: "Maximum usable amount",
-      es: "Monto máximo utilizable",
-    },
-  },
   assignedLimit: {
-    code: "CreditLimitTexts_assignedLimit",
-    description: "Customized maximum amount by business unit",
+    code: "Custom_assigned_limit",
+    description: "Custom assigned limit",
     i18n: {
-      en: "Customized max amount by B.U.",
+      en: "Custom limit assigned by business unit",
       es: "Monto máx. personalizado por U.N.",
     },
   },
   maxUsableLimit: {
-    code: "CreditLimitTexts_maxUsableLimit",
+    code: "Max_usable_limit",
     description: "Maximum usable limit",
     i18n: {
       en: "Maximum usable limit",
@@ -68,7 +60,7 @@ export const creditLimitTextsEnum = {
     },
   },
   maxMount: {
-    code: "CreditLimitTexts_maxMount",
+    code: "Maximum_amount",
     description: "Maximum amount",
     i18n: {
       en: "Maximum amount",
@@ -76,51 +68,54 @@ export const creditLimitTextsEnum = {
     },
   },
   maxUsableQuote: {
-    code: "CreditLimitTexts_maxUsableQuote",
-    description: "Description of maximum usable limit calculation",
+    code: "Max_usable_limit_description",
+    description: "Max usable limit description",
     i18n: {
       en: (
         <>
-          The smallest of the above is your <strong>maximum</strong> usable quota.
+          The lowest of the above is your <strong>maximum</strong> usable limit.
         </>
       ),
       es: (
         <>
-          El menor de los anteriores es su cupo <strong>máximo</strong> utilizable.
+          El menor de los anteriores es su cupo <strong>máximo</strong>{" "}
+          utilizable.
         </>
       ),
     },
   },
   currentPortfolio: {
-    code: "CreditLimitTexts_currentPortfolio",
-    description: "Current portfolio deduction",
+    code: "Current_portfolio",
+    description: "Current portfolio",
     i18n: {
       en: "(-) Current portfolio",
       es: "(-) Cartera vigente",
     },
   },
   availableLimitWithoutGuarantee: {
-    code: "CreditLimitTexts_availableLimitWithoutGuarantee",
+    code: "Available_limit_without_guarantee",
     description: "Available limit without guarantee",
     i18n: {
       en: "Available limit without guarantee",
       es: "Cupo disponible sin garantía",
     },
   },
-  errorTitle: {
-    code: "CreditLimitTexts_errorTitle",
-    description: "Error loading data title",
-    i18n: {
-      en: "Error loading data",
-      es: "Error cargando datos",
+  error: {
+    title: {
+      code: "Credit_limit_error_title",
+      description: "Credit limit error title",
+      i18n: {
+        en: "Error loading data",
+        es: "Error cargando datos",
+      },
     },
-  },
-  errorMessage: {
-    code: "CreditLimitTexts_errorMessage",
-    description: "Error loading data message",
-    i18n: {
-      en: "Could not load data. Please try again later.",
-      es: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
+    message: {
+      code: "Credit_limit_error_message",
+      description: "Credit limit error message",
+      i18n: {
+        en: "The data could not be loaded. Please try again later.",
+        es: "No se pudieron cargar los datos. Intenta nuevamente más tarde.",
+      },
     },
   },
 };

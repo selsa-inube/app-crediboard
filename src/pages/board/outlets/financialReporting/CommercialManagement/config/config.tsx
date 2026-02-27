@@ -11,61 +11,32 @@ import {
 import { IOptions } from "@components/navigation/MenuProspect/types";
 import { EnumType } from "@hooks/useEnum";
 
-export const SummaryTitlesEnum = {
-  requestedAmount: {
-    code: "Summary_requestedAmount",
-    description: "Requested credit amount",
-    i18n: {
-      en: "Requested Amount",
-      es: "Monto solicitado",
-    },
-  },
-  totalConsolidatedAmount: {
-    code: "Summary_totalConsolidatedAmount",
-    description: "Consolidated obligations amount",
-    i18n: {
-      en: "Consolidated Obligations",
-      es: "Obligaciones recogidas",
-    },
-  },
-  deductibleExpenses: {
-    code: "Summary_deductibleExpenses",
-    description: "Deductible expenses",
-    i18n: {
-      en: "Deductible Expenses",
-      es: "Gastos descontables",
-    },
-  },
-  netAmountToDisburse: {
-    code: "Summary_netAmountToDisburse",
-    description: "Net amount to disburse",
-    i18n: {
-      en: "Net to Disburse",
-      es: "Neto a girar",
-    },
-  },
-  totalRegularInstallment: {
-    code: "Summary_totalRegularInstallment",
-    description: "Regular installment amount",
-    i18n: {
-      en: "Regular Installment",
-      es: "Cuota ordinaria",
-    },
-  },
-};
-
-export const SummaryProspectCreditEnum = [
+export const SummaryProspectCredit = [
   {
     item: [
       {
         id: "requestedAmount",
-        title: SummaryTitlesEnum.requestedAmount,
+        title: {
+          code: "Requested_amount",
+          description: "Credit products amount title",
+          i18n: {
+            en: "Credit products amount",
+            es: "Monto productos de crédito",
+          },
+        },
         miniIcon: false,
         operation: "-",
       },
       {
         id: "totalConsolidatedAmount",
-        title: SummaryTitlesEnum.totalConsolidatedAmount,
+        title: {
+          code: "Total_consolidated_amount",
+          description: "Collected obligations title",
+          i18n: {
+            en: "Collected obligations",
+            es: "Obligaciones recogidas",
+          },
+        },
         miniIcon: true,
         icon: <MdOutlineEdit />,
         modal: "edit",
@@ -73,7 +44,14 @@ export const SummaryProspectCreditEnum = [
       },
       {
         id: "deductibleExpenses",
-        title: SummaryTitlesEnum.deductibleExpenses,
+        title: {
+          code: "Deductible_expenses",
+          description: "Deductible expenses title",
+          i18n: {
+            en: "Deductible expenses",
+            es: "Gastos descontables",
+          },
+        },
         miniIcon: true,
         icon: <MdOutlineRemoveRedEye />,
         modal: "view",
@@ -81,14 +59,28 @@ export const SummaryProspectCreditEnum = [
       },
       {
         id: "netAmountToDisburse",
-        title: SummaryTitlesEnum.netAmountToDisburse,
+        title: {
+          code: "Net_amount_to_disburse",
+          description: "Net amount to disburse title",
+          i18n: {
+            en: "Net amount to disburse",
+            es: "Neto a girar",
+          },
+        },
         miniIcon: false,
         operation: "|",
       },
       {
         id: "totalRegularInstallment",
-        title: SummaryTitlesEnum.totalRegularInstallment,
-        miniIcon: true,
+        title: {
+          code: "Total_regular_installment",
+          description: "Monthly ordinary installment title",
+          i18n: {
+            en: "Monthly ordinary installment",
+            es: "Cuota ordinaria mensual",
+          },
+        },
+        miniIcon: false,
         operation: "",
       },
     ],
@@ -96,6 +88,38 @@ export const SummaryProspectCreditEnum = [
   },
 ];
 
+export const privilegeCrediboard = {
+  title: "Información",
+  subtitle: "Funcionalidad no disponible",
+  description: "No tienes privilegios para realizar esta acción.",
+  nextButtonText: "Entendido",
+};
+
+export const tittleOptions = {
+  titleCreditId: "No. Rad.: ",
+  titleDestination: "Destino: ",
+  tittleAmount: "Valor: ",
+  titleDisbursement: "Medios de desembolso",
+  titleCall: "Llamada",
+  titleVideoCall: "Videollamada",
+  titleAddProduct: "Agregar producto",
+  titleExtraPayments: "Pagos extras",
+  titleError: "¡Uy, algo ha salido mal!",
+  descriptionError: "Lamentamos los inconvenientes",
+  deductibleExpensesErrorTitle: "Error al cargar gastos descontables",
+  editProduct: "Editar producto",
+  save: "Guardar",
+  deletedExpensesErrorDescription: "¿Realmente deseas eliminar el producto?",
+  errorDelete: "Error al eliminar el producto credito.",
+  errorReload: "Error al recargar la informacion del prospecto.",
+};
+
+export const paymentCycleMap: Record<string, string> = {
+  Weekly: "Cada 10 días",
+  Biweekly: "Bisemanal",
+  Semimonthly: "Quincenal",
+  Monthly: "Mensual",
+};
 export const incomeOptions = [
   { id: "user1", label: "Camilo Rincón", value: "camilo-rincon" },
   {

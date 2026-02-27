@@ -25,7 +25,7 @@ import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { IAddProduct } from "@services/prospect/addCreditProduct/types";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
-import { IProspect } from "@services/prospect/types";
+import { IProspect, IProspectSummaryById } from "@services/prospect/types";
 import {
   StyledContainerIcon,
   StyledVerticalDivider,
@@ -39,7 +39,6 @@ import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
-
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
 import { updateProspect } from "@services/prospect/updateProspect";
@@ -50,6 +49,7 @@ import { getLinesOfCreditByMoneyDestination } from "@services/prospect/getLinesO
 import { documentClientNumber } from "@utils/documentClientNumber";
 import { addCreditProduct } from "@services/prospect/addCreditProduct";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+import { IAllEnumsResponse } from "@services/enumerators/types";
 
 import { AddProductModal } from "../AddProductModal";
 import { configModal, dataCreditProspectEnum, errorMessage } from "./config";
@@ -58,6 +58,7 @@ import { IIncomeSources } from "./types";
 import { IncomeModal } from "../modals/IncomeModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
 import InfoModal from "../modals/InfoModal";
+import { ICustomerData } from "../AddProductModal/config";
 
 interface ICreditProspectProps {
   borrowersProspect: IProspect | undefined;
@@ -80,6 +81,11 @@ interface ICreditProspectProps {
   >;
   prospectData?: IProspect;
   onProspectUpdate?: (prospect: IProspect) => void;
+  onProspectRefreshData?: () => Promise<void>;
+  generalLoading: boolean;
+  setGeneralLoading: (
+    isLoading: boolean | ((prev: boolean) => boolean),
+  ) => void;
   isPrint?: boolean;
   showPrint?: boolean;
   setRequestValue?: React.Dispatch<
@@ -93,6 +99,8 @@ interface ICreditProspectProps {
   setDataProspect?: React.Dispatch<React.SetStateAction<IProspect[]>>;
   setOpenModal?: React.Dispatch<React.SetStateAction<string | null>> | null;
   openModal?: string | null;
+  showAddProduct?: boolean;
+  customerData: ICustomerData;
 }
 
 export function CreditProspect(props: ICreditProspectProps) {
@@ -121,29 +129,35 @@ export function CreditProspect(props: ICreditProspectProps) {
     setDataProspect,
     availableEditCreditRequest,
     openModal,
+    generalLoading,
+    setGeneralLoading,
     setOpenModal,
     currentModal,
     handleOpenModal,
     handleCloseModal,
+    onProspectRefreshData,
+    showAddProduct = true,
+    customerData,
   } = props;
   const [showShareModal, setShowShareModal] = useState(false);
-
+  const [prospectSummaryData, setProspectSummaryData] =
+    useState<IProspectSummaryById>({} as IProspectSummaryById);
   const [showEditApprovalModal, setShowEditApprovalModal] = useState(false);
   const [editedApprovalObservations, setEditedApprovalObservations] =
     useState("");
   const [messageError, setMessageError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [loadingTasks, setLoadingTasks] = useState(0);
-  const [isAddProductDisabled, setIsAddProductDisabled] = useState(false);
+
+  const [isAddProductDisabled, setIsAddProductDisabled] = useState(true);
   const { addFlag } = useFlag();
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
   const [showMessageSuccessModal, setShowMessageSuccessModal] = useState(false);
   const { disabledButton: editCreditApplication } = useValidateUseCase({
     useCase: getUseCaseValue("editCreditApplication"),
   });
 
   const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
-  const generalLoading = loadingTasks > 0;
+
   useEffect(() => {
     if (creditRequestCode) {
       const foundProspect = mockProspectCredit.find(
@@ -218,18 +232,14 @@ export function CreditProspect(props: ICreditProspectProps) {
     if (!dataProspect) return;
 
     try {
-      const mainBorrower = dataProspect.borrowers?.find(
-        (borrower) => borrower.borrowerType === "MainBorrower",
-      );
-
+      setGeneralLoading(true);
       const lineOfCreditValues = await getLinesOfCreditByMoneyDestination(
         businessUnitPublicCode,
         businessManagerCode,
         dataProspect.moneyDestinationAbbreviatedName,
-        mainBorrower?.borrowerIdentificationNumber || "",
+        customerData.clientIdinteficationNumber,
         eventData.token,
       );
-
       if (Array.isArray(lineOfCreditValues)) {
         setIsAddProductDisabled(
           lineOfCreditValues.length === dataProspect.creditProducts.length,
@@ -243,15 +253,16 @@ export function CreditProspect(props: ICreditProspectProps) {
       };
       const code = err?.data?.code ? `[${err.data.code}] ` : "";
       const description = code + err?.message + (err?.data?.description || "");
-
       setShowErrorModal(true);
       setMessageError(description);
+    } finally {
+      setGeneralLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
+    dataProspect.moneyDestinationAbbreviatedName,
     dataProspect,
-    businessManagerCode,
-    eventData.token,
   ]);
 
   useEffect(() => {
@@ -267,6 +278,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     };
 
     try {
+      setGeneralLoading(true);
       await updateProspect(
         businessUnitPublicCode,
         businessManagerCode,
@@ -304,6 +316,8 @@ export function CreditProspect(props: ICreditProspectProps) {
     } catch (error) {
       setShowErrorModal(true);
       setMessageError(dataCreditProspectEnum.errorCredit.i18n[lang]);
+    } finally {
+      setGeneralLoading(false);
     }
   };
 
@@ -349,26 +363,16 @@ export function CreditProspect(props: ICreditProspectProps) {
       handleCloseModal();
       setShowMessageSuccessModal(true);
     } catch (error) {
-      setGeneralLoading(false);
       setMessageError(`${errorMessage.addCreditProduct.description}`);
       setShowErrorModal(true);
+    } finally {
+      setGeneralLoading(false);
     }
   };
 
   const handlePdfGeneration = () => {
     print();
   };
-
-  const setGeneralLoading = useCallback(
-    (isLoading: boolean | ((prev: boolean) => boolean)) => {
-      setLoadingTasks((prev) => {
-        const isNowLoading =
-          typeof isLoading === "function" ? isLoading(prev > 0) : isLoading;
-        return isNowLoading ? prev + 1 : Math.max(0, prev - 1);
-      });
-    },
-    [],
-  );
 
   const borrower = dataProspect?.borrowers?.[0];
 
@@ -399,7 +403,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       {!isMobile && (
         <StyledPrint>
           <Stack gap="10px" justifyContent="end" alignItems="center">
-            {!isAddProductDisabled && (
+            {showAddProduct && !isAddProductDisabled && !generalLoading && (
               <Button
                 type="button"
                 appearance="primary"
@@ -418,9 +422,9 @@ export function CreditProspect(props: ICreditProspectProps) {
                 {dataCreditProspectEnum.addProduct.i18n[lang]}
               </Button>
             )}
-            
+
             {editCreditApplication ||
-              (availableEditCreditRequest && (
+              (availableEditCreditRequest && !isAddProductDisabled && (
                 <Icon
                   icon={<MdOutlineInfo />}
                   appearance="primary"
@@ -494,18 +498,24 @@ export function CreditProspect(props: ICreditProspectProps) {
       <StyledPrintCardProspect>
         <Stack direction="column">
           <CardCommercialManagement
-            id={creditRequestCode!}
+            id={dataProspect?.prospectId || ""}
             dataRef={dataCommercialManagementRef}
-            moneyDestination={dataProspect?.moneyDestinationAbbreviatedName}
-            businessManagerCode={businessManagerCode}
-            clientIdentificationNumber={
-              dataMaximumCreditLimitService.identificationDocumentNumber
-            }
             onClick={() => handleOpenModal("editProductModal")}
             prospectData={prospectData || undefined}
             onProspectUpdate={onProspectUpdate}
+            prospectSummaryData={prospectSummaryData}
+            setProspectSummaryData={setProspectSummaryData}
+            setShowMessageSuccessModal={setShowMessageSuccessModal}
+            onProspectRefreshData={onProspectRefreshData}
+            showAddProduct={showAddProduct}
             availableEditCreditRequest={availableEditCreditRequest}
-            canAddProduct={isAddProductDisabled}
+            lang={lang}
+            enums={enums as IAllEnumsResponse}
+            fetchProspectData={onProspectRefreshData}
+            disableAddProduct={isAddProductDisabled}
+            setGeneralLoading={setGeneralLoading}
+            generalLoading={generalLoading}
+            creditRequestCode={creditRequestCode}
           />
         </Stack>
       </StyledPrintCardProspect>
