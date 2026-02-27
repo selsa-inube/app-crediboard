@@ -19,3 +19,12 @@ export type MappedRequirements = {
   DOCUMENT: Record<string, RequirementStatus>;
   HUMAN_VALIDATION: Record<string, RequirementStatus>;
 };
+export enum EUpdateMethod {
+  Manual = "Manual",
+  Automatic = "Automatic",
+}
+
+export interface ICreditRiskBureauUpdateMethod {
+  bureauName: string;
+  updateCreditScoreMethod: EUpdateMethod;
+}
