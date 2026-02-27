@@ -343,23 +343,35 @@ function ToDo(props: ToDoProps) {
     }
   };
 
+  const isRepresentative = () => {
+    const currentUserId = eventData?.user?.identificationDocumentNumber;
+
+    if (approvalsEntries.length > 0) {
+      return approvalsEntries.some(
+        (approval) =>
+          approval.identificationNumber === currentUserId &&
+          approval.concept !== "Sin concepto",
+      );
+    } else {
+      return true;
+    }
+  };
   let userIdentificationNumber =
     eventData?.user?.identificationDocumentNumber || "";
 
   if (isIndividualConceptOfAproval()) {
-    if (isRepresentativeButNotApprover()) {
+    if (isRepresentativeButNotApprover() || isRepresentative()) {
       const matchedEntry = approvalsEntries.find(
-        (entry) =>
-          String(entry.id) === selectedRepresentative ||
-          String(entry.name) === selectedRepresentative,
+        (entry) => String(entry.id) === selectedRepresentative,
       );
-      userIdentificationNumber = String(
-        matchedEntry?.identificationNumber || selectedRepresentative || "",
-      );
+      userIdentificationNumber = String(matchedEntry?.identificationNumber);
     }
   }
   const handleSend = () => {
-    if (isIndividualConceptOfAproval() && isRepresentativeButNotApprover()) {
+    if (
+      isIndividualConceptOfAproval() &&
+      (isRepresentativeButNotApprover() || isRepresentative())
+    ) {
       setIsModalConfirm(true);
     } else {
       setIsModalOpen(true);
@@ -535,7 +547,7 @@ function ToDo(props: ToDoProps) {
                     type="submit"
                     fullwidth={isMobile}
                     spacing="compact"
-                    disabled={!hasPermitSend || !decisionValue.decision}
+                    disabled={!hasPermitSend}
                   >
                     {button?.label || txtLabelsEnum.buttonText.i18n[lang]}
                   </Button>
