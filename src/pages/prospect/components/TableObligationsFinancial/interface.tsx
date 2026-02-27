@@ -424,6 +424,7 @@ export const TableFinancialObligationsUI = ({
             setShowDeleteModal(false);
           }}
           TextDelete={dataReportEnum.content.i18n[lang]}
+          lang={lang}
         />
       )}
       {isModalOpen && (

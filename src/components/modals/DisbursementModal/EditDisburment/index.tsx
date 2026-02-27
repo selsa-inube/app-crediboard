@@ -107,7 +107,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
         );
         setInitialValues({
           ...initialValues,
-          amount: data.netAmountToDisburse,
+          amount: (data as IProspectSummaryById).netAmountToDisburse || 0,
         });
       } finally {
         validation;

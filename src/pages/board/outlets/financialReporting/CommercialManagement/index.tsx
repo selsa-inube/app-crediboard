@@ -56,6 +56,7 @@ import { getPropertyValue } from "@utils/mappingData/mappings";
 import { IProspectSummaryById } from "@services/prospect/types";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { useEnum } from "@hooks/useEnum";
+import { documentClientNumber } from "@utils/documentClientNumber";
 
 import { titlesModalEnum } from "../ToDo/config";
 import { errorMessagesEnum } from "../config";
@@ -95,6 +96,11 @@ interface ComercialManagementProps {
   isPrint?: boolean;
   hideContactIcons?: boolean;
   requestValue?: IPaymentChannel[];
+  fetchProspectData: () => Promise<void>;
+  setGeneralLoading: (
+    isLoading: boolean | ((prev: boolean) => boolean),
+  ) => void;
+  generalLoading: boolean;
 }
 
 export const ComercialManagement = (props: ComercialManagementProps) => {
@@ -107,12 +113,15 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     hideContactIcons,
     prospectData,
     generateAndSharePdf,
+    generalLoading,
+    setGeneralLoading,
     sentData,
     setSentData,
     setRequestValue,
     errorGetProspects,
     setErrorModal,
     setErrorMessage,
+    fetchProspectData,
   } = props;
 
   const [showMenu, setShowMenu] = useState(false);
@@ -138,7 +147,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [error, setError] = useState(false);
-
   const [form, setForm] = useState({
     borrower: "",
     monthlySalary: 0,
@@ -717,15 +725,19 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   )}
                   <StyledCollapseIcon
                     $collapse={collapse}
-                    onClick={handleCollapse}
+                    onClick={!loading ? handleCollapse : undefined}
                   >
                     <StyledPrint>
-                      <Icon
-                        icon={<MdOutlineChevronRight />}
-                        appearance="primary"
-                        size={"26px"}
-                        cursorHover
-                      />
+                      {loading ? (
+                        <SkeletonLine width="26px" height="26px" animated />
+                      ) : (
+                        <Icon
+                          icon={<MdOutlineChevronRight />}
+                          appearance="primary"
+                          size={"26px"}
+                          cursorHover
+                        />
+                      )}
                     </StyledPrint>
                   </StyledCollapseIcon>
                 </Stack>
@@ -902,6 +914,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                   isMobile={isMobile}
                   prospectData={localProspectData}
                   businessManagerCode={businessManagerCode}
+                  customerData={documentClientNumber(dataProspect[0])}
                   showPrint
                   showMenu={() => setShowMenu(false)}
                   handleChange={handleChangeIncome}
@@ -925,6 +938,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                     setLocalProspectData(prospect);
                     setRefreshKey((prev) => prev + 1);
                   }}
+                  onProspectRefreshData={fetchProspectData}
+                  generalLoading={generalLoading}
+                  setGeneralLoading={setGeneralLoading}
                 />
               )}
             </Stack>
@@ -945,6 +961,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 incomeData={incomeData}
                 moneyDestination={data.moneyDestinationAbreviatedName}
                 setRequestValue={setRequestValue}
+                userAccount={userAccount}
               />
             )}
             {currentModal === "IncomeModal" && (

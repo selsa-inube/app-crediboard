@@ -1,64 +1,39 @@
-/* export const deductibleExpenses = {
-  deductibleExpenses: "Gastos descontables",
-  close: "Cerrar",
-  loading: "Cargando...",
-  totalExpenses: "Total",
-  BondValue: "Fianza",
-  Interest: "Intereses de ajuste al ciclo (I.A.C)",
-  noData: "No se han encontraron gastos descontables.",
-}; */
-
-export const deductibleExpensesEnum = {
+export const deductibleExpenses = {
   deductibleExpenses: {
-    code: "DeductibleExpenses_deductibleExpenses",
+    code: "Deductible_expenses_label",
     description: "Label for deductible expenses section",
-    i18n: {
-      en: "Deductible expenses",
-      es: "Gastos descontables",
-    },
+    i18n: { en: "Deductible expenses", es: "Gastos descontables" },
   },
   close: {
-    code: "DeductibleExpenses_close",
-    description: "Label for close action",
-    i18n: {
-      en: "Close",
-      es: "Cerrar",
-    },
+    code: "Deductible_expenses_close",
+    description: "Close button label",
+    i18n: { en: "Close", es: "Cerrar" },
   },
   loading: {
-    code: "DeductibleExpenses_loading",
-    description: "Label displayed while loading data",
-    i18n: {
-      en: "Loading...",
-      es: "Cargando...",
-    },
+    code: "Deductible_expenses_loading",
+    description: "Loading label when fetching data",
+    i18n: { en: "Loading...", es: "Cargando..." },
   },
   totalExpenses: {
-    code: "DeductibleExpenses_totalExpenses",
+    code: "Deductible_expenses_total",
     description: "Label for total expenses",
-    i18n: {
-      en: "Total",
-      es: "Total",
-    },
+    i18n: { en: "Total", es: "Total" },
   },
   BondValue: {
-    code: "DeductibleExpenses_BondValue",
+    code: "Deductible_expenses_bondValue",
     description: "Label for bond value",
-    i18n: {
-      en: "Bond",
-      es: "Fianza",
-    },
+    i18n: { en: "Bond value", es: "Fianza" },
   },
   Interest: {
-    code: "DeductibleExpenses_Interest",
-    description: "Label for adjustment interest",
+    code: "Deductible_expenses_interest",
+    description: "Label for interest adjustment",
     i18n: {
       en: "Cycle adjustment interest (I.A.C)",
       es: "Intereses de ajuste al ciclo (I.A.C)",
     },
   },
   noData: {
-    code: "DeductibleExpenses_noData",
+    code: "Deductible_expenses_noData",
     description: "Message when no deductible expenses are found",
     i18n: {
       en: "No deductible expenses found.",

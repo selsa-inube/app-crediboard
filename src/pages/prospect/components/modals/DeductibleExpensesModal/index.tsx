@@ -3,21 +3,21 @@ import { SkeletonLine, Stack, Text, Divider } from "@inubekit/inubekit";
 import { currencyFormat } from "@utils/formatData/currency";
 import { BaseModal } from "@components/modals/baseModal";
 import { Fieldset } from "@components/data/Fieldset";
-import { useEnum } from "@hooks/useEnum";
+import { EnumType } from "@hooks/useEnum";
 
-import { deductibleExpensesEnum } from "./config";
 import { StyledContainer } from "./styles";
+import { deductibleExpenses } from "./config";
 
 export interface DeductibleExpensesModalProps {
   initialValues: { expenseName: string; expenseValue: number }[];
   loading: boolean;
   isMobile: boolean;
+  lang: EnumType;
   handleClose: () => void;
 }
 
 export function DeductibleExpensesModal(props: DeductibleExpensesModalProps) {
-  const { handleClose, initialValues, isMobile, loading } = props;
-  const { lang } = useEnum();
+  const { handleClose, initialValues, isMobile, loading, lang } = props;
 
   const calculateTotalExpenses = () => {
     return initialValues.reduce((acc, item) => acc + item.expenseValue, 0);
@@ -26,15 +26,15 @@ export function DeductibleExpensesModal(props: DeductibleExpensesModalProps) {
   const deductibleExpensedAmount = initialValues.length < 5;
 
   const expenseTranslations: Record<string, string> = {
-    "Bond value": deductibleExpensesEnum.BondValue.i18n[lang],
+    "Bond value": deductibleExpenses.BondValue.i18n[lang],
     "Interest for cycle adjustment in disbursement":
-      deductibleExpensesEnum.Interest.i18n[lang],
+      deductibleExpenses.Interest.i18n[lang],
   };
 
   return (
     <BaseModal
-      title={deductibleExpensesEnum.deductibleExpenses.i18n[lang]}
-      nextButton={deductibleExpensesEnum.close.i18n[lang]}
+      title={deductibleExpenses.deductibleExpenses.i18n[lang]}
+      nextButton={deductibleExpenses.close.i18n[lang]}
       handleNext={handleClose}
       handleClose={handleClose}
       width={!isMobile ? "540px" : "290px"}
@@ -47,9 +47,7 @@ export function DeductibleExpensesModal(props: DeductibleExpensesModalProps) {
       >
         {initialValues.length > 0 ? (
           <>
-            <Fieldset
-              borderColor="none"
-            >
+            <Fieldset>
               <StyledContainer>
                 <Stack
                   direction="column"
@@ -92,7 +90,7 @@ export function DeductibleExpensesModal(props: DeductibleExpensesModalProps) {
             <Stack direction="column" justifyContent="space-between" gap="12px">
               <Stack justifyContent="space-between">
                 <Text type="body" weight="bold" size="medium">
-                  {deductibleExpensesEnum.totalExpenses.i18n[lang]}
+                  {deductibleExpenses.totalExpenses.i18n[lang]}
                 </Text>
                 <Stack alignItems="center">
                   <Text
@@ -116,7 +114,7 @@ export function DeductibleExpensesModal(props: DeductibleExpensesModalProps) {
           </>
         ) : (
           <Stack margin="auto">
-            <Text>{deductibleExpensesEnum.noData.i18n[lang]}</Text>
+            <Text>{deductibleExpenses.noData.i18n[lang]}</Text>
           </Stack>
         )}
       </Stack>

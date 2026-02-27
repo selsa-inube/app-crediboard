@@ -102,15 +102,15 @@ export function IncomeBorrowersModal(props: IIncomeBorrowersModalProps) {
             {borrowerOptions && borrowerOptions.length === 1 ? (
               <CardGray
                 isMobile={isMobile}
-                label="borrower"
+                label={dataCreditProspectEnum.borrower.i18n[lang]}
                 placeHolder={borrowerOptions[selectedIndex]?.value}
                 apparencePlaceHolder="gray"
               />
             ) : (
               <Select
-                label="borrower"
+                label={dataCreditProspectEnum.borrower.i18n[lang]}
                 id="borrower"
-                name="borrower"
+                name={dataCreditProspectEnum.borrower.i18n[lang]}
                 options={borrowerOptions}
                 value={borrowerOptions[selectedIndex]?.value}
                 onChange={handleChange}

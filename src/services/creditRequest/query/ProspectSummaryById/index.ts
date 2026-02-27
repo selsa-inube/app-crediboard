@@ -10,8 +10,8 @@ const getSearchProspectSummaryById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   creditRequestCode: string,
-  token: string
-): Promise<IProspectSummaryById> => {
+  token: string,
+): Promise<IProspectSummaryById | []> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -33,13 +33,13 @@ const getSearchProspectSummaryById = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay resumen de montos disponibles.");
+        return [];
       }
 
       const data = await res.json();
@@ -61,14 +61,14 @@ const getSearchProspectSummaryById = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo traer el resumen de montos"
+          "Todos los intentos fallaron. No se pudo traer el resumen de montos",
         );
       }
     }
   }
 
   throw new Error(
-    "No se pudo obtener el resumen de montos después de varios intentos."
+    "No se pudo obtener el resumen de montos después de varios intentos.",
   );
 };
 

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import {
   MdOutlineVisibility,
   MdInfoOutline,
@@ -17,12 +17,13 @@ import { BaseModal } from "@components/modals/baseModal";
 import { currencyFormat } from "@utils/formatData/currency";
 import { getGlobalCreditLimitByLineOfCredit } from "@services/creditLimit/getGlobalCreditLimitByLineOfCredit";
 import { IMaximumCreditLimitByLineOfCredit } from "@services/creditLimit/types";
-import { EnumType } from "@hooks/useEnum";
+import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { AppContext } from "@context/AppContext";
+import { EnumType } from "@hooks/useEnum";
 
-import { creditLimitTextsEnum } from "./creditLimitConfig";
+import { creditLimitTexts, renderSkeletons } from "./creditLimitConfig";
 import { StyledList } from "./styles";
-import { Skeletons } from "./skeletons";
+import { analysisLabel } from "../payCapacityModal/config";
 
 export interface ICreditLimitProps {
   title: string;
@@ -30,6 +31,8 @@ export interface ICreditLimitProps {
   businessManagerCode: string;
   clientIdentificationNumber: string;
   lang: EnumType;
+  creditLine: string;
+  incomeData: IIncomeSources;
   loading?: boolean;
   handleClose: () => void;
   onOpenMaxLimitModal?: () => void;
@@ -44,19 +47,21 @@ export const CreditLimit = (props: ICreditLimitProps) => {
     businessUnitPublicCode,
     businessManagerCode,
     clientIdentificationNumber,
+    lang,
+    creditLine,
+    incomeData,
     loading,
     handleClose,
     onOpenMaxLimitModal,
     onOpenPaymentCapacityModal,
     onOpenReciprocityModal,
     onOpenFrcModal,
-    lang,
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
+  const { eventData } = useContext(AppContext);
 
   const [error, setError] = useState(false);
-  const { eventData } = useContext(AppContext);
   const [internalLoading, setInternalLoading] = useState(true);
   const [dataMaximumCreditLimit, setDataMaximumCreditLimit] = useState<
     IMaximumCreditLimitByLineOfCredit[]
@@ -66,13 +71,15 @@ export const CreditLimit = (props: ICreditLimitProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setInternalLoading(true);
       try {
-        setInternalLoading(true);
         const data = await getGlobalCreditLimitByLineOfCredit(
           businessUnitPublicCode,
           businessManagerCode,
           clientIdentificationNumber,
           eventData.token,
+          creditLine,
+          incomeData as IIncomeSources,
         );
 
         if (data) {
@@ -86,12 +93,8 @@ export const CreditLimit = (props: ICreditLimitProps) => {
     };
 
     fetchData();
-  }, [
-    businessUnitPublicCode,
-    businessManagerCode,
-    clientIdentificationNumber,
-    eventData.token,
-  ]);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, businessManagerCode, clientIdentificationNumber]);
 
   const limits = useMemo(() => {
     const map: Record<string, number> = {};
@@ -105,6 +108,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
       maxCreditLimit: map["MaxCreditLimit"],
       reciprocity: map["ReciprocityBasedCreditLimit"],
       paymentCapacity: map["PaymentCapacityBasedCreditLimit"],
+      regulatoryLimit: map["LineOfCreditRegulationBasedCreditLimit"],
       riskAnalysis: map["RiskAnalysisBasedCreditLimit"],
       personalized: map["Personalized"],
     };
@@ -114,10 +118,11 @@ export const CreditLimit = (props: ICreditLimitProps) => {
     const validValues = [
       limits.maxCreditLimit,
       limits.reciprocity,
+      limits.regulatoryLimit,
       limits.paymentCapacity,
       limits.riskAnalysis,
       limits.personalized,
-    ].filter((value): value is number => value !== undefined);
+    ].filter((val): val is number => val !== undefined);
 
     if (validValues.length === 0) return 0;
     return Math.min(...validValues);
@@ -126,51 +131,44 @@ export const CreditLimit = (props: ICreditLimitProps) => {
   return (
     <BaseModal
       title={title}
-      nextButton={creditLimitTextsEnum.close.i18n[lang]}
+      nextButton={creditLimitTexts.close.i18n[lang]}
       handleNext={handleClose}
-      width={isMobile ? "280px" : "550px"}
-      height={isMobile ? "600px" : "497px"}
+      internalWidth={isMobile ? "280px" : "550px"}
+      height={isMobile ? "auto" : "477px"}
       handleBack={handleClose}
-      finalDivider={true}
+      initialDivider={false}
+      gap="10px"
     >
+      <Text
+        type="body"
+        size="medium"
+        appearance="gray"
+        cursorHover={false}
+        weight="normal"
+      >
+        {`${analysisLabel.i18n[lang]} ${creditLine}`}
+      </Text>
+      <Stack margin="10px 0 20px 0">
+        <Divider />
+      </Stack>
       {error ? (
-        <Stack
-          direction="column"
-          alignItems="center"
-          height={isMobile ? "auto" : "216px"}
-          justifyContent="center"
-          alignContent="center"
-        >
+        <Stack direction="column" alignItems="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">
-            {creditLimitTextsEnum.errorTitle.i18n[lang]}
+            {creditLimitTexts.error.title.i18n[lang]}
           </Text>
           <Text size="small" appearance="dark" textAlign="center">
-            {creditLimitTextsEnum.errorMessage.i18n[lang]}
+            {creditLimitTexts.error.message.i18n[lang]}
           </Text>
         </Stack>
       ) : (
-        <Stack
-          direction="column"
-          gap="24px"
-          height={isMobile ? "400px" : "330px"}
-        >
+        <Stack direction="column" gap="24px" height="310px">
           {isLoading ? (
-            <StyledList>
-              <Stack direction="column" gap="12px" height="160px">
-                {Array.from({ length: 5 }).map((__, index) => (
-                  <Skeletons index={index} />
-                ))}
-              </Stack>
-            </StyledList>
+            renderSkeletons()
           ) : (
             <StyledList>
-              <Stack
-                direction="column"
-                gap="12px"
-                height={isMobile ? "250px" : "170px"}
-              >
-                {limits.maxCreditLimit !== undefined && (
+              <Stack direction="column" gap="12px" height="160px">
+                {limits.regulatoryLimit !== undefined && (
                   <li>
                     <Stack justifyContent="space-between">
                       <Text
@@ -179,18 +177,14 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.maxPaymentCapacity.i18n[lang]}
+                        {creditLimitTexts.maxPaymentCapacity.i18n[lang]}
                       </Text>
 
                       <Stack alignItems="center">
                         <Text appearance="success">$</Text>
-                        {loading ? (
-                          <SkeletonLine width="70px" animated={true} />
-                        ) : (
-                          <Text type="body" size="medium" appearance="dark">
-                            {currencyFormat(limits.maxCreditLimit, false)}
-                          </Text>
-                        )}
+                        <Text type="body" size="medium" appearance="dark">
+                          {currencyFormat(limits.regulatoryLimit || 0, false)}
+                        </Text>
                         <Stack margin="0px 0px 0px 5px">
                           <Icon
                             appearance="primary"
@@ -216,17 +210,13 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.maxReciprocity.i18n[lang]}
+                        {creditLimitTexts.maxReciprocity.i18n[lang]}
                       </Text>
                       <Stack alignItems="center">
                         <Text appearance="success">$</Text>
-                        {loading ? (
-                          <SkeletonLine width="70px" animated={true} />
-                        ) : (
-                          <Text type="body" size="medium" appearance="dark">
-                            {currencyFormat(limits.reciprocity, false)}
-                          </Text>
-                        )}
+                        <Text type="body" size="medium" appearance="dark">
+                          {currencyFormat(limits.reciprocity || 0, false)}
+                        </Text>
                         <Stack margin="0px 0px 0px 5px">
                           <Icon
                             appearance="primary"
@@ -243,6 +233,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                     </Stack>
                   </li>
                 )}
+
                 {limits.paymentCapacity !== undefined && (
                   <li>
                     <Stack justifyContent="space-between">
@@ -252,17 +243,13 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.maxDebtFRC.i18n[lang]}
+                        {creditLimitTexts.maxDebtFRC.i18n[lang]}
                       </Text>
                       <Stack alignItems="center">
                         <Text appearance="success">$</Text>
-                        {loading ? (
-                          <SkeletonLine width="70px" animated={true} />
-                        ) : (
-                          <Text type="body" size="medium" appearance="dark">
-                            {currencyFormat(limits.paymentCapacity, false)}
-                          </Text>
-                        )}
+                        <Text type="body" size="medium" appearance="dark">
+                          {currencyFormat(limits.paymentCapacity || 0, false)}
+                        </Text>
                         <Stack margin="0px 0px 0px 5px">
                           <Icon
                             appearance="primary"
@@ -289,17 +276,13 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.maxIndebtedness.i18n[lang]}
+                        {creditLimitTexts.maxIndebtedness.i18n[lang]}
                       </Text>
                       <Stack alignItems="center">
                         <Text appearance="success">$</Text>
-                        {loading ? (
-                          <SkeletonLine width="70px" animated={true} />
-                        ) : (
-                          <Text type="body" size="medium" appearance="dark">
-                            {currencyFormat(limits.riskAnalysis, false)}
-                          </Text>
-                        )}
+                        <Text type="body" size="medium" appearance="dark">
+                          {currencyFormat(limits.riskAnalysis || 0, false)}
+                        </Text>
                         <Stack margin="0px 0px 0px 5px">
                           <Icon
                             appearance="primary"
@@ -325,22 +308,18 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                         weight="bold"
                         type="label"
                       >
-                        {creditLimitTextsEnum.assignedLimit.i18n[lang]}
+                        {creditLimitTexts.assignedLimit.i18n[lang]}
                       </Text>
                       <Stack alignItems="center" gap="4px">
                         <Text appearance="success">$</Text>
-                        {loading ? (
-                          <SkeletonLine width="70px" animated={true} />
-                        ) : (
-                          <Text
-                            weight="bold"
-                            type="body"
-                            size="medium"
-                            appearance="dark"
-                          >
-                            {currencyFormat(limits.personalized, false)}
-                          </Text>
-                        )}
+                        <Text
+                          weight="bold"
+                          type="body"
+                          size="medium"
+                          appearance="dark"
+                        >
+                          {currencyFormat(limits.personalized || 0, false)}
+                        </Text>
                       </Stack>
                     </Stack>
                   </li>
@@ -369,7 +348,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                   spacing="narrow"
                 />
                 <Text margin="0px 5px" size="small">
-                  {creditLimitTextsEnum.maxUsableQuote.i18n[lang]}
+                  {creditLimitTexts.maxUsableQuote.i18n[lang]}
                 </Text>
               </Stack>
               <Stack direction="column" alignItems="center">
@@ -382,7 +361,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                   {currencyFormat(usableQuota, true)}
                 </Text>
                 <Text type="body" size="small">
-                  {creditLimitTextsEnum.maxMount.i18n[lang]}
+                  {creditLimitTexts.maxMount.i18n[lang] || 0}
                 </Text>
               </Stack>
             </>

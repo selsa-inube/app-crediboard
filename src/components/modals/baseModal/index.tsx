@@ -44,6 +44,7 @@ export interface IBaseModalProps {
   marginTop?: string;
   marginBottom?: string;
   isLoading?: boolean;
+  gap?: string;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -73,6 +74,7 @@ export function BaseModal(props: IBaseModalProps) {
     isLoading = false,
     marginBottom,
     marginTop,
+    gap = "24px",
   } = props;
 
   const { lang } = useEnum();
@@ -96,7 +98,7 @@ export function BaseModal(props: IBaseModalProps) {
         <Stack
           direction="column"
           padding="24px"
-          gap="24px"
+          gap={gap}
           width={internalWidth || "auto"}
           height={height}
         >

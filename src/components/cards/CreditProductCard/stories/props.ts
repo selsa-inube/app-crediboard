@@ -26,7 +26,7 @@ const props: Partial<ArgTypes<CreditProductCardProps>> = {
   },
   periodicFee: {
     control: "number",
-    description: "Periodic loan amount including both principal and interest.",
+    description: "Periodic fee including both principal and interest.",
   },
   schedule: {
     control: "text",
