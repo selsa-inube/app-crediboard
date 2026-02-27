@@ -71,7 +71,8 @@ function ToDo(props: ToDoProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalInfo, setIsModalInfo] = useState(false);
   const [isModalConfirm, setIsModalConfirm] = useState(false);
-  const [hasPermitSend, setHasPermitSend] = useState<boolean>(false);
+  const [isAuthorizedToTakeDecision, setIsAuthorizedToTakeDecision] =
+    useState<boolean>(false);
   const [representablePersons, setRepresentablePersons] = useState<string[]>(
     [],
   );
@@ -126,7 +127,7 @@ function ToDo(props: ToDoProps) {
           const persons = response?.approvalBoardRepresentablePersons || [];
           setRepresentablePersons(persons);
 
-          if (persons.length === 1) {
+          if (persons.length >= 1) {
             setSelectedRepresentative(persons[0]);
           }
         } catch (error) {
@@ -323,7 +324,7 @@ function ToDo(props: ToDoProps) {
     handleToggleStaffModal();
   };
 
-  const isIndividualConceptOfAproval = () => {
+  const isCreditRequestInIndividualConceptOnApproval = () => {
     {
       return (
         requests?.creditRequestStateAbbreviatedName ===
@@ -343,23 +344,50 @@ function ToDo(props: ToDoProps) {
     }
   };
 
+  const isCurrentUserApprover = () => {
+    const currentUserId = eventData?.user?.identificationDocumentNumber;
+
+    if (approvalsEntries.length > 0) {
+      return approvalsEntries.some(
+        (approval) => approval.identificationNumber === currentUserId,
+      );
+    } else {
+      return true;
+    }
+  };
+
+  const isNoLongerResponsibleForApproval = () => {
+    const currentUserId = eventData?.user?.identificationDocumentNumber;
+
+    if (approvalsEntries.length > 0) {
+      return approvalsEntries.some(
+        (approval) =>
+          approval.identificationNumber === currentUserId &&
+          approval.concept !== "Sin concepto",
+      );
+    } else {
+      return true;
+    }
+  };
   let userIdentificationNumber =
     eventData?.user?.identificationDocumentNumber || "";
 
-  if (isIndividualConceptOfAproval()) {
-    if (isRepresentativeButNotApprover()) {
+  if (isCreditRequestInIndividualConceptOnApproval()) {
+    if (
+      isRepresentativeButNotApprover() ||
+      isNoLongerResponsibleForApproval()
+    ) {
       const matchedEntry = approvalsEntries.find(
-        (entry) =>
-          String(entry.id) === selectedRepresentative ||
-          String(entry.name) === selectedRepresentative,
+        (entry) => String(entry.id) === selectedRepresentative,
       );
-      userIdentificationNumber = String(
-        matchedEntry?.identificationNumber || selectedRepresentative || "",
-      );
+      userIdentificationNumber = String(matchedEntry?.identificationNumber);
     }
   }
   const handleSend = () => {
-    if (isIndividualConceptOfAproval() && isRepresentativeButNotApprover()) {
+    if (
+      isCreditRequestInIndividualConceptOnApproval() &&
+      (isRepresentativeButNotApprover() || isNoLongerResponsibleForApproval())
+    ) {
       setIsModalConfirm(true);
     } else {
       setIsModalOpen(true);
@@ -384,7 +412,7 @@ function ToDo(props: ToDoProps) {
     },
     businessUnit: businessUnitPublicCode,
     user: userIdentificationNumber,
-    xAction: isIndividualConceptOfAproval()
+    xAction: isCreditRequestInIndividualConceptOnApproval()
       ? "RegisterIndividualConceptOfApproval"
       : getXAction(selectedDecision?.code),
     humanDecisionDescription: selectedDecision?.label || "",
@@ -420,7 +448,7 @@ function ToDo(props: ToDoProps) {
         s.role === taskRole && s.userId === eventData?.user?.staff?.staffId,
     );
 
-    setHasPermitSend(hasStaffPermission);
+    setIsAuthorizedToTakeDecision(hasStaffPermission);
   }, [staff, eventData, taskData, taskRole, requests]);
 
   const hasSingleDecision = taskDecisions.length === 1;
@@ -451,6 +479,17 @@ function ToDo(props: ToDoProps) {
     } else {
       return assignedStaff.analyst;
     }
+  };
+
+  const disableSendButton = () => {
+    return (
+      !decisionValue.decision ||
+      !(
+        isAuthorizedToTakeDecision ||
+        (isCreditRequestInIndividualConceptOnApproval() &&
+          (isCurrentUserApprover || representablePersons.length > 0))
+      )
+    );
   };
 
   return (
@@ -535,11 +574,16 @@ function ToDo(props: ToDoProps) {
                     type="submit"
                     fullwidth={isMobile}
                     spacing="compact"
-                    disabled={!hasPermitSend || !decisionValue.decision}
+                    disabled={disableSendButton()}
                   >
                     {button?.label || txtLabelsEnum.buttonText.i18n[lang]}
                   </Button>
-                  {!hasPermitSend && (
+                  {!(
+                    isAuthorizedToTakeDecision ||
+                    (isCreditRequestInIndividualConceptOnApproval() &&
+                      (isCurrentUserApprover() ||
+                        representablePersons.length > 0))
+                  ) && (
                     <Icon
                       icon={<MdOutlineInfo />}
                       appearance="primary"
@@ -697,7 +741,7 @@ function ToDo(props: ToDoProps) {
         >
           <Stack direction="column" gap="16px">
             <Text>
-              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} "${selectedDecision?.label || txtConfirmRepresentativeEnum.processingDefault.i18n[lang]}" ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} "${representablePersons[0] || "..."}", ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
+              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} "${selectedDecision?.label || txtConfirmRepresentativeEnum.processingDefault.i18n[lang]}" ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} "${selectedRepresentative || representablePersons[0] || "..."}", ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
             </Text>
             {representablePersons.length > 1 && (
               <Select
