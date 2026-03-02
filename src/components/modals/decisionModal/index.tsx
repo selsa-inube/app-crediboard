@@ -1,5 +1,5 @@
 import {
-  Date,
+  Button,
   Divider,
   Icon,
   Stack,
@@ -8,9 +8,11 @@ import {
   IIconAppearance,
 } from "@inubekit/inubekit";
 import { ReactNode } from "react";
+import { MdCheckCircle, MdArrowBack, MdArrowForward } from "react-icons/md";
+import { Fieldset } from "@components/data/Fieldset";
 
 import { EComponentAppearance } from "./types";
-
+import { decisionModalMessages } from "./config";
 import { BaseModal } from "../baseModal";
 
 interface IDecisionModal {
@@ -41,96 +43,119 @@ interface IDecisionModal {
 }
 const DecisionModal = (props: IDecisionModal) => {
   const {
-    actionText,
-    icon = <></>,
-    withIcon = false,
     description,
     loading = false,
     sizeIcon = "60px",
     portalId = "portal",
     title,
     appearance = EComponentAppearance.PRIMARY,
-    appearanceButton = EComponentAppearance.PRIMARY,
-    withCancelButton = true,
     moreDetails,
     withDate,
     onDateChange,
     statusDate,
     valueDate,
     messageDate,
-    isDisabledButton = false,
-    changeZIndex,
     subtitle,
-    valueZIndex,
     onBlurDate,
     onClick,
     onCloseModal,
   } = props;
 
-  const isMobile = useMediaQuery("");
+  const isMobile = false;
 
   return (
     <BaseModal
       portalId={portalId}
-      width={isMobile ? "335px" : "450px"}
-      labelActionButton={actionText}
-      labelCloseButton="Cancelar"
-      labelCloseModal="Cerrar"
+      width={isMobile ? "335px" : "500px"}
+      internalWidth={isMobile ? "335px" : "452px"}
+      gap="24px"
+      backButton="Cancel"
+      nextButton="Cerrar"
       title={title}
-      withCancelButton={withCancelButton}
-      onCloseModal={onCloseModal}
-      onClick={onClick ?? (() => void 0)}
-      loading={loading}
-      disabledActionButton={isDisabledButton}
-      appearanceButton={appearanceButton}
-      changeZIndex={changeZIndex}
-      valueZIndex={valueZIndex}
+      handleBack={onCloseModal}
+      handleNext={onClick ?? (() => void 0)}
+      isLoading={loading}
+      withoutHeader
+      initialDivider={false}
     >
-      <>
-        {withIcon && (
-          <Stack width="100%" alignItems="center" justifyContent="center">
-            <Icon icon={icon} appearance={appearance} size={sizeIcon} />
-          </Stack>
-        )}
-        {subtitle && (
-          <Text appearance={EComponentAppearance.DARK} size="large">
-            {subtitle}
-          </Text>
-        )}
-
-        <Text
-          appearance={
-            moreDetails ? EComponentAppearance.GRAY : EComponentAppearance.DARK
-          }
-          type="body"
-          size="medium"
-        >
-          {description}
+      <Stack
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        gap="24px"
+      >
+        <Icon
+          icon={<MdCheckCircle />}
+          appearance={EComponentAppearance.SUCCESS}
+          size="50px"
+        />
+        <Text type="title" size="large" weight="bold">
+          {"lineInitiatedLabels.title"}
+        </Text>
+        <Text size="large" appearance={EComponentAppearance.GRAY}>
+          {"lineInitiatedLabels.subtitle"}
         </Text>
 
-        {withDate && (
-          <Date
-            id="date"
-            name="date"
-            onChange={onDateChange}
-            status={statusDate}
-            value={valueDate}
-            size="compact"
-            message={messageDate}
-            fullwidth
-            onBlur={onBlurDate}
-          />
-        )}
+        <Fieldset
 
-        {moreDetails && (
-          <Stack direction="column" gap={"20px"}>
-            <Divider dashed />
-            <Text size="medium" appearance={EComponentAppearance.DARK}>
-              {moreDetails}
+        /*         width="452px"
+        height="auto"
+        direction="column"
+        backgroundColor={EComponentAppearance.LIGHT}
+        borderRadius={tokens.spacing.s100}
+        borderColor={EComponentAppearance.DARK}
+        padding={tokens.spacing.s200}
+        gap={tokens.spacing.s150} */
+        /* boxSizing="border-box" */
+        >
+          <Stack direction="column" gap="12px">
+            <Text type="label" size="large" weight="bold">
+              {"lineInitiatedLabels.titleFirstBox"}
             </Text>
+            <Text size="medium" appearance={EComponentAppearance.GRAY}>
+              {"lineInitiatedLabels.descriptionFirst"}
+            </Text>
+            <Stack justifyContent="flex-end">
+              <Button
+                onClick={() => void 0}
+                iconBefore={<MdArrowBack />}
+                variant="outlined"
+              >
+                {"lineInitiatedLabels.goBackButton"}
+              </Button>
+            </Stack>
           </Stack>
-        )}
-      </>
+        </Fieldset>
+        <Fieldset
+        /*         width="452px"
+          height="auto"
+          direction="column"
+          backgroundColor={EComponentAppearance.LIGHT}
+          borderRadius={tokens.spacing.s100}
+          borderColor={EComponentAppearance.DARK}
+          padding={tokens.spacing.s200}
+          gap={tokens.spacing.s150}
+          boxSizing="border-box" */
+        >
+          <Stack direction="column" gap="12px">
+            <Text type="label" size="large" weight="bold">
+              {"lineInitiatedLabels.titleSecondBox"}
+            </Text>
+            <Text size="medium" appearance={EComponentAppearance.GRAY}>
+              {"lineInitiatedLabels.descriptionSecond"}
+            </Text>
+            <Stack justifyContent="flex-end">
+              <Button
+                onClick={() => void 0}
+                iconBefore={<MdArrowForward />}
+                variant="outlined"
+              >
+                {"lineInitiatedLabels.continueButton"}
+              </Button>
+            </Stack>
+          </Stack>
+        </Fieldset>
+      </Stack>
     </BaseModal>
   );
 };

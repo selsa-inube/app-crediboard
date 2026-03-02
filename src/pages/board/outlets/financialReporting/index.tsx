@@ -46,6 +46,7 @@ import { useEnum } from "@hooks/useEnum";
 import { IEntries } from "@components/data/TableBoard/types";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+import { DecisionModal } from "@components/modals/decisionModal";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -484,6 +485,15 @@ export const FinancialReporting = () => {
 
   return (
     <div ref={dataCommercialManagementRef}>
+      {true && (
+        <DecisionModal
+          actionText={"title"}
+          portalId={"portal"}
+          description={"description"}
+          title={"title"}
+          onCloseModal={() => {}}
+        />
+      )}
       <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
       <StyledMarginPrint $isMobile={isMobile}>
         <Stack direction="column">

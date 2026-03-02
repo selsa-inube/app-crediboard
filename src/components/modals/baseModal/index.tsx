@@ -45,6 +45,7 @@ export interface IBaseModalProps {
   marginBottom?: string;
   isLoading?: boolean;
   gap?: string;
+  withoutHeader?: boolean;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -75,6 +76,7 @@ export function BaseModal(props: IBaseModalProps) {
     marginBottom,
     marginTop,
     gap = "24px",
+    withoutHeader = false,
   } = props;
 
   const { lang } = useEnum();
@@ -102,24 +104,26 @@ export function BaseModal(props: IBaseModalProps) {
           width={internalWidth || "auto"}
           height={height}
         >
-          <Stack justifyContent="space-between" alignItems="center">
-            <Text size="small" type="headline">
-              {title}
-            </Text>
-            <StyledContainerClose onClick={handleClose || handleBack}>
-              <Stack alignItems="center" gap="8px">
-                <Text type="body" size="large">
-                  {dataBaseModalEnum.close.i18n[lang]}
-                </Text>
-                <Icon
-                  icon={<MdClear />}
-                  size="24px"
-                  cursorHover
-                  appearance="dark"
-                />
-              </Stack>
-            </StyledContainerClose>
-          </Stack>
+          {!withoutHeader && (
+            <Stack justifyContent="space-between" alignItems="center">
+              <Text size="small" type="headline">
+                {title}
+              </Text>
+              <StyledContainerClose onClick={handleClose || handleBack}>
+                <Stack alignItems="center" gap="8px">
+                  <Text type="body" size="large">
+                    {dataBaseModalEnum.close.i18n[lang]}
+                  </Text>
+                  <Icon
+                    icon={<MdClear />}
+                    size="24px"
+                    cursorHover
+                    appearance="dark"
+                  />
+                </Stack>
+              </StyledContainerClose>
+            </Stack>
+          )}
           {initialDivider && <Divider />}
           <Stack direction="column">{children}</Stack>
           {finalDivider && <Divider />}

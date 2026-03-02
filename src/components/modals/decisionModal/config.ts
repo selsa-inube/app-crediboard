@@ -1,0 +1,80 @@
+export const decisionModalMessages = {
+  decisionSuccess: {
+    title: {
+      id: "decisionSuccessTitle",
+      code: "Messages_decisionModal_title",
+      description: "Título del modal de decisión exitosa",
+      i18n: {
+        en: "Successful decision!",
+        es: "¡Decisión exitosa!",
+      },
+    },
+    description: {
+      id: "decisionSuccessDescription",
+      code: "Messages_decisionModal_description",
+      description: "Descripción principal del modal de éxito",
+      i18n: {
+        en: "The decision you made on {{radicationNumber}} was successfully executed. Select one of the options to continue.",
+        es: "La decisión que tomaste en la {{radicationNumber}} fue ejecutada exitosamente. Selecciona una de las opciones para continuar.",
+      },
+    },
+  },
+  returnOption: {
+    titleCard: {
+      id: "returnOptionTitle",
+      code: "Messages_decisionModal_returnTitle",
+      description: "Título de la tarjeta para regresar",
+      i18n: {
+        en: "Return to Board",
+        es: "Regresar a la Board",
+      },
+    },
+    descriptionCard: {
+      id: "returnOptionBody",
+      code: "Messages_decisionModal_returnBody",
+      description: "Texto explicativo de la tarjeta para regresar",
+      i18n: {
+        en: "Click this option if you wish to return to the Board where you can view all credit requests in progress.",
+        es: "Haz clic en esta opción, si deseas regresar a la Board donde puedes visualizar todas las solicitudes de crédito en trámite.",
+      },
+    },
+    button: {
+      id: "returnOptionButton",
+      code: "Messages_decisionModal_returnButton",
+      description: "Botón de acción para regresar",
+      i18n: {
+        en: "Return",
+        es: "Regresar",
+      },
+    },
+  },
+  continueOption: {
+    titleCard: {
+      id: "continueOptionTitle",
+      code: "Messages_decisionModal_continueTitle",
+      description: "Título de la tarjeta para continuar",
+      i18n: {
+        en: "Continue in extended card:",
+        es: "Continuar en la tarjeta extendida:",
+      },
+    },
+    descriptionCard: {
+      id: "continueOptionBody",
+      code: "Messages_decisionModal_continueBody",
+      description: "Texto explicativo de la tarjeta para continuar",
+      i18n: {
+        en: "Click this option if you wish to continue in the extended card and manage {{radicationNumber}}.",
+        es: "Haz clic en está opción si deseas continuar en la tarjeta extendida y gestionar la {{radicationNumber}}.",
+      },
+    },
+    button: {
+      id: "continueOptionButton",
+      code: "Messages_decisionModal_continueButton",
+      description: "Botón de acción para continuar",
+      i18n: {
+        en: "Continue",
+        es: "Continuar",
+      },
+    },
+  },
+};
