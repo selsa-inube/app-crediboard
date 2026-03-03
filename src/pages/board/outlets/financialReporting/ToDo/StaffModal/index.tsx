@@ -120,13 +120,13 @@ export function StaffModal(props: StaffModalProps) {
       try {
         const [accountManagers, analysts] = await Promise.all([
           getCommercialManagerAndAnalyst(
-            "CredicarAccountManager",
+            "Gestor Comercial",
             businessUnitPublicCode,
             businessManagerCode,
             eventData.token || "",
           ),
           getCommercialManagerAndAnalyst(
-            "CredicarAnalyst",
+            "Analista de Crédito",
             businessUnitPublicCode,
             businessManagerCode,
             eventData.token || "",
@@ -199,13 +199,13 @@ export function StaffModal(props: StaffModalProps) {
 
   const handleCreditRequests = async () => {
     const managerRequest = buildCreditRequest(
-      "CredicarAccountManager",
+      "AccountManager",
       selectedCommercialManager,
       commercialManager,
     );
 
     const analystRequest = buildCreditRequest(
-      "CredicarAnalyst",
+      "CreditAnalyst",
       selectedAnalyst,
       analyst,
     );

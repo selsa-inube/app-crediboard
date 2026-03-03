@@ -266,11 +266,11 @@ function ToDo(props: ToDoProps) {
       setStaff(formattedStaff);
 
       const firstAccountManager = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAccountManager",
+        (staffMember) => staffMember.role === "AccountManager",
       );
 
       const firstAnalyst = formattedStaff.find(
-        (staffMember) => staffMember.role === "CredicarAnalyst",
+        (staffMember) => staffMember.role === "CreditAnalyst",
       );
 
       const newStaffState = {
@@ -475,7 +475,7 @@ function ToDo(props: ToDoProps) {
       return assignedStaff.analyst || assignedStaff.commercialManager || "";
     }
 
-    if (taskRole === "CredicarAccountManager") {
+    if (taskRole === "AccountManager") {
       return assignedStaff.commercialManager;
     } else {
       return assignedStaff.analyst;

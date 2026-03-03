@@ -22,7 +22,6 @@ import { ScoreModal } from "@components/modals/FrcModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
-import { extraordinaryInstallmentMock } from "@mocks/prospect/extraordinaryInstallment.mock";
 import { IAddProduct } from "@services/prospect/addCreditProduct/types";
 import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
 import { IProspect, IProspectSummaryById } from "@services/prospect/types";
@@ -59,6 +58,7 @@ import { IncomeModal } from "../modals/IncomeModal";
 import { ShareCreditModal } from "../modals/ShareCreditModal";
 import InfoModal from "../modals/InfoModal";
 import { ICustomerData } from "../AddProductModal/config";
+import { ScoreModalProspect } from "../ScoreModalProspect";
 
 interface ICreditProspectProps {
   borrowersProspect: IProspect | undefined;
@@ -423,8 +423,9 @@ export function CreditProspect(props: ICreditProspectProps) {
               </Button>
             )}
 
-            {editCreditApplication ||
-              (availableEditCreditRequest && !isAddProductDisabled && (
+            {(editCreditApplication || availableEditCreditRequest) &&
+              !isAddProductDisabled &&
+              !generalLoading && (
                 <Icon
                   icon={<MdOutlineInfo />}
                   appearance="primary"
@@ -432,7 +433,7 @@ export function CreditProspect(props: ICreditProspectProps) {
                   cursorHover
                   onClick={handleInfo}
                 />
-              ))}
+              )}
             {prospectData?.creditProducts?.some(
               (product) =>
                 Array.isArray(product.extraordinaryInstallments) &&
@@ -608,15 +609,13 @@ export function CreditProspect(props: ICreditProspectProps) {
       )}
       {currentModal === "extraPayments" && (
         <ExtraordinaryPaymentModal
-          dataTable={extraordinaryInstallmentMock}
           handleClose={handleCloseModal}
           prospectData={prospectData}
           sentData={sentData}
           setSentData={setSentData}
-          creditRequestCode={creditRequestCode || ""}
           businessUnitPublicCode={businessUnitPublicCode}
-          businessManagerCode={businessManagerCode}
-          availableEditCreditRequest={availableEditCreditRequest}
+          lang={lang}
+          customerData={customerData}
         />
       )}
       {showShareModal && (
@@ -681,7 +680,21 @@ export function CreditProspect(props: ICreditProspectProps) {
           </BaseModal>
         </>
       )}
-
+      {currentModal === "scores" && (
+        <ScoreModalProspect
+          isMobile={isMobile}
+          handleClose={handleCloseModal}
+          lang={lang}
+          businessUnitPublicCode={businessUnitPublicCode}
+          businessManagerCode={businessManagerCode}
+          setShowMessageSuccessModal={setShowMessageSuccessModal}
+          setMessageError={setMessageError}
+          eventData={eventData}
+          setShowErrorModal={setShowErrorModal}
+          prospectData={prospectData as IProspect}
+          onProspectRefreshData={onProspectRefreshData}
+        />
+      )}
       {showEditApprovalModal && (
         <BaseModal
           width={isMobile ? "300px" : "500px"}

@@ -1,19 +1,22 @@
 export interface IExtraordinaryInstallment {
-  installmentAmount?: number;
-  installmentDate?: string;
-  paymentChannelAbbreviatedName?: string;
-  humanChannelPaymentDay?: string;
   id?: string;
-  creditProductCode?: string;
-  extraordinaryInstallments?: IExtraordinaryInstallment[];
-  prospectId?: string;
-  creditRequestCode?: string;
+  installmentDate: Date | string;
+  installmentAmount: number;
+  paymentChannelAbbreviatedName: string;
+  humanChannelPaymentDay?: number;
+  payrollForDeductionAgreementCode?: string;
+}
+
+export interface ICalculatedSeries {
+  cycleName: string;
+  paymentChannelAbbreviatedName: string;
+  paymentDate: string;
+  value: number;
 }
 export interface IExtraordinaryInstallments {
   creditProductCode: string;
-  extraordinaryInstallments: IExtraordinaryInstallment[];
-  creditRequestCode: string;
-  prospectId?: string;
+  extraordinaryInstallments: IExtraordinaryInstallment[] | ICalculatedSeries[];
+  prospectId: string;
 }
 
 export interface IExtraordinaryInstallmentAddSeries {

@@ -1,18 +1,16 @@
 import { addExtraordinaryInstallments } from "@services/prospect/addExtraordinaryInstallments";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
 
-const updateExtraordinaryInstallment = (
+const saveExtraordinaryInstallment = (
   businessUnitPublicCode: string,
   extraordinaryInstallments: IExtraordinaryInstallments,
-  token: string,
-  xUserName: string,
+  authorizationToken: string,
 ) => {
   return addExtraordinaryInstallments(
     extraordinaryInstallments,
     businessUnitPublicCode,
-    token,
-    xUserName,
+    authorizationToken,
   );
 };
 
-export { updateExtraordinaryInstallment };
+export { saveExtraordinaryInstallment };

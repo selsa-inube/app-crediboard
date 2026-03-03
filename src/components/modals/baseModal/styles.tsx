@@ -5,6 +5,7 @@ interface IStyledContainer {
   $height?: string;
   $width?: string;
   $margin?: string;
+  marginsMobile: boolean;
 }
 
 export const StyledContainerClose = styled.div`
@@ -18,4 +19,5 @@ export const StyledContainer = styled.div<IStyledContainer>`
   height: ${({ $height }) => $height || "auto"};
   width: ${({ $width }) => $width || "auto"};
   margin: ${({ $margin }) => $margin || "0"};
+  margin: ${({ marginsMobile }) => (marginsMobile ? "16px 0" : "0")};
 `;

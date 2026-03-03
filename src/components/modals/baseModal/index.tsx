@@ -44,6 +44,7 @@ export interface IBaseModalProps {
   marginTop?: string;
   marginBottom?: string;
   isLoading?: boolean;
+  marginsMobile?: boolean;
   gap?: string;
   withoutHeader?: boolean;
   hiddenBottom?: boolean;
@@ -70,6 +71,7 @@ export function BaseModal(props: IBaseModalProps) {
     backButton = "",
     initialDivider = true,
     finalDivider = false,
+    marginsMobile = false,
     portalId = "portal",
     $height,
     internalWidth,
@@ -98,6 +100,7 @@ export function BaseModal(props: IBaseModalProps) {
         $height={$height}
         $width={width}
         $margin={`${marginTop || 0} 0 ${marginBottom || 0} 0`}
+        marginsMobile={marginsMobile}
       >
         <Stack
           direction="column"
