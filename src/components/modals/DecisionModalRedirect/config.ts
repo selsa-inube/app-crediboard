@@ -14,8 +14,8 @@ export const decisionModalMessages = {
       code: "Messages_decisionModal_description",
       description: "Descripción principal del modal de éxito",
       i18n: {
-        en: "The decision you made on {{radicationNumber}} was successfully executed. Select one of the options to continue.",
-        es: "La decisión que tomaste en la {{radicationNumber}} fue ejecutada exitosamente. Selecciona una de las opciones para continuar.",
+        en: "The decision you made on {{creditRequestCode}} was successfully executed. Select one of the options to continue.",
+        es: "La decisión que tomaste en la {{creditRequestCode}} fue ejecutada exitosamente. Selecciona una de las opciones para continuar.",
       },
     },
   },
@@ -63,8 +63,8 @@ export const decisionModalMessages = {
       code: "Messages_decisionModal_continueBody",
       description: "Texto explicativo de la tarjeta para continuar",
       i18n: {
-        en: "Click this option if you wish to continue in the extended card and manage {{radicationNumber}}.",
-        es: "Haz clic en está opción si deseas continuar en la tarjeta extendida y gestionar la {{radicationNumber}}.",
+        en: "Click this option if you wish to continue in the extended card and manage {{creditRequestCode}}.",
+        es: "Haz clic en está opción si deseas continuar en la tarjeta extendida y gestionar la {{creditRequestCode}}.",
       },
     },
     button: {

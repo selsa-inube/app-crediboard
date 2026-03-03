@@ -56,6 +56,7 @@ interface ToDoProps {
   id: string;
   setIdProspect: (idProspect: string) => void;
   approvalsEntries: IEntries[];
+  handleDecisionModal: () => void;
 }
 
 function ToDo(props: ToDoProps) {
@@ -616,6 +617,7 @@ function ToDo(props: ToDoProps) {
                   onCloseModal={handleCloseModal}
                   data={data}
                   eventData={eventData}
+                  handleDecisionModal={props.handleDecisionModal}
                 />
               )}
               <Stack

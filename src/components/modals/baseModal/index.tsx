@@ -46,6 +46,7 @@ export interface IBaseModalProps {
   isLoading?: boolean;
   gap?: string;
   withoutHeader?: boolean;
+  hiddenBottom?: boolean;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -77,6 +78,7 @@ export function BaseModal(props: IBaseModalProps) {
     marginTop,
     gap = "24px",
     withoutHeader = false,
+    hiddenBottom = false,
   } = props;
 
   const { lang } = useEnum();
@@ -127,33 +129,35 @@ export function BaseModal(props: IBaseModalProps) {
           {initialDivider && <Divider />}
           <Stack direction="column">{children}</Stack>
           {finalDivider && <Divider />}
-          <Stack justifyContent="end" gap="20px">
-            {backButton && (
-              <Button
-                onClick={handleBack || handleClose}
-                disabled={disabledBack}
-                variant="outlined"
-                appearance="gray"
-                iconAfter={iconAfterback}
-                iconBefore={iconBeforeback}
-              >
-                {backButton}
-              </Button>
-            )}
-            {nextButton && (
-              <Button
-                onClick={handleNext}
-                disabled={disabledNext}
-                iconAfter={iconAfterNext}
-                iconBefore={iconBeforeNext}
-                appearance={apparenceNext}
-                variant={variantNext}
-                loading={isLoading}
-              >
-                {nextButton}
-              </Button>
-            )}
-          </Stack>
+          {!hiddenBottom && (
+            <Stack justifyContent="end" gap="20px">
+              {backButton && (
+                <Button
+                  onClick={handleBack || handleClose}
+                  disabled={disabledBack}
+                  variant="outlined"
+                  appearance="gray"
+                  iconAfter={iconAfterback}
+                  iconBefore={iconBeforeback}
+                >
+                  {backButton}
+                </Button>
+              )}
+              {nextButton && (
+                <Button
+                  onClick={handleNext}
+                  disabled={disabledNext}
+                  iconAfter={iconAfterNext}
+                  iconBefore={iconBeforeNext}
+                  appearance={apparenceNext}
+                  variant={variantNext}
+                  loading={isLoading}
+                >
+                  {nextButton}
+                </Button>
+              )}
+            </Stack>
+          )}
         </Stack>
       </StyledContainer>
     </Blanket>,

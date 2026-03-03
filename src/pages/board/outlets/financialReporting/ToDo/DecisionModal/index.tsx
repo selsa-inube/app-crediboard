@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, FieldProps, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import {
@@ -44,6 +43,7 @@ export interface DecisionModalProps {
   inputPlaceholder: string;
   businessManagerCode: string;
   eventData: ICrediboardData;
+  handleDecisionModal: () => void;
   onSubmit?: (values: { textarea: string }) => void;
   onSecondaryButtonClick?: () => void;
   maxLength?: number;
@@ -68,9 +68,9 @@ export function DecisionModal(props: DecisionModalProps) {
     readOnly = false,
     disableTextarea = false,
     secondaryButtonText = "Cancelar",
+    handleDecisionModal,
   } = props;
 
-  const navigate = useNavigate();
   const { addFlag } = useFlag();
   const { lang } = useEnum();
 
@@ -147,7 +147,7 @@ export function DecisionModal(props: DecisionModalProps) {
       );
 
       if (response?.statusServices === 200) {
-        navigate("/");
+        handleDecisionModal();
         addFlag({
           title: txtFlagsEnum.titleSuccess.i18n[lang],
           description: `${txtFlagsEnum.descriptionSuccess.i18n[lang]} ${response.status}`,

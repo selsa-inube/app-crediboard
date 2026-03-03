@@ -46,7 +46,7 @@ import { useEnum } from "@hooks/useEnum";
 import { IEntries } from "@components/data/TableBoard/types";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
-import { DecisionModal } from "@components/modals/decisionModal";
+import { DecisionModalRedirect } from "@components/modals/DecisionModalRedirect";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -103,6 +103,8 @@ export const FinancialReporting = () => {
   const [showGuarantee, setShowGuarantee] = useState(false);
   const [document, setDocument] = useState<IListdataProps["data"]>([]);
   const [errorGetProspects, setErrorGetProspects] = useState(false);
+  const [showModalDecision, setShowModalDecision] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
 
   const [dataProspect, setDataProspect] = useState<IProspect>();
   const [uploadedFiles, setUploadedFiles] = useState<
@@ -335,6 +337,10 @@ export const FinancialReporting = () => {
     menuIcon: () => setShowMenu(true),
   });
 
+  const handleDecisionModal = () => {
+    setShowModalDecision(true);
+  };
+
   const handleCloseErrorService = (errorId: string) => {
     setErrorsService(removeErrorByIdServices(errorsService, errorId));
   };
@@ -471,6 +477,7 @@ export const FinancialReporting = () => {
         handleToggleModal();
         setTimeout(() => {
           navigation("/");
+          setShowModalDecision(false);
         }, 1000);
       });
   };
@@ -483,15 +490,23 @@ export const FinancialReporting = () => {
     setPdfState({ isGenerating: false, blob: null, showShareModal: false });
   };
 
+  const handleResetForm = () => {
+    setResetKey((prev) => prev + 1);
+  };
+
   return (
-    <div ref={dataCommercialManagementRef}>
-      {true && (
-        <DecisionModal
-          actionText={"title"}
-          portalId={"portal"}
-          description={"description"}
-          title={"title"}
-          onCloseModal={() => {}}
+    <div ref={dataCommercialManagementRef} key={resetKey}>
+      {showModalDecision && (
+        <DecisionModalRedirect
+          onCloseModal={() => {
+            setShowModalDecision(false);
+          }}
+          lang={lang}
+          creditRequestCode={creditRequestCode || ""}
+          refresh={() => {
+            setShowModalDecision(false);
+            handleResetForm();
+          }}
         />
       )}
       <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
@@ -559,6 +574,7 @@ export const FinancialReporting = () => {
                         user={user!.nickname!}
                         setIdProspect={setIdProspect}
                         approvalsEntries={approvalsEntries}
+                        handleDecisionModal={handleDecisionModal}
                       />
                     </Stack>
                   </BlockPdfSection>
