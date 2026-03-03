@@ -85,7 +85,78 @@ export const staffConfigEnum = {
     },
   },
 };
-
+export const staffModalTextsEnum = {
+  title: {
+    code: "staffModal_title",
+    description: "Title of the staff modal",
+    i18n: {
+      en: "Commercial Manager and Analyst",
+      es: "Gestor Comercial y Analista",
+    },
+  },
+  commercialManagerLabel: {
+    code: "staffModal_commercialManagerLabel",
+    description: "Label for the commercial manager field",
+    i18n: {
+      en: "Commercial Manager",
+      es: "Gestor Comercial",
+    },
+  },
+  commercialManagerPlaceholder: {
+    code: "staffModal_commercialManagerPlaceholder",
+    description:
+      "Placeholder for the commercial manager select when options are available",
+    i18n: {
+      en: "Select an option",
+      es: "Selecciona una opción",
+    },
+  },
+  commercialManagerEmptyPlaceholder: {
+    code: "staffModal_commercialManagerEmptyPlaceholder",
+    description:
+      "Placeholder for the commercial manager select when no options are available",
+    i18n: {
+      en: "No managers available",
+      es: "No hay gestores disponibles",
+    },
+  },
+  analystLabel: {
+    code: "staffModal_analystLabel",
+    description: "Label for the analyst field",
+    i18n: {
+      en: "Analyst",
+      es: "Analista",
+    },
+  },
+  analystPlaceholder: {
+    code: "staffModal_analystPlaceholder",
+    description:
+      "Placeholder for the analyst select when options are available",
+    i18n: {
+      en: "Select an option",
+      es: "Selecciona una opción",
+    },
+  },
+  analystEmptyPlaceholder: {
+    code: "staffModal_analystEmptyPlaceholder",
+    description:
+      "Placeholder for the analyst select when no options are available",
+    i18n: {
+      en: "No analysts available",
+      es: "No hay analistas disponibles",
+    },
+  },
+  justification: {
+    code: "staffModal_justification",
+    description: "Justification message for the assignment of a new role",
+    i18n: {
+      en: (roleLabel: string, previousUserName: string, newUserName: string) =>
+        `A new ${roleLabel} is being assigned. Previous: ${previousUserName || "N/A"}. New: ${newUserName}`,
+      es: (roleLabel: string, previousUserName: string, newUserName: string) =>
+        `Se realiza la asignación de un nuevo ${roleLabel}. Anterior: ${previousUserName || "N/A"}. Nuevo: ${newUserName}`,
+    },
+  },
+};
 export const errorMessaggeEnum = {
   default: {
     code: "ErrorMessage_default",
