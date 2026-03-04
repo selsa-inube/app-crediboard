@@ -299,16 +299,9 @@ export function StaffModal(props: StaffModalProps) {
       >
         {({ setFieldValue, values }) => {
           const isCommercialManagerReady =
-            hasSingleCommercialManager ||
-            options.commercialManager.length === 0 ||
-            Boolean(values.commercialManager);
-
-          const isAnalystReady =
-            hasSingleAnalyst ||
-            options.analyst.length === 0 ||
-            Boolean(values.analyst);
-
-          const isNextDisabled = !isCommercialManagerReady || !isAnalystReady;
+            hasSingleCommercialManager || Boolean(values.commercialManager);
+          const isAnalystReady = hasSingleAnalyst || Boolean(values.analyst);
+          const isNextDisabled = !isCommercialManagerReady && !isAnalystReady;
 
           return (
             <Form>
