@@ -10,7 +10,7 @@ export interface IMakeDecisionsCreditRequestResponse {
 export interface IDeleteCreditRequest {
   creditRequestId: string;
   creditRequestCode?: string;
-  humanDecision: string;
+  humanDecision?: string;
   justification: string;
 }
 
