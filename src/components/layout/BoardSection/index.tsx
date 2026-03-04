@@ -312,7 +312,7 @@ function BoardSection(props: BoardSectionProps) {
             <Stack
               gap="24px"
               alignItems="center"
-              height={orientation === "vertical" ? "533px" : "200px"}
+              height={orientation === "vertical" ? "570px" : "200px"}
               width="100%"
             >
               <Text type="title" size="small" appearance="gray">
