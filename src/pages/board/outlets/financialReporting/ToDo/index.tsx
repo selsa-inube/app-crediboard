@@ -77,6 +77,8 @@ function ToDo(props: ToDoProps) {
     [],
   );
   const [selectedRepresentative, setSelectedRepresentative] = useState("");
+  const [hasRepresentablePersonsAccess, setHasRepresentablePersonsAccess] =
+    useState<boolean | null>(null);
 
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
@@ -124,14 +126,23 @@ function ToDo(props: ToDoProps) {
             eventData.token || "",
           );
 
+          if (!response) {
+            setHasRepresentablePersonsAccess(false);
+            setRepresentablePersons([]);
+            return;
+          }
+
           const persons = response?.approvalBoardRepresentablePersons || [];
           setRepresentablePersons(persons);
+          setHasRepresentablePersonsAccess(persons.length > 0);
 
           if (persons.length >= 1) {
             setSelectedRepresentative(persons[0]);
           }
         } catch (error) {
           console.error("Error fetching representable persons:", error);
+          setHasRepresentablePersonsAccess(false);
+          setRepresentablePersons([]);
         }
       }
     };
@@ -332,6 +343,7 @@ function ToDo(props: ToDoProps) {
       );
     }
   };
+
   const isRepresentativeButNotApprover = () => {
     const currentUserId = eventData?.user?.identificationDocumentNumber;
 
@@ -369,6 +381,7 @@ function ToDo(props: ToDoProps) {
       return true;
     }
   };
+
   let userIdentificationNumber =
     eventData?.user?.identificationDocumentNumber || "";
 
@@ -383,11 +396,15 @@ function ToDo(props: ToDoProps) {
       userIdentificationNumber = String(matchedEntry?.identificationNumber);
     }
   }
+
   const handleSend = () => {
     if (
       isCreditRequestInIndividualConceptOnApproval() &&
       (isRepresentativeButNotApprover() || isNoLongerResponsibleForApproval())
     ) {
+      if (hasRepresentablePersonsAccess === false) {
+        return;
+      }
       setIsModalConfirm(true);
     } else {
       setIsModalOpen(true);
@@ -481,14 +498,48 @@ function ToDo(props: ToDoProps) {
     }
   };
 
+  const isUserAuthorizedForApproval = () => {
+    if (hasRepresentablePersonsAccess === null) return false;
+
+    if (approvalsEntries.length === 0) {
+      return hasRepresentablePersonsAccess === true;
+    }
+    return isCurrentUserApprover() || hasRepresentablePersonsAccess === true;
+  };
+
   const disableSendButton = () => {
-    return (
-      !decisionValue.decision ||
-      !(
-        isAuthorizedToTakeDecision ||
-        (isCreditRequestInIndividualConceptOnApproval() &&
-          (isCurrentUserApprover || representablePersons.length > 0))
-      )
+    if (!decisionValue.decision) return true;
+
+    if (
+      isCreditRequestInIndividualConceptOnApproval() &&
+      (isRepresentativeButNotApprover() ||
+        isNoLongerResponsibleForApproval()) &&
+      hasRepresentablePersonsAccess === false
+    ) {
+      return true;
+    }
+
+    return !(
+      isAuthorizedToTakeDecision ||
+      (isCreditRequestInIndividualConceptOnApproval() &&
+        isUserAuthorizedForApproval())
+    );
+  };
+
+  const showInfoIcon = () => {
+    if (
+      isCreditRequestInIndividualConceptOnApproval() &&
+      (isRepresentativeButNotApprover() ||
+        isNoLongerResponsibleForApproval()) &&
+      hasRepresentablePersonsAccess === false
+    ) {
+      return true; 
+    }
+
+    return !(
+      isAuthorizedToTakeDecision ||
+      (isCreditRequestInIndividualConceptOnApproval() &&
+        isUserAuthorizedForApproval())
     );
   };
 
@@ -578,12 +629,7 @@ function ToDo(props: ToDoProps) {
                   >
                     {button?.label || txtLabelsEnum.buttonText.i18n[lang]}
                   </Button>
-                  {!(
-                    isAuthorizedToTakeDecision ||
-                    (isCreditRequestInIndividualConceptOnApproval() &&
-                      (isCurrentUserApprover() ||
-                        representablePersons.length > 0))
-                  ) && (
+                  {showInfoIcon() && (
                     <Icon
                       icon={<MdOutlineInfo />}
                       appearance="primary"
