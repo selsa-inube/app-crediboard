@@ -113,32 +113,6 @@ export const dataAmount = {
   },
 };
 
-export const dataModalDisableLoanAmount = {
-  title: {
-    code: "Title",
-    description: "Information title",
-    i18n: {
-      en: "Information",
-      es: "Información",
-    },
-  },
-  description: {
-    code: "Description",
-    description: "Client has no portfolio obligations",
-    i18n: {
-      en: "The client does not have portfolio obligations.",
-      es: "El cliente no cuenta con obligaciones de cartera.",
-    },
-  },
-  understood: {
-    code: "Understood",
-    description: "Understood button",
-    i18n: {
-      en: "Understood",
-      es: "Entendido",
-    },
-  },
-};
 export const paymentConfiguration = {
   paymentMethod: {
     placeholder: {

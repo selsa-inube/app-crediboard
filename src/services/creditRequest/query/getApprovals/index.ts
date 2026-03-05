@@ -8,7 +8,7 @@ export const getApprovalsById = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   creditRequestId: string,
-  token: string
+  token: string,
 ): Promise<IApprovals> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -32,13 +32,13 @@ export const getApprovalsById = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/approvals/${creditRequestId}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay aprobaciones disponibles.");
+        return {} as IApprovals;
       }
 
       const data = await res.json();
@@ -56,13 +56,13 @@ export const getApprovalsById = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se logro obtener las aprobaciones"
+          "Todos los intentos fallaron. No se logro obtener las aprobaciones",
         );
       }
     }
   }
 
   throw new Error(
-    "No se logro obtener las aprobaciones después de varios intentos."
+    "No se logro obtener las aprobaciones después de varios intentos.",
   );
 };

@@ -23,7 +23,7 @@ import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
 import { IAddProduct } from "@services/prospect/addCreditProduct/types";
-import { mockProspectCredit } from "@mocks/prospect/prospectCredit.mock";
+
 import { IProspect, IProspectSummaryById } from "@services/prospect/types";
 import {
   StyledContainerIcon,
@@ -158,28 +158,6 @@ export function CreditProspect(props: ICreditProspectProps) {
 
   const dataCommercialManagementRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (creditRequestCode) {
-      const foundProspect = mockProspectCredit.find(
-        (prospect) => prospect.public_code === creditRequestCode,
-      );
-      if (foundProspect) {
-        const mockCredit = foundProspect.consolidated_credit[0];
-        setForm({
-          borrower: foundProspect.borrower[0].borrower_name,
-          monthlySalary: mockCredit.monthly_salary ?? 0,
-          otherMonthlyPayments: mockCredit.other_monthly_payments ?? 0,
-          pensionAllowances: mockCredit.pension_allowances ?? 0,
-          leases: mockCredit.leases ?? 0,
-          dividendsOrShares: mockCredit.dividends_or_shares ?? 0,
-          financialReturns: mockCredit.financial_returns ?? 0,
-          averageMonthlyProfit: mockCredit.average_monthly_profit ?? 0,
-          monthlyFees: mockCredit.monthly_fees ?? 0,
-          total: undefined,
-        });
-      }
-    }
-  }, [creditRequestCode]);
   useEffect(() => {
     if (showMessageSuccessModal) {
       addFlag({

@@ -17,7 +17,6 @@ import { MenuUser } from "@components/navigation/MenuUser";
 import { BusinessUnitChange } from "@components/inputs/BusinessUnitChange";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 import { getUserMenu } from "@config/menuMainConfiguration";
-import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardNoveilties } from "@components/cards/CardsNoveilties";
 import { IUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnreadNoveltiesByUser/types";
@@ -42,7 +41,7 @@ import {
   StyledCardsContainer,
   StyledUserImage,
 } from "./styles";
-import { emptyNoveltiesConfigEnum } from "./config/errorNovelties";
+import { emptyNoveltiesConfigEnum, errorBoardConfigEnum } from "./config/errorNovelties";
 
 const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
   return (
@@ -151,10 +150,9 @@ function AppPage() {
   const { addFlag } = useFlag();
 
   const handleFlag = () => {
-    const errorData = mockErrorBoard[0].business;
     addFlag({
-      title: errorData[0],
-      description: errorData[1],
+      title: errorBoardConfigEnum.business.title.i18n[lang],
+      description: errorBoardConfigEnum.business.description.i18n[lang],
       appearance: "danger",
       duration: 5000,
     });

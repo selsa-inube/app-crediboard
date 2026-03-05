@@ -5,12 +5,6 @@ export const infoIcon = {
   onClick: () => {},
 };
 
-export const errorMessages = {
-  patchChangeUsersByCreditRequest: {
-    description: "",
-  },
-};
-
 export const staffConfigEnum = {
   title: {
     code: "StaffConfig_title",
@@ -166,17 +160,6 @@ export const errorMessaggeEnum = {
     i18n: {
       en: "Oops, something went wrong. Unable to load information. Please try again later.",
       es: "Ups, algo salió mal. No se puede cargar la información. Intente nuevamente más tarde.",
-    },
-  },
-};
-
-export const buttonTextEnum = {
-  send: {
-    code: "ButtonText_send",
-    description: "Text for send button",
-    i18n: {
-      en: "Send",
-      es: "Enviar",
     },
   },
 };
@@ -466,13 +449,3 @@ export const txtConfirmRepresentativeEnum = {
   },
 };
 
-export const errorMessagesEnum = {
-  patchChangeUsersByCreditRequest: {
-    code: "ErrorMessages_patchChangeUsersByCreditRequest",
-    description: "Error description placeholder",
-    i18n: {
-      en: "",
-      es: "",
-    },
-  },
-};

@@ -102,6 +102,16 @@ export const Approvals = (props: IApprovalsProps) => {
         requests.creditRequestId,
         eventData.token || "",
       );
+      if (
+        !data ||
+        (typeof data === "object" &&
+          !Array.isArray(data) &&
+          Object.keys(data).length === 0)
+      ) {
+        setApprovalsEntries([]);
+        setLoading(false);
+        return;
+      }
       if (data && Array.isArray(data)) {
         const entries: IEntries[] = entriesApprovals(data, lang).map(
           (entry) => {
@@ -240,7 +250,7 @@ export const Approvals = (props: IApprovalsProps) => {
         hasError={!requests ? true : false}
         hasOverflow={isMobile}
       >
-        {!requests || error ? (
+        {!requests || error || (!loading && approvalsEntries.length === 0) ? (
           <ItemNotFound
             image={userNotFound}
             title={errorMessagesEnum.approval.title.i18n[lang]}

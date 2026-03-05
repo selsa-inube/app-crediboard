@@ -16,7 +16,7 @@ import {
 import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
 import { ErrorModal } from "@components/modals/ErrorModal";
-import { getCanUnpin } from "@utils/configRules/permissions";
+
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { useEnum } from "@hooks/useEnum";
 
@@ -27,6 +27,7 @@ import {
 } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
 import { configOptionEnum, infoModalEnum } from "./config";
+import { getCanUnpin } from "@utils/configRules/permissions";
 
 interface BoardSectionProps {
   sectionTitle: string;

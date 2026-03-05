@@ -77,31 +77,6 @@ const handleChangeWithCurrency = (
   formik.setFieldValue(fieldName, formattedValue);
 };
 
-const parseCunstomFormat = (amount: string) => {
-  const amountParsed = parseFloat(amount);
-  return amount === "0" || !amountParsed ? "$ 0" : currencyFormat(amountParsed);
-};
-
-const getMonthsElapsed = (dateString: string, decimal: number): number => {
-  const startDate = new Date(dateString);
-  const currentDate = new Date();
-
-  const yearsDiff = currentDate.getFullYear() - startDate.getFullYear();
-  const monthsDiff = currentDate.getMonth() - startDate.getMonth();
-  const daysDiff = currentDate.getDate() - startDate.getDate();
-
-  let totalMonths = yearsDiff * 12 + monthsDiff;
-
-  if (daysDiff > 0) {
-    totalMonths += daysDiff / 30;
-  }
-
-  const years = Math.floor(totalMonths / 12);
-  const months = (totalMonths % 12) / 12;
-
-  return parseFloat((years + months).toFixed(decimal));
-};
-
 const getTotalFinancialObligations = (properties: IProperty[]) => {
   return properties
     .filter((prop) => prop.propertyName === "FinancialObligation")
@@ -118,10 +93,8 @@ const getTotalFinancialObligations = (properties: IProperty[]) => {
 
 export {
   currencyFormat,
-  parseCunstomFormat,
   handleChangeWithCurrency,
   parseCurrencyString,
   validateCurrencyField,
-  getMonthsElapsed,
   getTotalFinancialObligations,
 };
