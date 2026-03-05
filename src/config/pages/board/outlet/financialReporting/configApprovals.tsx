@@ -12,11 +12,6 @@ import { EnumType } from "@hooks/useEnum";
 
 import { approvalsConfigEnum } from "./configApprovalTexts";
 
-
-const handleData = (data: IEntries) => {
-  console.log("function that receives data", data);
-};
-
 interface IActionConfig {
   id: string;
   actionName: string;
@@ -47,7 +42,6 @@ export const getActionMobileApprovals = (lang: "es" | "en") => [
         spacing="narrow"
         cursorHover
         size="20px"
-        onClick={() => handleData(data)}
         disabled={
           isValidElement(data?.tag) &&
           data?.tag?.props?.label !==
@@ -66,7 +60,6 @@ export const getActionMobileApprovals = (lang: "es" | "en") => [
         spacing="narrow"
         cursorHover
         size="20px"
-        onClick={() => handleData(data)}
         disabled={
           isValidElement(data?.tag) &&
           data?.tag?.props?.label !==
@@ -175,6 +168,7 @@ const appearanceTag = (label: string, lang: "es" | "en") => {
     return "dark";
   return "danger";
 };
+
 const getIconByTagStatus = (
   tagElement: React.ReactElement,
   lang: "es" | "en",

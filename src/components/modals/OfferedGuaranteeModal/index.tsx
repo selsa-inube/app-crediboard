@@ -67,8 +67,17 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
-      setMessageError(dataGuaranteeEnum.errorPledge.i18n[lang]);
+      setMessageError(description);
     }
   };
 
@@ -83,8 +92,17 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
-      setMessageError(dataGuaranteeEnum.errorMortgage.i18n[lang]);
+      setMessageError(description);
     } finally {
       setIsLoadingMortgage(false);
     }
@@ -101,8 +119,17 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
-      setMessageError(dataGuaranteeEnum.errorPledge.i18n[lang]);
+      setMessageError(description);
     } finally {
       setIsLoadingPledge(false);
     }

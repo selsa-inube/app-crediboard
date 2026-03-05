@@ -33,6 +33,7 @@ import {
   ICreditRequest,
   ICreditRequestPinned,
 } from "@services/creditRequest/query/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   StyledInputsContainer,
@@ -125,6 +126,8 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const businessManagerCode = eventData.businessManager.publicCode;
   const stackRef = useRef<HTMLDivElement>(null);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const observerRef = useRef<HTMLDivElement | null>(null);
   const { lang } = useEnum();
 
@@ -263,7 +266,17 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         );
         if (result) setTotalsData(normalizedTotalData(result));
       } catch (error) {
-        console.error("Error fetching totals:", error);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -566,6 +579,15 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         )}
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
+      )}
     </StyledContainerToCenter>
   );
 }

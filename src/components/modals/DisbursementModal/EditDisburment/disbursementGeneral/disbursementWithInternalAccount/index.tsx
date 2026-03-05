@@ -26,6 +26,7 @@ import { IProspectSummaryById, IProspect } from "@services/prospect/types";
 import { CardGray } from "@components/cards/CardGray";
 import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import {
@@ -77,6 +78,10 @@ export function DisbursementWithInternalAccount(
     handleCheckboxChange,
     handleToggleChange,
     isInvalidAmount,
+    showErrorModal,
+    setShowErrorModal,
+    messageError,
+    setMessageError,
   } = useDisbursementForm({ ...props, skipValidation: true });
 
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
@@ -141,7 +146,7 @@ export function DisbursementWithInternalAccount(
     const timer = setTimeout(checkValidity, 200);
     return () => clearTimeout(timer);
   }, [formik.errors, formik.values, optionNameForm, customerData, onFormValid]);
-
+  const currentToggleValue = formik.values[optionNameForm]?.toggle;
   useEffect(() => {
     async function fetchAccounts() {
       setIsLoadingAccounts(true);
@@ -171,6 +176,17 @@ export function DisbursementWithInternalAccount(
         });
         setAccountOptions(Array.from(uniqueMap.values()));
       } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
         setAccountOptions([]);
       } finally {
         setIsLoadingAccounts(false);
@@ -178,7 +194,7 @@ export function DisbursementWithInternalAccount(
     }
     fetchAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIdentification, formik.values[optionNameForm]?.toggle, eventData.token]);
+  }, [currentIdentification, currentToggleValue, eventData.token]);
 
   const { setFieldValue } = formik;
 
@@ -334,6 +350,15 @@ export function DisbursementWithInternalAccount(
         onBlur={formik.handleBlur}
         fullwidth
       />
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
+      )}
     </Stack>
   );
 }

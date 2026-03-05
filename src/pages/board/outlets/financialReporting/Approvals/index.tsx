@@ -26,7 +26,7 @@ import { AppContext } from "@context/AppContext";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 
-import { errorObserver, errorMessagesEnum } from "../config";
+import { errorMessagesEnum } from "../config";
 import { dataInfoApprovalsEnum } from "./config";
 import { appearanceTag } from "../PromissoryNotes/config";
 
@@ -45,12 +45,12 @@ export const Approvals = (props: IApprovalsProps) => {
   const [loading, setLoading] = useState(true);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [selectedData, setSelectedData] = useState<IEntries | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { addFlag } = useFlag();
   const { businessUnitSigla, eventData } = useContext(AppContext);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -67,11 +67,17 @@ export const Approvals = (props: IApprovalsProps) => {
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
-      console.error(error);
-      errorObserver.notify({
-        id: "Management",
-        message: (error as Error).message.toString(),
-      });
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   }, [
     businessUnitPublicCode,
@@ -96,6 +102,16 @@ export const Approvals = (props: IApprovalsProps) => {
         requests.creditRequestId,
         eventData.token || "",
       );
+      if (
+        !data ||
+        (typeof data === "object" &&
+          !Array.isArray(data) &&
+          Object.keys(data).length === 0)
+      ) {
+        setApprovalsEntries([]);
+        setLoading(false);
+        return;
+      }
       if (data && Array.isArray(data)) {
         const entries: IEntries[] = entriesApprovals(data, lang).map(
           (entry) => {
@@ -124,12 +140,17 @@ export const Approvals = (props: IApprovalsProps) => {
         setApprovalsEntries(entries);
       }
     } catch (error) {
-      console.error(error);
-      errorObserver.notify({
-        id: "Aprovals",
-        message: (error as Error).message.toString(),
-      });
-      setError((error as Error).message);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     } finally {
       setLoading(false);
     }
@@ -198,8 +219,17 @@ export const Approvals = (props: IApprovalsProps) => {
       setShowNotificationModal(false);
     } catch (error) {
       setShowNotificationModal(false);
-      setErrorMessage(dataInfoApprovalsEnum.error.i18n[lang]);
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -220,7 +250,7 @@ export const Approvals = (props: IApprovalsProps) => {
         hasError={!requests ? true : false}
         hasOverflow={isMobile}
       >
-        {!requests || error ? (
+        {!requests || error || (!loading && approvalsEntries.length === 0) ? (
           <ItemNotFound
             image={userNotFound}
             title={errorMessagesEnum.approval.title.i18n[lang]}
@@ -260,10 +290,20 @@ export const Approvals = (props: IApprovalsProps) => {
       {errorModal && (
         <ErrorModal
           isMobile={isMobile}
-          message={errorMessage}
+          message={messageError}
           handleClose={() => {
             setErrorModal(false);
           }}
+        />
+      )}
+
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

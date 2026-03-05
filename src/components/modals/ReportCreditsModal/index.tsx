@@ -31,7 +31,6 @@ import {
   defaultOptionsSelectEnum,
   configSelectEnum,
   restoreDataEnum,
-  errorMessagesEnum,
 } from "./config";
 
 export interface ReportCreditsModalProps {
@@ -85,8 +84,8 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     prospectData || [],
   );
   const [tableRefreshKey, setTableRefreshKey] = useState(0);
-  const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const initialProspectSnapshot = useRef<IProspect[] | null>(null);
 
@@ -124,6 +123,17 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
         setLoading(false);
       } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
         setLoading(false);
       }
     };
@@ -274,8 +284,17 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
       setLocalProspectData([refreshedData]);
     } catch (error) {
-      setErrorMessage(errorMessagesEnum.updateProspectDescription.i18n[lang]);
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -432,13 +451,13 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           <></>
         )}
       </BaseModal>
-      {errorModal && (
+      {showErrorModal && (
         <ErrorModal
-          isMobile={isMobile}
-          message={errorMessage}
           handleClose={() => {
-            setErrorModal(false);
+            setShowErrorModal(false);
           }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

@@ -55,6 +55,8 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
     dataProspect,
     eventData,
     setCurrentStep,
+    setShowErrorModal,
+    showErrorModal,
   } = props;
 
   return (
@@ -260,6 +262,16 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
           isMobile={isMobile}
           message={errorMessage}
           handleClose={() => setErrorModal(false)}
+        />
+      )}
+
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={errorMessage}
         />
       )}
     </>

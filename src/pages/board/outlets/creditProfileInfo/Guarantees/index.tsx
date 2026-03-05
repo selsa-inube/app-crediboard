@@ -9,13 +9,14 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { getGuaranteesSummary } from "@services/creditRequest/query/guaranteesSummary";
 import { IGuaranteesSummary } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   dataGuaranteesEnum,
   guaranteesLabelsEnum,
   getGuaranteesTranslations,
 } from "./config";
-import { ICrediboardData } from "@context/AppContext/types";
 
 interface GuaranteesProps {
   businessUnitPublicCode: string;
@@ -37,7 +38,8 @@ export function Guarantees(props: GuaranteesProps) {
 
   const [guaranteesSummary, setGuaranteesSummary] =
     useState<IGuaranteesSummary | null>(null);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const fetchLaborStabilityByCustomerId = async () => {
     if (!creditRequestId) return;
 
@@ -50,12 +52,17 @@ export function Guarantees(props: GuaranteesProps) {
       );
       setGuaranteesSummary(data);
     } catch (error) {
-      if (typeof error === "object" && error !== null) {
-        throw {
-          ...(error as object),
-          message: (error as Error).message,
-        };
-      }
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -138,6 +145,15 @@ export function Guarantees(props: GuaranteesProps) {
               ).join(", ")}
             </Text>
           </Stack>
+          {showErrorModal && (
+            <ErrorModal
+              handleClose={() => {
+                setShowErrorModal(false);
+              }}
+              isMobile={isMobile}
+              message={messageError}
+            />
+          )}
         </Stack>
       )}
     </CardInfoContainer>

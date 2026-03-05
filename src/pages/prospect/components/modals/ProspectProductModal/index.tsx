@@ -151,7 +151,17 @@ function EditProductModal(props: EditProductModalProps) {
           setAllowedRateCodes(codes);
         }
       } catch (error) {
-        console.error("Error fetching filtered rules", error);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       } finally {
         setIsLoadingRateTypes(false);
       }
@@ -434,7 +444,17 @@ function EditProductModal(props: EditProductModalProps) {
         setIncrementError("");
       }
     } catch (error) {
-      setIncrementError(validationMessages.incrementValidationError);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     } finally {
       setIsValidatingIncrement(false);
     }

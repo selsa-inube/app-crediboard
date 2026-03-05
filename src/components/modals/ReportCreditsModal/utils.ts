@@ -1,11 +1,12 @@
+import { IBorrowerDocumentRule } from "@pages/prospect/components/SourceIncome/types";
 import { useState } from "react";
-import { mockFinancialObligation } from "@mocks/add-prospect/financial-obligation/financialobligation.mock";
 
-export const usePagination = () => {
+
+export const usePagination = (dataToRender: IBorrowerDocumentRule[]) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const pageLength = 5;
-  const totalRecords = mockFinancialObligation.length;
+  const totalRecords = dataToRender.length;
   const totalPages = Math.ceil(totalRecords / pageLength);
 
   const handleStartPage = () => setCurrentPage(0);
@@ -17,7 +18,7 @@ export const usePagination = () => {
   const firstEntryInPage = currentPage * pageLength;
   const lastEntryInPage = Math.min(firstEntryInPage + pageLength, totalRecords);
 
-  const currentData = mockFinancialObligation.slice(firstEntryInPage, lastEntryInPage);
+  const currentData = dataToRender.slice(firstEntryInPage, lastEntryInPage);
 
   return {
     currentPage,

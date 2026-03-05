@@ -15,7 +15,26 @@ export interface EmptyNoveltiesConfig {
     actionIcon: React.ReactNode;
   };
 }
-
+export const errorBoardConfigEnum = {
+  business: {
+    title: {
+      code: "ErrorBoard_business_title",
+      description: "Error loading business units",
+      i18n: {
+        en: "Error loading business units",
+        es: "Error al cargar unidades de negocio",
+      },
+    },
+    description: {
+      code: "ErrorBoard_business_description",
+      description: "Could not load the business units. Please try again.",
+      i18n: {
+        en: "Could not load the business units. Please try again.",
+        es: "No se pudieron cargar las unidades de negocio. Intente de nuevo.",
+      },
+    },
+  },
+};
 export const emptyNoveltiesConfigEnum = {
   image: {
     src: userImage,

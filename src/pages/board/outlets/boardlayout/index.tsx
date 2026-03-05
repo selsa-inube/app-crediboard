@@ -87,7 +87,8 @@ function BoardLayout() {
     assignment: "",
     status: "",
   });
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const boardColumns = getBoardColumns(activeOptions, filters.boardOrientation);
 
   const fetchBoardData = async (
@@ -159,7 +160,17 @@ function BoardLayout() {
         setErrorLoadingPins(true);
       }
     } catch (error) {
-      console.error("Error fetching board data:", error);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
       setHasServerError(true);
     }
   };
@@ -408,7 +419,17 @@ function BoardLayout() {
         return;
       }
     } catch (error) {
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -803,6 +824,15 @@ function BoardLayout() {
           handleClose={() => {
             setErrorModal(false);
           }}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

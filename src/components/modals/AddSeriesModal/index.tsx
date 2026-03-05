@@ -290,11 +290,22 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
         );
         setPayrollSpecial(data);
       } catch (error) {
-        console.log(error);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     cycleOptions,
     lineOfCreditAbbreviatedName,

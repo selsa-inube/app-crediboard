@@ -26,6 +26,7 @@ import { ICrediboardData } from "@context/AppContext/types";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 import { getSearchAllRequirementsByBusinessUnit } from "@services/requirementsPackages/searchAllRequirementsByBusinessUnit";
 import { AddRequirementMock } from "@mocks/addRequirement";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   infoItems,
@@ -76,6 +77,8 @@ export const Requirements = (props: IRequirementsProps) => {
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const [showAprovalsModal, setShowAprovalsModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
   const [approvalSystemValues, setApprovalSystemValues] = useState<
     Record<
@@ -148,9 +151,9 @@ export const Requirements = (props: IRequirementsProps) => {
         );
 
         setRawRequirements(data);
-
-        if (!Array.isArray(data) || data.length === 0) {
-          throw new Error("No hay requisitos disponibles.");
+        if (data.length === 0) {
+          setDataRequirements([]);
+          return;
         }
 
         const mapped: MappedRequirements = {
@@ -285,11 +288,21 @@ export const Requirements = (props: IRequirementsProps) => {
         const processedRequirements = maperDataRequirements(
           processedEntries,
           lang,
+          () => {},
         );
         setDataRequirements(processedRequirements);
       } catch (error) {
-        console.error("Error fetching requirements:", error);
-        setError(true);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -306,8 +319,17 @@ export const Requirements = (props: IRequirementsProps) => {
         );
         setRequirement(data);
       } catch (error) {
-        console.error("Error fetching requirements:", error);
-        setError(true);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -532,8 +554,9 @@ export const Requirements = (props: IRequirementsProps) => {
       );
       setRawRequirements(data);
 
-      if (!Array.isArray(data) || data.length === 0) {
-        throw new Error("No hay requisitos disponibles.");
+      if (data.length === 0) {
+        setDataRequirements([]);
+        return;
       }
 
       const mapped: MappedRequirements = {
@@ -564,10 +587,21 @@ export const Requirements = (props: IRequirementsProps) => {
       const processedRequirements = maperDataRequirements(
         processedEntries,
         lang,
+        () => {},
       );
       setDataRequirements(processedRequirements);
     } catch (error) {
-      console.error("Error refreshing requirements:", error);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -863,6 +897,15 @@ export const Requirements = (props: IRequirementsProps) => {
           rawRequirements={rawRequirements}
           setJustificationRequirement={setJustificationRequirement}
           justificationRequirement={justificationRequirement}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>
