@@ -73,6 +73,10 @@ export function DisbursementWithExternalAccount(
     handleCheckboxChange,
     handleToggleChange,
     isInvalidAmount,
+    showErrorModal,
+    setShowErrorModal,
+    messageError,
+    setMessageError,
   } = useDisbursementForm(props);
 
   const [banks, setBanks] = useState<IOptionsSelect[]>([]);
@@ -91,10 +95,21 @@ export function DisbursementWithExternalAccount(
         }));
         setBanks(formattedBanks);
       } catch (error) {
-        setModalError(true);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
     fetchBanks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues, eventData.token]);
 
   useEffect(() => {
@@ -309,6 +324,15 @@ export function DisbursementWithExternalAccount(
             setAlreadyShowMessageErrorBank(true);
             setModalError(false);
           }}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

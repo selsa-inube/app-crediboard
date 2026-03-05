@@ -73,9 +73,7 @@ export const titlesMock = [
   },
 ];
 
-const receiveData = (data: IEntries) => {
-  console.log(data);
-};
+const receiveData = () => {};
 
 export const actionsMock: IAction[] = [
   {
@@ -88,9 +86,9 @@ export const actionsMock: IAction[] = [
           appearance={appearanceIcon(
             isValidElement(data?.tag)
               ? data?.tag?.props?.children?.props?.label
-              : "primary"
+              : "primary",
           )}
-          onClick={() => receiveData(data)}
+          onClick={() => receiveData()}
           spacing="compact"
           size="24px"
           cursorHover
@@ -108,7 +106,7 @@ export const actionsMock: IAction[] = [
         spacing="compact"
         cursorHover
         size="24px"
-        onClick={() => receiveData(data)}
+        onClick={() => receiveData()}
         disabled={
           isValidElement(data?.tag) &&
           data?.tag?.props?.children?.props?.label === "Sin Validar"
@@ -118,9 +116,7 @@ export const actionsMock: IAction[] = [
   },
 ];
 
-const resiveDataMobile = (data: IEntries) => {
-  console.log(data, "function que recibe data");
-};
+const resiveDataMobile = () => {};
 
 const iconActionsMobile = (tag: string) => {
   if (tag === "Cumple") {
@@ -173,14 +169,14 @@ export const actionMobileMock: IAction[] = [
   {
     id: "agregar",
     actionName: "Agregar",
-    content: (data: IEntries) => (
+    content: () => (
       <Icon
         icon={<MdAddCircleOutline />}
         appearance="primary"
         spacing="compact"
         size="24px"
         cursorHover
-        onClick={() => resiveDataMobile(data)}
+        onClick={() => resiveDataMobile()}
       />
     ),
   },

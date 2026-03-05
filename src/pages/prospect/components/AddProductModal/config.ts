@@ -228,9 +228,11 @@ export const isRuleArray = (value: TRuleInput): value is TRuleArrayValue => {
 export interface IAddProductModalUIProps {
   title: string;
   setCurrentStep: (step: number) => void;
+  showErrorModal: boolean;
   confirmButtonText: string;
   initialValues: Partial<IFormValues>;
   validationSchema: Yup.AnyObjectSchema;
+  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
   onConfirm: (values: IFormValues) => void;
   onCloseModal: () => void;
   iconBefore?: React.JSX.Element;

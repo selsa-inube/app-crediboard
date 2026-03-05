@@ -316,8 +316,17 @@ export const CardCommercialManagement = (
         }
       } catch (error) {
         setGeneralLoading(false);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
         setShowErrorModal(true);
-        setMessageError(tittleOptions.descriptionError);
+        setMessageError(description);
       }
     };
     if (prospectData) {
@@ -340,8 +349,17 @@ export const CardCommercialManagement = (
         );
         setDeductibleExpenses(data);
       } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
         setShowErrorModal(true);
-        setMessageError(`${error}`);
+        setMessageError(description);
       } finally {
         setGeneralLoading(false);
       }
@@ -629,7 +647,9 @@ export const CardCommercialManagement = (
         )}
         {showErrorModal && (
           <ErrorModal
-            handleClose={() => setShowErrorModal(false)}
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
             isMobile={isMobile}
             message={messageError}
           />

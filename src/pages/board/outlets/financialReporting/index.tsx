@@ -102,7 +102,8 @@ export const FinancialReporting = () => {
   const [showGuarantee, setShowGuarantee] = useState(false);
   const [document, setDocument] = useState<IListdataProps["data"]>([]);
   const [errorGetProspects, setErrorGetProspects] = useState(false);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [dataProspect, setDataProspect] = useState<IProspect>();
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
@@ -201,7 +202,17 @@ export const FinancialReporting = () => {
       setDocument(documentsUser);
       setAttachDocuments(true);
     } catch (error) {
-      console.error(error);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
       setShowNoDocumentsModal(true);
     } finally {
       setIsLoadingDocuments(false);
@@ -231,10 +242,19 @@ export const FinancialReporting = () => {
       );
       setDataProspect(Array.isArray(result) ? result[0] : result);
     } catch (error) {
-      setErrorMessage(errorMessagesEnum.searchProspect.description.i18n[lang]);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
       setErrorModal(true);
       setErrorGetProspects(true);
-      console.error("Error al obtener los prospectos:", error);
     } finally {
       setGeneralLoading(false);
     }
@@ -425,8 +445,17 @@ export const FinancialReporting = () => {
         setErrorsService(mappedErrors);
       }
     } catch (error) {
-      setErrorModal(true);
-      setErrorMessage(errorMessagesEnum.unreadErrors.description.i18n[lang]);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -779,6 +808,16 @@ export const FinancialReporting = () => {
           handleClose={handleSharePdfModal}
           handleNext={handleSharePdf}
           lang={lang}
+        />
+      )}
+
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </div>

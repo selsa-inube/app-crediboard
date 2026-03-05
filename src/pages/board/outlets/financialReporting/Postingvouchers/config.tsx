@@ -1,12 +1,6 @@
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { Icon } from "@inubekit/inubekit";
 
-import { IEntries } from "@components/data/TableBoard/types";
-
-const entrySelection = (data: IEntries) => {
-  console.log(data);
-};
-
 export const titlesPostingvouchersEnum = {
   obligationCode: {
     id: "obligationCode",
@@ -29,6 +23,7 @@ export const titlesPostingvouchersEnum = {
     priority: 2,
   },
 };
+
 export const documentCodeText = {
   id: "documentCodeText",
   code: "TitlesPostingvouchers_documentCodeText",
@@ -38,11 +33,12 @@ export const documentCodeText = {
     es: "El documento no fue entregado.",
   },
 };
+
 export const actionsPostingvouchers = [
   {
     id: "ver imagen",
     actionName: "Ver Imagen",
-    content: (data: IEntries) => (
+    content: () => (
       <Icon
         appearance="primary"
         size="22px"
@@ -50,7 +46,6 @@ export const actionsPostingvouchers = [
         variant="empty"
         cursorHover
         icon={<MdOutlineRemoveRedEye />}
-        onClick={() => entrySelection(data)}
       />
     ),
   },
@@ -58,7 +53,5 @@ export const actionsPostingvouchers = [
 
 export const actionMobile = actionsPostingvouchers.map((action) => ({
   id: action.id,
-  content: (data: IEntries) => (
-    <div onClick={() => entrySelection(data)}>{action.content(data)}</div>
-  ),
+  content: () => <div>{action.content()}</div>,
 }));

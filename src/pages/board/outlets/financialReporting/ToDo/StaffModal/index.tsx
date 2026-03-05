@@ -21,7 +21,7 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 
 import { changeUsersByCreditRequest } from "./utils";
-import { txtFlagsEnum, errorMessages, staffModalTextsEnum } from "../config";
+import { txtFlagsEnum, staffModalTextsEnum } from "../config";
 import { traceObserver } from "../../config";
 
 export interface StaffModalProps {
@@ -75,8 +75,8 @@ export function StaffModal(props: StaffModalProps) {
   const { lang } = useEnum();
 
   const [showModal, setShowModal] = useState(false);
-  const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const validationSchema = Yup.object().shape({
     commercialManager: Yup.string(),
@@ -251,10 +251,17 @@ export function StaffModal(props: StaffModalProps) {
       });
       traceObserver.notify({});
     } catch (error) {
-      setErrorMessage(
-        errorMessages.patchChangeUsersByCreditRequest.description,
-      );
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     } finally {
       if (onCloseModal) onCloseModal();
       handleToggleModal();
@@ -391,13 +398,13 @@ export function StaffModal(props: StaffModalProps) {
           );
         }}
       </Formik>
-      {errorModal && (
+      {showErrorModal && (
         <ErrorModal
-          isMobile={isMobile}
-          message={errorMessage}
           handleClose={() => {
-            setErrorModal(false);
+            setShowErrorModal(false);
           }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

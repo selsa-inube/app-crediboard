@@ -20,6 +20,7 @@ import {
 } from "@utils/formatData/currency";
 import { IProspect } from "@services/prospect/types";
 import { EnumType } from "@hooks/useEnum";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   disbursementGeneralEnum,
@@ -65,6 +66,9 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
     handleCheckboxChange,
     handleToggleChange,
     isInvalidAmount,
+    showErrorModal,
+    setShowErrorModal,
+    messageError,
   } = useDisbursementForm(props);
 
   return (
@@ -182,6 +186,15 @@ export function DisbursementWithCash(props: IDisbursementWithCashProps) {
           fullwidth
         />
       </Stack>
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
+      )}
     </Stack>
   );
 }

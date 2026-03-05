@@ -51,7 +51,7 @@ import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectB
 import { IAllEnumsResponse } from "@services/enumerators/types";
 
 import { AddProductModal } from "../AddProductModal";
-import { configModal, dataCreditProspectEnum, errorMessage } from "./config";
+import { configModal, dataCreditProspectEnum } from "./config";
 import { StyledPrint, StyledPrintCardProspect } from "./styles";
 import { IIncomeSources } from "./types";
 import { IncomeModal } from "../modals/IncomeModal";
@@ -314,8 +314,17 @@ export function CreditProspect(props: ICreditProspectProps) {
         duration: 5000,
       });
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
-      setMessageError(dataCreditProspectEnum.errorCredit.i18n[lang]);
+      setMessageError(description);
     } finally {
       setGeneralLoading(false);
     }
@@ -363,8 +372,17 @@ export function CreditProspect(props: ICreditProspectProps) {
       handleCloseModal();
       setShowMessageSuccessModal(true);
     } catch (error) {
-      setMessageError(`${errorMessage.addCreditProduct.description}`);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
+      setMessageError(description);
     } finally {
       setGeneralLoading(false);
     }

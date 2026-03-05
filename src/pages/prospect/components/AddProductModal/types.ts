@@ -44,4 +44,3 @@ export interface IExtraInstallmentsAllowedResponse {
 export interface IFinancialObligationsUpdateResponse {
   financialObligationsUpdateRequired: string;
 }
-

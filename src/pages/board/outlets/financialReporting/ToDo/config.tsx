@@ -2,7 +2,7 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 
 export const infoIcon = {
   icon: <MdOutlineModeEditOutline />,
-  onClick: () => console.log("info"),
+  onClick: () => {},
 };
 
 export const errorMessages = {
@@ -85,6 +85,7 @@ export const staffConfigEnum = {
     },
   },
 };
+
 export const staffModalTextsEnum = {
   title: {
     code: "staffModal_title",
@@ -157,6 +158,7 @@ export const staffModalTextsEnum = {
     },
   },
 };
+
 export const errorMessaggeEnum = {
   default: {
     code: "ErrorMessage_default",
@@ -430,7 +432,6 @@ export const txtConfirmRepresentativeEnum = {
       es: "¿Deseas continuar?",
     },
   },
-
   processingDefault: {
     code: "TxtConfirmRepresentative_processingDefault",
     description: "Default text when no decision is selected",
@@ -455,7 +456,6 @@ export const txtConfirmRepresentativeEnum = {
       es: "Seleccione una opción",
     },
   },
-
   taskLabel: {
     code: "TxtLabels_taskLabel",
     description: "Label for task field",
@@ -465,6 +465,7 @@ export const txtConfirmRepresentativeEnum = {
     },
   },
 };
+
 export const errorMessagesEnum = {
   patchChangeUsersByCreditRequest: {
     code: "ErrorMessages_patchChangeUsersByCreditRequest",

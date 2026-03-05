@@ -26,7 +26,7 @@ import {
   StyledFilterIcon,
 } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
-import { configOptionEnum, infoModalEnum, messagesErrorEnum } from "./config";
+import { configOptionEnum, infoModalEnum } from "./config";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -85,7 +85,7 @@ function BoardSection(props: BoardSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const { lang } = useEnum();
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const businessManagerCode = eventData.businessManager.publicCode;
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
@@ -166,10 +166,17 @@ function BoardSection(props: BoardSectionProps) {
         eventData.user.identificationDocumentNumber || "",
       );
     } catch (error) {
-      setMessageError(
-        messagesErrorEnum.changeTracesToReadById.description.i18n[lang],
-      );
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -359,6 +366,15 @@ function BoardSection(props: BoardSectionProps) {
             </Text>
           </Stack>
         </BaseModal>
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
       )}
     </StyledBoardSection>
   );

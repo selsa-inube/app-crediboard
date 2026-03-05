@@ -12,6 +12,7 @@ import { UnfoundData } from "@components/layout/UnfoundData";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
 import { useEnum } from "@hooks/useEnum";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   actionsPostingvouchers,
@@ -19,7 +20,7 @@ import {
   actionMobile,
   documentCodeText,
 } from "./config";
-import { errorMessagesEnum, errorObserver } from "../config";
+import { errorMessagesEnum } from "../config";
 
 interface IApprovalsProps {
   user: string;
@@ -37,6 +38,8 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const titles = useMemo(() => {
     return Object.values(titlesPostingvouchersEnum).map((title) => ({
@@ -62,11 +65,17 @@ export const Postingvouchers = (props: IApprovalsProps) => {
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
-      console.error(error);
-      errorObserver.notify({
-        id: "Management",
-        message: (error as Error).message.toString(),
-      });
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   }, [
     businessUnitPublicCode,
@@ -93,7 +102,17 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         );
         setPositionsAccountingVouchers(vouchers);
       } catch (error) {
-        console.error("Error loading accounting vouchers:", error);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       } finally {
         setLoading(false);
       }
@@ -159,6 +178,15 @@ export const Postingvouchers = (props: IApprovalsProps) => {
           />
         )}
       </Fieldset>
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
+      )}
     </Stack>
   );
 };

@@ -154,8 +154,17 @@ export function SourceIncome(props: ISourceIncomeProps) {
         }
       }
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
-      setMessageError(dataReportEnum.errorIncome.i18n[lang]);
+      setMessageError(description);
     } finally {
       setIsOpenModal(false);
     }

@@ -31,6 +31,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { IEntries } from "@components/data/TableBoard/types";
 import { getApprovalBoardRepresentablePersons } from "@services/creditRequest/query/approvalBoardRepresentablePersons";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -45,7 +46,7 @@ import {
 import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
 import { StyledHorizontalDivider, StyledTextField } from "../styles";
-import { errorMessagesEnum, errorObserver } from "../config";
+import { errorMessagesEnum } from "../config";
 import { DecisionModal } from "./DecisionModal";
 
 interface ToDoProps {
@@ -64,6 +65,8 @@ function ToDo(props: ToDoProps) {
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [staff, setStaff] = useState<IStaff[]>([]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [taskDecisions, setTaskDecisions] = useState<ITaskDecisionOption[]>([]);
   const [selectedDecision, setSelectedDecision] =
     useState<ITaskDecisionOption | null>(null);
@@ -140,7 +143,17 @@ function ToDo(props: ToDoProps) {
             setSelectedRepresentative(persons[0]);
           }
         } catch (error) {
-          console.error("Error fetching representable persons:", error);
+          const err = error as {
+            message?: string;
+            status?: number;
+            data?: { description?: string; code?: string };
+          };
+          const code = err?.data?.code ? `[${err.data.code}] ` : "";
+          const description =
+            code + (err?.message || "") + (err?.data?.description || "");
+
+          setShowErrorModal(true);
+          setMessageError(description);
           setHasRepresentablePersonsAccess(false);
           setRepresentablePersons([]);
         }
@@ -170,11 +183,17 @@ function ToDo(props: ToDoProps) {
 
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -205,11 +224,17 @@ function ToDo(props: ToDoProps) {
         setTaskData(data);
         data.prospectId && setIdProspect(data.prospectId);
       } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -246,11 +271,17 @@ function ToDo(props: ToDoProps) {
           : [];
         setTaskDecisions(formattedDecisions);
       } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -304,11 +335,17 @@ function ToDo(props: ToDoProps) {
         );
         setTaskData(data);
       } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     }
   };
@@ -533,7 +570,7 @@ function ToDo(props: ToDoProps) {
         isNoLongerResponsibleForApproval()) &&
       hasRepresentablePersonsAccess === false
     ) {
-      return true; 
+      return true;
     }
 
     return !(
@@ -814,6 +851,15 @@ function ToDo(props: ToDoProps) {
             )}
           </Stack>
         </BaseModal>
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
       )}
     </>
   );

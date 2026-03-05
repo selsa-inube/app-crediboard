@@ -6,10 +6,6 @@ import check from "@assets/images/check.svg";
 import close from "@assets/images/close.svg";
 import remove from "@assets/images/remove.svg";
 
-const entrySelection = (data: IEntries) => {
-  console.log(data);
-};
-
 export const titlesFinancialReportingEnum = {
   obligationCode: {
     id: "obligationCode",
@@ -171,7 +167,9 @@ export const getActionsMobileIcon = (lang: "es" | "en") => [
   },
 ];
 
-export const actionsFinanacialReporting = [
+export const getActionsFinancialReporting = (
+  entrySelection: (data: IEntries) => void,
+) => [
   {
     id: "Reenviar",
     actionName: "Reenviar",
@@ -213,7 +211,7 @@ export const infoItems = [
   },
 ];
 
-export const actionMobile = [
+export const getActionMobile = (entrySelection: (data: IEntries) => void) => [
   {
     id: "Reenviar",
     actionName: "Reenviar",
@@ -249,7 +247,7 @@ export const firstWord = (text: string) => text.split(" ")[0];
 export const getTableBoardActionMobile = (
   entrySelection: (data: IEntries) => void,
 ) =>
-  actionMobile.map((action) => ({
+  getActionMobile(entrySelection).map((action) => ({
     id: action.id,
     actionName: action.actionName,
     label: "Mobile Action Label",

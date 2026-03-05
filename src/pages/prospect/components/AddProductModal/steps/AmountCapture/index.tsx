@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from "react";
+import { useMediaQuery } from "@inubekit/inubekit";
 
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { IBusinessUnitRules } from "@services/businessUnitRules/types";
@@ -23,10 +24,11 @@ export function AmountCapture(props: IAmountCaptureProps) {
   } = props;
 
   const { eventData } = useContext(AppContext);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [loanAmountError, setLoanAmountError] = useState<string>("");
   const [displayValue, setDisplayValue] = useState<string>("");
-
+  const isMobile: boolean = useMediaQuery("(max-width: 555px)");
   const validateLoanAmount = async (amountValue: number): Promise<void> => {
     try {
       setLoanAmountError("");
@@ -71,7 +73,17 @@ export function AmountCapture(props: IAmountCaptureProps) {
         setLoanAmountError(amountCaptureTexts.errors.validationFailed);
       }
     } catch (error) {
-      setLoanAmountError(amountCaptureTexts.errors.validationError);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -124,6 +136,10 @@ export function AmountCapture(props: IAmountCaptureProps) {
       loanAmountError={loanAmountError}
       amountCaptureTexts={amountCaptureTexts}
       handleCurrencyChange={handleCurrencyChange}
+      showErrorModal={showErrorModal}
+      setShowErrorModal={setShowErrorModal}
+      messageError={messageError}
+      isMobile={isMobile}
     />
   );
 }

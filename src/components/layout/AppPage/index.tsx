@@ -25,6 +25,7 @@ import { getUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnrea
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
 import { useEnum } from "@hooks/useEnum";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   StyledAppPage,
@@ -64,6 +65,8 @@ function AppPage() {
   const [noveltiesData, setNoveltiesData] = useState<IUnreadNoveltiesByUser[]>(
     [],
   );
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const navigate = useNavigate();
   const { businessUnitSigla } = useContext(AppContext);
   const { lang } = useEnum();
@@ -175,7 +178,17 @@ function AppPage() {
         );
         setNoveltiesData(data);
       } catch (error) {
-        console.error("Error fetching novelties:", error);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       } finally {
         setIsLoadingBusinessUnit(false);
       }
@@ -208,7 +221,6 @@ function AppPage() {
   return (
     <StyledAppPage>
       <Grid templateRows="auto 1fr" height="100vh" justifyContent="unset">
-   
         <StyledPrint>
           <StyledHeaderContainer>
             <Header
@@ -338,6 +350,16 @@ function AppPage() {
           </StyledFooter>
         </StyledContainer>
       </Grid>
+
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
+      )}
     </StyledAppPage>
   );
 }
