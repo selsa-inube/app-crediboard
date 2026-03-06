@@ -824,7 +824,7 @@ function ToDo(props: ToDoProps) {
         >
           <Stack direction="column" gap="16px">
             <Text>
-              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} "${selectedDecision?.label || txtConfirmRepresentativeEnum.processingDefault.i18n[lang]}" ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} "${selectedRepresentative || representablePersons[0] || "..."}", ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
+              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} ${selectedDecision?.label || txtConfirmRepresentativeEnum.processingDefault.i18n[lang]} ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} ${selectedRepresentative || representablePersons[0] || "..."}, ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
             </Text>
             {representablePersons.length > 1 && (
               <Select

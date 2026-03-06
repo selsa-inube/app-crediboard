@@ -10,8 +10,8 @@ export const staffConfigEnum = {
     code: "StaffConfig_title",
     description: "Title for staff roles",
     i18n: {
-      en: "Commercial Manager and Analyst",
-      es: "Gestor Comercial y Analista",
+      en: "Commercial Manager and Credit Analyst",
+      es: "Gestor Comercial y Analista de Crédito",
     },
   },
   confirm: {
@@ -86,7 +86,7 @@ export const staffModalTextsEnum = {
     description: "Title of the staff modal",
     i18n: {
       en: "Commercial Manager and Analyst",
-      es: "Gestor Comercial y Analista",
+      es: "Gestor Comercial y Analista de Crédito",
     },
   },
   commercialManagerLabel: {
@@ -119,8 +119,8 @@ export const staffModalTextsEnum = {
     code: "staffModal_analystLabel",
     description: "Label for the analyst field",
     i18n: {
-      en: "Analyst",
-      es: "Analista",
+      en: "Credit Analyst",
+      es: "Analista de Crédito",
     },
   },
   analystPlaceholder: {
@@ -137,8 +137,8 @@ export const staffModalTextsEnum = {
     description:
       "Placeholder for the analyst select when no options are available",
     i18n: {
-      en: "No analysts available",
-      es: "No hay analistas disponibles",
+      en: "No credit analysts available",
+      es: "No hay analistas de crédito disponibles",
     },
   },
   justification: {
@@ -339,8 +339,8 @@ export const txtTaskQueryEnum = {
     code: "TxtTaskQuery_txtAnalyst",
     description: "Label for analyst",
     i18n: {
-      en: "Analyst",
-      es: "Analista",
+      en: "Credit Analyst",
+      es: "Analista de Crédito",
     },
   },
 };
