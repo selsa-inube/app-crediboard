@@ -46,6 +46,7 @@ import { useEnum } from "@hooks/useEnum";
 import { IEntries } from "@components/data/TableBoard/types";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+import { DecisionModalRedirect } from "@components/modals/DecisionModalRedirect";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -102,6 +103,9 @@ export const FinancialReporting = () => {
   const [showGuarantee, setShowGuarantee] = useState(false);
   const [document, setDocument] = useState<IListdataProps["data"]>([]);
   const [errorGetProspects, setErrorGetProspects] = useState(false);
+  const [showModalDecision, setShowModalDecision] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [dataProspect, setDataProspect] = useState<IProspect>();
@@ -354,6 +358,10 @@ export const FinancialReporting = () => {
     menuIcon: () => setShowMenu(true),
   });
 
+  const handleDecisionModal = () => {
+    setShowModalDecision(true);
+  };
+
   const handleCloseErrorService = (errorId: string) => {
     setErrorsService(removeErrorByIdServices(errorsService, errorId));
   };
@@ -466,6 +474,33 @@ export const FinancialReporting = () => {
     //eslint-disable-next-line
   }, [data]);
 
+  const fetchCreditRequest = useCallback(async () => {
+    if (!creditRequestCode || !businessUnitPublicCode) return;
+
+    try {
+      setGeneralLoading(true);
+      const result = await getCreditRequestByCode(
+        businessUnitPublicCode,
+        businessManagerCode,
+        creditRequestCode,
+        eventData.user.identificationDocumentNumber || "",
+        eventData.token || "",
+      );
+      setData(result[0]);
+    } catch (error) {
+      console.error("Error al refrescar:", error);
+    } finally {
+      setGeneralLoading(false);
+    }
+    //eslint-disable-next-line
+  }, [
+    creditRequestCode,
+    businessUnitPublicCode,
+    businessManagerCode,
+    eventData.user.identificationDocumentNumber,
+    eventData.token,
+  ]);
+
   const handleDeleteCreditRequest = async () => {
     const creditRequests: IDeleteCreditRequest = {
       creditRequestId: data?.creditRequestId ?? "",
@@ -498,6 +533,7 @@ export const FinancialReporting = () => {
         handleToggleModal();
         setTimeout(() => {
           navigation("/");
+          setShowModalDecision(false);
         }, 1000);
       });
   };
@@ -510,8 +546,26 @@ export const FinancialReporting = () => {
     setPdfState({ isGenerating: false, blob: null, showShareModal: false });
   };
 
+  const handleResetForm = () => {
+    setResetKey((prev) => prev + 1);
+  };
+
   return (
-    <div ref={dataCommercialManagementRef}>
+    <div ref={dataCommercialManagementRef} key={resetKey}>
+      {showModalDecision && (
+        <DecisionModalRedirect
+          onCloseModal={() => {
+            setShowModalDecision(false);
+          }}
+          lang={lang}
+          creditRequestCode={creditRequestCode || ""}
+          refresh={async () => {
+            setShowModalDecision(false);
+            handleResetForm();
+            await fetchCreditRequest();
+          }}
+        />
+      )}
       <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
       <StyledMarginPrint $isMobile={isMobile}>
         <Stack direction="column">
@@ -577,6 +631,7 @@ export const FinancialReporting = () => {
                         user={user!.nickname!}
                         setIdProspect={setIdProspect}
                         approvalsEntries={approvalsEntries}
+                        handleDecisionModal={handleDecisionModal}
                       />
                     </Stack>
                   </BlockPdfSection>

@@ -46,6 +46,8 @@ export interface IBaseModalProps {
   isLoading?: boolean;
   marginsMobile?: boolean;
   gap?: string;
+  withoutHeader?: boolean;
+  hiddenBottom?: boolean;
 }
 
 export function BaseModal(props: IBaseModalProps) {
@@ -77,6 +79,8 @@ export function BaseModal(props: IBaseModalProps) {
     marginBottom,
     marginTop,
     gap = "24px",
+    withoutHeader = false,
+    hiddenBottom = false,
   } = props;
 
   const { lang } = useEnum();
@@ -105,54 +109,58 @@ export function BaseModal(props: IBaseModalProps) {
           width={internalWidth || "auto"}
           height={height}
         >
-          <Stack justifyContent="space-between" alignItems="center">
-            <Text size="small" type="headline">
-              {title}
-            </Text>
-            <StyledContainerClose onClick={handleClose || handleBack}>
-              <Stack alignItems="center" gap="8px">
-                <Text type="body" size="large">
-                  {dataBaseModalEnum.close.i18n[lang]}
-                </Text>
-                <Icon
-                  icon={<MdClear />}
-                  size="24px"
-                  cursorHover
-                  appearance="dark"
-                />
-              </Stack>
-            </StyledContainerClose>
-          </Stack>
+          {!withoutHeader && (
+            <Stack justifyContent="space-between" alignItems="center">
+              <Text size="small" type="headline">
+                {title}
+              </Text>
+              <StyledContainerClose onClick={handleClose || handleBack}>
+                <Stack alignItems="center" gap="8px">
+                  <Text type="body" size="large">
+                    {dataBaseModalEnum.close.i18n[lang]}
+                  </Text>
+                  <Icon
+                    icon={<MdClear />}
+                    size="24px"
+                    cursorHover
+                    appearance="dark"
+                  />
+                </Stack>
+              </StyledContainerClose>
+            </Stack>
+          )}
           {initialDivider && <Divider />}
           <Stack direction="column">{children}</Stack>
           {finalDivider && <Divider />}
-          <Stack justifyContent="end" gap="20px">
-            {backButton && (
-              <Button
-                onClick={handleBack || handleClose}
-                disabled={disabledBack}
-                variant="outlined"
-                appearance="gray"
-                iconAfter={iconAfterback}
-                iconBefore={iconBeforeback}
-              >
-                {backButton}
-              </Button>
-            )}
-            {nextButton && (
-              <Button
-                onClick={handleNext}
-                disabled={disabledNext}
-                iconAfter={iconAfterNext}
-                iconBefore={iconBeforeNext}
-                appearance={apparenceNext}
-                variant={variantNext}
-                loading={isLoading}
-              >
-                {nextButton}
-              </Button>
-            )}
-          </Stack>
+          {!hiddenBottom && (
+            <Stack justifyContent="end" gap="20px">
+              {backButton && (
+                <Button
+                  onClick={handleBack || handleClose}
+                  disabled={disabledBack}
+                  variant="outlined"
+                  appearance="gray"
+                  iconAfter={iconAfterback}
+                  iconBefore={iconBeforeback}
+                >
+                  {backButton}
+                </Button>
+              )}
+              {nextButton && (
+                <Button
+                  onClick={handleNext}
+                  disabled={disabledNext}
+                  iconAfter={iconAfterNext}
+                  iconBefore={iconBeforeNext}
+                  appearance={apparenceNext}
+                  variant={variantNext}
+                  loading={isLoading}
+                >
+                  {nextButton}
+                </Button>
+              )}
+            </Stack>
+          )}
         </Stack>
       </StyledContainer>
     </Blanket>,
