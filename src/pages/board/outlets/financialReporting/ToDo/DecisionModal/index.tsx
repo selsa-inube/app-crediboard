@@ -45,6 +45,7 @@ export interface DecisionModalProps {
   businessManagerCode: string;
   eventData: ICrediboardData;
   enums: IAllEnumsResponse | null;
+  handleDecisionModal: () => void;
   onSubmit?: (values: { textarea: string }) => void;
   onSecondaryButtonClick?: () => void;
   maxLength?: number;
@@ -63,6 +64,7 @@ export function DecisionModal(props: DecisionModalProps) {
     inputPlaceholder,
     businessManagerCode,
     onSubmit,
+    handleDecisionModal,
     enums,
     eventData,
     onSecondaryButtonClick,
@@ -150,6 +152,7 @@ export function DecisionModal(props: DecisionModalProps) {
       );
 
       if (response?.statusServices === 200) {
+        handleDecisionModal();
         addFlag({
           title: txtFlagsEnum.titleSuccess.i18n[lang],
           description: `${txtFlagsEnum.descriptionSuccess.i18n[lang]} ${response.status}`,
@@ -181,7 +184,7 @@ export function DecisionModal(props: DecisionModalProps) {
     textarea: "",
     selectedOptions: "",
   };
-  console.log(data);
+
   return (
     <>
       <Formik

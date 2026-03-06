@@ -707,6 +707,7 @@ function ToDo(props: ToDoProps) {
                   data={data}
                   eventData={eventData}
                   enums={enums}
+                  handleDecisionModal={props.handleDecisionModal}
                 />
               )}
               <Stack

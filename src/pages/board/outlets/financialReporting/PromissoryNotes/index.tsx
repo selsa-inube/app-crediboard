@@ -209,7 +209,9 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
     setShowRetry(false);
     fetchData();
   };
+
   useEffect(() => {
+    if (!publicCode) return;
     const fetchCustomer = async () => {
       try {
         const documentData = await searchAllCustomerCatalog(
@@ -218,8 +220,8 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
           businessManagerCode,
           eventData.token || "",
         );
+
         setDocumentPreview(documentData);
-        console.log(documentData);
       } catch (error) {
         const err = error as {
           message?: string;
