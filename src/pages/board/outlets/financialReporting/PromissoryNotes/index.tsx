@@ -15,6 +15,7 @@ import { AppContext } from "@context/AppContext";
 import { useEnum } from "@hooks/useEnum";
 import { IPayrollDiscountAuthorization } from "@services/creditRequest/query/types";
 import { IPromissoryNotes } from "@services/creditRequest/query/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   appearanceTag,
@@ -50,7 +51,8 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   const [showRetry, setShowRetry] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { businessUnitSigla, eventData } = useContext(AppContext);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -71,10 +73,17 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
         );
         setCreditRequests(data[0] as ICreditRequest);
       } catch (error) {
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message,
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
     if (id) fetchCreditRequest();
@@ -262,6 +271,15 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
                 });
                 setShowModal(false);
               }}
+            />
+          )}
+          {showErrorModal && (
+            <ErrorModal
+              handleClose={() => {
+                setShowErrorModal(false);
+              }}
+              isMobile={isMobile}
+              message={messageError}
             />
           )}
         </Stack>

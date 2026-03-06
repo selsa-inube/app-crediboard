@@ -25,6 +25,7 @@ import { AppContext } from "@context/AppContext";
 
 import { frcConfigEnum } from "./FrcConfig";
 import { StyledExpanded } from "./styles";
+import { ErrorModal } from "../ErrorModal";
 
 export interface ScoreModalProps {
   handleClose: () => void;
@@ -57,7 +58,8 @@ export const ScoreModal = (props: ScoreModalProps) => {
     useState<InfoModalType>("intercept");
   const [isExpanded, setIsExpanded] = useState(false);
   const { eventData } = useContext(AppContext);
-  const [error, setError] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [
     dataMaximumCreditLimitReciprocity,
     setDataMaximumCreditLimitReciprocity,
@@ -85,13 +87,28 @@ export const ScoreModal = (props: ScoreModalProps) => {
         if (data) {
           setDataMaximumCreditLimitReciprocity(data);
         }
-      } catch (err) {
-        setError(true);
+      } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
     fetchData();
-  }, [businessUnitPublicCode, businessManagerCode, clientIdentificationNumber, eventData.token]);
+  }, [
+    businessUnitPublicCode,
+    businessManagerCode,
+    clientIdentificationNumber,
+    eventData.token,
+  ]);
 
   const handleInfoClick = (type: InfoModalType) => {
     setCurrentInfoType(type);
@@ -122,7 +139,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
       variantNext="outlined"
       width={isMobile ? "290px" : "500px"}
     >
-      {error ? (
+      {showErrorModal ? (
         <Stack
           direction="column"
           alignItems="center"
@@ -433,6 +450,15 @@ export const ScoreModal = (props: ScoreModalProps) => {
               >
                 <Text>{getInfoText(currentInfoType)}</Text>
               </BaseModal>
+            )}
+            {showErrorModal && (
+              <ErrorModal
+                handleClose={() => {
+                  setShowErrorModal(false);
+                }}
+                isMobile={isMobile}
+                message={messageError}
+              />
             )}
           </Stack>
         </ScrollableContainer>

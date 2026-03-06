@@ -2,13 +2,7 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 
 export const infoIcon = {
   icon: <MdOutlineModeEditOutline />,
-  onClick: () => console.log("info"),
-};
-
-export const errorMessages = {
-  patchChangeUsersByCreditRequest: {
-    description: "",
-  },
+  onClick: () => {},
 };
 
 export const staffConfigEnum = {
@@ -16,8 +10,8 @@ export const staffConfigEnum = {
     code: "StaffConfig_title",
     description: "Title for staff roles",
     i18n: {
-      en: "Commercial Manager and Analyst",
-      es: "Gestor Comercial y Analista",
+      en: "Commercial Manager and Credit Analyst",
+      es: "Gestor Comercial y Analista de Crédito",
     },
   },
   confirm: {
@@ -86,6 +80,79 @@ export const staffConfigEnum = {
   },
 };
 
+export const staffModalTextsEnum = {
+  title: {
+    code: "staffModal_title",
+    description: "Title of the staff modal",
+    i18n: {
+      en: "Commercial Manager and Analyst",
+      es: "Gestor Comercial y Analista de Crédito",
+    },
+  },
+  commercialManagerLabel: {
+    code: "staffModal_commercialManagerLabel",
+    description: "Label for the commercial manager field",
+    i18n: {
+      en: "Commercial Manager",
+      es: "Gestor Comercial",
+    },
+  },
+  commercialManagerPlaceholder: {
+    code: "staffModal_commercialManagerPlaceholder",
+    description:
+      "Placeholder for the commercial manager select when options are available",
+    i18n: {
+      en: "Select an option",
+      es: "Selecciona una opción",
+    },
+  },
+  commercialManagerEmptyPlaceholder: {
+    code: "staffModal_commercialManagerEmptyPlaceholder",
+    description:
+      "Placeholder for the commercial manager select when no options are available",
+    i18n: {
+      en: "No managers available",
+      es: "No hay gestores disponibles",
+    },
+  },
+  analystLabel: {
+    code: "staffModal_analystLabel",
+    description: "Label for the analyst field",
+    i18n: {
+      en: "Credit Analyst",
+      es: "Analista de Crédito",
+    },
+  },
+  analystPlaceholder: {
+    code: "staffModal_analystPlaceholder",
+    description:
+      "Placeholder for the analyst select when options are available",
+    i18n: {
+      en: "Select an option",
+      es: "Selecciona una opción",
+    },
+  },
+  analystEmptyPlaceholder: {
+    code: "staffModal_analystEmptyPlaceholder",
+    description:
+      "Placeholder for the analyst select when no options are available",
+    i18n: {
+      en: "No credit analysts available",
+      es: "No hay analistas de crédito disponibles",
+    },
+  },
+  justification: {
+    code: "staffModal_justification",
+    description: "Justification message for the assignment of a new role",
+    i18n: {
+      en: (roleLabel: string, previousUserName: string, newUserName: string) =>
+        `A new ${roleLabel} is being assigned. Previous: ${previousUserName || "N/A"}. New: ${newUserName}`,
+      es: (roleLabel: string, previousUserName: string, newUserName: string) =>
+        `Se realiza la asignación de un nuevo ${roleLabel}. Anterior: ${previousUserName || "N/A"}. Nuevo: ${newUserName}`,
+    },
+  },
+};
+
 export const errorMessaggeEnum = {
   default: {
     code: "ErrorMessage_default",
@@ -93,17 +160,6 @@ export const errorMessaggeEnum = {
     i18n: {
       en: "Oops, something went wrong. Unable to load information. Please try again later.",
       es: "Ups, algo salió mal. No se puede cargar la información. Intente nuevamente más tarde.",
-    },
-  },
-};
-
-export const buttonTextEnum = {
-  send: {
-    code: "ButtonText_send",
-    description: "Text for send button",
-    i18n: {
-      en: "Send",
-      es: "Enviar",
     },
   },
 };
@@ -283,8 +339,8 @@ export const txtTaskQueryEnum = {
     code: "TxtTaskQuery_txtAnalyst",
     description: "Label for analyst",
     i18n: {
-      en: "Analyst",
-      es: "Analista",
+      en: "Credit Analyst",
+      es: "Analista de Crédito",
     },
   },
 };
@@ -359,7 +415,6 @@ export const txtConfirmRepresentativeEnum = {
       es: "¿Deseas continuar?",
     },
   },
-
   processingDefault: {
     code: "TxtConfirmRepresentative_processingDefault",
     description: "Default text when no decision is selected",
@@ -384,7 +439,6 @@ export const txtConfirmRepresentativeEnum = {
       es: "Seleccione una opción",
     },
   },
-
   taskLabel: {
     code: "TxtLabels_taskLabel",
     description: "Label for task field",
@@ -394,13 +448,4 @@ export const txtConfirmRepresentativeEnum = {
     },
   },
 };
-export const errorMessagesEnum = {
-  patchChangeUsersByCreditRequest: {
-    code: "ErrorMessages_patchChangeUsersByCreditRequest",
-    description: "Error description placeholder",
-    i18n: {
-      en: "",
-      es: "",
-    },
-  },
-};
+

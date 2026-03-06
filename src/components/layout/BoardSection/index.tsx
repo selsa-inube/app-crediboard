@@ -16,7 +16,7 @@ import {
 import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
 import { ErrorModal } from "@components/modals/ErrorModal";
-import { getCanUnpin } from "@utils/configRules/permissions";
+
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { useEnum } from "@hooks/useEnum";
 
@@ -26,7 +26,8 @@ import {
   StyledFilterIcon,
 } from "./styles";
 import { SectionBackground, SectionOrientation } from "./types";
-import { configOptionEnum, infoModalEnum, messagesErrorEnum } from "./config";
+import { configOptionEnum, infoModalEnum } from "./config";
+import { getCanUnpin } from "@utils/configRules/permissions";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -85,7 +86,7 @@ function BoardSection(props: BoardSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const { lang } = useEnum();
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const businessManagerCode = eventData.businessManager.publicCode;
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
@@ -166,10 +167,17 @@ function BoardSection(props: BoardSectionProps) {
         eventData.user.identificationDocumentNumber || "",
       );
     } catch (error) {
-      setMessageError(
-        messagesErrorEnum.changeTracesToReadById.description.i18n[lang],
-      );
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -312,7 +320,7 @@ function BoardSection(props: BoardSectionProps) {
             <Stack
               gap="24px"
               alignItems="center"
-              height={orientation === "vertical" ? "533px" : "200px"}
+              height={orientation === "vertical" ? "570px" : "200px"}
               width="100%"
             >
               <Text type="title" size="small" appearance="gray">
@@ -359,6 +367,15 @@ function BoardSection(props: BoardSectionProps) {
             </Text>
           </Stack>
         </BaseModal>
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
       )}
     </StyledBoardSection>
   );

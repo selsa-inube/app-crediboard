@@ -66,9 +66,18 @@ export function RiskScoring(props: RiskScoringProps) {
         eventData.token,
       );
       setData(response);
-    } catch {
+    } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
-      setMessageError(dataRiskScoringEnum.modalError.i18n[lang]);
+      setMessageError(description);
     } finally {
       setLoading(false);
     }
@@ -87,9 +96,18 @@ export function RiskScoring(props: RiskScoringProps) {
           eventData.token,
         );
         setData(response);
-      } catch {
+      } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
         setShowErrorModal(true);
-        setMessageError(dataRiskScoringEnum.modalError.i18n[lang]);
+        setMessageError(description);
       } finally {
         setLoading(false);
       }
@@ -186,8 +204,11 @@ export function RiskScoring(props: RiskScoringProps) {
         )}
         {showErrorModal && (
           <ErrorModal
+            handleClose={() => {
+              setShowErrorModal(false);
+            }}
+            isMobile={isMobile}
             message={messageError}
-            handleClose={() => setShowErrorModal(false)}
           />
         )}
       </>

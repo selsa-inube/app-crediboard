@@ -137,10 +137,20 @@ export function DocumentValidationApprovalModal(
       setDocuments(response);
       return response;
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
-      setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[lang]);
+      setMessageError(description);
       return [];
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     id,
     user,
@@ -174,7 +184,6 @@ export function DocumentValidationApprovalModal(
           ...existingCodes,
           ...newlyUploadedDocumentCodes,
         ];
-        console.log("allDocumentCodesToRelate: ", allDocumentCodesToRelate);
         let nextStatusValue = "";
         if (formik.values.answer === optionsAnswer[0].label) {
           nextStatusValue = getRequirementCode("DOCUMENT_STORED_AND_VALIDATED");
@@ -225,8 +234,17 @@ export function DocumentValidationApprovalModal(
           onCloseModal();
         }
       } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
         setShowErrorModal(true);
-        setMessageError(approvalsConfigEnum.titleError.i18n[lang]);
+        setMessageError(description);
       } finally {
         setIsLoading(false);
       }
@@ -257,8 +275,17 @@ export function DocumentValidationApprovalModal(
         );
         setDocuments(response);
       } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
         setShowErrorModal(true);
-        setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[lang]);
+        setMessageError(description);
       } finally {
         setIsLoading(false);
       }
@@ -302,8 +329,17 @@ export function DocumentValidationApprovalModal(
       setOpen(true);
       setSeenDocuments((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
       setShowErrorModal(true);
-      setMessageError(approvalsConfigEnum.titleErrorDocument.i18n[lang]);
+      setMessageError(description);
     }
   };
 

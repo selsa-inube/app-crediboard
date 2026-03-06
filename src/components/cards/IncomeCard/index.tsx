@@ -16,7 +16,7 @@ import {
   parseCurrencyString,
   validateCurrencyField,
 } from "@utils/formatData/currency";
-import { EnumType } from "@hooks/useEnum"; 
+import { EnumType } from "@hooks/useEnum";
 
 import { StyledContainer, StyledTextField, StyledSupport } from "./styles";
 import { incomeCardDataEnum } from "./config";
@@ -55,7 +55,7 @@ export function IncomeCard(props: IIncomeCardProps) {
         acc[`field${index}`] = currencyFormat(parseCurrencyString(val));
         return acc;
       },
-      {} as Record<string, string>
+      {} as Record<string, string>,
     ),
     validationSchema,
     validateOnMount: true,
@@ -95,7 +95,7 @@ export function IncomeCard(props: IIncomeCardProps) {
                           `field${index}`,
                           formik,
                           true,
-                          ""
+                          "",
                         )}
                         onChange={(event) => {
                           handleChangeWithCurrency(formik, event);
@@ -119,7 +119,7 @@ export function IncomeCard(props: IIncomeCardProps) {
                     `field${index}`,
                     formik,
                     true,
-                    ""
+                    "",
                   )}
                 />
               ))}
@@ -128,7 +128,7 @@ export function IncomeCard(props: IIncomeCardProps) {
         </Stack>
         {ShowSupport && (
           <Stack justifyContent="end" margin="auto 12px 5px 0px">
-            <StyledSupport onClick={() => console.log("Ver soporte")}>
+            <StyledSupport>
               <Stack gap="8px" alignItems="center">
                 <Text appearance="primary" type="label" size="large">
                   {incomeCardDataEnum.support.i18n[lang]}

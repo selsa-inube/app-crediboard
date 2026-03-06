@@ -42,7 +42,7 @@ const getAllPackagesOfRequirementsById = async (
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        throw new Error("No hay requisitos disponibles.");
+        return [];
       }
 
       const data = await res.json();

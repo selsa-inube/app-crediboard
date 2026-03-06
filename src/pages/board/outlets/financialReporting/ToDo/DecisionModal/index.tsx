@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, FieldProps, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import {
@@ -44,6 +43,7 @@ export interface DecisionModalProps {
   inputPlaceholder: string;
   businessManagerCode: string;
   eventData: ICrediboardData;
+  handleDecisionModal: () => void;
   onSubmit?: (values: { textarea: string }) => void;
   onSecondaryButtonClick?: () => void;
   maxLength?: number;
@@ -68,14 +68,14 @@ export function DecisionModal(props: DecisionModalProps) {
     readOnly = false,
     disableTextarea = false,
     secondaryButtonText = "Cancelar",
+    handleDecisionModal,
   } = props;
 
-  const navigate = useNavigate();
   const { addFlag } = useFlag();
   const { lang } = useEnum();
-
   const isMobile = useMediaQuery("(max-width: 700px)");
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -147,7 +147,7 @@ export function DecisionModal(props: DecisionModalProps) {
       );
 
       if (response?.statusServices === 200) {
-        navigate("/");
+        handleDecisionModal();
         addFlag({
           title: txtFlagsEnum.titleSuccess.i18n[lang],
           description: `${txtFlagsEnum.descriptionSuccess.i18n[lang]} ${response.status}`,
@@ -159,8 +159,17 @@ export function DecisionModal(props: DecisionModalProps) {
         setErrorModal(true);
       }
     } catch (error) {
-      setErrorMessage(txtFlagsEnum.descriptionDanger.i18n[lang]);
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     } finally {
       onCloseModal?.();
     }
@@ -274,6 +283,16 @@ export function DecisionModal(props: DecisionModalProps) {
           handleClose={() => {
             setErrorModal(false);
           }}
+        />
+      )}
+
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

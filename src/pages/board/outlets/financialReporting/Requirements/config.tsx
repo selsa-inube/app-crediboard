@@ -30,10 +30,6 @@ export const getDataButton = (
   onClickSistemValidation,
 });
 
-const receiveData = (data: IEntries) => {
-  console.log(data, "function que recibe data");
-};
-
 export const getTitlesRequirements = (lang: EnumType) => [
   Object.values(titlesRequirementsEnum.validacionesDelSistema.columns).map(
     (col) => ({
@@ -358,13 +354,17 @@ export const infoItems = [
     appearance: "help",
   },
 ];
+
 export const questionToBeAskedInModalText = {
   notEvaluated: "Sin Evaluar",
   notCompliant: "No Cumple",
   questionForUnvalidated: "Pudo evaluar?",
   questionForNotCompliant: "Cumple?",
 };
-export const actionsRequirements = [
+
+export const getActionsRequirements = (
+  receiveData: (data: IEntries) => void,
+) => [
   [
     {
       id: "agregar",
@@ -426,7 +426,7 @@ const isValidTagElement = (element: unknown): element is TagElement => {
   return isValidElement(element) && element.props !== undefined;
 };
 
-const actionsMobile = [
+export const getActionsMobile = (receiveData: (data: IEntries) => void) => [
   {
     id: "tags",
     actionName: "",
@@ -604,8 +604,10 @@ export const getActionsMobileIcon = () => {
 export const maperDataRequirements = (
   processedEntries: IEntries[][],
   lang: EnumType,
+  receiveData: (data: IEntries) => void,
 ) => {
   const titles = getTitlesRequirements(lang);
+  const actionsMobile = getActionsMobile(receiveData);
   return [
     {
       id: "tableApprovalSystem",

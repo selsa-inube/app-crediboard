@@ -564,6 +564,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
       ) || [],
     ),
   ];
+
   return (
     <>
       <Fieldset

@@ -12,3 +12,7 @@ export interface IIncome {
   employment: string[];
   businesses: string[];
 }
+export interface IBorrowerDocumentRule {
+  borrower: string;
+  value: string;
+}
