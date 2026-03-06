@@ -289,7 +289,15 @@ export const amountCaptureTextsEnum = {
     },
   },
 };
-
+export const verificationTexts = {
+  returnToStep: {
+    code: "Return_to_step",
+    i18n: {
+      en: "Return to this step",
+      es: "Regresar a este paso",
+    },
+  },
+};
 export const dataAmountEnum = {
   availableQuota: {
     id: "availableQuota",

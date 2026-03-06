@@ -15,6 +15,8 @@ import {
   ITermSelectionValuesMain,
   VALIDATED_NUMBER_REGEX,
 } from "../config";
+import { borrowerProperties, termSelectionTexts } from "./config/config";
+
 
 export function TermSelection(props: ITermSelection) {
   const {
@@ -36,6 +38,7 @@ export function TermSelection(props: ITermSelection) {
     useState<IPaymentCapacityResponse | null>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
+
   useEffect(() => {
     if (!quotaCapEnabled && !maximumTermEnabled) {
       onChange({
@@ -75,8 +78,8 @@ export function TermSelection(props: ITermSelection) {
       (quotaCapToggle, schema) =>
         quotaCapToggle
           ? schema
-              .required("Campo requerido")
-              .test("is-number", "Debe ser un número válido", (value) => {
+              .required(termSelectionTexts.required.i18n[lang])
+              .test("is-number", termSelectionTexts.invalidNumber.i18n[lang], (value) => {
                 const numericValue = Number(
                   String(value).replace(VALIDATED_NUMBER_REGEX, ""),
                 );
@@ -84,7 +87,7 @@ export function TermSelection(props: ITermSelection) {
               })
               .test(
                 "max-limit",
-                `El valor no puede exceder ${currencyFormat(paymentCapacity)}`,
+                termSelectionTexts.maxLimit.i18n(currencyFormat(paymentCapacity))[lang],
                 (value) => {
                   const numericValue = Number(
                     String(value).replace(VALIDATED_NUMBER_REGEX, ""),
@@ -200,6 +203,7 @@ export function TermSelection(props: ITermSelection) {
       maximumTermEnabled: isChecked,
     });
   };
+
   const borrower = dataProspect?.borrowers[0];
 
   useEffect(() => {
@@ -210,38 +214,28 @@ export function TermSelection(props: ITermSelection) {
       const data: IPaymentCapacity = {
         clientIdentificationNumber: borrower.borrowerIdentificationNumber,
         dividends: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, "Dividends") || "0",
+          getPropertyValue(borrower.borrowerProperties, borrowerProperties.dividends) || "0",
         ),
         financialIncome: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, "FinancialIncome") ||
-            "0",
+          getPropertyValue(borrower.borrowerProperties, borrowerProperties.financialIncome) || "0",
         ),
         leases: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, "Leases") || "0",
+          getPropertyValue(borrower.borrowerProperties, borrowerProperties.leases) || "0",
         ),
         otherNonSalaryEmoluments: parseFloat(
-          getPropertyValue(
-            borrower.borrowerProperties,
-            "OtherNonSalaryEmoluments",
-          ) || "0",
+          getPropertyValue(borrower.borrowerProperties, borrowerProperties.otherNonSalaryEmoluments) || "0",
         ),
         pensionAllowances: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, "PensionAllowances") ||
-            "0",
+          getPropertyValue(borrower.borrowerProperties, borrowerProperties.pensionAllowances) || "0",
         ),
         periodicSalary: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, "PeriodicSalary") ||
-            "0",
+          getPropertyValue(borrower.borrowerProperties, borrowerProperties.periodicSalary) || "0",
         ),
         personalBusinessUtilities: parseFloat(
-          getPropertyValue(
-            borrower.borrowerProperties,
-            "PersonalBusinessUtilities",
-          ) || "0",
+          getPropertyValue(borrower.borrowerProperties, borrowerProperties.personalBusinessUtilities) || "0",
         ),
         professionalFees: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, "ProfessionalFees") ||
-            "0",
+          getPropertyValue(borrower.borrowerProperties, borrowerProperties.professionalFees) || "0",
         ),
         livingExpenseToIncomeRatio: 0,
       };

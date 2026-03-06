@@ -3,9 +3,11 @@ import { Stack, Grid, Button } from "@inubekit/inubekit";
 
 import { BoxAttribute } from "@components/data/BoxAttirbute";
 import { AccordionValidations } from "@components/data/AccordionValidations";
+import { useEnum } from "@hooks/useEnum";
 
 import { IDataVerificationStep } from "./types";
 import { ScrollableContainer } from "../../styles";
+import { verificationTexts } from "../config";
 
 interface IVerificationAddProductUIProps {
   dataVerificationStep: IDataVerificationStep[];
@@ -18,7 +20,7 @@ export const VerificationAddProductUI = (
   props: IVerificationAddProductUIProps,
 ) => {
   const { dataVerificationStep, keySections, isMobile, setCurrentStep } = props;
-
+  const { lang } = useEnum();
   return (
     <ScrollableContainer
       $smallScreen={isMobile}
@@ -72,7 +74,7 @@ export const VerificationAddProductUI = (
                     iconBefore={<MdArrowBack />}
                     onClick={() => setCurrentStep(section.stepNumber)}
                   >
-                    Regresar a este paso
+                    {verificationTexts.returnToStep.i18n[lang]}
                   </Button>
                 </Stack>
               </Stack>

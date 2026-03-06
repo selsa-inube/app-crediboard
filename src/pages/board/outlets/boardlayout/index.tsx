@@ -14,11 +14,18 @@ import { Filter } from "@components/cards/SelectedFilters/interface";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { useEnum } from "@hooks/useEnum";
+import { SectionOrientation } from "@components/layout/BoardSection/types";
 
 import { dataInformationModalEnum, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
 import { selectCheckOptionsEnum } from "./config/select";
 import { IBoardData } from "./types";
+import {
+  boardOrientationEnum,
+  completedFilterEnum,
+  retryButtonLabel,
+  scrollTargetIdEnum,
+} from "./config";
 
 export interface IFilterFormValues {
   assignment: string;
@@ -26,7 +33,7 @@ export interface IFilterFormValues {
 }
 
 function BoardLayout() {
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
   const selectCheckOptions = selectCheckOptionsEnum.map((option) => ({
     id: option.id,
     label: option.i18n[lang],
@@ -41,12 +48,15 @@ function BoardLayout() {
     boardRequests: [],
     requestsPinned: [],
   });
+
   const [activeOptions, setActiveOptions] = useState<Filter[]>([]);
   const [filters, setFilters] = useState({
     searchRequestValue: "",
     showPinnedOnly: eventData.user.preferences.showPinnedOnly || false,
     selectOptions: selectCheckOptions,
-    boardOrientation: eventData.user.preferences.boardOrientation || "vertical",
+    boardOrientation:
+      eventData.user.preferences.boardOrientation ||
+      boardOrientationEnum.vertical.i18n[lang],
   });
 
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
@@ -60,18 +70,19 @@ function BoardLayout() {
   const searchAbortControllerRef = useRef<AbortController | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSearchValueRef = useRef<string>("");
-
   const isMobile = useMediaQuery("(max-width: 1439px)");
-
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
 
   useEffect(() => {
-    const orientation = isMobile ? "horizontal" : "vertical";
+    const orientation = isMobile
+      ? (boardOrientationEnum.horizontal.i18n[lang] as SectionOrientation)
+      : (boardOrientationEnum.vertical.i18n[lang] as SectionOrientation);
     setFilters((prevFilters) => ({
       ...prevFilters,
       boardOrientation: orientation,
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
   const businessUnitPublicCode: string =
@@ -277,19 +288,23 @@ function BoardLayout() {
     setCurrentPage(1);
 
     const hasCompletedFilter = activeFilteredValues.some(
-      (filter) => filter.value === "completedLessThan30DaysAgo=Y",
+      (filter) => filter.value === completedFilterEnum.queryValue.i18n[lang],
     );
 
     if (hasCompletedFilter) {
       setFilters((prev) => ({
         ...prev,
-        boardOrientation: "horizontal",
+        boardOrientation: boardOrientationEnum.horizontal.i18n[
+          lang
+        ] as SectionOrientation,
       }));
 
       const updatedEventData = { ...eventData };
       updatedEventData.user.preferences = {
         ...updatedEventData.user.preferences,
-        boardOrientation: "horizontal",
+        boardOrientation: boardOrientationEnum.horizontal.i18n[
+          lang
+        ] as SectionOrientation,
       };
       setEventData(updatedEventData);
     }
@@ -301,10 +316,16 @@ function BoardLayout() {
     setIsFilterModalOpen(false);
     setShouldCollapseAll(true);
     setTimeout(() => setShouldCollapseAll(false), 100);
+    const tramitadaCode = scrollTargetIdEnum.tramitada.code;
 
-    if (hasCompletedFilter) {
+    const hasCompletedFilterScroll = activeFilteredValues.some(
+      (filter) =>
+        filter.value === completedFilterEnum.queryValue.i18n[lang] &&
+        enums?.DmStagesPrs?.some((stage) => stage.code === tramitadaCode),
+    );
+    if (hasCompletedFilterScroll) {
       setTimeout(() => {
-        const tramitadaSection = document.getElementById("TRAMITADA");
+        const tramitadaSection = document.getElementById(tramitadaCode);
         if (tramitadaSection) {
           tramitadaSection.scrollIntoView({
             behavior: "smooth",
@@ -331,14 +352,19 @@ function BoardLayout() {
 
       setEventData(updatedEventData);
 
-      if (newFilters.boardOrientation === "vertical") {
+      if (
+        newFilters.boardOrientation ===
+        (boardOrientationEnum.vertical.i18n[lang] as SectionOrientation)
+      ) {
         const hasCompletedFilter = activeOptions.some(
-          (filter) => filter.value === "completedLessThan30DaysAgo=Y",
+          (filter) =>
+            filter.value === completedFilterEnum.queryValue.i18n[lang],
         );
 
         if (hasCompletedFilter) {
           const updatedActiveOptions = activeOptions.filter(
-            (option) => option.value !== "completedLessThan30DaysAgo=Y",
+            (option) =>
+              option.value !== completedFilterEnum.queryValue.i18n[lang],
           );
 
           setActiveOptions(updatedActiveOptions);
@@ -351,7 +377,7 @@ function BoardLayout() {
                 .filter((id) => id.trim() !== "");
               const updatedAssignmentIds = assignmentIds.filter((id) => {
                 const option = selectCheckOptions.find((opt) => opt.id === id);
-                return option?.value !== "completedLessThan30DaysAgo";
+                return option?.value !== completedFilterEnum.i18n[lang];
               });
               newValues.assignment = updatedAssignmentIds.join(",");
             }
@@ -391,10 +417,13 @@ function BoardLayout() {
   ) => {
     try {
       const isOwner = userWhoPinnnedId === staffId;
-      const isUnpin = isPinned === "N";
+      const isUnpin = isPinned === enums?.DmEstado?.[1]?.code;
       const isAuthorizedByRule = positionsAuthorized.includes(missionName);
-
-      if (isOwner || (isUnpin && isAuthorizedByRule) || isPinned === "Y") {
+      if (
+        isOwner ||
+        (isUnpin && isAuthorizedByRule) ||
+        isPinned === enums?.DmEstado?.[0]?.code
+      ) {
         setBoardData((prevState) => ({
           ...prevState,
           requestsPinned: prevState.requestsPinned.map((card) =>
@@ -440,7 +469,7 @@ function BoardLayout() {
 
   const handleClearFilters = async (keepSearchValue = false) => {
     const hasCompletedFilter = activeOptions.some(
-      (filter) => filter.value === "completedLessThan30DaysAgo=Y",
+      (filter) => filter.value === completedFilterEnum.queryValue.i18n[lang],
     );
 
     setFilterValues({ assignment: "", status: "" });
@@ -456,14 +485,18 @@ function BoardLayout() {
       searchRequestValue: keepSearchValue ? prev.searchRequestValue : "",
       showPinnedOnly: false,
       selectOptions: selectCheckOptions,
-      boardOrientation: hasCompletedFilter ? "vertical" : prev.boardOrientation,
+      boardOrientation: hasCompletedFilter
+        ? (boardOrientationEnum.vertical.i18n[lang] as SectionOrientation)
+        : prev.boardOrientation,
     }));
 
     if (hasCompletedFilter) {
       const updatedEventData = { ...eventData };
       updatedEventData.user.preferences = {
         ...updatedEventData.user.preferences,
-        boardOrientation: "vertical",
+        boardOrientation: boardOrientationEnum.vertical.i18n[
+          lang
+        ] as SectionOrientation,
       };
       setEventData(updatedEventData);
     }
@@ -489,17 +522,22 @@ function BoardLayout() {
       (option) => option.id === filterIdToRemove,
     );
     const isRemovingCompletedFilter =
-      removedFilter?.value === "completedLessThan30DaysAgo=Y";
+      removedFilter?.value === completedFilterEnum.queryValue.i18n[lang];
+
     if (isRemovingCompletedFilter) {
       setFilters((prev) => ({
         ...prev,
-        boardOrientation: "vertical",
+        boardOrientation: boardOrientationEnum.vertical.i18n[
+          lang
+        ] as SectionOrientation,
       }));
 
       const updatedEventData = { ...eventData };
       updatedEventData.user.preferences = {
         ...updatedEventData.user.preferences,
-        boardOrientation: "vertical",
+        boardOrientation: boardOrientationEnum.vertical.i18n[
+          lang
+        ] as SectionOrientation,
       };
       setEventData(updatedEventData);
     }
@@ -739,9 +777,8 @@ function BoardLayout() {
     if (!showPinnedOnly) return boardRequests;
 
     const pinnedIds = requestsPinned
-      .filter((r) => r.isPinned === "Y")
+      .filter((r) => r.isPinned === enums?.DmEstado?.[0]?.code)
       .map((r) => r.creditRequestId);
-
     return boardRequests.filter((request) =>
       pinnedIds.includes(request.creditRequestId as string),
     );
@@ -757,12 +794,11 @@ function BoardLayout() {
     return (
       <ErrorPage
         errorCode={400}
-        nameButton="Reintentar"
+        nameButton={retryButtonLabel.i18n[lang]}
         onClick={handleRetryFromError}
       />
     );
   }
-
   return (
     <>
       <BoardLayoutUI

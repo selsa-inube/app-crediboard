@@ -72,7 +72,7 @@ export function StaffModal(props: StaffModalProps) {
     analyst: "",
   });
   const isMobile = useMediaQuery("(max-width: 700px)");
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
 
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -114,19 +114,25 @@ export function StaffModal(props: StaffModalProps) {
       setSelectedAnalyst(selected);
     }
   };
+  const accountManagerRole =
+    enums?.Role?.find((r) => r.code === "AccountManager")?.i18n[lang] ??
+    "Gestor Comercial";
 
+  const creditAnalystRole =
+    enums?.Role?.find((r) => r.code === "CreditAnalyst")?.i18n[lang] ??
+    "Analista de Crédito";
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [accountManagers, analysts] = await Promise.all([
           getCommercialManagerAndAnalyst(
-            "Gestor Comercial",
+            accountManagerRole,
             businessUnitPublicCode,
             businessManagerCode,
             eventData.token || "",
           ),
           getCommercialManagerAndAnalyst(
-            "Analista de Crédito",
+            creditAnalystRole,
             businessUnitPublicCode,
             businessManagerCode,
             eventData.token || "",
@@ -147,7 +153,7 @@ export function StaffModal(props: StaffModalProps) {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+ 
   useEffect(() => {
     if (accountManagerList.length === 1) {
       const singleManager = accountManagerList[0];
