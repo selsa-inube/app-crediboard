@@ -408,7 +408,6 @@ function useAppContext() {
       }));
     }
   }, [staffUseCases]);
-
   const appContext = useMemo(
     () => ({
       eventData,

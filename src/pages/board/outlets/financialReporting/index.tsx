@@ -444,6 +444,33 @@ export const FinancialReporting = () => {
     //eslint-disable-next-line
   }, [data]);
 
+  const fetchCreditRequest = useCallback(async () => {
+    if (!creditRequestCode || !businessUnitPublicCode) return;
+
+    try {
+      setGeneralLoading(true);
+      const result = await getCreditRequestByCode(
+        businessUnitPublicCode,
+        businessManagerCode,
+        creditRequestCode,
+        eventData.user.identificationDocumentNumber || "",
+        eventData.token || "",
+      );
+      setData(result[0]);
+    } catch (error) {
+      console.error("Error al refrescar:", error);
+    } finally {
+      setGeneralLoading(false);
+    }
+    //eslint-disable-next-line
+  }, [
+    creditRequestCode,
+    businessUnitPublicCode,
+    businessManagerCode,
+    eventData.user.identificationDocumentNumber,
+    eventData.token,
+  ]);
+
   const handleDeleteCreditRequest = async () => {
     const creditRequests: IDeleteCreditRequest = {
       creditRequestId: data?.creditRequestId ?? "",
@@ -503,9 +530,10 @@ export const FinancialReporting = () => {
           }}
           lang={lang}
           creditRequestCode={creditRequestCode || ""}
-          refresh={() => {
+          refresh={async () => {
             setShowModalDecision(false);
             handleResetForm();
+            await fetchCreditRequest();
           }}
         />
       )}
