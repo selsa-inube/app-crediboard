@@ -72,3 +72,37 @@ export const loanData = {
     },
   },
 };
+export const termSelectionTexts = {
+  required: {
+    code: "Term_required",
+    i18n: {
+      en: "Required field",
+      es: "Campo requerido",
+    },
+  },
+  invalidNumber: {
+    code: "Term_invalid_number",
+    i18n: {
+      en: "Must be a valid number",
+      es: "Debe ser un número válido",
+    },
+  },
+  maxLimit: {
+    code: "Term_max_limit",
+    i18n: (limit: string) => ({
+      en: `The value cannot exceed ${limit}`,
+      es: `El valor no puede exceder ${limit}`,
+    }),
+  },
+};
+
+export const borrowerProperties = {
+  dividends: "Dividends",
+  financialIncome: "FinancialIncome",
+  leases: "Leases",
+  otherNonSalaryEmoluments: "OtherNonSalaryEmoluments",
+  pensionAllowances: "PensionAllowances",
+  periodicSalary: "PeriodicSalary",
+  personalBusinessUtilities: "PersonalBusinessUtilities",
+  professionalFees: "ProfessionalFees",
+};

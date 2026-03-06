@@ -16,6 +16,7 @@ import { useEnum } from "@hooks/useEnum";
 import { IPayrollDiscountAuthorization } from "@services/creditRequest/query/types";
 import { IPromissoryNotes } from "@services/creditRequest/query/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
+import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 
 import {
   appearanceTag,
@@ -27,18 +28,20 @@ import {
   titlesFinancialReportingEnum,
 } from "./config";
 import { errorObserver, errorMessagesEnum } from "../config";
+import { ICustomer } from "@services/costumer/types";
 
 interface IPromissoryNotesProps {
   id: string;
   isMobile: boolean;
+  publicCode: string;
 }
 
 type DocumentEntry = IPayrollDiscountAuthorization | IPromissoryNotes;
 
 export const PromissoryNotes = (props: IPromissoryNotesProps) => {
-  const { id, isMobile } = props;
+  const { id, isMobile, publicCode } = props;
   const { addFlag } = useFlag();
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
 
   const [creditRequets, setCreditRequests] = useState<ICreditRequest | null>(
     null,
@@ -57,7 +60,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
   const businessManagerCode = eventData.businessManager.publicCode;
-
+  const [documentPreview, setDocumentPreview] = useState<ICustomer | null>();
   const { userAccount } =
     typeof eventData === "string" ? JSON.parse(eventData).user : eventData.user;
 
@@ -123,7 +126,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
         result: PromiseSettledResult<
           IPayrollDiscountAuthorization[] | IPromissoryNotes[]
         >,
-        sourceType: "payroll" | "promissory_note",
+        sourceType: "Payroll_discount_authorization" | "Promissory_note",
       ) => {
         if (result.status === "fulfilled") {
           const entries = result.value as DocumentEntry[];
@@ -144,14 +147,9 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
               [titlesFinancialReportingEnum.documentCode.id]:
                 entry.documentCode,
               [titlesFinancialReportingEnum.type.id]:
-                // eslint-disable-next-line no-nested-ternary
-                sourceType === "payroll"
-                  ? lang === "es"
-                    ? "Libranza"
-                    : "Payroll"
-                  : lang === "es"
-                    ? "Pagaré"
-                    : "Promissory Note",
+                enums?.LegalDocumentsAndWarranties?.find(
+                  (e) => e.code === sourceType,
+                )?.i18n[lang] ?? "",
               tag: (
                 <Tag
                   label={entry.documentState}
@@ -163,7 +161,10 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
         }
 
         errorObserver.notify({
-          id: sourceType === "payroll" ? "PayrollDiscount" : "PromissoryNotes",
+          id:
+            sourceType === "Payroll_discount_authorization"
+              ? "PayrollDiscount"
+              : "PromissoryNotes",
           message:
             typeof result.reason === "string"
               ? result.reason
@@ -173,8 +174,11 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
       };
 
       const combinedData = [
-        ...processResult(payrollDiscountResult, "payroll"),
-        ...processResult(promissoryNotesResult, "promissory_note"),
+        ...processResult(
+          payrollDiscountResult,
+          "Payroll_discount_authorization",
+        ),
+        ...processResult(promissoryNotesResult, "Promissory_note"),
       ];
 
       if (combinedData.length === 0) {
@@ -196,7 +200,6 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessUnitPublicCode, businessManagerCode, creditRequets]);
-
   useEffect(() => {
     if (creditRequets?.creditRequestId) fetchData();
   }, [fetchData, creditRequets]);
@@ -206,6 +209,35 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
     setShowRetry(false);
     fetchData();
   };
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      try {
+        const documentData = await searchAllCustomerCatalog(
+          publicCode,
+          businessUnitPublicCode,
+          businessManagerCode,
+          eventData.token || "",
+        );
+        setDocumentPreview(documentData);
+        console.log(documentData);
+      } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
+      }
+    };
+
+    fetchCustomer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessUnitPublicCode, businessManagerCode, eventData.token]);
 
   return (
     <Fieldset
@@ -256,9 +288,15 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
               title="Confirma los datos del usuario"
               buttonText="Enviar"
               formValues={{
-                field1: "usuario@inube.com",
-                field2: "3122638128",
-                field3: "3122638128",
+                field1:
+                  documentPreview?.generalAttributeClientNaturalPersons?.[0]
+                    ?.emailContact ?? "",
+                field2:
+                  documentPreview?.generalAttributeClientNaturalPersons?.[0]
+                    ?.cellPhoneContact ?? "",
+                field3:
+                  documentPreview?.generalAttributeClientNaturalPersons?.[0]
+                    ?.cellPhoneContact ?? "",
               }}
               handleClose={() => setShowModal(false)}
               onSubmit={() => {

@@ -111,6 +111,14 @@ export const dataAmount = {
       es: "La línea de crédito seleccionada no cuenta con medios de pago configurados en este momento. Por favor, intenta con otra línea de crédito o comunícate con un asesor para obtener más información.",
     },
   },
+  noOptionsAvailable: {
+    code: "No_options_available",
+    description: "Fallback when no options are available",
+    i18n: {
+      en: "No options available.",
+      es: "No hay opciones disponibles.",
+    },
+  },
 };
 
 export const paymentConfiguration = {

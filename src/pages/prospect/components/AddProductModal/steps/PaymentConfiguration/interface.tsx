@@ -2,7 +2,6 @@ import { Stack, Select } from "@inubekit/inubekit";
 
 import { CardGray } from "@components/cards/CardGray";
 
-
 import { IPaymentConfigurationUI } from "../config";
 import { dataAmount } from "./config/config";
 
@@ -22,14 +21,14 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
     hasOnlyOnePaymentMethod,
   } = props;
 
+  const noOptions = dataAmount.noOptionsAvailable.i18n[lang];
+
   return (
     <Stack direction="column" gap="24px" padding="0px 16px">
       {hasOnlyOnePaymentMethod ? (
         <CardGray
           label={dataAmount.ordinaryPayment.i18n[lang]}
-          placeHolder={
-            paymentMethodOptions[0]?.label || "No hay opciones disponibles."
-          }
+          placeHolder={paymentMethodOptions[0]?.label || noOptions}
         />
       ) : (
         <Select
@@ -53,9 +52,7 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
           {hasOnlyOnePaymentCycle ? (
             <CardGray
               label={dataAmount.paymentCycle.i18n[lang]}
-              placeHolder={
-                paymentCycleOptions[0]?.label || "No hay opciones disponibles."
-              }
+              placeHolder={paymentCycleOptions[0]?.label || noOptions}
             />
           ) : (
             <Select
@@ -81,10 +78,7 @@ export function PaymentConfigurationUI(props: IPaymentConfigurationUI) {
           {hasOnlyOneFirstPaymentDate ? (
             <CardGray
               label={dataAmount.paymentDate.i18n[lang]}
-              placeHolder={
-                firstPaymentDateOptions[0]?.label ||
-                "No hay opciones disponibles."
-              }
+              placeHolder={firstPaymentDateOptions[0]?.label || noOptions}
             />
           ) : (
             <Select

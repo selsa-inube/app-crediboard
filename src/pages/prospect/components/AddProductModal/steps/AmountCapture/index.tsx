@@ -11,6 +11,7 @@ import {
   VALIDATED_NUMBER_REGEX,
   amountCaptureTexts,
 } from "../config";
+import { useEnum } from "@hooks/useEnum";
 
 export function AmountCapture(props: IAmountCaptureProps) {
   const {
@@ -24,11 +25,21 @@ export function AmountCapture(props: IAmountCaptureProps) {
   } = props;
 
   const { eventData } = useContext(AppContext);
+  const { enums } = useEnum();
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [loanAmountError, setLoanAmountError] = useState<string>("");
   const [displayValue, setDisplayValue] = useState<string>("");
   const isMobile: boolean = useMediaQuery("(max-width: 555px)");
+  const ruleNames = (
+    enums?.GroupRuleType as unknown as { ruleNameType: string[] }[]
+  )?.flatMap((g) => g.ruleNameType ?? []);
+
+  const loanAmountLimitRule =
+    ruleNames?.find((r) => r === "LoanAmountLimit") ?? "LoanAmountLimit";
+  const lineOfCreditCondition =
+    ruleNames?.find((r) => r === "LineOfCredit") ?? "LineOfCredit";
+
   const validateLoanAmount = async (amountValue: number): Promise<void> => {
     try {
       setLoanAmountError("");
@@ -39,9 +50,9 @@ export function AmountCapture(props: IAmountCaptureProps) {
       }
 
       const payload: IBusinessUnitRules = {
-        ruleName: "LoanAmountLimit",
+        ruleName: loanAmountLimitRule,
         conditions: [
-          { condition: "LineOfCredit", value: creditLine },
+          { condition: lineOfCreditCondition, value: creditLine },
           { condition: "MoneyDestination", value: moneyDestination },
         ],
       };

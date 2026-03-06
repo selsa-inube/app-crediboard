@@ -362,7 +362,9 @@ export const FinancialReporting = () => {
     setShowCancelModal(true);
     setShowMenu(false);
   };
-
+  const conceptoRechazarSolicitud =
+    enums?.DmConceptos?.find((c) => c.code === "RECHAZAR_SOLICITUD")?.code ??
+    "RECHAZAR_SOLICITUD";
   const hanleOnReject = () => {
     setShowRejectModal(true);
     setShowMenu(false);
@@ -380,7 +382,7 @@ export const FinancialReporting = () => {
         eventData.user.identificationDocumentNumber || "",
         businessUnitPublicCode,
         businessManagerCode,
-        "RECHAZAR_SOLICITUD",
+        conceptoRechazarSolicitud,
         removalJustification,
         eventData.token,
       );
@@ -509,7 +511,7 @@ export const FinancialReporting = () => {
   const handleSharePdfModal = () => {
     setPdfState({ isGenerating: false, blob: null, showShareModal: false });
   };
-
+  
   return (
     <div ref={dataCommercialManagementRef}>
       <GlobalPdfStyles $isGeneratingPdf={pdfState.isGenerating} />
@@ -631,6 +633,7 @@ export const FinancialReporting = () => {
                       <PromissoryNotes
                         id={creditRequestCode!}
                         isMobile={isMobile}
+                        publicCode={data.clientIdentificationNumber}
                       />
                     </BlockPdfSection>
                   </Stack>

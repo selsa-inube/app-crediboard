@@ -61,7 +61,7 @@ interface ToDoProps {
 
 function ToDo(props: ToDoProps) {
   const { icon, button, isMobile, id, setIdProspect, approvalsEntries } = props;
-  const { lang } = useEnum();
+  const { lang, enums } = useEnum();
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [staff, setStaff] = useState<IStaff[]>([]);
@@ -114,10 +114,18 @@ function ToDo(props: ToDoProps) {
       ? JSON.parse(eventData).user.identificationDocumentNumber
       : eventData.user.identificationDocumentNumber;
 
+  const stageVerificacionAprobacion =
+    enums?.DmEstPrs?.find((s) => s.code === "VERIFICACION_APROBACION")?.value ??
+    "VERIFICACION_APROBACION";
+
+  const stageValidacionInstancia =
+    enums?.DmEstPrs?.find((s) => s.code === "VALIDACION_INSTANCIA_APRUEBA")
+      ?.value ?? "VALIDACION_INSTANCIA_APRUEBA";
+
   useEffect(() => {
     const fetchRepresentable = async () => {
       if (
-        requests?.stage === "VERIFICACION_APROBACION" &&
+        requests?.stage === stageVerificacionAprobacion &&
         requests.creditRequestId
       ) {
         try {
@@ -168,6 +176,7 @@ function ToDo(props: ToDoProps) {
     businessManagerCode,
     userAccount,
     eventData.token,
+    stageVerificacionAprobacion,
   ]);
 
   useEffect(() => {
@@ -373,12 +382,9 @@ function ToDo(props: ToDoProps) {
   };
 
   const isCreditRequestInIndividualConceptOnApproval = () => {
-    {
-      return (
-        requests?.creditRequestStateAbbreviatedName ===
-        "VALIDACION_INSTANCIA_APRUEBA"
-      );
-    }
+    return (
+      requests?.creditRequestStateAbbreviatedName === stageValidacionInstancia
+    );
   };
 
   const isRepresentativeButNotApprover = () => {
@@ -515,7 +521,7 @@ function ToDo(props: ToDoProps) {
   }, [hasSingleDecision, taskDecisions, decisionValue.decision]);
 
   const getToDoDescriptionTitle = (): string => {
-    if (requests?.stage === "VERIFICACION_APROBACION") {
+    if (requests?.stage === stageVerificacionAprobacion) {
       const currentUserId = eventData?.user?.identificationDocumentNumber;
 
       const isUserApprover = approvalsEntries.some(
@@ -699,6 +705,7 @@ function ToDo(props: ToDoProps) {
                   onCloseModal={handleCloseModal}
                   data={data}
                   eventData={eventData}
+                  enums={enums}
                 />
               )}
               <Stack

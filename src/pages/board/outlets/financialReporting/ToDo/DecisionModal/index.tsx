@@ -29,6 +29,7 @@ import {
   txtFlagsEnum,
   txtOthersOptionsEnum,
 } from "./../config";
+import { IAllEnumsResponse } from "@services/enumerators/types";
 
 interface FormValues {
   textarea: string;
@@ -44,6 +45,7 @@ export interface DecisionModalProps {
   inputPlaceholder: string;
   businessManagerCode: string;
   eventData: ICrediboardData;
+  enums: IAllEnumsResponse | null;
   onSubmit?: (values: { textarea: string }) => void;
   onSecondaryButtonClick?: () => void;
   maxLength?: number;
@@ -62,6 +64,7 @@ export function DecisionModal(props: DecisionModalProps) {
     inputPlaceholder,
     businessManagerCode,
     onSubmit,
+    enums,
     eventData,
     onSecondaryButtonClick,
     maxLength = 200,
@@ -108,7 +111,9 @@ export function DecisionModal(props: DecisionModalProps) {
 
     return realNamesEnumNonCompliantDocuments(selectedIndices) as string[];
   };
-
+  const soportesInvalidosCode = enums?.DmDecisions?.find(
+    (d) => d.code === "SOPORTES_INVALIDOS",
+  )?.code;
   const realNamesEnumNonCompliantDocuments = (selectedOptions: number[]) => {
     return selectedOptions
       .map((index) => soporteInvalidOptionsEnum[index]?.value)
@@ -179,7 +184,7 @@ export function DecisionModal(props: DecisionModalProps) {
     textarea: "",
     selectedOptions: "",
   };
-
+  console.log(data);
   return (
     <>
       <Formik
@@ -229,7 +234,7 @@ export function DecisionModal(props: DecisionModalProps) {
                   </Text>
                 </Stack>
               </StyledContainerTextField>
-              {data.makeDecision.concept === "SOPORTES_INVALIDOS" && (
+              {data.makeDecision.concept === soportesInvalidosCode && (
                 <Stack margin="0 0 20px 0">
                   <Field name="selectedOptions">
                     {({ form }: FieldProps) => (
