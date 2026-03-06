@@ -9,10 +9,10 @@ const getUnreadNoveltiesByUser = async (
   userAccount: string,
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  token: string
+  token: string,
 ): Promise<IUnreadNoveltiesByUser[]> => {
   if (!userAccount || !businessUnitPublicCode || !businessManagerCode) {
-    throw new Error("Parámetros requeridos faltantes");
+    return [];
   }
 
   const maxRetries = maxRetriesServices;
@@ -38,7 +38,7 @@ const getUnreadNoveltiesByUser = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -66,7 +66,7 @@ const getUnreadNoveltiesByUser = async (
     } catch (error) {
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
-        return [];
+        throw error;
       }
     }
   }

@@ -31,6 +31,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { IEntries } from "@components/data/TableBoard/types";
 import { getApprovalBoardRepresentablePersons } from "@services/creditRequest/query/approvalBoardRepresentablePersons";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -45,7 +46,7 @@ import {
 import { IICon, IButton, ITaskDecisionOption, DecisionItem } from "./types";
 import { getXAction } from "./util/utils";
 import { StyledHorizontalDivider, StyledTextField } from "../styles";
-import { errorMessagesEnum, errorObserver } from "../config";
+import { errorMessagesEnum } from "../config";
 import { DecisionModal } from "./DecisionModal";
 
 interface ToDoProps {
@@ -65,6 +66,8 @@ function ToDo(props: ToDoProps) {
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [staff, setStaff] = useState<IStaff[]>([]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [taskDecisions, setTaskDecisions] = useState<ITaskDecisionOption[]>([]);
   const [selectedDecision, setSelectedDecision] =
     useState<ITaskDecisionOption | null>(null);
@@ -78,6 +81,8 @@ function ToDo(props: ToDoProps) {
     [],
   );
   const [selectedRepresentative, setSelectedRepresentative] = useState("");
+  const [hasRepresentablePersonsAccess, setHasRepresentablePersonsAccess] =
+    useState<boolean | null>(null);
 
   const [assignedStaff, setAssignedStaff] = useState({
     commercialManager: "",
@@ -125,14 +130,33 @@ function ToDo(props: ToDoProps) {
             eventData.token || "",
           );
 
+          if (!response) {
+            setHasRepresentablePersonsAccess(false);
+            setRepresentablePersons([]);
+            return;
+          }
+
           const persons = response?.approvalBoardRepresentablePersons || [];
           setRepresentablePersons(persons);
+          setHasRepresentablePersonsAccess(persons.length > 0);
 
           if (persons.length >= 1) {
             setSelectedRepresentative(persons[0]);
           }
         } catch (error) {
-          console.error("Error fetching representable persons:", error);
+          const err = error as {
+            message?: string;
+            status?: number;
+            data?: { description?: string; code?: string };
+          };
+          const code = err?.data?.code ? `[${err.data.code}] ` : "";
+          const description =
+            code + (err?.message || "") + (err?.data?.description || "");
+
+          setShowErrorModal(true);
+          setMessageError(description);
+          setHasRepresentablePersonsAccess(false);
+          setRepresentablePersons([]);
         }
       }
     };
@@ -160,11 +184,17 @@ function ToDo(props: ToDoProps) {
 
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -195,11 +225,17 @@ function ToDo(props: ToDoProps) {
         setTaskData(data);
         data.prospectId && setIdProspect(data.prospectId);
       } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -236,11 +272,17 @@ function ToDo(props: ToDoProps) {
           : [];
         setTaskDecisions(formattedDecisions);
       } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -294,11 +336,17 @@ function ToDo(props: ToDoProps) {
         );
         setTaskData(data);
       } catch (error) {
-        console.error(error);
-        errorObserver.notify({
-          id: "Management",
-          message: (error as Error).message.toString(),
-        });
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     }
   };
@@ -333,6 +381,7 @@ function ToDo(props: ToDoProps) {
       );
     }
   };
+
   const isRepresentativeButNotApprover = () => {
     const currentUserId = eventData?.user?.identificationDocumentNumber;
 
@@ -370,6 +419,7 @@ function ToDo(props: ToDoProps) {
       return true;
     }
   };
+
   let userIdentificationNumber =
     eventData?.user?.identificationDocumentNumber || "";
 
@@ -384,11 +434,15 @@ function ToDo(props: ToDoProps) {
       userIdentificationNumber = String(matchedEntry?.identificationNumber);
     }
   }
+
   const handleSend = () => {
     if (
       isCreditRequestInIndividualConceptOnApproval() &&
       (isRepresentativeButNotApprover() || isNoLongerResponsibleForApproval())
     ) {
+      if (hasRepresentablePersonsAccess === false) {
+        return;
+      }
       setIsModalConfirm(true);
     } else {
       setIsModalOpen(true);
@@ -482,14 +536,48 @@ function ToDo(props: ToDoProps) {
     }
   };
 
+  const isUserAuthorizedForApproval = () => {
+    if (hasRepresentablePersonsAccess === null) return false;
+
+    if (approvalsEntries.length === 0) {
+      return hasRepresentablePersonsAccess === true;
+    }
+    return isCurrentUserApprover() || hasRepresentablePersonsAccess === true;
+  };
+
   const disableSendButton = () => {
-    return (
-      !decisionValue.decision ||
-      !(
-        isAuthorizedToTakeDecision ||
-        (isCreditRequestInIndividualConceptOnApproval() &&
-          (isCurrentUserApprover || representablePersons.length > 0))
-      )
+    if (!decisionValue.decision) return true;
+
+    if (
+      isCreditRequestInIndividualConceptOnApproval() &&
+      (isRepresentativeButNotApprover() ||
+        isNoLongerResponsibleForApproval()) &&
+      hasRepresentablePersonsAccess === false
+    ) {
+      return true;
+    }
+
+    return !(
+      isAuthorizedToTakeDecision ||
+      (isCreditRequestInIndividualConceptOnApproval() &&
+        isUserAuthorizedForApproval())
+    );
+  };
+
+  const showInfoIcon = () => {
+    if (
+      isCreditRequestInIndividualConceptOnApproval() &&
+      (isRepresentativeButNotApprover() ||
+        isNoLongerResponsibleForApproval()) &&
+      hasRepresentablePersonsAccess === false
+    ) {
+      return true;
+    }
+
+    return !(
+      isAuthorizedToTakeDecision ||
+      (isCreditRequestInIndividualConceptOnApproval() &&
+        isUserAuthorizedForApproval())
     );
   };
 
@@ -579,12 +667,7 @@ function ToDo(props: ToDoProps) {
                   >
                     {button?.label || txtLabelsEnum.buttonText.i18n[lang]}
                   </Button>
-                  {!(
-                    isAuthorizedToTakeDecision ||
-                    (isCreditRequestInIndividualConceptOnApproval() &&
-                      (isCurrentUserApprover() ||
-                        representablePersons.length > 0))
-                  ) && (
+                  {showInfoIcon() && (
                     <Icon
                       icon={<MdOutlineInfo />}
                       appearance="primary"
@@ -743,7 +826,7 @@ function ToDo(props: ToDoProps) {
         >
           <Stack direction="column" gap="16px">
             <Text>
-              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} "${selectedDecision?.label || txtConfirmRepresentativeEnum.processingDefault.i18n[lang]}" ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} "${selectedRepresentative || representablePersons[0] || "..."}", ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
+              {`${txtConfirmRepresentativeEnum.confirmationMessage.i18n[lang]} ${selectedDecision?.label || txtConfirmRepresentativeEnum.processingDefault.i18n[lang]} ${txtConfirmRepresentativeEnum.decisionLabel.i18n[lang]} ${selectedRepresentative || representablePersons[0] || "..."}, ${txtConfirmRepresentativeEnum.decisionPlaceholder.i18n[lang]}`}
             </Text>
             {representablePersons.length > 1 && (
               <Select
@@ -770,6 +853,15 @@ function ToDo(props: ToDoProps) {
             )}
           </Stack>
         </BaseModal>
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
       )}
     </>
   );

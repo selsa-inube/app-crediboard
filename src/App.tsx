@@ -13,7 +13,6 @@ import { AppContext, AppContextProvider } from "@context/AppContext";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { GlobalStyles } from "@styles/global";
 import { Login } from "@pages/login";
-import { initializeDataDB } from "@mocks/utils/initializeDataDB";
 import { LoginRoutes } from "@routes/login";
 import { BoardRoutes } from "@routes/board";
 import { useIAuth } from "@inube/iauth-react";
@@ -36,9 +35,6 @@ function FirstPage() {
   if (businessUnitSigla.length > 0) {
     return <BoardRoutes />;
   }
-
-  initializeDataDB(businessUnitSigla);
-
   if (businessUnitSigla.length > 0) {
     if (location.pathname.startsWith("/login")) {
       const params = new URLSearchParams(location.search);

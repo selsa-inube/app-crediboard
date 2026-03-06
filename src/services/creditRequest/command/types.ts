@@ -10,7 +10,6 @@ export interface IMakeDecisionsCreditRequestResponse {
 export interface IDeleteCreditRequest {
   creditRequestId: string;
   creditRequestCode?: string;
-  humanDecision: string;
   justification: string;
 }
 
@@ -113,3 +112,4 @@ export interface IRestoreIncomeResponse {
   income: IIncome;
   creditRequestCode: string;
 }
+

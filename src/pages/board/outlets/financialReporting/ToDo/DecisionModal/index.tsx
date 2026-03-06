@@ -73,9 +73,9 @@ export function DecisionModal(props: DecisionModalProps) {
 
   const { addFlag } = useFlag();
   const { lang } = useEnum();
-
   const isMobile = useMediaQuery("(max-width: 700px)");
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -159,8 +159,17 @@ export function DecisionModal(props: DecisionModalProps) {
         setErrorModal(true);
       }
     } catch (error) {
-      setErrorMessage(txtFlagsEnum.descriptionDanger.i18n[lang]);
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     } finally {
       onCloseModal?.();
     }
@@ -274,6 +283,16 @@ export function DecisionModal(props: DecisionModalProps) {
           handleClose={() => {
             setErrorModal(false);
           }}
+        />
+      )}
+
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

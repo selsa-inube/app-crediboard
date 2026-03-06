@@ -1,20 +1,3 @@
-export const optionLocalAccount = [
-  {
-    id: "savings account",
-    label: "Cuenta Ahorro - Bancolombia - 33345612311",
-    value: "cuenta de ahorro",
-  },
-  {
-    id: "bank",
-    label: "Cuenta Corriente - Davivienda - 45612311898",
-    value: "banco",
-  },
-  {
-    id: "account number",
-    label: "Numero de cuenta - Banco de bogotá - 31313131141",
-    value: "numero de cuenta",
-  },
-];
 export const Sex = [
   { id: "man", label: "Hombre", value: "man" },
   { id: "women", label: "Mujer", value: "women" },
@@ -43,25 +26,6 @@ export const City = [
   { id: "santa Marta", label: "Santa Marta", value: "santa Marta" },
   { id: "manizales", label: "Manizales", value: "manizales" },
 ];
-
-export const Bank = [
-  { id: "Bancolombia", label: "Bancolombia", value: "Bancolombia" },
-  { id: "Davivienda", label: "Davivienda", value: "Davivienda" },
-  { id: "BancoBogotá", label: "Banco de Bogotá", value: "Banco de Bogotá" },
-  {
-    id: "BancoOccidente",
-    label: "Banco de Occidente",
-    value: "Banco de Occidente",
-  },
-  { id: "BancoPopular", label: "Banco Popular", value: "Banco Popular" },
-  { id: "Bbva", label: "BBVA Colombia", value: "BBVA Colombia" },
-  {
-    id: "BancoCajaSocial",
-    label: "Banco Caja Social",
-    value: "Banco Caja Social",
-  },
-];
-
 export const typeAccount = [
   { id: "CH", label: "Cuenta de ahorro", value: "A" },
   { id: "CC", label: "Cuenta Corriente", value: "C" },

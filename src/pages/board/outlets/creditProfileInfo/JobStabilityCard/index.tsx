@@ -11,9 +11,10 @@ import { getLaborStabilityByCustomerId } from "@services/creditRequest/query/get
 import { ILaborStabilityByCustomerId } from "@services/creditRequest/query/getLaborStabilityByCustomerId/types";
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
+import { ICrediboardData } from "@context/AppContext/types";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { jobStabilityConfigEnum } from "./config";
-import { ICrediboardData } from "@context/AppContext/types";
 
 interface JobStabilityCardProps {
   isMobile?: boolean;
@@ -36,7 +37,8 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
   const [laborStabilityByCustomerId, setLaborStabilityByCustomerId] = useState<
     ILaborStabilityByCustomerId[]
   >([]);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const fetchLaborStabilityByCustomerId = async () => {
     if (!requests.clientIdentificationNumber) return;
 
@@ -50,15 +52,17 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
       );
       setLaborStabilityByCustomerId(data);
     } catch (error) {
-      if (typeof error === "object" && error !== null) {
-        throw {
-          ...(error as object),
-          message: (error as Error).message,
-        };
-      }
-      throw new Error(
-        jobStabilityConfigEnum.errorMessages.fetchError.i18n[lang],
-      );
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -161,6 +165,15 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
               </Text>
             </Stack>
           </Stack>
+          {showErrorModal && (
+            <ErrorModal
+              handleClose={() => {
+                setShowErrorModal(false);
+              }}
+              isMobile={isMobile}
+              message={messageError}
+            />
+          )}
         </Stack>
       )}
     </CardInfoContainer>

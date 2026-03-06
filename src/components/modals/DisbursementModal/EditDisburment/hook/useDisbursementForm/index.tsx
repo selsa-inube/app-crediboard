@@ -41,7 +41,8 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
   const [currentIdentification, setCurrentIdentification] =
     useState(identificationNumber);
   const { eventData } = useContext(AppContext);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   useEffect(() => {
     if (!skipValidation) {
       onFormValid(formik.isValid);
@@ -281,6 +282,17 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
           setCurrentIdentification(identificationNumber);
         }
       } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
         setIsAutoCompleted(false);
       }
     };
@@ -306,5 +318,9 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
     handleCheckboxChange,
     handleToggleChange,
     isInvalidAmount,
+    showErrorModal,
+    setShowErrorModal,
+    messageError,
+    setMessageError,
   };
 };

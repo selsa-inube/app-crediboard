@@ -35,7 +35,8 @@ function AddProductModal(props: IAddProductModalProps) {
     eventData,
   } = props;
   const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const [creditLineTerms, setCreditLineTerms] = useState<TCreditLineTerms>({});
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(
@@ -160,8 +161,17 @@ function AddProductModal(props: IAddProductModalProps) {
           },
         }));
       } catch (error) {
-        setErrorMessage(errorMessages.getPaymentMethods.i18n[lang]);
-        setErrorModal(true);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
         setLoading(false);
       }
     };
@@ -271,7 +281,7 @@ function AddProductModal(props: IAddProductModalProps) {
         lineOfCredit: formData.creditLine,
         moneyDestination: moneyDestination,
       }}
-      errorMessage={errorMessage}
+      errorMessage={messageError}
       setErrorModal={setErrorModal}
       errorModal={errorModal}
       isLoading={isLoading}
@@ -279,6 +289,8 @@ function AddProductModal(props: IAddProductModalProps) {
       dataProspect={dataProspect}
       eventData={eventData}
       setCurrentStep={setCurrentStep}
+      showErrorModal={showErrorModal}
+      setShowErrorModal={setShowErrorModal}
     />
   );
 }

@@ -1,7 +1,7 @@
 import { MdAddCircleOutline } from "react-icons/md";
 
 import { IOptionButtons } from "@components/modals/ListModal";
-import { addItem } from "@mocks/utils/dataMock.service";
+
 
 type Observer<T> = (data: T) => void;
 
@@ -28,63 +28,8 @@ export const errorObserver = observer<{
   message: string;
 }>();
 
-export const handleConfirmReject = async (
-  id: string,
-  user: string,
-  formData: { textarea: string },
-) => {
-  const justificationText = formData.textarea;
 
-  if (justificationText && id) {
-    const trace = {
-      trace_value: "Document uploaded",
-      credit_request_id: id,
-      use_case: "document_upload",
-      user_id: user,
-      execution_date: new Date().toISOString(),
-      justification: justificationText,
-      decision_taken_by_user: "rejected",
-      trace_type: "executed_task",
-      read_novelty: "",
-    };
 
-    try {
-      await addItem("trace", trace);
-      traceObserver.notify(trace);
-    } catch (error) {
-      console.error(`No se ha podido realizar el rechazo: ${error}`);
-    }
-  }
-};
-
-export const handleConfirmCancel = async (
-  id: string,
-  user: string,
-  formData: { textarea: string },
-) => {
-  const justificationText = formData.textarea;
-
-  if (justificationText && id) {
-    const trace = {
-      trace_value: "Document cancelled",
-      credit_request_id: id,
-      use_case: "document_cancel",
-      user_id: user,
-      execution_date: new Date().toISOString(),
-      justification: justificationText,
-      decision_taken_by_user: "cancelled",
-      trace_type: "executed_task",
-      read_novelty: "",
-    };
-
-    try {
-      await addItem("trace", trace);
-      traceObserver.notify(trace);
-    } catch (error) {
-      console.error(`No se ha podido realizar la anulación: ${error}`);
-    }
-  }
-};
 
 export const optionButtons: IOptionButtons = {
   label: "Adjuntar archivo",
@@ -630,45 +575,4 @@ export const financialReportingLabelsEnum = {
   },
 };
 
-export const errorMessagesAttachEnum = {
-  searchProspect: {
-    code: "Error_search_prospect",
-    description: "Error when fetching prospects fails",
-    i18n: {
-      en: "Error fetching prospects",
-      es: "Error al obtener los prospectos",
-    },
-  },
-  share: {
-    code: "Error_share_pdf",
-    description: "Error when sharing or generating the PDF",
-    i18n: {
-      en: "Error generating or sharing the PDF",
-      es: "Error al generar o compartir el PDF",
-    },
-    spinner: {
-      code: "Status_generating_pdf",
-      description: "Text shown while generating PDF",
-      i18n: {
-        en: "Generating PDF...",
-        es: "Generando PDF...",
-      },
-    },
-  },
-  lateRejection: {
-    code: "Error_late_rejection",
-    description: "Error during the late rejection process",
-    i18n: {
-      en: "Could not reject the credit request.",
-      es: "No se pudo rechazar la solicitud de crédito.",
-    },
-  },
-  unreadErrors: {
-    code: "Error_unread_errors",
-    description: "Error when fetching unread notifications or service errors",
-    i18n: {
-      en: "Error fetching unread errors.",
-      es: "Error al obtener los errores no leídos.",
-    },
-  },
-};
+

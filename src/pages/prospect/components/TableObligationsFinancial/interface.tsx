@@ -67,6 +67,9 @@ interface UIProps {
   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
   lang: EnumType;
   enums: IAllEnumsResponse | null;
+  showErrorModal: boolean;
+  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  messageError: string;
   setErrorModal?: React.Dispatch<React.SetStateAction<boolean>>;
   errorMessage?: string;
   errorModal?: boolean;
@@ -95,6 +98,9 @@ export const TableFinancialObligationsUI = ({
   errorMessage,
   lang,
   enums,
+  showErrorModal,
+  setShowErrorModal,
+  messageError,
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(
@@ -444,6 +450,15 @@ export const TableFinancialObligationsUI = ({
           handleClose={() => {
             setErrorModal(false);
           }}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

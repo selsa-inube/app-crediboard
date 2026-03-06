@@ -58,9 +58,8 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     { id: string; name: string; file: File }[]
   >([]);
   const [showAttachments, setShowAttachments] = useState(false);
-  const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -87,9 +86,19 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       );
       setCreditRequest(data[0] as ICreditRequest);
     } catch (error) {
-      console.error(error);
-      notifyError((error as Error).message);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
     id,
@@ -117,12 +126,22 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         eventData.token || "",
       );
       setTraces(Array.isArray(data) ? data.flat() : []);
-    } catch (err) {
-      notifyError((err as Error).message);
-      setError("Error al intentar conectar con el servicio de trazabilidad.");
+    } catch (error) {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessUnitPublicCode,
     creditRequest?.creditRequestId,
@@ -180,8 +199,17 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         }
       });
     } catch (error) {
-      setErrorMessage(errorMessagesEnum.registerNews.description.i18n[lang]);
-      setErrorModal(true);
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
+
+      setShowErrorModal(true);
+      setMessageError(description);
     }
   };
 
@@ -381,13 +409,14 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
           </>
         )}
       </Fieldset>
-      {errorModal && (
+
+      {showErrorModal && (
         <ErrorModal
-          isMobile={isMobile}
-          message={errorMessage}
           handleClose={() => {
-            setErrorModal(false);
+            setShowErrorModal(false);
           }}
+          isMobile={isMobile}
+          message={messageError}
         />
       )}
     </>

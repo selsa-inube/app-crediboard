@@ -84,6 +84,9 @@ export interface ITermSelectionUI {
   isMobile: boolean;
   initialValues: ITermSelectionValuesMain;
   lang: EnumType;
+  showErrorModal: boolean;
+  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  messageError: string;
   validationSchema: Yup.ObjectSchema<{
     quotaCapValue?: string;
     maximumTermValue?: string;
@@ -174,7 +177,10 @@ export interface IAmountCaptureUI {
   loanAmountError: string;
   amountCaptureTexts: typeof amountCaptureTexts;
   handleCurrencyChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  isMobile?: boolean;
+  showErrorModal: boolean;
+  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  messageError: string;
+  isMobile: boolean;
 }
 
 export type PaymentChannelItem =

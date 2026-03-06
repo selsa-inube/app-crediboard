@@ -34,7 +34,8 @@ export function TermSelection(props: ITermSelection) {
 
   const [paymentCapacityData, setPaymentCapacityData] =
     useState<IPaymentCapacityResponse | null>(null);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   useEffect(() => {
     if (!quotaCapEnabled && !maximumTermEnabled) {
       onChange({
@@ -253,8 +254,18 @@ export function TermSelection(props: ITermSelection) {
           eventData.token,
         );
         setPaymentCapacityData(paymentCapacity ?? null);
-      } catch (error: unknown) {
-        console.log(error);
+      } catch (error) {
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       }
     };
 
@@ -273,6 +284,9 @@ export function TermSelection(props: ITermSelection) {
       handleMaximumTermToggleChange={handleMaximumTermToggleChange}
       handleMaximumTermValueChange={handleMaximumTermValueChange}
       lang={lang}
+      showErrorModal={showErrorModal}
+      setShowErrorModal={setShowErrorModal}
+      messageError={messageError}
     />
   );
 }

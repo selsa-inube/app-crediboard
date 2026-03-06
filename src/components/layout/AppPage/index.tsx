@@ -17,7 +17,6 @@ import { MenuUser } from "@components/navigation/MenuUser";
 import { BusinessUnitChange } from "@components/inputs/BusinessUnitChange";
 import { IBusinessUnitsPortalStaff } from "@services/businessUnitsPortalStaff/types";
 import { getUserMenu } from "@config/menuMainConfiguration";
-import { mockErrorBoard } from "@mocks/error-board/errorborad.mock";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardNoveilties } from "@components/cards/CardsNoveilties";
 import { IUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnreadNoveltiesByUser/types";
@@ -25,6 +24,7 @@ import { getUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnrea
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
 import { useEnum } from "@hooks/useEnum";
+import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
   StyledAppPage,
@@ -41,7 +41,7 @@ import {
   StyledCardsContainer,
   StyledUserImage,
 } from "./styles";
-import { emptyNoveltiesConfigEnum } from "./config/errorNovelties";
+import { emptyNoveltiesConfigEnum, errorBoardConfigEnum } from "./config/errorNovelties";
 
 const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
   return (
@@ -64,6 +64,8 @@ function AppPage() {
   const [noveltiesData, setNoveltiesData] = useState<IUnreadNoveltiesByUser[]>(
     [],
   );
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
   const navigate = useNavigate();
   const { businessUnitSigla } = useContext(AppContext);
   const { lang } = useEnum();
@@ -148,10 +150,9 @@ function AppPage() {
   const { addFlag } = useFlag();
 
   const handleFlag = () => {
-    const errorData = mockErrorBoard[0].business;
     addFlag({
-      title: errorData[0],
-      description: errorData[1],
+      title: errorBoardConfigEnum.business.title.i18n[lang],
+      description: errorBoardConfigEnum.business.description.i18n[lang],
       appearance: "danger",
       duration: 5000,
     });
@@ -175,7 +176,17 @@ function AppPage() {
         );
         setNoveltiesData(data);
       } catch (error) {
-        console.error("Error fetching novelties:", error);
+        const err = error as {
+          message?: string;
+          status?: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + (err?.message || "") + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       } finally {
         setIsLoadingBusinessUnit(false);
       }
@@ -208,7 +219,6 @@ function AppPage() {
   return (
     <StyledAppPage>
       <Grid templateRows="auto 1fr" height="100vh" justifyContent="unset">
-   
         <StyledPrint>
           <StyledHeaderContainer>
             <Header
@@ -338,6 +348,16 @@ function AppPage() {
           </StyledFooter>
         </StyledContainer>
       </Grid>
+
+      {showErrorModal && (
+        <ErrorModal
+          handleClose={() => {
+            setShowErrorModal(false);
+          }}
+          isMobile={isMobile}
+          message={messageError}
+        />
+      )}
     </StyledAppPage>
   );
 }

@@ -14,7 +14,7 @@ const deleteCreditRequests = async (
     const options: RequestInit = {
       method: "PATCH",
       headers: {
-        "X-Action": "CancelCreditRequest",
+        "X-Action": "DeleteACreditRequest",
         "X-Business-Unit": businessUnitPublicCode,
         "X-User-Name": userName,
         "Content-type": "application/json; charset=UTF-8",
