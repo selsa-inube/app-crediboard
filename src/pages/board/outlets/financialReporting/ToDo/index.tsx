@@ -57,6 +57,7 @@ interface ToDoProps {
   id: string;
   setIdProspect: (idProspect: string) => void;
   approvalsEntries: IEntries[];
+  handleDecisionModal: () => void;
 }
 
 function ToDo(props: ToDoProps) {

@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, FieldProps, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import {
@@ -73,7 +72,6 @@ export function DecisionModal(props: DecisionModalProps) {
     secondaryButtonText = "Cancelar",
   } = props;
 
-  const navigate = useNavigate();
   const { addFlag } = useFlag();
   const { lang } = useEnum();
   const isMobile = useMediaQuery("(max-width: 700px)");
@@ -152,7 +150,6 @@ export function DecisionModal(props: DecisionModalProps) {
       );
 
       if (response?.statusServices === 200) {
-        navigate("/");
         addFlag({
           title: txtFlagsEnum.titleSuccess.i18n[lang],
           description: `${txtFlagsEnum.descriptionSuccess.i18n[lang]} ${response.status}`,
