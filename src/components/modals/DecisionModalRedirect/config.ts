@@ -5,8 +5,8 @@ export const decisionModalMessages = {
       code: "Messages_decisionModal_title",
       description: "Título del modal de decisión exitosa",
       i18n: {
-        en: "Successful decision!",
-        es: "¡Decisión exitosa!",
+        en: "Successful action!",
+        es: "¡Acción exitosa!",
       },
     },
     description: {
@@ -35,7 +35,7 @@ export const decisionModalMessages = {
       description: "Texto explicativo de la tarjeta para regresar",
       i18n: {
         en: "Click this option if you wish to return to the Board where you can view all credit requests in progress.",
-        es: "Haz clic en esta opción, si deseas regresar a la Board donde puedes visualizar todas las solicitudes de crédito en trámite.",
+        es: "Haz clic en esta opción si deseas regresar al board, donde puedes visualizar todas las solicitudes de crédito en trámite.",
       },
     },
     button: {
@@ -54,8 +54,8 @@ export const decisionModalMessages = {
       code: "Messages_decisionModal_continueTitle",
       description: "Título de la tarjeta para continuar",
       i18n: {
-        en: "Continue in extended card:",
-        es: "Continuar en la tarjeta extendida:",
+        en: "Stay in extended card:",
+        es: "Quedarte en la tarjeta extendida:",
       },
     },
     descriptionCard: {
@@ -64,7 +64,7 @@ export const decisionModalMessages = {
       description: "Texto explicativo de la tarjeta para continuar",
       i18n: {
         en: "Click this option if you wish to continue in the extended card and manage {{creditRequestCode}}.",
-        es: "Haz clic en está opción si deseas continuar en la tarjeta extendida y gestionar la {{creditRequestCode}}.",
+        es: "Haz clic en está opción si deseas quedarte en la tarjeta extendida y gestionar la {{creditRequestCode}}.",
       },
     },
     button: {
