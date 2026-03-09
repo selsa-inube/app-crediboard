@@ -1,4 +1,4 @@
-export const prospectScore = {
+/* export const prospectScore = {
   save: "Guardar",
   close: "Cerrar",
   notFount: (
@@ -7,6 +7,42 @@ export const prospectScore = {
       score de crédito.
     </>
   ),
+}; */
+
+export const prospectScore = {
+  save: {
+    code: "Prospect_score_save",
+    description: "Save button text",
+    i18n: {
+      en: "Save",
+      es: "Guardar",
+    },
+  },
+  close: {
+    code: "Prospect_score_close",
+    description: "Close button text",
+    i18n: {
+      en: "Close",
+      es: "Cerrar",
+    },
+  },
+  notFount: {
+    code: "Prospect_score_not_found",
+    description: "Message displayed when no credit score is found",
+    i18n: {
+      es: (
+        <>
+          Después de una cuidadosa búsqueda, <strong>no</strong> encontramos
+          ningún score de crédito.
+        </>
+      ),
+      en: (
+        <>
+          After a careful search, we found <strong>no</strong> credit score.
+        </>
+      ),
+    },
+  },
 };
 
 export const riskScoreChanges = {

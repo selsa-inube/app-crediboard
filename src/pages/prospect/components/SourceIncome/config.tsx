@@ -14,7 +14,7 @@ function IncomeCapital({
   ShowSupport,
   disabled,
   onValueChange,
-  lang
+  lang,
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -39,7 +39,7 @@ function IncomeEmployment({
   ShowSupport,
   disabled,
   onValueChange,
-  lang
+  lang,
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -68,7 +68,7 @@ function MicroBusinesses({
   ShowSupport,
   disabled,
   onValueChange,
-  lang
+  lang,
 }: IncomeProps) {
   return (
     <IncomeCard
@@ -83,5 +83,7 @@ function MicroBusinesses({
     />
   );
 }
+
+export const RestoreJustification = "restore income";
 
 export { IncomeCapital, IncomeEmployment, MicroBusinesses };

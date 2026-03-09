@@ -6,6 +6,7 @@ import { getPropertyValue } from "@utils/mappingData/mappings";
 import { currencyFormat } from "@utils/formatData/currency";
 import { IBorrower } from "@services/prospect/types";
 import { useEnum } from "@hooks/useEnum";
+import { IEnumItem } from "@services/enumerators/types";
 
 import { dataIncomeDebtorEnum } from "./config";
 
@@ -15,32 +16,42 @@ interface IIncomeBorrower {
 
 export function IncomeBorrower(props: IIncomeBorrower) {
   const { initialIncome } = props;
-const { lang } = useEnum();
+  const { lang, enums } = useEnum();
+
+  const getIncomeKeys = (types: string[]) => {
+    if (!enums?.IncomeSource) return [];
+
+    return enums.IncomeSource.filter(
+      (source: IEnumItem) =>
+        source.incomeType && types.includes(source.incomeType),
+    ).map((source: IEnumItem) => source.code);
+  };
 
   const incomeFields = [
     {
       label: dataIncomeDebtorEnum.work.i18n[lang],
-      keys: ["PeriodicSalary", "OtherNonSalaryEmoluments", "PensionAllowances"],
+      keys: getIncomeKeys(["EmploymentIncome"]),
     },
     {
       label: dataIncomeDebtorEnum.capital.i18n[lang],
-      keys: ["FinancialIncome", "Leases", "Dividends"],
+      keys: getIncomeKeys(["CapitalIncome"]),
     },
     {
       label: dataIncomeDebtorEnum.variables.i18n[lang],
-      keys: ["ProfessionalFees", "PersonalBusinessUtilities"],
+      keys: getIncomeKeys([
+        "ProfessionalFees",
+        "EarningsFromVenturesOrMicroBusinesses",
+      ]),
     },
   ];
 
   return (
-    <Fieldset
-      borderColor="none"
-    >
+    <Fieldset borderColor="none">
       <Stack direction="column" padding="10px 16px" gap="16px">
         {incomeFields.map((field, index) => {
           const sum = field.keys.reduce((acc, key) => {
             const val = Number(
-              getPropertyValue(initialIncome.borrowerProperties, key) ?? 0
+              getPropertyValue(initialIncome.borrowerProperties, key) ?? 0,
             );
             return acc + (isNaN(val) ? 0 : val);
           }, 0);

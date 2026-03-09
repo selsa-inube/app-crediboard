@@ -1,3 +1,12 @@
+import * as Yup from "yup";
+
+import { ICrediboardData } from "@context/AppContext/types";
+import { EnumType } from "@hooks/useEnum";
+import { IProspect } from "@services/prospect/types";
+import { ICustomerData as ICustomerDataConfig } from "./config";
+
+import { IPaymentConfiguration } from "./steps/config";
+
 export interface ICustomerData {
   customerId: string;
   publicCode: string;
@@ -44,3 +53,126 @@ export interface IExtraInstallmentsAllowedResponse {
 export interface IFinancialObligationsUpdateResponse {
   financialObligationsUpdateRequired: string;
 }
+
+export interface IAddProductModalProps {
+  onCloseModal: () => void;
+  onConfirm: (values: IFormValues) => void;
+  title: string;
+  confirmButtonText: string;
+  initialValues: Partial<IFormValues>;
+  moneyDestination: string;
+  businessUnitPublicCode: string;
+  businessManagerCode: string;
+  dataProspect: IProspect;
+  isLoading: boolean;
+  lang: EnumType;
+  eventData: ICrediboardData;
+  iconBefore?: React.JSX.Element;
+  iconAfter?: React.JSX.Element;
+  customerData?: ICustomerDataConfig;
+}
+
+export interface IAddProductModalUIProps {
+  title: string;
+  setCurrentStep: (step: number) => void;
+  showErrorModal: boolean;
+  confirmButtonText: string;
+  initialValues: Partial<IFormValues>;
+  validationSchema: Yup.AnyObjectSchema;
+  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  onConfirm: (values: IFormValues) => void;
+  onCloseModal: () => void;
+  iconBefore?: React.JSX.Element;
+  iconAfter?: React.JSX.Element;
+  creditLineTerms: TCreditLineTerms;
+  isMobile: boolean;
+  steps: IStep[];
+  currentStep: number;
+  currentStepsNumber: IStep;
+  isCurrentFormValid: boolean;
+  formData: IFormValues;
+  setIsCurrentFormValid: React.Dispatch<React.SetStateAction<boolean>>;
+  handleFormChange: (updatedValues: Partial<IFormValues>) => void;
+  handleNextStep: () => void;
+  handlePreviousStep: () => void;
+  handleSubmitClick: () => void;
+  businessUnitPublicCode: string;
+  businessManagerCode: string;
+  prospectData: {
+    lineOfCredit: string;
+    moneyDestination: string;
+  };
+  errorModal: boolean;
+  setErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  errorMessage: string;
+  eventData: ICrediboardData;
+  loading: boolean;
+  isLoading: boolean;
+  lang: EnumType;
+  dataProspect: IProspect;
+}
+
+export interface IStep {
+  id: number;
+  number: number;
+  name: string;
+  description: string;
+}
+
+export interface IFirstPaymentDate {
+  id: string;
+  value: string;
+  label: string;
+}
+
+export interface IFormValues {
+  creditLine: string;
+  creditAmount: number;
+  paymentConfiguration: IPaymentConfiguration;
+  quotaCapValue: number;
+  maximumTermValue: number;
+  quotaCapEnabled: boolean;
+  maximumTermEnabled: boolean;
+  selectedProducts: string[];
+}
+
+export interface IBorrowerIncomeData {
+  Dividends: number;
+  FinancialIncome: number;
+  Leases: number;
+  OtherNonSalaryEmoluments: number;
+  PensionAllowances: number;
+  PeriodicSalary: number;
+  PersonalBusinessUtilities: number;
+  ProfessionalFees: number;
+}
+
+export type TRuleEvaluationResult = {
+  value: number | string;
+  [key: string]: string | number;
+};
+
+export type TCreditLineTerms = Record<
+  string,
+  {
+    LoanAmountLimit: number;
+    LoanTermLimit: number;
+    RiskFreeInterestRate: number;
+    amortizationType?: string[];
+    description?: string;
+  }
+>;
+export type TRulePrimitiveValue = number | string;
+
+export type TRuleArrayValue = (
+  | TRuleEvaluationResult
+  | TRulePrimitiveValue
+  | undefined
+)[];
+
+export type TRuleInput =
+  | TRulePrimitiveValue
+  | TRuleEvaluationResult
+  | TRuleArrayValue
+  | null
+  | undefined;

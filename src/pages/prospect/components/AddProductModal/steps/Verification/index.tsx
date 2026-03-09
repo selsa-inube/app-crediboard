@@ -8,7 +8,7 @@ import { useEnum } from "@hooks/useEnum";
 import { IAttributes, IDataVerificationStep } from "./types";
 import { VerificationAddProductUI } from "./interface";
 import { getVerificationAddProductConfig } from "../config";
-import { IFormValues, TCreditLineTerms } from "../../config";
+import { IFormValues, TCreditLineTerms } from "../../types";
 
 export interface IVerificationAddProductProps {
   formData: IFormValues;

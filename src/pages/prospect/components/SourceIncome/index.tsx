@@ -24,7 +24,12 @@ import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
 
 import { IIncomeSources } from "../CreditProspect/types";
-import { IncomeEmployment, IncomeCapital, MicroBusinesses } from "./config";
+import {
+  IncomeEmployment,
+  IncomeCapital,
+  MicroBusinesses,
+  RestoreJustification,
+} from "./config";
 import { IIncome } from "./types";
 import { StyledContainer } from "./styles";
 
@@ -115,7 +120,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
 
     const body = {
       borrowerIdentificationNumber: data.identificationNumber,
-      justification: "restore income",
+      justification: RestoreJustification,
       creditRequestCode: creditRequestCode || "",
     };
 
