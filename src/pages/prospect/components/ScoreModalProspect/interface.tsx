@@ -4,7 +4,6 @@ import { BaseModal } from "@components/modals/baseModal";
 
 import { Fieldset } from "@components/data/Fieldset";
 
-
 import { urlMock } from "./config";
 import { prospectScore } from "./config";
 import { DataRiskScore } from "../RiskScoreGauge/config";
@@ -48,9 +47,9 @@ export const ScoreModalProspectUI = (props: IScoreModalProspectUIProps) => {
       nextButton={
         firstScore === null && secondScore === null
           ? undefined
-          : prospectScore.save
+          : prospectScore.save.i18n[lang]
       }
-      backButton={prospectScore.close}
+      backButton={prospectScore.close.i18n[lang]}
       handleClose={handleClose}
       handleBack={handleClose}
       handleNext={handleSave}
@@ -156,7 +155,7 @@ export const ScoreModalProspectUI = (props: IScoreModalProspectUIProps) => {
               padding="24px"
             >
               <StyledImgNotFound />
-              <Text>{prospectScore.notFount}</Text>
+              <Text>{prospectScore.notFount.i18n[lang]}</Text>
             </Stack>
           </Fieldset>
         )}

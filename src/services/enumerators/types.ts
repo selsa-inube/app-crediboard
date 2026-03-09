@@ -14,6 +14,7 @@ export interface IEnumItem {
   value?: string;
   i18nAttribute?: string;
   i18n: I18nText;
+  incomeType?: string;
 }
 
 export interface IAllEnumsResponse {

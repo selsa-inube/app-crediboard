@@ -6,15 +6,17 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import { getLinesOfCreditByMoneyDestination } from "@services/prospect/getLinesOfCreditByMoneyDestination";
 import { GetSearchAllPaymentChannels } from "@services/prospect/searchAllPaymentChannelsByIdentificationNumber/SearchAllPaymentChannelsByIdentificationNumber";
 import {
-  IAddProductModalProps,
-  TCreditLineTerms,
-  IFormValues,
   extractBorrowerIncomeData,
   stepsAddProduct,
   errorMessages,
 } from "./config";
 import { AddProductModalUI } from "./interface";
-import { ILinesOfCreditByMoneyDestination } from "./types";
+import {
+  ILinesOfCreditByMoneyDestination,
+  IAddProductModalProps,
+  TCreditLineTerms,
+  IFormValues,
+} from "./types";
 import { IResponsePaymentDatesChannel } from "./steps/config";
 function AddProductModal(props: IAddProductModalProps) {
   const {

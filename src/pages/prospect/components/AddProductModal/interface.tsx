@@ -15,7 +15,6 @@ import { CardProductSelection } from "@components/cards/CardProductSelection";
 import { ScrollableContainer } from "./styles";
 import {
   messageNotFound,
-  IAddProductModalUIProps,
   titleButtonTextAssisted,
   stepsAddProduct,
   noAvailablePaymentMethods,
@@ -23,6 +22,7 @@ import {
 import { PaymentConfiguration } from "./steps/PaymentConfiguration";
 import { AmountCapture } from "./steps/AmountCapture";
 import { TermSelection } from "./steps/TermSelection";
+import { IAddProductModalUIProps } from "./types";
 
 import { VerificationDebtorAddModal } from "./steps/Verification";
 

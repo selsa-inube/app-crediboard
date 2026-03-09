@@ -41,3 +41,8 @@ export const deductibleExpenses = {
     },
   },
 };
+
+export const expensesProperties = {
+  bondvalue: "Bond value",
+  interestCycle: "Interest for cycle adjustment in disbursement",
+} as const;

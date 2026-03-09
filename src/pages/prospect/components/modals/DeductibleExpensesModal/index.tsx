@@ -6,7 +6,7 @@ import { Fieldset } from "@components/data/Fieldset";
 import { EnumType } from "@hooks/useEnum";
 
 import { StyledContainer } from "./styles";
-import { deductibleExpenses } from "./config";
+import { deductibleExpenses, expensesProperties } from "./config";
 
 export interface DeductibleExpensesModalProps {
   initialValues: { expenseName: string; expenseValue: number }[];
@@ -26,9 +26,8 @@ export function DeductibleExpensesModal(props: DeductibleExpensesModalProps) {
   const deductibleExpensedAmount = initialValues.length < 5;
 
   const expenseTranslations: Record<string, string> = {
-    "Bond value": deductibleExpenses.BondValue.i18n[lang],
-    "Interest for cycle adjustment in disbursement":
-      deductibleExpenses.Interest.i18n[lang],
+    [expensesProperties.bondvalue]: deductibleExpenses.BondValue.i18n[lang],
+    [expensesProperties.interestCycle]: deductibleExpenses.Interest.i18n[lang],
   };
 
   return (
