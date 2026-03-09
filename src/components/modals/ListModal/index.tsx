@@ -52,6 +52,8 @@ export interface IOptionButtons {
 export interface IListModalProps {
   title: string;
   buttonLabel: string;
+  isLoading?: boolean;
+  showNoDocumentsModal?: boolean;
   cancelButton?: string;
   appearanceCancel?:
     | "primary"
@@ -71,6 +73,7 @@ export interface IListModalProps {
   isViewing?: boolean;
   uploadedFiles?: IDocumentUpload[];
   onlyDocumentReceived?: boolean;
+  onDeleteDocument?: (id: string, name: string) => Promise<void>;
   handleClose: (
     uploadedDocs?: IUploadedFileReturn[] | undefined,
   ) => void | Promise<void>;
@@ -96,6 +99,7 @@ export const ListModal = (props: IListModalProps) => {
     handleSubmit,
     onSubmit,
     setUploadedFiles,
+    onDeleteDocument,
     id,
   } = props;
 
@@ -162,46 +166,42 @@ export const ListModal = (props: IListModalProps) => {
 
   interface IListdataProps {
     data: { id: string; name: string }[] | null | undefined;
-    onDelete?: (id: string) => void;
+    onDelete?: (id: string, name: string) => void;
     icon?: React.ReactNode;
     onPreview?: (id: string, name: string) => void;
   }
 
   const Listdata = (props: IListdataProps) => {
-    const { data, icon, onDelete, onPreview } = props;
-
+    const { data, onDelete, onPreview } = props;
     const maxLength = isMobile ? 20 : 40;
-
     return (
-      <ul
-        style={{
-          paddingInlineStart: "2px",
-          marginBlock: "8px",
-        }}
-      >
+      <ul style={{ paddingInlineStart: "2px", marginBlock: "8px" }}>
         {data?.map((element) => (
           <StyledItem key={element.id}>
             <TruncatedText text={element.name} maxLength={maxLength} />
-            <Icon
-              icon={icon}
-              appearance="dark"
-              spacing="narrow"
-              size="24px"
-              cursorHover
-              onClick={() => {
-                if (onDelete) {
-                  onDelete(element.id);
-                } else if (onPreview) {
-                  onPreview(element.id, element.name);
-                }
-              }}
-            />
+            <Stack gap="8px">
+              <Icon
+                icon={<MdOutlineRemoveRedEye />}
+                appearance="dark"
+                spacing="narrow"
+                size="24px"
+                cursorHover
+                onClick={() => onPreview?.(element.id, element.name)}
+              />
+              <Icon
+                icon={<MdDeleteOutline />}
+                appearance="dark"
+                spacing="narrow"
+                size="24px"
+                cursorHover
+                onClick={() => onDelete?.(element.id, element.name)}
+              />
+            </Stack>
           </StyledItem>
         ))}
       </ul>
     );
   };
-
   const handleDeleteFile = (id: string) => {
     if (!setUploadedFiles) return;
     setUploadedFiles(
@@ -231,6 +231,7 @@ export const ListModal = (props: IListModalProps) => {
       duration: 5000,
     });
   };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!setUploadedFiles || !files) return;
@@ -266,7 +267,6 @@ export const ListModal = (props: IListModalProps) => {
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
     e.preventDefault();
     dragCounter.current = 0;
     setIsDragging(false);
@@ -432,6 +432,7 @@ export const ListModal = (props: IListModalProps) => {
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
+
   const handleBrowseClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -467,18 +468,32 @@ export const ListModal = (props: IListModalProps) => {
             <>
               {isViewing && (
                 <StyledContainerContent $smallScreen={isMobile}>
-                  <Listdata
-                    data={isViewing ? (dataDocument ?? []) : uploadedFiles}
-                    icon={
-                      isViewing ? (
-                        <MdOutlineRemoveRedEye />
-                      ) : (
-                        <MdDeleteOutline />
-                      )
-                    }
-                    onDelete={!isViewing ? handleDeleteFile : undefined}
-                    onPreview={isViewing ? handlePreview : undefined}
-                  />
+                  {isViewing ? (
+                    <Listdata
+                      data={dataDocument ?? []}
+                      icon={<MdOutlineRemoveRedEye />}
+                      onPreview={handlePreview}
+                      onDelete={(id, name) => onDeleteDocument?.(id, name)}
+                    />
+                  ) : (
+                    uploadedFiles &&
+                    uploadedFiles.length > 0 && (
+                      <Listdata
+                        data={uploadedFiles}
+                        icon={<MdDeleteOutline />}
+                        onDelete={handleDeleteFile}
+                        onPreview={(id, name) => {
+                          const file = uploadedFiles.find((f) => f.id === id);
+                          if (file) {
+                            const url = URL.createObjectURL(file.file);
+                            setSelectedFile(url);
+                            setFileName(name);
+                            setOpen(true);
+                          }
+                        }}
+                      />
+                    )
+                  )}
                 </StyledContainerContent>
               )}
             </>
@@ -552,7 +567,6 @@ export const ListModal = (props: IListModalProps) => {
               uploadedFiles.length > 0 && (
                 <>
                   <Divider dashed />
-
                   <Text
                     type="title"
                     size="medium"
