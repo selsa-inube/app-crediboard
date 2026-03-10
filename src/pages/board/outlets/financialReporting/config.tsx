@@ -2,7 +2,6 @@ import { MdAddCircleOutline } from "react-icons/md";
 
 import { IOptionButtons } from "@components/modals/ListModal";
 
-
 type Observer<T> = (data: T) => void;
 
 function observer<T>() {
@@ -27,9 +26,6 @@ export const errorObserver = observer<{
   id: string;
   message: string;
 }>();
-
-
-
 
 export const optionButtons: IOptionButtons = {
   label: "Adjuntar archivo",
@@ -574,5 +570,3 @@ export const financialReportingLabelsEnum = {
     },
   },
 };
-
-
