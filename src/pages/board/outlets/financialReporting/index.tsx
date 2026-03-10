@@ -421,7 +421,7 @@ export const FinancialReporting = () => {
         data.creditRequestStateAbbreviatedName === "ASESORAMIENTO_CLIENTE";
 
       const hasRequiredRole = eventData?.enumRole?.some(
-        (role) => role.code === "CredicarAccountManager",
+        (role) => role.code === "AccountManager",
       );
 
       try {
