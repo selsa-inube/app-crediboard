@@ -1,7 +1,7 @@
 const secretKeyPortalId = import.meta.env.VITE_SECRET_KEY_PORTAL_ID as string;
 
 const environment = {
-  REDIRECT_URI: window.location.origin,
+  REDIRECT_URI: window.location.href,
   VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE: import.meta.env
     .VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE,
   VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE: import.meta.env

@@ -20,7 +20,15 @@ export interface IMakeDecisionsCreditRequest {
   justification?: string;
   justificacion?: string;
 }
-
+export interface IRemoveDocument {
+  abbreviatedName: string;
+  creditRequestId: string;
+  transactionOperation: string;
+  documentId: string;
+  fileName?: string;
+  requirementReference?: string;
+  documentCode?: string;
+}
 export interface INotificationOnApprovals {
   approvalId: string;
   creditRequestId: string;
@@ -112,4 +120,3 @@ export interface IRestoreIncomeResponse {
   income: IIncome;
   creditRequestCode: string;
 }
-

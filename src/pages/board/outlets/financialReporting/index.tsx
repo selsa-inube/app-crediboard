@@ -19,6 +19,7 @@ import { TextAreaModal } from "@components/modals/TextAreaModal";
 import {
   IDeleteCreditRequest,
   IPaymentChannel,
+  IRemoveDocument,
 } from "@services/creditRequest/command/types";
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
@@ -78,6 +79,7 @@ import { Postingvouchers } from "./Postingvouchers";
 import { IDocumentData, IErrorService, IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
 import { ComercialManagement } from "./CommercialManagement";
+import { removeDocument } from "@services/creditRequest/delete/removeDocument";
 
 interface IListdataProps {
   data: { id: string; name: string }[];
@@ -108,7 +110,7 @@ export const FinancialReporting = () => {
   const [errorGetProspects, setErrorGetProspects] = useState(false);
   const [showModalDecision, setShowModalDecision] = useState(false);
   const [resetKey, setResetKey] = useState(0);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [dataProspect, setDataProspect] = useState<IProspect>();
@@ -172,9 +174,11 @@ export const FinancialReporting = () => {
     eventData.token,
     eventData.user.identificationDocumentNumber,
   ]);
+
   const [showNoDocumentsModal, setShowNoDocumentsModal] = useState(false);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(0);
+
   const fetchAndShowDocuments = async () => {
     if (!data?.creditRequestId || !user?.id || !businessUnitPublicCode) return;
     setIsLoadingDocuments(true);
@@ -225,6 +229,7 @@ export const FinancialReporting = () => {
       setIsLoadingDocuments(false);
     }
   };
+
   const generalLoading = loadingTasks > 0;
   const setGeneralLoading = useCallback(
     (isLoading: boolean | ((prev: boolean) => boolean)) => {
@@ -236,6 +241,7 @@ export const FinancialReporting = () => {
     },
     [],
   );
+
   const fetchData = async () => {
     if (!creditRequestCode) return;
 
@@ -266,6 +272,7 @@ export const FinancialReporting = () => {
       setGeneralLoading(false);
     }
   };
+
   useEffect(() => {
     idProspect && businessUnitPublicCode && fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -373,9 +380,11 @@ export const FinancialReporting = () => {
     setShowCancelModal(true);
     setShowMenu(false);
   };
+
   const conceptoRechazarSolicitud =
     enums?.DmConceptos?.find((c) => c.code === "RECHAZAR_SOLICITUD")?.code ??
     "RECHAZAR_SOLICITUD";
+
   const hanleOnReject = () => {
     setShowRejectModal(true);
     setShowMenu(false);
@@ -589,6 +598,60 @@ export const FinancialReporting = () => {
     setResetKey((prev) => prev + 1);
   };
 
+  const handleRemoveDocument = async (
+    documentId: string,
+    documentName: string,
+  ) => {
+    setIsLoading(true);
+    try {
+      const abbreviatedName = documentName
+        .split(".")
+        .slice(0, -1)
+        .join(".")
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .substring(0, 10);
+
+      const creditRequests: IRemoveDocument = {
+        abbreviatedName: abbreviatedName,
+        creditRequestId: data.creditRequestId! || "",
+        documentId: documentId,
+        transactionOperation: "Delete",
+      };
+
+      await removeDocument(
+        businessUnitPublicCode,
+        businessManagerCode,
+        creditRequests,
+        eventData.token,
+        eventData.user.identificationDocumentNumber || "",
+      );
+
+      setDocument((prev) => {
+        const updated = prev.filter((doc) => doc.id !== documentId);
+
+        if (updated.length === 0) {
+          setAttachDocuments(false);
+          setShowNoDocumentsModal(true);
+        }
+
+        return updated;
+      });
+    } catch (error) {
+      const err = error as {
+        message?: string;
+        status: number;
+        data?: { description?: string; code?: string };
+      };
+      const code = err?.data?.code ? `[${err.data.code}] ` : "";
+      const description = code + err?.message + (err?.data?.description || "");
+
+      setMessageError(description);
+      setShowErrorModal(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div ref={dataCommercialManagementRef} key={resetKey}>
       {showModalDecision && (
@@ -786,6 +849,8 @@ export const FinancialReporting = () => {
                   id={data.creditRequestId!}
                   isViewing={true}
                   dataDocument={document}
+                  onDeleteDocument={handleRemoveDocument}
+                  isLoading={isLoading}
                 />
               )}
             </>
@@ -905,7 +970,6 @@ export const FinancialReporting = () => {
           lang={lang}
         />
       )}
-
       {showErrorModal && (
         <ErrorModal
           handleClose={() => {
