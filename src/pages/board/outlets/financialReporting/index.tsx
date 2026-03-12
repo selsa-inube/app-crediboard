@@ -58,6 +58,8 @@ import {
   labelsAndValuesShareEnum,
   errorMessagesEnum,
   financialReportingLabelsEnum,
+  ClientAdvisory,
+  AccountManager,
 } from "./config";
 import {
   StyledMarginPrint,
@@ -417,17 +419,11 @@ export const FinancialReporting = () => {
     const assignAccountManagerIfNeeded = async () => {
       if (!data?.creditRequestId || !businessUnitPublicCode) return;
 
-      let state = "";
-
-      if (Array.isArray(enums?.DmEtapasPrs)) {
-        state = enums?.DmEtapasPrs[8]?.code;
-      }
-
       const isCustomerAdviceStage =
-        data.creditRequestStateAbbreviatedName === state;
+        data.creditRequestStateAbbreviatedName === ClientAdvisory.code;
 
       const hasRequiredRole = eventData?.enumRole?.some(
-        (role) => role.code === "AccountManager",
+        (role) => role.code === AccountManager.code,
       );
 
       try {
@@ -439,7 +435,7 @@ export const FinancialReporting = () => {
         );
 
         const hasAccountManager = todoData?.usersByCreditRequestResponse?.some(
-          (user) => user.role === "AccountManager",
+          (user) => user.role === AccountManager.code,
         );
 
         if (isCustomerAdviceStage && !hasAccountManager && hasRequiredRole) {

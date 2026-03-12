@@ -2,7 +2,6 @@ import { MdAddCircleOutline } from "react-icons/md";
 
 import { IOptionButtons } from "@components/modals/ListModal";
 
-
 type Observer<T> = (data: T) => void;
 
 function observer<T>() {
@@ -27,9 +26,6 @@ export const errorObserver = observer<{
   id: string;
   message: string;
 }>();
-
-
-
 
 export const optionButtons: IOptionButtons = {
   label: "Adjuntar archivo",
@@ -575,4 +571,20 @@ export const financialReportingLabelsEnum = {
   },
 };
 
+export const ClientAdvisory = {
+  code: "ASESORAMIENTO_CLIENTE",
+  value: "ASESORAMIENTO_CLIENTE",
+  i18n: {
+    en: "Client advisory",
+    es: "Asesoramiento al cliente",
+  },
+};
 
+export const AccountManager = {
+  code: "AccountManager",
+  description: "AccountManager",
+  i18n: {
+    en: "Account Manager",
+    es: "Gestor Comercial",
+  },
+};
