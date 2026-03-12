@@ -417,8 +417,14 @@ export const FinancialReporting = () => {
     const assignAccountManagerIfNeeded = async () => {
       if (!data?.creditRequestId || !businessUnitPublicCode) return;
 
+      let state = "";
+
+      if (Array.isArray(enums?.DmEtapasPrs)) {
+        state = enums?.DmEtapasPrs[8]?.code;
+      }
+
       const isCustomerAdviceStage =
-        data.creditRequestStateAbbreviatedName === "ASESORAMIENTO_CLIENTE";
+        data.creditRequestStateAbbreviatedName === state;
 
       const hasRequiredRole = eventData?.enumRole?.some(
         (role) => role.code === "AccountManager",
