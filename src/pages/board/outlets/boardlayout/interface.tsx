@@ -51,7 +51,11 @@ import {
   dataInformationSearchModalEnum,
   TBoardColumn,
 } from "./config/board";
-import { keywordLabel, dataCreditProspects } from "./config";
+import {
+  keywordLabel,
+  dataCreditProspects,
+  simulateRedirectModal,
+} from "./config";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -86,6 +90,9 @@ interface BoardLayoutProps {
   handleRemoveFilter: (filterIdToRemove: string) => void;
   isMenuOpen: boolean;
   filterValues: IFilterFormValues;
+  setShowRedirectModal: React.Dispatch<React.SetStateAction<boolean>>;
+  showRedirectModal: boolean;
+  redirectToSimulation: () => Promise<void>;
 }
 
 function BoardLayoutUI(props: BoardLayoutProps) {
@@ -113,6 +120,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     handleSearchRequestsValue,
     onOrientationChange,
     shouldCollapseAll,
+    setShowRedirectModal,
+    showRedirectModal,
+    redirectToSimulation,
   } = props;
 
   const [hasBeenFocused, setHasBeenFocused] = useState(false);
@@ -482,8 +492,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
             <StyledRequestsContainer $isMobile={isMobile} widthAuto>
               <Button
                 iconBefore={<MdAdd />}
-                type="link"
-                path="../simulate-credit"
+                onClick={() => setShowRedirectModal(true)}
                 fullwidth={isMobile}
               >
                 {dataCreditProspects.simulate.i18n[lang]}
@@ -590,6 +599,19 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         )}
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
+      {showRedirectModal && (
+        <BaseModal
+          title={simulateRedirectModal.title.i18n[lang]}
+          width="400px"
+          nextButton={simulateRedirectModal.confirmButton.i18n[lang]}
+          backButton={simulateRedirectModal.cancelButton.i18n[lang]}
+          handleBack={() => setShowRedirectModal(false)}
+          handleNext={redirectToSimulation}
+          handleClose={() => setShowRedirectModal(false)}
+        >
+          <Text>{simulateRedirectModal.message.i18n[lang]}</Text>
+        </BaseModal>
+      )}
       {showErrorModal && (
         <ErrorModal
           handleClose={() => {
