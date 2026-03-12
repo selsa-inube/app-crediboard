@@ -34,6 +34,17 @@ export const completedFilterEnum = {
   },
 };
 
+export const dataCreditProspects = {
+  simulate: {
+    code: "Simulate",
+    description: "Simulation action",
+    i18n: {
+      en: "Simulate credit",
+      es: "Simular crédito",
+    },
+  },
+};
+
 export const retryButtonLabel = {
   code: "Retry_button_label",
   description: "Label for the retry button on error page",

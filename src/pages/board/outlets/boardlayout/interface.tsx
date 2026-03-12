@@ -4,6 +4,7 @@ import {
   MdOutlineFilterAltOff,
   MdOutlinePushPin,
   MdSearch,
+  MdAdd,
 } from "react-icons/md";
 import { RxDragHandleVertical, RxDragHandleHorizontal } from "react-icons/rx";
 
@@ -50,7 +51,7 @@ import {
   dataInformationSearchModalEnum,
   TBoardColumn,
 } from "./config/board";
-import { keywordLabel } from "./config";
+import { keywordLabel, dataCreditProspects } from "./config";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -478,6 +479,16 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 </Button>
               </StyledRequestsContainer>
             )}
+            <StyledRequestsContainer $isMobile={isMobile} widthAuto>
+              <Button
+                iconBefore={<MdAdd />}
+                type="link"
+                path="../simulate-credit"
+                fullwidth={isMobile}
+              >
+                {dataCreditProspects.simulate.i18n[lang]}
+              </Button>
+            </StyledRequestsContainer>
             <Stack alignItems="center">
               <Stack gap="16px">
                 {!isMobile && (
