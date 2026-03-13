@@ -428,11 +428,21 @@ export const FinancialReporting = () => {
     const assignAccountManagerIfNeeded = async () => {
       if (!data?.creditRequestId || !businessUnitPublicCode) return;
 
+      const enumClientAdvisory = enums?.DmEstPrs?.find(
+        (enumItem) => enumItem.code === ClientAdvisory.code,
+      );
+
+      const enumAccountManager = enums?.Role?.find(
+        (enumItem) => enumItem.code === AccountManager.code,
+      );
+
+      if (!enumClientAdvisory || !enumAccountManager) return;
+
       const isCustomerAdviceStage =
-        data.creditRequestStateAbbreviatedName === ClientAdvisory.code;
+        data.creditRequestStateAbbreviatedName === enumClientAdvisory.code;
 
       const hasRequiredRole = eventData?.enumRole?.some(
-        (role) => role.code === AccountManager.code,
+        (role) => role.code === enumAccountManager.code,
       );
 
       try {
@@ -444,7 +454,7 @@ export const FinancialReporting = () => {
         );
 
         const hasAccountManager = todoData?.usersByCreditRequestResponse?.some(
-          (user) => user.role === AccountManager.code,
+          (user) => user.role === enumAccountManager.code,
         );
 
         if (isCustomerAdviceStage && !hasAccountManager && hasRequiredRole) {
