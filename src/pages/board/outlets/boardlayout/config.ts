@@ -35,7 +35,7 @@ export const completedFilterEnum = {
 };
 
 export const dataCreditProspects = {
-  simulate: {
+  simulateCredit: {
     code: "Simulate",
     description: "Simulation action",
     i18n: {
@@ -188,6 +188,6 @@ export const currentEnvironment = {
   cloud: "cloud",
 };
 
-export const UrlRedirect = (staffPortalId: string, environmentApp: string) => {
-  return `https://app-crm-portal.inube.${environmentApp}/?portal=${staffPortalId}&redirectToSimulate=true`;
+export const UrlRedirect = (staffPortalId: string, baseUrl: string) => {
+  return `${baseUrl}?portal=${staffPortalId}`;
 };

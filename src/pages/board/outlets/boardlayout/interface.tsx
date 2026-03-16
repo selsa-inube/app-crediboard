@@ -495,7 +495,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 onClick={() => setShowRedirectModal(true)}
                 fullwidth={isMobile}
               >
-                {dataCreditProspects.simulate.i18n[lang]}
+                {dataCreditProspects.simulateCredit.i18n[lang]}
               </Button>
             </StyledRequestsContainer>
             <Stack alignItems="center">

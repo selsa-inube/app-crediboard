@@ -825,7 +825,7 @@ function BoardLayout() {
     if (staffPortalId.length > 0) {
       window.location.href = UrlRedirect(
         staffPortalId[0].staffPortalId as string,
-        environmentApp,
+        `https://app-crm-portal.inube.${environmentApp}/credit/simulate-credit`,
       );
     }
   };
