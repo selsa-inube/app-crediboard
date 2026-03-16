@@ -59,8 +59,8 @@ import {
   labelsAndValuesShareEnum,
   errorMessagesEnum,
   financialReportingLabelsEnum,
-  ClientAdvisory,
-  AccountManager,
+  ClientAdvisoryCode,
+  AccountManagerCode,
 } from "./config";
 import {
   StyledMarginPrint,
@@ -429,11 +429,11 @@ export const FinancialReporting = () => {
       if (!data?.creditRequestId || !businessUnitPublicCode) return;
 
       const enumClientAdvisory = enums?.DmEstPrs?.find(
-        (enumItem) => enumItem.code === ClientAdvisory.code,
+        (enumItem) => enumItem.code === ClientAdvisoryCode,
       );
 
       const enumAccountManager = enums?.Role?.find(
-        (enumItem) => enumItem.code === AccountManager.code,
+        (enumItem) => enumItem.code === AccountManagerCode,
       );
 
       if (!enumClientAdvisory || !enumAccountManager) return;
