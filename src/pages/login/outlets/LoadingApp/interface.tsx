@@ -1,8 +1,14 @@
-import { Stack, Text, Spinner } from "@inubekit/inubekit";
+import { Stack, Text, Spinner, Header } from "@inubekit/inubekit";
 
 import { EnumType } from "@hooks/useEnum";
 
 import { loadingAppLabels } from "./config";
+import {
+  StyledContainer,
+  StyledContent,
+  StyledFooter,
+  StyledHeader,
+} from "./styles";
 
 interface ILoadingAppUIProps {
   lang: EnumType;
@@ -12,24 +18,26 @@ function LoadingAppUI(prop: ILoadingAppUIProps) {
   const { lang } = prop;
 
   return (
-    <Stack
-      alignItems="center"
-      justifyContent="center"
-      direction="column"
-      width="100%"
-      height="600px"
-      gap="16px"
-    >
-      <Text type="title" textAlign="center">
-        {loadingAppLabels.title.i18n[lang || "es"]}
-      </Text>
-      <Text type="title" size="small" textAlign="center">
-        {loadingAppLabels.subtitle.i18n[lang || "es"]}
-      </Text>
+    <Stack justifyContent="center">
+      <StyledContainer>
+        <StyledHeader>
+          <Header menu={[]}></Header>
+        </StyledHeader>
 
-      <Stack alignItems="center" direction="column">
-        <Spinner size="large" />
-      </Stack>
+        <StyledContent>
+          <Text type="title" textAlign="center">
+            {loadingAppLabels.title.i18n[lang || "es"]}
+          </Text>
+          <Text type="title" size="small" textAlign="center">
+            {loadingAppLabels.subtitle.i18n[lang || "es"]}
+          </Text>
+
+          <Stack alignItems="center" direction="column">
+            <Spinner size="large" />
+          </Stack>
+        </StyledContent>
+        <StyledFooter></StyledFooter>
+      </StyledContainer>
     </Stack>
   );
 }
