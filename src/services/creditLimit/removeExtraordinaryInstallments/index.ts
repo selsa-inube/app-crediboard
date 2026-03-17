@@ -5,7 +5,7 @@ import {
 } from "@config/environment";
 
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-import { IExtraordinaryInstallments } from "../types";
+import { IExtraordinaryInstallments } from "../../creditRequest/query/ProspectByCode/types";
 
 export const removeExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,

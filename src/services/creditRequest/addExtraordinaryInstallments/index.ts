@@ -5,7 +5,7 @@ import {
 } from "@config/environment";
 
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-import { IExtraordinaryInstallments } from "../../prospect/types";
+import { IExtraordinaryInstallments } from "../query/ProspectByCode/types";
 
 export const addExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,

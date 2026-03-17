@@ -1,4 +1,4 @@
-import { IExtraordinaryInstallments } from "../../prospect/types";
+import { IExtraordinaryInstallments } from "../query/ProspectByCode/types";
 
 const mapExtraordinaryInstallmentsEntity = (
   data: IExtraordinaryInstallments,

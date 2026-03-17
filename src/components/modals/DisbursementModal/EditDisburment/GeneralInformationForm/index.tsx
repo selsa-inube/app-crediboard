@@ -16,7 +16,7 @@ import {
   City,
 } from "@mocks/filing-application/disbursement-general/disbursementgeneral.mock";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { useEnum } from "@hooks/useEnum";
 
 import { dataGeneralInformationFormEnum } from "./config";
@@ -34,13 +34,7 @@ interface IGeneralInformationFormProps {
 }
 
 export function GeneralInformationForm(props: IGeneralInformationFormProps) {
-  const {
-    formik,
-    isMobile,
-    optionNameForm,
-    isReadOnly,
-    prospectData
-  } = props;
+  const { formik, isMobile, optionNameForm, isReadOnly, prospectData } = props;
 
   const { lang } = useEnum();
 
@@ -56,7 +50,7 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
       const onlyOption = Sex[0];
       formik.setFieldValue(`${optionNameForm}.sex`, onlyOption.value);
     }
-  }, [optionNameForm, formik, ]);
+  }, [optionNameForm, formik]);
 
   useEffect(() => {
     if (City.length === 1) {
@@ -105,7 +99,9 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           id={"identification"}
           name={`${optionNameForm}.identification`}
           label={disbursemenOptionAccountEnum.labelDocumentNumber.i18n[lang]}
-          placeholder={disbursemenOptionAccountEnum.placeDocumentNumber.i18n[lang]}
+          placeholder={
+            disbursemenOptionAccountEnum.placeDocumentNumber.i18n[lang]
+          }
           value={formik.values[optionNameForm]?.identification || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -114,13 +110,13 @@ export function GeneralInformationForm(props: IGeneralInformationFormProps) {
           size="compact"
           status={
             formik.values[optionNameForm]?.identification ===
-              prospectData?.borrowers?.[0]?.borrowerIdentificationNumber
+            prospectData?.borrowers?.[0]?.borrowerIdentificationNumber
               ? "invalid"
               : undefined
           }
           message={
             formik.values[optionNameForm]?.identification ===
-              prospectData?.borrowers?.[0]?.borrowerIdentificationNumber
+            prospectData?.borrowers?.[0]?.borrowerIdentificationNumber
               ? dataGeneralInformationFormEnum.identityMismatch.i18n[lang]
               : undefined
           }

@@ -4,7 +4,7 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import {
   IExtraordinaryInstallments,
   IProspect,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
 import { searchExtraInstallmentPaymentCyclesByCustomerCode } from "@services/creditLimit/extraInstallmentPaymentCyles/searchExtraInstallmentPaymentCyclesByCustomerCode";
@@ -12,9 +12,9 @@ import {
   IExtraordinaryAgreement,
   IExtraordinaryCycle,
 } from "@services/creditLimit/types";
-import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 
-import { removeExtraordinaryInstallment } from "./utils";
+import { removeExtraordinaryInstallment } from "../../../board/outlets/financialReporting/CommercialManagement/utils";
 import {
   headersTableExtraordinaryInstallment,
   rowsVisbleMobile,

@@ -3,36 +3,36 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IUpdateProductPayload } from "@pages/prospect/components/modals/ProspectProductModal/config";
+import { IConsolidatedCredit } from "../query/ProspectByCode/types";
 
-import { IProspect, IUpdateCreditProduct } from "../types";
-
-export const updateCreditProduct = async (
+export const updateConsolidatedCredits = async (
   businessUnitPublicCode: string,
-  businessManagerCode: string,
-  payload: IUpdateCreditProduct | IUpdateProductPayload,
+  creditRequestCode: string,
+  payload: IConsolidatedCredit[],
   token: string,
   xUserName: string,
-): Promise<IProspect | undefined> => {
+): Promise<IConsolidatedCredit[] | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
-
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+      const body = JSON.stringify({
+        creditRequestCode: creditRequestCode,
+        consolidatedCredits: payload,
+      });
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "UpdateCreditProduct",
+          "X-Action": "UpdateConsolidatedCredits",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-Process-Manager": businessManagerCode,
           "X-User-Name": xUserName,
           Authorization: token,
         },
-        body: JSON.stringify(payload),
         signal: controller.signal,
+        body,
       };
 
       const res = await fetch(
@@ -43,7 +43,7 @@ export const updateCreditProduct = async (
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -56,7 +56,7 @@ export const updateCreditProduct = async (
         };
       }
 
-      return data;
+      return data.consolidatedCredits;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -66,9 +66,11 @@ export const updateCreditProduct = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo actualizar el producto de credito.",
+          "Todos los intentos fallaron. No se pudo actualizar la información de créditos consolidados.",
         );
       }
     }
   }
+
+  return null;
 };

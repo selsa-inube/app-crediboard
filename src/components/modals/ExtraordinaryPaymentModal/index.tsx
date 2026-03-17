@@ -4,13 +4,16 @@ import { Stack, Icon, useMediaQuery, Button } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
 import { TableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment";
-import { IExtraordinaryInstallment, IProspect } from "@services/prospect/types";
+import {
+  IExtraordinaryInstallment,
+  IProspect,
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { AddSeriesModal } from "@components/modals/AddSeriesModal";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
 import { EnumType } from "@hooks/useEnum";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/config";
-import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 
 import { ErrorModal } from "../ErrorModal";
 import { TextLabels } from "./config";

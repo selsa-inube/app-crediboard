@@ -4,7 +4,7 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 import { IRemoveCreditProduct } from "@services/creditRequest/query/types";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 
 export const RemoveCreditProduct = async (
   businessUnitPublicCode: string,

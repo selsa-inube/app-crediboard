@@ -4,15 +4,15 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { ILinesOfCreditByMoneyDestination } from "../types";
+import { IPaymentDatesChannel, IResponsePaymentDatesChannel } from "./types";
 
-const getLinesOfCreditByMoneyDestination = async (
+export const GetSearchAllPaymentChannels = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  moneyDestinationAbbreviatedName: string,
-  clientIdentificationNumber: string,
-  token: string,
-): Promise<ILinesOfCreditByMoneyDestination | null> => {
+  paymentChannel: IPaymentDatesChannel,
+  authorizationToken: string,
+  xUserName: string,
+): Promise<IResponsePaymentDatesChannel[] | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -20,56 +20,49 @@ const getLinesOfCreditByMoneyDestination = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
+
       const options: RequestInit = {
-        method: "GET",
+        method: "POST",
         headers: {
-          "X-Action": "GetLinesOfCreditByMoneyDestination",
+          "X-Action": "SearchAllPaymentChannelsByIdentificationNumber",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
-          Authorization: token,
+          "X-User-Name": xUserName,
+          Authorization: `${authorizationToken}`,
         },
+        body: JSON.stringify(paymentChannel),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/lines-of-credit/${moneyDestinationAbbreviatedName}/${clientIdentificationNumber}`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/payment-channels`,
         options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return null;
+        return;
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Ha ocurrido un error: ",
+          message: "Error al actualizar documentos requeridos  ",
           status: res.status,
           data,
         };
       }
 
-      return data as ILinesOfCreditByMoneyDestination;
+      return data;
     } catch (error) {
       if (attempt === maxRetries) {
-        if (typeof error === "object" && error !== null) {
-          throw {
-            ...(error as object),
-            message: (error as Error).message,
-          };
-        }
         throw new Error(
-          `Todos los intentos fallaron. No se pudo obtener las líneas de crédito para el destino de dinero ${moneyDestinationAbbreviatedName}.`,
+          "Todos los intentos fallaron. No se pudo actualizar documentos requeridos.",
         );
       }
     }
   }
-
-  return null;
 };
-
-export { getLinesOfCreditByMoneyDestination };

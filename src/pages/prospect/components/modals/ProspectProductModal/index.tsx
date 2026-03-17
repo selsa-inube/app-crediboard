@@ -19,8 +19,6 @@ import {
   validateCurrencyField,
 } from "@utils/formatData/currency";
 
-import { validateIncrement } from "@services/prospect/validateIncrement";
-import { IValidateIncrementRequest } from "@services/prospect/validateIncrement/types";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 import { CardGray } from "@components/cards/CardGray";
 import { capitalizeFirstLetter } from "@utils/formatData/text";
@@ -29,7 +27,7 @@ import { AppContext } from "@context/AppContext";
 import { getCreditLineGeneralTerms } from "@services/lineOfCredit/generalTerms/getCreditLineGeneralTerms";
 import { CreditLineGeneralTerms } from "@services/lineOfCredit/types";
 import { EnumType } from "@hooks/useEnum";
-import { IBusinessUnitRuleResponse } from "@services/prospect/types";
+import { IBusinessUnitRuleResponse } from "@services/creditRequest/query/ProspectByCode/types";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 
 import { ScrollableContainer } from "./styles";
@@ -95,8 +93,6 @@ function EditProductModal(props: EditProductModalProps) {
   >(null);
   const [incrementValue, setIncrementValue] = useState<string>("");
   const [incrementError, setIncrementError] = useState<string>("");
-  const [isValidatingIncrement, setIsValidatingIncrement] =
-    useState<boolean>(false);
   const [termInMonthsModified, setTermInMonthsModified] =
     useState<boolean>(false);
   const [loanAmountError, setLoanAmountError] = useState<string>("");
@@ -390,76 +386,6 @@ function EditProductModal(props: EditProductModalProps) {
     }
   };
 
-  const validateIncrementValue = async (
-    value: string,
-    formik: FormikProps<FormikValues>,
-  ): Promise<void> => {
-    if (!incrementType || !value) {
-      setIncrementError("");
-      return;
-    }
-
-    setIsValidatingIncrement(true);
-
-    try {
-      const numericValue = Number(value.replace(/[^0-9.]/g, ""));
-
-      if (isNaN(numericValue) || numericValue <= 0) {
-        setIncrementError(validationMessages.incrementMustBePositive);
-        return;
-      }
-
-      const payload: IValidateIncrementRequest = {
-        lineOfCredit: prospectData.lineOfCredit,
-        moneyDestination: prospectData.moneyDestination,
-        amortizationType: formik.values.amortizationType,
-        incrementType: incrementType,
-        incrementValue: numericValue,
-        loanAmount: Number(formik.values.creditAmount) || 0,
-      };
-
-      const response = await validateIncrement(
-        businessUnitPublicCode,
-        businessManagerCode,
-        payload,
-      );
-
-      if (!response.isValid) {
-        if (incrementType === "value") {
-          setIncrementError(
-            validationMessages.incrementValueRange(
-              response.minValue,
-              response.maxValue,
-            ),
-          );
-        } else {
-          setIncrementError(
-            validationMessages.incrementPercentageRange(
-              response.minValue,
-              response.maxValue,
-            ),
-          );
-        }
-      } else {
-        setIncrementError("");
-      }
-    } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
-    } finally {
-      setIsValidatingIncrement(false);
-    }
-  };
-
   const onSubmitHandler = (
     values: FormikValues,
     formikHelpers: FormikHelpers<FormikValues>,
@@ -564,7 +490,6 @@ function EditProductModal(props: EditProductModalProps) {
             Boolean(loanTermError) ||
             Boolean(interestRateError) ||
             Boolean(incrementError) ||
-            isValidatingIncrement ||
             (showIncrementField && !incrementValue)
           }
           iconAfterNext={iconAfter}
@@ -674,15 +599,9 @@ function EditProductModal(props: EditProductModalProps) {
                   value={incrementValue}
                   status={(() => {
                     if (incrementError) return "invalid";
-                    if (isValidatingIncrement) return "pending";
                     return undefined;
                   })()}
-                  message={
-                    incrementError ||
-                    (isValidatingIncrement
-                      ? validationMessages.incrementValidating
-                      : "")
-                  }
+                  message={incrementError}
                   iconBefore={
                     incrementType === "value" ? (
                       <Icon
@@ -705,14 +624,7 @@ function EditProductModal(props: EditProductModalProps) {
                   onChange={(event) => {
                     const value = event.target.value;
                     setIncrementValue(value);
-
-                    const timeoutId = setTimeout(() => {
-                      validateIncrementValue(value, formik);
-                    }, 500);
-
-                    return () => clearTimeout(timeoutId);
                   }}
-                  onBlur={() => validateIncrementValue(incrementValue, formik)}
                   fullwidth
                 />
               )}

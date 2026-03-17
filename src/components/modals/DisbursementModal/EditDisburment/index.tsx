@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useMemo, useContext } from "react";
 
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { searchAllModesOfDisbursementTypes } from "@services/lineOfCredit/getSearchAllModesOfDisbursementTypes";
-import { IProspectSummaryById } from "@services/prospect/types";
+import { IProspectSummaryById } from "@services/creditRequest/query/ProspectByCode/types";
 import { getSearchProspectSummaryById } from "@services/creditRequest/query/ProspectSummaryById";
 import { IModeOfDisbursement } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";

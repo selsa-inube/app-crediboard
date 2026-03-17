@@ -3,19 +3,17 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
+import { IUpdateProductPayload } from "@pages/prospect/components/modals/ProspectProductModal/config";
 
-import {
-  IPaymentDatesChannel,
-  IResponsePaymentDatesChannel,
-} from "../SearchAllPaymentChannelsByIdentificationNumber/types";
+import { IProspect, IUpdateCreditProduct } from "../query/ProspectByCode/types";
 
-export const GetSearchAllPaymentChannels = async (
+export const updateCreditProduct = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  paymentChannel: IPaymentDatesChannel,
-  authorizationToken: string,
+  payload: IUpdateCreditProduct | IUpdateProductPayload,
+  token: string,
   xUserName: string,
-): Promise<IResponsePaymentDatesChannel[] | undefined> => {
+): Promise<IProspect | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -23,23 +21,22 @@ export const GetSearchAllPaymentChannels = async (
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-
       const options: RequestInit = {
-        method: "POST",
+        method: "PATCH",
         headers: {
-          "X-Action": "SearchAllPaymentChannelsByIdentificationNumber",
+          "X-Action": "UpdateCreditProduct",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
           "X-User-Name": xUserName,
-          Authorization: `${authorizationToken}`,
+          Authorization: token,
         },
-        body: JSON.stringify(paymentChannel),
+        body: JSON.stringify(payload),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/payment-channels`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
         options,
       );
 
@@ -53,7 +50,7 @@ export const GetSearchAllPaymentChannels = async (
 
       if (!res.ok) {
         throw {
-          message: "Error al actualizar documentos requeridos  ",
+          message: "Ha ocurrido un error: ",
           status: res.status,
           data,
         };
@@ -62,8 +59,14 @@ export const GetSearchAllPaymentChannels = async (
       return data;
     } catch (error) {
       if (attempt === maxRetries) {
+        if (typeof error === "object" && error !== null) {
+          throw {
+            ...(error as object),
+            message: (error as Error).message,
+          };
+        }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo actualizar documentos requeridos.",
+          "Todos los intentos fallaron. No se pudo actualizar el producto de credito.",
         );
       }
     }

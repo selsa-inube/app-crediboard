@@ -14,13 +14,16 @@ import {
 import { BaseModal } from "@components/modals/baseModal";
 import { dataReportEnum } from "@pages/prospect/components/TableObligationsFinancial/config";
 import { TableFinancialObligations } from "@pages/prospect/components/TableObligationsFinancial";
-import { IProspect, IBorrower } from "@services/prospect/types";
+import {
+  IProspect,
+  IBorrower,
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 
 import { ErrorModal } from "@components/modals/ErrorModal";
-import { restoreFinancialObligationsByBorrowerId } from "@services/prospect/restoreFinancialObligationsByBorrowerId";
+import { restoreFinancialObligationsByBorrowerId } from "@services/creditRequest/restoreFinancialObligationsByBorrowerId";
 import { CardGray } from "@components/cards/CardGray";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";

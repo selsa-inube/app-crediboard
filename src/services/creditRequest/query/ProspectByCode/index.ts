@@ -4,14 +4,14 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IProspect } from "../../../prospect/types";
-import { mapperProspectResponseToIProspect } from "../../../prospect/mapper";
+import { IProspect } from "./types";
+import { mapperProspectResponseToIProspect } from "./mapper";
 
 const getSearchProspectByCode = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   creditRequestCode: string,
-  token: string
+  token: string,
 ): Promise<IProspect> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -35,7 +35,7 @@ const getSearchProspectByCode = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/prospects/${creditRequestCode}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -63,7 +63,7 @@ const getSearchProspectByCode = async (
       console.error(`Intento ${attempt} fallido:`, error);
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudo obtener la tarea."
+          "Todos los intentos fallaron. No se pudo obtener la tarea.",
         );
       }
     }

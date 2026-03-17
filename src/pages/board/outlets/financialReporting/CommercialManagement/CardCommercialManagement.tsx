@@ -19,7 +19,7 @@ import {
   IProspect,
   ICreditProduct,
   IProspectSummaryById,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { AppContext } from "@context/AppContext";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { StyledCreditProductCard } from "@components/cards/CreditProductCard/styles";
@@ -27,7 +27,7 @@ import { IAllEnumsResponse } from "@services/enumerators/types";
 import { capitalizeFirstLetter } from "@utils/formatData/text";
 import { EnumType } from "@hooks/useEnum";
 import { RemoveCreditProduct } from "@services/creditRequest/command/removeCreditProduct";
-import { updateCreditProduct } from "@services/prospect/updateCreditProduct";
+import { updateCreditProduct } from "@services/creditRequest/updateCreditProduct";
 import { documentClientNumber } from "@utils/documentClientNumber";
 import { optionsDisableStage } from "@config/privilege";
 import { areValuesEqual } from "@pages/prospect/components/modals/ProspectProductModal/utils";

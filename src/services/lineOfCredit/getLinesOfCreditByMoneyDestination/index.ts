@@ -4,15 +4,15 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IProspect } from "../types";
-import { IAddCreditProduct, IAddProduct } from "./types";
+import { ILinesOfCreditByMoneyDestination } from "../../creditRequest/query/ProspectByCode/types";
 
-export const addCreditProduct = async (
+const getLinesOfCreditByMoneyDestination = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
-  payload: IAddCreditProduct | IAddProduct,
-  authorizationToken: string,
-): Promise<IProspect | IAddProduct | undefined> => {
+  moneyDestinationAbbreviatedName: string,
+  clientIdentificationNumber: string,
+  token: string,
+): Promise<ILinesOfCreditByMoneyDestination | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -21,27 +21,26 @@ export const addCreditProduct = async (
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "AddCreditProduct",
+          "X-Action": "GetLinesOfCreditByMoneyDestination",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
           "X-Process-Manager": businessManagerCode,
-          Authorization: `${authorizationToken}`,
+          Authorization: token,
         },
-        body: JSON.stringify(payload),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/lines-of-credit/${moneyDestinationAbbreviatedName}/${clientIdentificationNumber}`,
         options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
@@ -54,7 +53,7 @@ export const addCreditProduct = async (
         };
       }
 
-      return data;
+      return data as ILinesOfCreditByMoneyDestination;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -64,9 +63,13 @@ export const addCreditProduct = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo agregar el producto de credito.",
+          `Todos los intentos fallaron. No se pudo obtener las líneas de crédito para el destino de dinero ${moneyDestinationAbbreviatedName}.`,
         );
       }
     }
   }
+
+  return null;
 };
+
+export { getLinesOfCreditByMoneyDestination };

@@ -3,7 +3,7 @@ import { FormikValues } from "formik";
 
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 import { AppContext } from "@context/AppContext";
 

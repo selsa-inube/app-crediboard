@@ -22,9 +22,12 @@ import { ScoreModal } from "@components/modals/FrcModal";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { ExtraordinaryPaymentModal } from "@components/modals/ExtraordinaryPaymentModal";
 import { IPaymentChannel } from "@services/creditRequest/command/types";
-import { IAddProduct } from "@services/prospect/addCreditProduct/types";
+import { IAddProduct } from "@services/creditRequest/addCreditProduct/types";
 
-import { IProspect, IProspectSummaryById } from "@services/prospect/types";
+import {
+  IProspect,
+  IProspectSummaryById,
+} from "@services/creditRequest/query/ProspectByCode/types";
 import {
   StyledContainerIcon,
   StyledVerticalDivider,
@@ -34,7 +37,7 @@ import {
   menuOptions,
 } from "@pages/board/outlets/financialReporting/CommercialManagement/config/config";
 import { CardCommercialManagement } from "@pages/board/outlets/financialReporting/CommercialManagement/CardCommercialManagement";
-import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
@@ -44,9 +47,9 @@ import { updateProspect } from "@services/prospect/updateProspect";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { getLinesOfCreditByMoneyDestination } from "@services/prospect/getLinesOfCreditByMoneyDestination";
+import { getLinesOfCreditByMoneyDestination } from "@services/lineOfCredit/getLinesOfCreditByMoneyDestination";
 import { documentClientNumber } from "@utils/documentClientNumber";
-import { addCreditProduct } from "@services/prospect/addCreditProduct";
+import { addCreditProduct } from "@services/creditRequest/addCreditProduct";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 

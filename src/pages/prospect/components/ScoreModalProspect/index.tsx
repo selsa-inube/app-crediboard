@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useFlag } from "@inubekit/inubekit";
 
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { updateProspect } from "@services/prospect/updateProspect";
 
 import { ScoreModalProspectUI } from "./interface";

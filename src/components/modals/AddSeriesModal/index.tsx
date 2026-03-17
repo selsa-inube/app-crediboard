@@ -22,14 +22,14 @@ import {
   IExtraordinaryInstallment,
   IExtraordinaryInstallments,
   IProspect,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 import { searchExtraInstallmentPaymentCyclesByCustomerCode } from "@services/creditLimit/extraInstallmentPaymentCyles/searchExtraInstallmentPaymentCyclesByCustomerCode";
 import { CardGray } from "@components/cards/CardGray";
 import { calculateSeriesForExtraordinaryInstallment } from "@services/creditLimit/calculateSeriesForExtraordinaryInstallment";
-import { ICalculatedSeries } from "@services/prospect/types";
+import { ICalculatedSeries } from "@services/creditRequest/query/ProspectByCode/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/config";
-import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 
 import { dataAddSeriesModal, defaultFrequency } from "./config";
 import { saveExtraordinaryInstallment } from "../ExtraordinaryPaymentModal/utils";

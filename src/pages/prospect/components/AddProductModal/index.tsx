@@ -3,8 +3,8 @@ import * as Yup from "yup";
 
 import { useMediaQuery } from "@inubekit/inubekit";
 
-import { getLinesOfCreditByMoneyDestination } from "@services/prospect/getLinesOfCreditByMoneyDestination";
-import { GetSearchAllPaymentChannels } from "@services/prospect/searchAllPaymentChannelsByIdentificationNumber/SearchAllPaymentChannelsByIdentificationNumber";
+import { getLinesOfCreditByMoneyDestination } from "@services/lineOfCredit/getLinesOfCreditByMoneyDestination";
+import { GetSearchAllPaymentChannels } from "@services/paymentChannels/searchAllPaymentChannelsByIdentificationNumber/SearchAllPaymentChannelsByIdentificationNumber";
 import {
   extractBorrowerIncomeData,
   stepsAddProduct,
