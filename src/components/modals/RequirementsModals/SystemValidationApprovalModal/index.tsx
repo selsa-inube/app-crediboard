@@ -13,7 +13,7 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 import { ICrediboardData } from "@context/AppContext/types";
 
 import { IApprovalSystem } from "../types";
-import { approvalsConfigEnum } from "./config";
+import { approvalsConfigEnum, MinCharactersObservation } from "./config";
 
 interface ISystemValidationApprovalModalProps {
   isMobile: boolean;
@@ -53,6 +53,7 @@ export function SystemValidationApprovalModal(
   const validationSchema = Yup.object({
     toggleChecked: Yup.boolean(),
     observations: Yup.string()
+      .min(MinCharactersObservation)
       .max(200, validationMessages.limitedTxt)
       .required(validationMessages.required),
     labelText: Yup.string(),
@@ -134,14 +135,18 @@ export function SystemValidationApprovalModal(
     <BaseModal
       title={approvalsConfigEnum.title.i18n[lang]}
       handleNext={formik.handleSubmit}
-      width={isMobile ? "300px" : "432px"}
+      width={isMobile ? "300px" : "480px"}
       handleBack={onCloseModal}
       backButton={approvalsConfigEnum.cancel.i18n[lang]}
       nextButton={approvalsConfigEnum.confirm.i18n[lang]}
-      disabledNext={!formik.values.observations || !formik.isValid}
+      disabledNext={
+        !formik.values.observations ||
+        !formik.values.toggleChecked ||
+        !formik.isValid
+      }
     >
       <Stack direction="column" gap="24px">
-        <Stack direction="column" gap="8px">
+        <Stack direction="column" gap="12px">
           <Text>{`${approvalsConfigEnum.approval.i18n[lang]} ${questionToBeAskedInModal}`}</Text>
           <Stack>
             <Toggle
@@ -173,6 +178,16 @@ export function SystemValidationApprovalModal(
           onBlur={formik.handleBlur}
           required
           fullwidth
+          message={
+            formik.touched.observations && formik.errors.observations
+              ? approvalsConfigEnum.minLength.i18n[lang]
+              : ""
+          }
+          status={
+            formik.touched.observations && formik.errors.observations
+              ? "invalid"
+              : "pending"
+          }
         />
         {showErrorModal && (
           <ErrorModal

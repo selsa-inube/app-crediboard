@@ -19,16 +19,16 @@ export const approvalsConfigEnum = {
     code: "Approvals_rejectRequirementLabel",
     description: "Reject requirement option",
     i18n: {
-      en: "No, approve requirement.",
-      es: "No, aprobar requisito.",
+      en: "Sí, approve requirement.",
+      es: "Sí, aprobar requisito.",
     },
   },
   approval: {
     code: "Approvals_approval",
     description: "Approval question",
     i18n: {
-      en: "Do you want to approve the requirement?",
-      es: "¿Quieres aprobar el requisito?",
+      en: "Do you want to approve the requirement even if it is not met?",
+      es: "¿Quieres aprobar el requisito aunque no se cumpla?",
     },
   },
   observations: {
@@ -59,8 +59,8 @@ export const approvalsConfigEnum = {
     code: "Approvals_confirm",
     description: "Confirm action",
     i18n: {
-      en: "Confirm",
-      es: "Confirmar",
+      en: "Approve",
+      es: "Aprobar",
     },
   },
   titleError: {
@@ -79,4 +79,14 @@ export const approvalsConfigEnum = {
       es: "Longitud máxima",
     },
   },
+  minLength: {
+    code: "Approvals_minLength",
+    description: "Minimum length",
+    i18n: {
+      en: "A minimum of 3 characters is required.",
+      es: "Se requieren 3 caracteres como mínimo.",
+    },
+  },
 };
+
+export const MinCharactersObservation = 3;
