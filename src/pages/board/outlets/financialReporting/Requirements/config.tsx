@@ -490,6 +490,10 @@ export const requirementLabelsEnum = {
     id: "compliant",
     i18n: { en: "Compliant", es: "Cumple" },
   },
+  compliantAsterisk: {
+    id: "compliant",
+    i18n: { en: "Compliant*", es: "Cumple*" },
+  },
   notCompliant: {
     id: "notCompliant",
     i18n: { en: "Not Compliant", es: "No Cumple" },
@@ -500,33 +504,50 @@ export const requirementLabelsEnum = {
   },
 };
 
+export const ignoredStatuses = [
+  "IGNORED_BY_THE_USER",
+  "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
+  "DOCUMENT_IGNORED_BY_THE_USER",
+  "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
+];
+
+export const passedStatuses = [
+  "PASSED_WITH_SYSTEM_VALIDATION",
+  "DOCUMENT_STORED_WITHOUT_VALIDATION",
+  "PASSED_WITH_HUMAN_VALIDATION",
+  "DOCUMENT_VALIDATED_BY_THE_USER",
+  "IGNORED_BY_THE_USER",
+  "PASSED_HUMAN_VALIDATION",
+  "DOCUMENT_STORED_AND_VALIDATED",
+];
+
+export const failedStatuses = [
+  "FAILED_SYSTEM_VALIDATION",
+  "FAILED_DOCUMENT_VALIDATION",
+  "FAILED_HUMAN_VALIDATION",
+];
+
 const generateTag = (value: string, lang: EnumType): JSX.Element => {
-  const isPassed = [
-    "PASSED_WITH_SYSTEM_VALIDATION",
-    "DOCUMENT_STORED_WITHOUT_VALIDATION",
-    "PASSED_WITH_HUMAN_VALIDATION",
-    "DOCUMENT_VALIDATED_BY_THE_USER",
-    "IGNORED_BY_THE_USER",
-    "PASSED_HUMAN_VALIDATION",
-    "DOCUMENT_STORED_AND_VALIDATED",
-    "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
-    "DOCUMENT_IGNORED_BY_THE_USER",
-    "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
-  ].includes(value);
+  const isFailed = failedStatuses.includes(value);
 
-  const isFailed = [
-    "FAILED_SYSTEM_VALIDATION",
-    "FAILED_DOCUMENT_VALIDATION",
-    "FAILED_HUMAN_VALIDATION",
-  ].includes(value);
+  if (ignoredStatuses.includes(value)) {
+    return (
+      <Tag
+        label={`${requirementLabelsEnum.compliant.i18n[lang]}*`}
+        appearance="success"
+      />
+    );
+  }
 
-  if (isPassed)
+  if (passedStatuses.includes(value)) {
     return (
       <Tag
         label={requirementLabelsEnum.compliant.i18n[lang]}
         appearance="success"
       />
     );
+  }
+
   if (isFailed)
     return (
       <Tag

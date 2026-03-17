@@ -37,6 +37,10 @@ import {
   dataAddRequirementEnum,
   getActionsMobileIcon,
   questionToBeAskedInModalText,
+  ignoredStatuses,
+  passedStatuses,
+  failedStatuses,
+  requirementLabelsEnum,
 } from "./config";
 import { DocumentItem, MappedRequirements, RequirementType } from "./types";
 import { errorMessagesEnum } from "../config";
@@ -197,29 +201,13 @@ export const Requirements = (props: IRequirementsProps) => {
 
         const getAnswerFromStatus = (status: string): string => {
           if (!status) return "";
-          const passedStatuses = [
-            "PASSED_WITH_SYSTEM_VALIDATION",
-            "DOCUMENT_STORED_WITHOUT_VALIDATION",
-            "PASSED_WITH_HUMAN_VALIDATION",
-            "DOCUMENT_VALIDATED_BY_THE_USER",
-            "IGNORED_BY_THE_USER",
-            "PASSED_HUMAN_VALIDATION",
-            "DOCUMENT_STORED_AND_VALIDATED",
-            "IGNORED_BY_THE_USER_HUMAN_VALIDATION",
-            "DOCUMENT_IGNORED_BY_THE_USER",
-          ];
 
-          const failedStatuses = [
-            "FAILED_SYSTEM_VALIDATION",
-            "IGNORED_BY_THE_USER_SYSTEM_VALIDATION",
-            "FAILED_DOCUMENT_VALIDATION",
-            "FAILED_HUMAN_VALIDATION",
-          ];
-
-          if (passedStatuses.includes(status)) {
-            return "Cumple";
+          if (ignoredStatuses.includes(status)) {
+            return requirementLabelsEnum.compliantAsterisk.i18n[lang];
+          } else if (passedStatuses.includes(status)) {
+            return requirementLabelsEnum.compliant.i18n[lang];
           } else if (failedStatuses.includes(status)) {
-            return "No Cumple";
+            return requirementLabelsEnum.notCompliant.i18n[lang];
           }
 
           return "";
