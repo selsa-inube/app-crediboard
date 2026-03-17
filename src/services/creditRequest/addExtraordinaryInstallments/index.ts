@@ -5,7 +5,7 @@ import {
 } from "@config/environment";
 
 import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-import { IExtraordinaryInstallments } from "../types";
+import { IExtraordinaryInstallments } from "../../prospect/types";
 
 export const addExtraordinaryInstallments = async (
   extraordinaryInstallments: IExtraordinaryInstallments,
@@ -34,7 +34,7 @@ export const addExtraordinaryInstallments = async (
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
         options,
       );
 

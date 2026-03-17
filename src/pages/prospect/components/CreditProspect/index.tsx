@@ -612,6 +612,8 @@ export function CreditProspect(props: ICreditProspectProps) {
           businessUnitPublicCode={businessUnitPublicCode}
           lang={lang}
           customerData={customerData}
+          showAddButton={availableEditCreditRequest}
+          creditRequestCode={creditRequestCode || ""}
         />
       )}
       {showShareModal && (

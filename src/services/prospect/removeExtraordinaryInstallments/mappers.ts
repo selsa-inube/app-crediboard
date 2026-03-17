@@ -4,9 +4,8 @@ const mapExtraordinaryInstallmentsEntity = (
   data: IExtraordinaryInstallments,
 ): IExtraordinaryInstallments => {
   const creditRequest: IExtraordinaryInstallments = {
-    creditProductCode: String(data.creditProductCode || ""),
+    creditRequestCode: String(data.creditRequestCode || ""),
     extraordinaryInstallments: Object(data.extraordinaryInstallments || ""),
-    prospectId: String(data.prospectId || ""),
   };
   return creditRequest;
 };

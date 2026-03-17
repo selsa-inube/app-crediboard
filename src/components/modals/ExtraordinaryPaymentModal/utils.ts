@@ -1,4 +1,4 @@
-import { addExtraordinaryInstallments } from "@services/prospect/addExtraordinaryInstallments";
+import { addExtraordinaryInstallments } from "@services/creditRequest/addExtraordinaryInstallments";
 import { IExtraordinaryInstallments } from "@services/prospect/types";
 
 const saveExtraordinaryInstallment = (

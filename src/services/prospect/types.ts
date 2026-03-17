@@ -14,9 +14,8 @@ export interface ICalculatedSeries {
   value: number;
 }
 export interface IExtraordinaryInstallments {
-  creditProductCode: string;
+  creditRequestCode: string;
   extraordinaryInstallments: IExtraordinaryInstallment[] | ICalculatedSeries[];
-  prospectId: string;
 }
 
 export interface IExtraordinaryInstallmentAddSeries {

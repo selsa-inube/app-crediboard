@@ -15,7 +15,6 @@ import * as Yup from "yup";
 import { BaseModal } from "@components/modals/baseModal";
 import {
   currencyFormat,
-  handleChangeWithCurrency,
   parseCurrencyString,
 } from "@utils/formatData/currency";
 import { AppContext } from "@context/AppContext";
@@ -29,8 +28,6 @@ import { searchExtraInstallmentPaymentCyclesByCustomerCode } from "@services/cre
 import { CardGray } from "@components/cards/CardGray";
 import { calculateSeriesForExtraordinaryInstallment } from "@services/creditLimit/calculateSeriesForExtraordinaryInstallment";
 import { ICalculatedSeries } from "@services/prospect/types";
-import { getPayrollSpecialBenefitAvailableValue } from "@services/creditLimit/getPayrollSpecialBenefitAvailableValue";
-import { IPayrollSpecialBenefitAvailable } from "@services/creditLimit/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/config";
 import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
 
@@ -82,6 +79,7 @@ export interface AddSeriesModalProps {
   isSimulateCredit?: boolean;
   maxLoanTerm: number;
   customerData: ICustomerData;
+  creditRequestCode: string;
 }
 
 export function AddSeriesModal(props: AddSeriesModalProps) {
@@ -103,6 +101,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     isSimulateCredit = false,
     maxLoanTerm,
     customerData,
+    creditRequestCode,
   } = props;
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const { user } = useIAuth();
@@ -112,20 +111,14 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [dateOptions, setDateOptions] = useState<IOption[]>([]);
   const [cycleOptions, setCycleOptions] = useState<ICycleOption[]>([]);
-  const [payrollSpecial, setPayrollSpecial] = useState<
-    IPayrollSpecialBenefitAvailable[] | null
-  >(null);
 
   const frequencyOptions: IOption[] = [
     { id: defaultFrequency, label: defaultFrequency, value: defaultFrequency },
   ];
-
   const years = Math.floor(maxLoanTerm / 12);
-  const maxValue = payrollSpecial?.[0]?.availableValue ?? 0;
 
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
-  const businessManagerCode = eventData.businessManager.publicCode;
 
   const validationSchema = Yup.object({
     value: Yup.number()
@@ -133,8 +126,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       .positive(dataAddSeriesModal.valueGreater.i18n[lang])
       .max(years, `El valor no puede exceder ${years} Años`),
     installmentAmount: Yup.number()
-      .required("")
-      .max(maxValue, `El valor no puede exceder ${currencyFormat(maxValue)}`),
+      .integer(dataAddSeriesModal.valueInteger.i18n[lang])
+      .positive(dataAddSeriesModal.valuePositive.i18n[lang]),
   });
 
   const formik = useFormik({
@@ -144,7 +137,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       paymentChannelAbbreviatedName: "",
       cycleId: "",
       value: "",
-      frequency: "",
+      frequency: defaultFrequency,
       abbreviatedName: "",
     },
     validationSchema,
@@ -178,8 +171,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
   }, [isEdit, installmentState, formik]);
 
   useEffect(() => {
-    const clientIdentificationNumber =
-      customerData.clientIdinteficationNumber || "";
+    const clientIdentificationNumber = customerData.clientIdinteficationNumber;
     const fetchCycles = async () => {
       if (
         service &&
@@ -258,63 +250,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     };
 
     fetchCycles();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    prospectData,
-    service,
-    formik,
-    lineOfCreditAbbreviatedName,
-    moneyDestinationAbbreviatedName,
-    customerData.clientIdinteficationNumber,
-    businessUnitPublicCode,
-    eventData.token,
-    setMessageError,
-    setShowErrorModal,
-    toggleAddSeriesModal,
-    handleChangeWithCurrency,
-  ]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!cycleOptions) return;
-      try {
-        const data = await getPayrollSpecialBenefitAvailableValue(
-          businessUnitPublicCode,
-          businessManagerCode,
-          cycleOptions[0].extraordinaryCycleType,
-          customerData.clientIdinteficationNumber,
-          years.toString(),
-          lineOfCreditAbbreviatedName,
-          moneyDestinationAbbreviatedName,
-        );
-        setPayrollSpecial(data);
-      } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
-      }
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    cycleOptions,
-    lineOfCreditAbbreviatedName,
-    moneyDestinationAbbreviatedName,
-    customerData.clientIdinteficationNumber,
-    businessUnitPublicCode,
-    businessManagerCode,
-    years,
-  ]);
+  }, [prospectData, service]);
 
   const handleFieldChange = (name: string, value: string) => {
     formik.setFieldValue(name, value);
@@ -412,10 +349,8 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       );
 
       const saveBody: IExtraordinaryInstallments = {
-        creditProductCode:
-          prospectData?.creditProducts?.[0]?.creditProductCode || "",
+        creditRequestCode,
         extraordinaryInstallments: formattedInstallments,
-        prospectId: prospectData?.prospectId || "",
       };
 
       const newExtraordinaryInstallments = await saveExtraordinaryInstallment(
@@ -625,10 +560,6 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     );
   };
 
-  useEffect(() => {
-    formik.setFieldValue("frequency", defaultFrequency);
-  }, [formik]);
-
   return (
     <BaseModal
       title={dataAddSeriesModal.title.i18n[lang]}
@@ -697,8 +628,16 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
               ? currencyFormat(installmentState.installmentAmount, false)
               : ""
           }
-          message={formik.errors.installmentAmount}
-          status={formik.errors.installmentAmount ? "invalid" : "pending"}
+          message={
+            formik.touched.installmentAmount && formik.errors.installmentAmount
+              ? formik.errors.installmentAmount
+              : ""
+          }
+          status={
+            formik.touched.installmentAmount && formik.errors.installmentAmount
+              ? "invalid"
+              : "pending"
+          }
           required
           fullwidth
         />

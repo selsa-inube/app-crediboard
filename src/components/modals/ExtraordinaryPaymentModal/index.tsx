@@ -6,7 +6,6 @@ import { BaseModal } from "@components/modals/baseModal";
 import { TableExtraordinaryInstallment } from "@pages/prospect/components/TableExtraordinaryInstallment";
 import { IExtraordinaryInstallment, IProspect } from "@services/prospect/types";
 import { AddSeriesModal } from "@components/modals/AddSeriesModal";
-import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
 import { EnumType } from "@hooks/useEnum";
@@ -27,6 +26,7 @@ export interface ExtraordinaryPaymentModalProps {
   >;
   handleClose: () => void;
   customerData: ICustomerData;
+  creditRequestCode: string;
 }
 
 export const ExtraordinaryPaymentModal = (
@@ -41,6 +41,7 @@ export const ExtraordinaryPaymentModal = (
     setSentData,
     handleClose,
     customerData,
+    creditRequestCode,
   } = props;
 
   const [installmentState, setInstallmentState] = useState({
@@ -74,9 +75,7 @@ export const ExtraordinaryPaymentModal = (
   const handleSubmit = () => {
     closeAddSeriesModal();
   };
-  const { disabledButton: canEditCreditRequest } = useValidateUseCase({
-    useCase: getUseCaseValue("canEditCreditRequest"),
-  });
+
   const handleInfo = () => {
     setIsModalOpen(true);
   };
@@ -96,7 +95,7 @@ export const ExtraordinaryPaymentModal = (
     >
       <Stack gap="24px" direction="column">
         <Stack justifyContent="end">
-          {showAddButton && (
+          {true && (
             <Button
               type="button"
               appearance="primary"
@@ -111,13 +110,13 @@ export const ExtraordinaryPaymentModal = (
                 />
               }
               onClick={openAddSeriesModal}
-              disabled={canEditCreditRequest}
+              disabled={showAddButton}
             >
               {TextLabels.addSeries.i18n[lang]}
             </Button>
           )}
           <Stack alignItems="center">
-            {canEditCreditRequest ? (
+            {showAddButton ? (
               <Icon
                 icon={<MdOutlineInfo />}
                 appearance="primary"
@@ -138,6 +137,7 @@ export const ExtraordinaryPaymentModal = (
             handleClose={closeAddSeriesModal}
             businessUnitPublicCode={businessUnitPublicCode}
             lang={lang}
+            creditRequestCode={creditRequestCode}
           />
         </Stack>
         {isAddSeriesModalOpen && (
@@ -169,6 +169,7 @@ export const ExtraordinaryPaymentModal = (
             }}
             maxLoanTerm={prospectData?.creditProducts[0]?.loanTerm || 0}
             customerData={customerData}
+            creditRequestCode={creditRequestCode}
           />
         )}
         {isModalOpen ? (
