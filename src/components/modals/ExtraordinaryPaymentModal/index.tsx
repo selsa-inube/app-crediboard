@@ -27,6 +27,7 @@ export interface ExtraordinaryPaymentModalProps {
   handleClose: () => void;
   customerData: ICustomerData;
   creditRequestCode: string;
+  availableEditCreditRequest: boolean;
 }
 
 export const ExtraordinaryPaymentModal = (
@@ -42,6 +43,7 @@ export const ExtraordinaryPaymentModal = (
     handleClose,
     customerData,
     creditRequestCode,
+    availableEditCreditRequest,
   } = props;
 
   const [installmentState, setInstallmentState] = useState({
@@ -95,7 +97,7 @@ export const ExtraordinaryPaymentModal = (
     >
       <Stack gap="24px" direction="column">
         <Stack justifyContent="end">
-          {true && (
+          {!availableEditCreditRequest && (
             <Button
               type="button"
               appearance="primary"
@@ -116,7 +118,7 @@ export const ExtraordinaryPaymentModal = (
             </Button>
           )}
           <Stack alignItems="center">
-            {showAddButton ? (
+            {availableEditCreditRequest ? (
               <Icon
                 icon={<MdOutlineInfo />}
                 appearance="primary"

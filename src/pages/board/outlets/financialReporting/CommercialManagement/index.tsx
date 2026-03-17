@@ -1002,6 +1002,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 customerData={documentClientNumber(dataProspect[0])}
                 showAddButton={availableEditCreditRequest}
                 creditRequestCode={creditRequestCode}
+                availableEditCreditRequest={availableEditCreditRequest}
               />
             )}
             {openModal === "IncomeModalEdit" && (

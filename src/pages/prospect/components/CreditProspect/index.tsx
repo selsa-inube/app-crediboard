@@ -614,6 +614,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           customerData={customerData}
           showAddButton={availableEditCreditRequest}
           creditRequestCode={creditRequestCode || ""}
+          availableEditCreditRequest={availableEditCreditRequest}
         />
       )}
       {showShareModal && (
