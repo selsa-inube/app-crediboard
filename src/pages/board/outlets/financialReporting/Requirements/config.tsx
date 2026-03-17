@@ -492,7 +492,7 @@ export const requirementLabelsEnum = {
   },
   compliantAsterisk: {
     id: "compliant",
-    i18n: { en: "Compliant", es: "Cumple*" },
+    i18n: { en: "Compliant*", es: "Cumple*" },
   },
   notCompliant: {
     id: "notCompliant",
