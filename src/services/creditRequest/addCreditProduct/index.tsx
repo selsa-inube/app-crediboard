@@ -4,14 +4,15 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-import { IExtraordinaryInstallments } from "../types";
+import { IProspect } from "../query/ProspectByCode/types";
+import { IAddCreditProduct, IAddProduct } from "./types";
 
-export const addExtraordinaryInstallments = async (
-  extraordinaryInstallments: IExtraordinaryInstallments,
+export const addCreditProduct = async (
   businessUnitPublicCode: string,
+  businessManagerCode: string,
+  payload: IAddCreditProduct | IAddProduct,
   authorizationToken: string,
-): Promise<IExtraordinaryInstallments | undefined> => {
+): Promise<IProspect | IAddProduct | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -22,19 +23,18 @@ export const addExtraordinaryInstallments = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "AddExtraordinaryInstallments",
+          "X-Action": "AddCreditProduct",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
+          "X-Process-Manager": businessManagerCode,
           Authorization: `${authorizationToken}`,
         },
-        body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),
-        ),
+        body: JSON.stringify(payload),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_PERSISTENCE_PROCESS_SERVICE}/credit-requests`,
         options,
       );
 
@@ -48,7 +48,7 @@ export const addExtraordinaryInstallments = async (
 
       if (!res.ok) {
         throw {
-          message: "Error al crear cuotas extraordinarias",
+          message: "Ha ocurrido un error: ",
           status: res.status,
           data,
         };
@@ -64,7 +64,7 @@ export const addExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo guardar los Pagos Extras.",
+          "Todos los intentos fallaron. No se pudo agregar el producto de credito.",
         );
       }
     }

@@ -1,5 +1,5 @@
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/config";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 
 const documentClientNumber = (dataProspect: IProspect): ICustomerData => {
   const mainBorrower = dataProspect.borrowers?.find(

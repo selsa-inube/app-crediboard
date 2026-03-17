@@ -3,36 +3,34 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IConsolidatedCredit } from "../types";
 
-export const updateConsolidatedCredits = async (
+import { mapExtraordinaryInstallmentsEntity } from "./mappers";
+import { IExtraordinaryInstallments } from "../query/ProspectByCode/types";
+
+export const addExtraordinaryInstallments = async (
+  extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string,
-  creditRequestCode: string,
-  payload: IConsolidatedCredit[],
-  token: string,
-  xUserName: string,
-): Promise<IConsolidatedCredit[] | null> => {
+  authorizationToken: string,
+): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
-      const body = JSON.stringify({
-        creditRequestCode: creditRequestCode,
-        consolidatedCredits: payload,
-      });
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "UpdateConsolidatedCredits",
+          "X-Action": "AddExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-User-Name": xUserName,
-          Authorization: token,
+          Authorization: `${authorizationToken}`,
         },
+        body: JSON.stringify(
+          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),
+        ),
         signal: controller.signal,
-        body,
       };
 
       const res = await fetch(
@@ -43,20 +41,20 @@ export const updateConsolidatedCredits = async (
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return null;
+        return;
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Ha ocurrido un error: ",
+          message: "Error al crear cuotas extraordinarias",
           status: res.status,
           data,
         };
       }
 
-      return data.consolidatedCredits;
+      return data;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -66,11 +64,9 @@ export const updateConsolidatedCredits = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo actualizar la información de créditos consolidados.",
+          "Todos los intentos fallaron. No se pudo guardar los Pagos Extras.",
         );
       }
     }
   }
-
-  return null;
 };

@@ -5,7 +5,7 @@ import {
 } from "@config/environment";
 import { ITableFinancialObligationsProps } from "@pages/prospect/components/TableObligationsFinancial/index";
 
-import { IProspect } from "../types";
+import { IProspect } from "../../creditRequest/query/ProspectByCode/types";
 
 export const updateProspect = async (
   businessUnitPublicCode: string,

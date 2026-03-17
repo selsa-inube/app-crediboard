@@ -22,7 +22,10 @@ import {
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { searchAllCardSavingProducts } from "@services/bank/cardSavingProducts/SearchAllCardSavingProducts";
-import { IProspectSummaryById, IProspect } from "@services/prospect/types";
+import {
+  IProspectSummaryById,
+  IProspect,
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { CardGray } from "@components/cards/CardGray";
 import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";

@@ -5,7 +5,7 @@ import {
   RateType,
 } from "@services/enum/prospectProduct";
 import { Schedule } from "@services/enum/icorebanking-vi-crediboard/schedule";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 
 import {
   TRuleInput,

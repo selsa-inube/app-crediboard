@@ -228,6 +228,22 @@ export const dataAddSeriesModal = {
       es: "El valor debe ser mayor a 0",
     },
   },
+  valueInteger: {
+    code: "Value_integer",
+    description: "Validation message for integer value",
+    i18n: {
+      en: "Must be an integer value",
+      es: "Debe ser un valor entero",
+    },
+  },
+  valuePositive: {
+    code: "Value_positive",
+    description: "Validation message for positive value",
+    i18n: {
+      en: "Must be a positive value",
+      es: "Debe ser un valor positivo",
+    },
+  },
 };
 
 export const defaultFrequency = "Anual";

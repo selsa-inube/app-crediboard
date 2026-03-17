@@ -7,7 +7,7 @@ import { props, parameters } from "./props";
 import {
   IExtraordinaryInstallmentAddSeries,
   IExtraordinaryInstallmentsAddSeries,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 
 const story: Meta<typeof AddSeriesModal> = {
   component: AddSeriesModal,

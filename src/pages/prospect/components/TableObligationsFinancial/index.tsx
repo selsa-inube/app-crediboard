@@ -7,7 +7,7 @@ import {
   IBorrower,
   IProspect,
   IBorrowerProperty,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 import {
   optionsSelect,
   IFinancialObligation,

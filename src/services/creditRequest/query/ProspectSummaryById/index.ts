@@ -4,7 +4,7 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IProspectSummaryById } from "../../../prospect/types";
+import { IProspectSummaryById } from "../ProspectByCode/types";
 
 const getSearchProspectSummaryById = async (
   businessUnitPublicCode: string,

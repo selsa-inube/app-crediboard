@@ -4,14 +4,15 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { mapExtraordinaryInstallmentsEntity } from "./mappers";
-import { IExtraordinaryInstallments } from "../types";
+import { ILinesOfCreditByMoneyDestination } from "../../creditRequest/query/ProspectByCode/types";
 
-export const removeExtraordinaryInstallments = async (
-  extraordinaryInstallments: IExtraordinaryInstallments,
+const getLinesOfCreditByMoneyDestination = async (
   businessUnitPublicCode: string,
-  authorizationToken: string,
-): Promise<IExtraordinaryInstallments | undefined> => {
+  businessManagerCode: string,
+  moneyDestinationAbbreviatedName: string,
+  clientIdentificationNumber: string,
+  token: string,
+): Promise<ILinesOfCreditByMoneyDestination | null> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -20,41 +21,39 @@ export const removeExtraordinaryInstallments = async (
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), fetchTimeout);
       const options: RequestInit = {
-        method: "PATCH",
+        method: "GET",
         headers: {
-          "X-Action": "RemoveExtraordinaryInstallments",
+          "X-Action": "GetLinesOfCreditByMoneyDestination",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          Authorization: `${authorizationToken}`,
+          "X-Process-Manager": businessManagerCode,
+          Authorization: token,
         },
-        body: JSON.stringify(
-          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),
-        ),
         signal: controller.signal,
       };
 
       const res = await fetch(
-        `${environment.VITE_IPROSPECT_PERSISTENCE_PROCESS_SERVICE}/prospects`,
+        `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/lines-of-credit/${moneyDestinationAbbreviatedName}/${clientIdentificationNumber}`,
         options,
       );
 
       clearTimeout(timeoutId);
 
       if (res.status === 204) {
-        return;
+        return null;
       }
 
       const data = await res.json();
 
       if (!res.ok) {
         throw {
-          message: "Error al eliminar cuotas extraordinarias. : ",
+          message: "Ha ocurrido un error: ",
           status: res.status,
           data,
         };
       }
 
-      return data;
+      return data as ILinesOfCreditByMoneyDestination;
     } catch (error) {
       if (attempt === maxRetries) {
         if (typeof error === "object" && error !== null) {
@@ -64,9 +63,13 @@ export const removeExtraordinaryInstallments = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo eliminar los Pagos Extras.",
+          `Todos los intentos fallaron. No se pudo obtener las líneas de crédito para el destino de dinero ${moneyDestinationAbbreviatedName}.`,
         );
       }
     }
   }
+
+  return null;
 };
+
+export { getLinesOfCreditByMoneyDestination };

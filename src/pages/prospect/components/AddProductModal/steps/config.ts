@@ -2,7 +2,7 @@ import * as Yup from "yup";
 
 import { EnumType } from "@hooks/useEnum";
 
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { ICrediboardData } from "@context/AppContext/types";
 
 import { stepsAddProduct } from "../config";

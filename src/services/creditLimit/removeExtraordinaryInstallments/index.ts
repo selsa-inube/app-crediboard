@@ -4,15 +4,14 @@ import {
   maxRetriesServices,
 } from "@config/environment";
 
-import { IProspect } from "../types";
-import { IAddCreditProduct, IAddProduct } from "./types";
+import { mapExtraordinaryInstallmentsEntity } from "./mappers";
+import { IExtraordinaryInstallments } from "../../creditRequest/query/ProspectByCode/types";
 
-export const addCreditProduct = async (
+export const removeExtraordinaryInstallments = async (
+  extraordinaryInstallments: IExtraordinaryInstallments,
   businessUnitPublicCode: string,
-  businessManagerCode: string,
-  payload: IAddCreditProduct | IAddProduct,
   authorizationToken: string,
-): Promise<IProspect | IAddProduct | undefined> => {
+): Promise<IExtraordinaryInstallments | undefined> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
 
@@ -23,13 +22,14 @@ export const addCreditProduct = async (
       const options: RequestInit = {
         method: "PATCH",
         headers: {
-          "X-Action": "AddCreditProduct",
+          "X-Action": "RemoveExtraordinaryInstallments",
           "X-Business-Unit": businessUnitPublicCode,
           "Content-type": "application/json; charset=UTF-8",
-          "X-Process-Manager": businessManagerCode,
           Authorization: `${authorizationToken}`,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(
+          mapExtraordinaryInstallmentsEntity(extraordinaryInstallments),
+        ),
         signal: controller.signal,
       };
 
@@ -48,7 +48,7 @@ export const addCreditProduct = async (
 
       if (!res.ok) {
         throw {
-          message: "Ha ocurrido un error: ",
+          message: "Error al eliminar cuotas extraordinarias. : ",
           status: res.status,
           data,
         };
@@ -64,7 +64,7 @@ export const addCreditProduct = async (
           };
         }
         throw new Error(
-          "Todos los intentos fallaron. No se pudo agregar el producto de credito.",
+          "Todos los intentos fallaron. No se pudo eliminar los Pagos Extras.",
         );
       }
     }

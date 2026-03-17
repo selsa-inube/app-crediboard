@@ -38,7 +38,7 @@ import {
 import {
   IProspect,
   IExtraordinaryInstallmentsAddSeries,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ShareModal } from "@components/modals/ShareModal";
 import { BaseModal } from "@components/modals/baseModal";
