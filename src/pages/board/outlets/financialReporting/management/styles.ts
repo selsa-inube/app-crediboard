@@ -4,7 +4,7 @@ import {
   inube,
 } from "@inubekit/inubekit";
 
-export const ChatContent = styled.div`
+export const StyledChatContent = styled.div`
   flex: 1;
   overflow-y: auto;
   display: flex;
