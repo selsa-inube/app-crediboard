@@ -1,8 +1,6 @@
 import "styled-components";
-import { inube } from "@inubekit/inubekit";
-
-type Theme = typeof inube;
+import { ITheme } from "./context/theme/types";
 
 declare module "styled-components" {
-  export interface DefaultTheme extends Theme {}
+  export interface DefaultTheme extends ITheme {}
 }

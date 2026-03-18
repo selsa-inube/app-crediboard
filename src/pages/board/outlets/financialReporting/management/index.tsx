@@ -5,7 +5,7 @@ import {
   MdInfoOutline,
   MdOutlineInfo,
 } from "react-icons/md";
-import { Stack, Icon, Textfield } from "@inubekit/inubekit";
+import { Stack, Icon, Textfield, Text } from "@inubekit/inubekit";
 
 import { Fieldset } from "@components/data/Fieldset";
 import { Message } from "@components/data/Message";
@@ -315,7 +315,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
           <>
             <Stack direction="column" height={!isMobile ? "100%" : "292px"}>
               <ChatContent ref={chatContentRef}>
-                {loading ? renderSkeletons() : renderMessages()}
+                <Text>{loading ? renderSkeletons() : renderMessages()}</Text>
               </ChatContent>
               <form
                 onSubmit={(e) => {

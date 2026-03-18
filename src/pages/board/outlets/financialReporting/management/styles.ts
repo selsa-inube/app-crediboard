@@ -8,9 +8,9 @@ export const ChatContent = styled.div`
   flex: 1;
   overflow-y: auto;
   display: flex;
-  font-size: 14px;
+  /* font-size: 14px;
   color: #000000;
-  font-family: Roboto;
+  font-family: Roboto; */
   flex-direction: column;
   padding-right: 10px;
   margin-right: -8px;

@@ -368,14 +368,14 @@ function ToDo(props: ToDoProps) {
       setTempStaff((prev) => ({ ...prev, [key]: value }));
     };
 
-  const onChangeDecision = (_: string, newValue: string) => {
-    setDecisionValue({ decision: newValue });
+  // const onChangeDecision = (_: string, newValue: string) => {
+  //   setDecisionValue({ decision: newValue });
 
-    const selected = taskDecisions.find(
-      (decision) => decision.value === newValue,
-    );
-    setSelectedDecision(selected || null);
-  };
+  //   const selected = taskDecisions.find(
+  //     (decision) => decision.value === newValue,
+  //   );
+  //   setSelectedDecision(selected || null);
+  // };
 
   const handleSubmit = () => {
     setAssignedStaff(tempStaff);
@@ -643,21 +643,22 @@ function ToDo(props: ToDoProps) {
                     fullwidth={isMobile}
                   />
                 ) : (
-                  <Select
-                    key="decision-select-multiple"
-                    id="toDo"
-                    name="decision"
-                    label={txtOthersOptionsEnum.txtDecision.i18n[lang]}
-                    value={decisionValue.decision}
-                    placeholder={
-                      txtConfirmRepresentativeEnum.representativePlaceholder
-                        .i18n[lang]
-                    }
-                    size="compact"
-                    options={taskDecisions || []}
-                    onChange={onChangeDecision}
-                    fullwidth={isMobile}
-                  />
+                  <></>
+                  // <Select
+                  //   key="decision-select-multiple"
+                  //   id="toDo"
+                  //   name="decision"
+                  //   label={txtOthersOptionsEnum.txtDecision.i18n[lang]}
+                  //   value={decisionValue.decision}
+                  //   placeholder={
+                  //     txtConfirmRepresentativeEnum.representativePlaceholder
+                  //       .i18n[lang]
+                  //   }
+                  //   size="compact"
+                  //   options={taskDecisions || []}
+                  //   onChange={onChangeDecision}
+                  //   fullwidth={isMobile}
+                  // />
                 )}
               </Stack>
               <Stack padding="16px 0px 0px 0px" width="100%">
