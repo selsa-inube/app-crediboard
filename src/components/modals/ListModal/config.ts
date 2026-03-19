@@ -79,4 +79,12 @@ export const listModalDataEnum = {
       es: "No se pudo obtener el documento. Intenta de nuevo.",
     },
   },
+  deleteConfirm: {
+    code: "ListModal_deleteConfirm",
+    description: "Confirmation text for deleting a document",
+    i18n: {
+      en: "Do you really want to delete this document?",
+      es: "¿Realmente desea eliminar este documento?",
+    },
+  },
 };

@@ -26,6 +26,7 @@ import { StyledItem } from "@pages/board/outlets/financialReporting/styles";
 import { optionFlagsEnum } from "@pages/board/outlets/financialReporting/config";
 import { useEnum } from "@hooks/useEnum";
 import { getMaximumNotificationDocumentSize } from "@services/lineOfCredit/getMaximumNotificationDocumentSize";
+import { DeleteModal } from "@components/modals/DeleteModal";
 
 import { IUploadedFileReturn } from "../RequirementsModals/DocumentValidationApprovalModal/config";
 import { ErrorModal } from "../ErrorModal";
@@ -111,6 +112,7 @@ export const ListModal = (props: IListModalProps) => {
     node.style.position = "relative";
     node.style.zIndex = "3";
   }
+
   const { addFlag } = useFlag();
   const { lang } = useEnum();
   const isMobile = useMediaQuery("(max-width: 700px)");
@@ -132,6 +134,11 @@ export const ListModal = (props: IListModalProps) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [maxFileSize, setMaxFileSize] = useState<number>(2.5 * 1024 * 1024);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [elementToDelete, setElementToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchMaxFileSize = async () => {
@@ -172,7 +179,7 @@ export const ListModal = (props: IListModalProps) => {
   }
 
   const Listdata = (props: IListdataProps) => {
-    const { data, onDelete, onPreview } = props;
+    const { data, onPreview } = props;
     const maxLength = isMobile ? 20 : 40;
     return (
       <ul style={{ paddingInlineStart: "2px", marginBlock: "8px" }}>
@@ -194,7 +201,10 @@ export const ListModal = (props: IListModalProps) => {
                 spacing="narrow"
                 size="24px"
                 cursorHover
-                onClick={() => onDelete?.(element.id, element.name)}
+                onClick={() => {
+                  setElementToDelete({ id: element.id, name: element.name });
+                  setShowConfirmDelete(true);
+                }}
               />
             </Stack>
           </StyledItem>
@@ -202,6 +212,7 @@ export const ListModal = (props: IListModalProps) => {
       </ul>
     );
   };
+
   const handleDeleteFile = (id: string) => {
     if (!setUploadedFiles) return;
     setUploadedFiles(
@@ -473,7 +484,10 @@ export const ListModal = (props: IListModalProps) => {
                       data={dataDocument ?? []}
                       icon={<MdOutlineRemoveRedEye />}
                       onPreview={handlePreview}
-                      onDelete={(id, name) => onDeleteDocument?.(id, name)}
+                      onDelete={(id, name) => {
+                        setElementToDelete({ id, name });
+                        setShowConfirmDelete(true);
+                      }}
                     />
                   ) : (
                     uploadedFiles &&
@@ -557,6 +571,7 @@ export const ListModal = (props: IListModalProps) => {
                             fileInputRef.current.value = "";
                           }
                         }}
+                        lang={lang}
                       />
                     ))}
                   </StyledFileBox>
@@ -588,6 +603,7 @@ export const ListModal = (props: IListModalProps) => {
                             prev.filter((f) => f.id !== file.id),
                           );
                         }}
+                        lang={lang}
                       />
                     ))}
                   </StyledFileBox>
@@ -628,6 +644,21 @@ export const ListModal = (props: IListModalProps) => {
             selectedFile={selectedFile}
             handleClose={() => setOpen(false)}
             title={fileName || ""}
+          />
+        )}
+        {showConfirmDelete && elementToDelete && (
+          <DeleteModal
+            handleClose={() => {
+              setShowConfirmDelete(false);
+              setElementToDelete(null);
+            }}
+            handleDelete={() => {
+              onDeleteDocument?.(elementToDelete.id, elementToDelete.name);
+              setShowConfirmDelete(false);
+              setElementToDelete(null);
+            }}
+            TextDelete={listModalDataEnum.deleteConfirm.i18n[lang]}
+            lang={lang}
           />
         )}
         {showErrorModal && (
