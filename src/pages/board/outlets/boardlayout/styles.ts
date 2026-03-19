@@ -9,6 +9,7 @@ interface IStyledBoardContainer {
 
 interface IStyledInputsContainer {
   $isMobile: boolean;
+  widthAuto?: boolean;
 }
 
 interface IStyledSearch {
@@ -116,7 +117,7 @@ export const StyledRequestsContainer = styled.div<IStyledInputsContainer>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 807px;
+  width: ${({ widthAuto }) => (widthAuto ? "auto" : "807px")};
   height: 50px;
   ${({ $isMobile, theme }) =>
     !$isMobile &&

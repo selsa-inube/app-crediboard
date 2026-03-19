@@ -15,6 +15,8 @@ import { ErrorModal } from "@components/modals/ErrorModal";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { useEnum } from "@hooks/useEnum";
 import { SectionOrientation } from "@components/layout/BoardSection/types";
+import { getStaffPortalsByBusinessManager } from "@services/staff/SearchAllStaffPortalsByBusinessManager";
+import { environment } from "@config/environment";
 
 import { dataInformationModalEnum, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
@@ -25,6 +27,9 @@ import {
   completedFilterEnum,
   retryButtonLabel,
   scrollTargetIdEnum,
+  staffPortalCatalogCode,
+  currentEnvironment,
+  UrlRedirect,
 } from "./config";
 
 export interface IFilterFormValues {
@@ -64,6 +69,7 @@ function BoardLayout() {
   const [errorModal, setErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [hasServerError, setHasServerError] = useState(false);
+  const [showRedirectModal, setShowRedirectModal] = useState(false);
   const useDebounceSearch = Boolean(
     eventData?.user?.identificationDocumentNumber,
   );
@@ -799,9 +805,37 @@ function BoardLayout() {
       />
     );
   }
+
+  const redirectToSimulation = async () => {
+    const redirectUri = environment.REDIRECT_URI;
+
+    const isOnline = redirectUri.includes(currentEnvironment.online);
+
+    const environmentApp = isOnline
+      ? currentEnvironment.online
+      : currentEnvironment.cloud;
+
+    const staffPortalId = await getStaffPortalsByBusinessManager(
+      "",
+      eventData.token,
+      eventData.businessManager.abbreviatedName,
+      staffPortalCatalogCode,
+    );
+
+    if (staffPortalId.length > 0) {
+      window.location.href = UrlRedirect(
+        staffPortalId[0].staffPortalId as string,
+        `https://app-crm-portal.inube.${environmentApp}/credit/simulate-credit`,
+      );
+    }
+  };
+
   return (
     <>
       <BoardLayoutUI
+        redirectToSimulation={redirectToSimulation}
+        setShowRedirectModal={setShowRedirectModal}
+        showRedirectModal={showRedirectModal}
         isMobile={isMobile}
         openFilterModal={openFilterModal}
         boardOrientation={filters.boardOrientation}
