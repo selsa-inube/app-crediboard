@@ -24,7 +24,7 @@ import { privilegeCrediboard } from "@config/privilege";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 
-import { ChatContent, SkeletonContainer, SkeletonLine } from "./styles";
+import { SkeletonContainer, SkeletonLine, StyledChatContent } from "./styles";
 import {
   traceObserver,
   errorObserver,
@@ -314,9 +314,10 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         ) : (
           <>
             <Stack direction="column" height={!isMobile ? "100%" : "292px"}>
-              <ChatContent ref={chatContentRef}>
+              <StyledChatContent ref={chatContentRef}>
                 <Text>{loading ? renderSkeletons() : renderMessages()}</Text>
-              </ChatContent>
+              </StyledChatContent>
+
               <form
                 onSubmit={(e) => {
                   e.preventDefault();

@@ -34,6 +34,17 @@ export const completedFilterEnum = {
   },
 };
 
+export const dataCreditProspects = {
+  simulateCredit: {
+    code: "Simulate",
+    description: "Simulation action",
+    i18n: {
+      en: "Simulate credit",
+      es: "Simular crédito",
+    },
+  },
+};
+
 export const retryButtonLabel = {
   code: "Retry_button_label",
   description: "Label for the retry button on error page",
@@ -131,4 +142,52 @@ export const dataInformationModalEnum = {
       es: "No estás autorizado para eliminar anclajes colocados por otros usuarios.",
     },
   },
+};
+
+export const simulateRedirectModal = {
+  title: {
+    code: "SimulateRedirectModal_title",
+    description: "Modal title for simulation redirection",
+    i18n: {
+      en: "Start new simulation",
+      es: "Iniciar nueva simulación",
+    },
+  },
+  message: {
+    code: "SimulateRedirectModal_message",
+    description:
+      "Confirmation message before redirecting to simulation assistant",
+    i18n: {
+      en: "This action will redirect you to the simulation assistant. Do you want to continue?",
+      es: "Esta acción te redirigirá al asistido de simulación dentro del portal CRM. ¿Deseas continuar?",
+    },
+  },
+  confirmButton: {
+    code: "SimulateRedirectModal_confirmButton",
+    description: "Confirm button label to proceed to simulation assistant",
+    i18n: {
+      en: "Confirm",
+      es: "Confirmar",
+    },
+  },
+  cancelButton: {
+    code: "SimulateRedirectModal_cancelButton",
+    description: "Cancel button label to stay on the board",
+    i18n: {
+      en: "Cancel",
+      es: "Cancelar",
+    },
+  },
+};
+
+export const staffPortalCatalogCode = "Crm";
+
+export const currentEnvironment = {
+  dev: "dev",
+  online: "online",
+  cloud: "cloud",
+};
+
+export const UrlRedirect = (staffPortalId: string, baseUrl: string) => {
+  return `${baseUrl}?portal=${staffPortalId}`;
 };

@@ -4,6 +4,7 @@ import {
   MdOutlineFilterAltOff,
   MdOutlinePushPin,
   MdSearch,
+  MdAdd,
 } from "react-icons/md";
 import { RxDragHandleVertical, RxDragHandleHorizontal } from "react-icons/rx";
 
@@ -50,7 +51,11 @@ import {
   dataInformationSearchModalEnum,
   TBoardColumn,
 } from "./config/board";
-import { keywordLabel } from "./config";
+import {
+  keywordLabel,
+  dataCreditProspects,
+  simulateRedirectModal,
+} from "./config";
 
 interface BoardLayoutProps {
   isMobile: boolean;
@@ -85,6 +90,9 @@ interface BoardLayoutProps {
   handleRemoveFilter: (filterIdToRemove: string) => void;
   isMenuOpen: boolean;
   filterValues: IFilterFormValues;
+  setShowRedirectModal: React.Dispatch<React.SetStateAction<boolean>>;
+  showRedirectModal: boolean;
+  redirectToSimulation: () => Promise<void>;
 }
 
 function BoardLayoutUI(props: BoardLayoutProps) {
@@ -112,6 +120,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     handleSearchRequestsValue,
     onOrientationChange,
     shouldCollapseAll,
+    setShowRedirectModal,
+    showRedirectModal,
+    redirectToSimulation,
   } = props;
 
   const [hasBeenFocused, setHasBeenFocused] = useState(false);
@@ -478,6 +489,15 @@ function BoardLayoutUI(props: BoardLayoutProps) {
                 </Button>
               </StyledRequestsContainer>
             )}
+            <StyledRequestsContainer $isMobile={isMobile} widthAuto>
+              <Button
+                iconBefore={<MdAdd />}
+                onClick={() => setShowRedirectModal(true)}
+                fullwidth={isMobile}
+              >
+                {dataCreditProspects.simulateCredit.i18n[lang]}
+              </Button>
+            </StyledRequestsContainer>
             <Stack alignItems="center">
               <Stack gap="16px">
                 {!isMobile && (
@@ -579,6 +599,19 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         )}
         {boardOrientation === "vertical" && <div ref={observerRef} />}
       </Stack>
+      {showRedirectModal && (
+        <BaseModal
+          title={simulateRedirectModal.title.i18n[lang]}
+          width="400px"
+          nextButton={simulateRedirectModal.confirmButton.i18n[lang]}
+          backButton={simulateRedirectModal.cancelButton.i18n[lang]}
+          handleBack={() => setShowRedirectModal(false)}
+          handleNext={redirectToSimulation}
+          handleClose={() => setShowRedirectModal(false)}
+        >
+          <Text>{simulateRedirectModal.message.i18n[lang]}</Text>
+        </BaseModal>
+      )}
       {showErrorModal && (
         <ErrorModal
           handleClose={() => {
