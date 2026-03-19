@@ -30,7 +30,6 @@ interface StyledImageProps {
 }
 
 export const StyledImage = styled.img<StyledImageProps>`
-  font-family: Roboto;
   font-size: 14px;
   max-width: ${({ hasLogo }) => (hasLogo ? "35%" : "100%")};
   transition: filter 500ms ease-out;

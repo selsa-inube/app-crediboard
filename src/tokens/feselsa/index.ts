@@ -1,26 +1,29 @@
-import { inube } from "@inubekit/inubekit";
+import { feselsaPalette } from "./color/palette/palette";
+import { typography } from "./typography/typography";
+
 const feselsa = {
+  typography,
   icon: {
     primary: {
       content: {
         color: {
-          regular: inube.palette.blue.B400,
-          disabled: inube.palette.neutral.N70,
-          hover: inube.palette.blue.B300,
+          regular: feselsaPalette.blue.b400,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.blue.b300,
         },
       },
       background: {
         color: {
-          regular: inube.palette.blue.B400,
-          disabled: inube.palette.neutral.N20,
-          hover: inube.palette.blue.B300,
+          regular: feselsaPalette.blue.b400,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.blue.b300,
         },
       },
       contrast: {
         color: {
-          regular: inube.palette.neutral.N10,
-          disabled: inube.palette.neutral.N70,
-          hover: inube.palette.neutral.N10,
+          regular: feselsaPalette.neutral.n10,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.neutral.n10,
         },
       },
     },
@@ -29,20 +32,153 @@ const feselsa = {
     primary: {
       content: {
         color: {
-          regular: inube.palette.blue.B400,
-          disabled: inube.palette.neutral.N20,
-          hover: inube.palette.blue.B300,
+          regular: feselsaPalette.blue.b400,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.blue.b300,
         },
       },
       border: {
         color: {
-          regular: inube.palette.blue.B400,
-          disabled: inube.palette.neutral.N70,
-          hover: inube.palette.blue.B300,
+          regular: feselsaPalette.blue.b400,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.blue.b300,
         },
       },
       contrast: {
         appearance: "light",
+      },
+    },
+    success: {
+      content: {
+        color: {
+          regular: feselsaPalette.green.g400,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.green.g300,
+        },
+      },
+      border: {
+        color: {
+          regular: feselsaPalette.green.g400,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.green.g300,
+        },
+      },
+      contrast: {
+        appearance: "light",
+      },
+    },
+    warning: {
+      content: {
+        color: {
+          regular: feselsaPalette.yellow.y400,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.yellow.y300,
+        },
+      },
+      border: {
+        color: {
+          regular: feselsaPalette.yellow.y400,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.yellow.y300,
+        },
+      },
+      contrast: {
+        appearance: "dark",
+      },
+    },
+    danger: {
+      content: {
+        color: {
+          regular: feselsaPalette.red.r400,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.red.r300,
+        },
+      },
+      border: {
+        color: {
+          regular: feselsaPalette.red.r400,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.red.r300,
+        },
+      },
+      contrast: {
+        appearance: "light",
+      },
+    },
+    help: {
+      content: {
+        color: {
+          regular: feselsaPalette.purple.p400,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.purple.p300,
+        },
+      },
+      border: {
+        color: {
+          regular: feselsaPalette.purple.p400,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.purple.p300,
+        },
+      },
+      contrast: {
+        appearance: "light",
+      },
+    },
+    dark: {
+      content: {
+        color: {
+          regular: feselsaPalette.neutral.n900,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.neutral.n500,
+        },
+      },
+      border: {
+        color: {
+          regular: feselsaPalette.neutral.n900,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.neutral.n500,
+        },
+      },
+      contrast: {
+        appearance: "light",
+      },
+    },
+    gray: {
+      content: {
+        color: {
+          regular: feselsaPalette.neutral.n20,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.neutral.n30,
+        },
+      },
+      border: {
+        color: {
+          regular: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.neutral.n90,
+        },
+      },
+      contrast: {
+        appearance: "gray",
+      },
+    },
+    light: {
+      content: {
+        color: {
+          regular: feselsaPalette.neutral.n20,
+          disabled: feselsaPalette.neutral.n20,
+          hover: feselsaPalette.neutral.n0,
+        },
+      },
+      border: {
+        color: {
+          regular: feselsaPalette.neutral.n20,
+          disabled: feselsaPalette.neutral.n70,
+          hover: feselsaPalette.neutral.n0,
+        },
+      },
+      contrast: {
+        appearance: "dark",
       },
     },
   },
@@ -54,153 +190,164 @@ const feselsa = {
       appearance: "gray",
     },
     track: {
-      color: inube.palette.neutral.N30,
+      color: feselsaPalette.neutral.n30,
     },
     bar: {
-      color: inube.palette.blue.B400,
+      color: feselsaPalette.blue.b400,
     },
     background: {
-      color: inube.palette.neutral.N10,
+      color: feselsaPalette.neutral.n10,
     },
     button: {
       appearance: "primary",
     },
     step: {
-      color: inube.palette.blue.B400,
+      color: feselsaPalette.blue.b400,
     },
   },
   text: {
     primary: {
-      regular: inube.palette.green.G400,
-      hover: inube.palette.green.G300,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.green.g400,
+          hover: feselsaPalette.green.g300,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     danger: {
-      regular: inube.palette.red.R400,
-      hover: inube.palette.red.R300,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.red.r400,
+          hover: feselsaPalette.red.r300,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     warning: {
-      regular: inube.palette.yellow.Y400,
-      hover: inube.palette.yellow.Y300,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.yellow.y400,
+          hover: feselsaPalette.yellow.y300,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     success: {
-      regular: inube.palette.green.G400,
-      hover: inube.palette.green.G300,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.green.g400,
+          hover: feselsaPalette.green.g300,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     information: {
-      regular: inube.palette.blue.B400,
-      hover: inube.palette.blue.B300,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.blue.b400,
+          hover: feselsaPalette.blue.b300,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     help: {
-      regular: inube.palette.purple.P400,
-      hover: inube.palette.purple.P300,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.purple.p400,
+          hover: feselsaPalette.purple.p300,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     dark: {
-      regular: inube.palette.neutral.N900,
-      hover: inube.palette.neutral.N500,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.neutral.n900,
+          hover: feselsaPalette.neutral.n500,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     gray: {
-      regular: inube.palette.neutral.N300,
-      hover: inube.palette.neutral.N100,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.neutral.n300,
+          hover: feselsaPalette.neutral.n100,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     light: {
-      regular: inube.palette.neutral.N10,
-      hover: inube.palette.neutral.N0,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.neutral.n10,
+          hover: feselsaPalette.neutral.n0,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
     link: {
-      regular: inube.palette.blue.B400,
-      hover: inube.palette.blue.B300,
-      disabled: inube.palette.neutral.N70,
+      content: {
+        color: {
+          regular: feselsaPalette.blue.b400,
+          hover: feselsaPalette.blue.b300,
+          disabled: feselsaPalette.neutral.n70,
+        },
+      },
     },
   },
   input: {
     border: {
       color: {
-        regular: inube.palette.neutral.N40,
-        disabled: inube.palette.neutral.N40,
-        focus: inube.palette.blue.B300,
-        invalid: inube.palette.red.R400,
+        regular: feselsaPalette.neutral.n40,
+        disabled: feselsaPalette.neutral.n40,
+        focus: feselsaPalette.blue.b300,
+        invalid: feselsaPalette.red.r400,
       },
     },
     background: {
       color: {
-        regular: inube.palette.neutral.N0,
-        disabled: inube.palette.neutral.N10,
+        regular: feselsaPalette.neutral.n0,
+        disabled: feselsaPalette.neutral.n10,
       },
     },
     content: {
-      appearance: inube.palette.neutral.N900,
-      // color: {
-      //   regular: inube.palette.neutral.N900,
-      //   disabled: inube.palette.neutral.N200,
-      // },
+      color: {
+        regular: feselsaPalette.neutral.n900,
+        disabled: feselsaPalette.neutral.n200,
+      },
     },
     placeholder: {
-      appearance: inube.palette.neutral.N300,
-      // color: {
-      //   regular: inube.palette.neutral.N300,
-      // },
+      color: {
+        regular: feselsaPalette.neutral.n300,
+      },
     },
     message: {
-      appearance: inube.palette.red.R400,
-      // color: {
-      //   regular: inube.palette.red.R400,
-      // },
+      color: {
+        regular: feselsaPalette.red.r400,
+      },
     },
     required: {
-      appearance: inube.palette.red.R400,
-      // color: {
-      //   regular: inube.palette.red.R400,
-      //   disabled: inube.palette.neutral.N70,
-      // },
+      color: {
+        regular: feselsaPalette.red.r400,
+        disabled: feselsaPalette.neutral.n70,
+      },
     },
     option: {
       appearance: {
-        regular: inube.palette.neutral.N0,
-        expanded: inube.palette.neutral.N0,
+        regular: "dark",
+        hover: "primary",
       },
       background: {
-        expanded: inube.palette.neutral.N0,
-        selected: inube.palette.neutral.N30,
-        color: {
-          regular: inube.palette.red.R400,
-          disabled: inube.palette.neutral.N70,
-        },
+        regular: feselsaPalette.neutral.n0,
+        hover: feselsaPalette.neutral.n30,
       },
     },
   },
   label: {
-    large: {
-      font: "Lato",
-      lineHeight: "20px",
-      size: "14px",
-      tracking: "0",
-      weight: "500",
-    },
-    medium: {
-      font: "Lato",
-      lineHeight: "16px",
-      size: "12px",
-      tracking: "0",
-      weight: "500",
-    },
-    small: {
-      font: "Lato",
-      lineHeight: "16px",
-      size: "11px",
-      tracking: "0",
-      weight: "500",
-    },
     content: {
-      appearance: {
+      color: {
         regular: "dark",
         disabled: "dark",
         focus: "primary",
@@ -215,6 +362,77 @@ const feselsa = {
       },
     },
   },
+  BoxContainer: {
+    light: {
+      border: {
+        color: feselsaPalette.neutral.n0,
+      },
+      background: {
+        color: feselsaPalette.neutral.n0,
+      },
+      boxShadow: {
+        color: feselsaPalette.neutral.n0,
+      },
+    },
+    gray: {
+      border: {
+        color: feselsaPalette.neutral.n10,
+      },
+      background: {
+        color: feselsaPalette.neutral.n10,
+      },
+      boxShadow: {
+        color: feselsaPalette.neutral.n10,
+      },
+    },
+    dark: {
+      border: {
+        color: feselsaPalette.neutral.n40,
+      },
+      background: {
+        color: feselsaPalette.neutral.n40,
+      },
+      boxShadow: {
+        color: feselsaPalette.neutral.n40,
+      },
+    },
+    primary: {
+      border: {
+        color: feselsaPalette.blue.b300,
+      },
+      background: {
+        color: feselsaPalette.blue.b300,
+      },
+      boxShadow: {
+        color: feselsaPalette.blue.b300,
+      },
+    },
+    danger: {
+      border: {
+        color: feselsaPalette.red.r400,
+      },
+      background: {
+        color: feselsaPalette.red.r50,
+      },
+      boxShadow: {
+        color: feselsaPalette.red.r50,
+      },
+    },
+  },
+  appCard: {
+    boxShadow: {
+      color: {
+        regular: feselsaPalette.neutral.n40,
+      },
+    },
+    background: {
+      color: {
+        regular: feselsaPalette.neutral.n0,
+        hover: feselsaPalette.neutral.n20,
+      },
+    },
+  },
+  
 };
 
 export { feselsa };

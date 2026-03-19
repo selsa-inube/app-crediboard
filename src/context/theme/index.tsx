@@ -21,8 +21,8 @@ const ThemeProviderWrapper = ({ children }: IThemeProviderWrapper) => {
   }, [themeName]);
 
   const theme = {
-    ...tokensWithReference[themeName],
     ...inube,
+    ...tokensWithReference[themeName],
   } as ITheme;
 
   return (

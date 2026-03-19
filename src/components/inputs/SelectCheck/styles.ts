@@ -81,9 +81,6 @@ export const StyledInput = styled.input<IStyledInput>`
   padding-right: 12px;
   padding-left: 16px;
   border-style: none;
-
-  font-family: ${({ theme }) =>
-    theme?.typography?.body?.large?.font || inube.typography.body.large.font};
   font-size: ${({ theme }) =>
     theme?.typography?.body?.large?.size || inube.typography.body.large.size};
   line-height: ${({ theme }) =>
@@ -92,20 +89,17 @@ export const StyledInput = styled.input<IStyledInput>`
   letter-spacing: ${({ theme }) =>
     theme?.typography?.body?.large?.tracking ||
     inube.typography.body.large.tracking};
-
   color: ${({ theme, disabled }) => {
     if (disabled) {
       return theme?.palette?.neutral?.N90 || inube.palette.neutral.N90;
     }
     return theme?.palette?.neutral?.N900 || inube.palette.neutral.N900;
   }};
-
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-
   ${({ $size }) => sizeOptions[$size!]};
-
+  
   ::placeholder {
     color: ${({ theme }) =>
       theme?.palette?.neutral?.N90 || inube.palette.neutral.N90};

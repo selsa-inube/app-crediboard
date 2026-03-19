@@ -19,6 +19,8 @@ import { useIAuth } from "@inube/iauth-react";
 import { AuthProvider } from "@pages/AuthProvider";
 import { EnumProvider } from "@context/enumProvider";
 import { ThemeProviderWrapper } from "@context/theme";
+import { useFonts } from "@hooks/useFonts";
+import { tokensWithReference } from "@tokens";
 
 function LogOut() {
   sessionStorage.clear();
@@ -85,19 +87,20 @@ const router = createBrowserRouter(
 );
 
 function App() {
+  useFonts(tokensWithReference.feselsa.typography.fonts);
   return (
-    <AuthProvider>
-      <AppContextProvider>
-        <ThemeProviderWrapper>
+    <ThemeProviderWrapper>
+      <AuthProvider>
+        <AppContextProvider>
           <EnumProvider>
             <FlagProvider>
               <GlobalStyles />
               <RouterProvider router={router} />
             </FlagProvider>
           </EnumProvider>
-        </ThemeProviderWrapper>
-      </AppContextProvider>
-    </AuthProvider>
+        </AppContextProvider>
+      </AuthProvider>
+    </ThemeProviderWrapper>
   );
 }
 
