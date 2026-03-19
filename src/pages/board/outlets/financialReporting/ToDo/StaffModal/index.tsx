@@ -153,7 +153,7 @@ export function StaffModal(props: StaffModalProps) {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
- 
+
   useEffect(() => {
     if (accountManagerList.length === 1) {
       const singleManager = accountManagerList[0];
