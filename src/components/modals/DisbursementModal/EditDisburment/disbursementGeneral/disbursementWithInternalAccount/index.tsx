@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import {
   Stack,
@@ -29,7 +29,11 @@ import {
 import { CardGray } from "@components/cards/CardGray";
 import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import {
@@ -81,11 +85,8 @@ export function DisbursementWithInternalAccount(
     handleCheckboxChange,
     handleToggleChange,
     isInvalidAmount,
-    showErrorModal,
-    setShowErrorModal,
-    messageError,
-    setMessageError,
   } = useDisbursementForm({ ...props, skipValidation: true });
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
   const [accountOptions, setAccountOptions] = useState<
@@ -179,17 +180,7 @@ export function DisbursementWithInternalAccount(
         });
         setAccountOptions(Array.from(uniqueMap.values()));
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
         setAccountOptions([]);
       } finally {
         setIsLoadingAccounts(false);
@@ -353,15 +344,6 @@ export function DisbursementWithInternalAccount(
         onBlur={formik.handleBlur}
         fullwidth
       />
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
     </Stack>
   );
 }

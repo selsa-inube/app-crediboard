@@ -34,7 +34,11 @@ import {
   ICreditRequest,
   ICreditRequestPinned,
 } from "@services/creditRequest/query/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import {
   StyledInputsContainer,
@@ -125,6 +129,9 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     redirectToSimulation,
   } = props;
 
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { lang } = useEnum();
+
   const [hasBeenFocused, setHasBeenFocused] = useState(false);
   const [isTextSearchModalOpen, setIsTextSearchModalOpen] = useState(false);
   const [totalsData, setTotalsData] = useState<ICreditRequestTotalsByStage[]>();
@@ -137,10 +144,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
   const businessManagerCode = eventData.businessManager.publicCode;
   const stackRef = useRef<HTMLDivElement>(null);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const observerRef = useRef<HTMLDivElement | null>(null);
-  const { lang } = useEnum();
 
   useEffect(() => {
     if (activeOptions.length === 0) {
@@ -277,17 +281,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         );
         if (result) setTotalsData(normalizedTotalData(result));
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
@@ -611,15 +605,6 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         >
           <Text>{simulateRedirectModal.message.i18n[lang]}</Text>
         </BaseModal>
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
       )}
     </StyledContainerToCenter>
   );

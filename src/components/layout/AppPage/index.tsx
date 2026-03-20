@@ -24,6 +24,11 @@ import { getUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnrea
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
 import { useEnum } from "@hooks/useEnum";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
@@ -41,7 +46,10 @@ import {
   StyledCardsContainer,
   StyledUserImage,
 } from "./styles";
-import { emptyNoveltiesConfigEnum, errorBoardConfigEnum } from "./config/errorNovelties";
+import {
+  emptyNoveltiesConfigEnum,
+  errorBoardConfigEnum,
+} from "./config/errorNovelties";
 
 const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
   return (
@@ -54,6 +62,8 @@ const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
 function AppPage() {
   const { eventData, businessUnitsToTheStaff, setBusinessUnitSigla } =
     useContext(AppContext);
+  const { setShowModalError, setMessageError, messageError, showModalError } =
+    useContext(SystemStateContext);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [collapse, setCollapse] = useState(false);
@@ -64,8 +74,6 @@ function AppPage() {
   const [noveltiesData, setNoveltiesData] = useState<IUnreadNoveltiesByUser[]>(
     [],
   );
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const navigate = useNavigate();
   const { businessUnitSigla } = useContext(AppContext);
   const { lang } = useEnum();
@@ -176,17 +184,7 @@ function AppPage() {
         );
         setNoveltiesData(data);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       } finally {
         setIsLoadingBusinessUnit(false);
       }
@@ -194,6 +192,8 @@ function AppPage() {
 
     fetchNoveltiesData();
   }, [
+    setMessageError,
+    setShowModalError,
     eventData.user.identificationDocumentNumber,
     businessUnitPublicCode,
     businessManagerCode,
@@ -348,11 +348,10 @@ function AppPage() {
           </StyledFooter>
         </StyledContainer>
       </Grid>
-
-      {showErrorModal && (
+      {showModalError && (
         <ErrorModal
           handleClose={() => {
-            setShowErrorModal(false);
+            setShowModalError(false);
           }}
           isMobile={isMobile}
           message={messageError}

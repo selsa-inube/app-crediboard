@@ -18,6 +18,7 @@ import { BoardRoutes } from "@routes/board";
 import { useIAuth } from "@inube/iauth-react";
 import { AuthProvider } from "@pages/AuthProvider";
 import { EnumProvider } from "@context/enumProvider";
+import { SystemStateProvider } from "@context/systemStateContextProvider";
 
 function LogOut() {
   sessionStorage.clear();
@@ -87,12 +88,14 @@ function App() {
   return (
     <AuthProvider>
       <AppContextProvider>
-        <EnumProvider>
-          <FlagProvider>
-            <GlobalStyles />
-            <RouterProvider router={router} />
-          </FlagProvider>
-        </EnumProvider>
+        <SystemStateProvider>
+          <EnumProvider>
+            <FlagProvider>
+              <GlobalStyles />
+              <RouterProvider router={router} />
+            </FlagProvider>
+          </EnumProvider>
+        </SystemStateProvider>
       </AppContextProvider>
     </AuthProvider>
   );

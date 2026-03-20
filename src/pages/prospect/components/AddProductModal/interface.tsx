@@ -8,7 +8,6 @@ import {
 } from "@inubekit/inubekit";
 
 import { BaseModal } from "@components/modals/baseModal";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { CardProductSelection } from "@components/cards/CardProductSelection";
 
@@ -46,17 +45,12 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
     businessUnitPublicCode,
     businessManagerCode,
     prospectData,
-    errorMessage,
-    setErrorModal,
-    errorModal,
     loading,
     isLoading,
     lang,
     dataProspect,
     eventData,
     setCurrentStep,
-    setShowErrorModal,
-    showErrorModal,
   } = props;
 
   return (
@@ -257,23 +251,6 @@ export const AddProductModalUI = (props: IAddProductModalUIProps) => {
           )}
         </Stack>
       </BaseModal>
-      {errorModal && (
-        <ErrorModal
-          isMobile={isMobile}
-          message={errorMessage}
-          handleClose={() => setErrorModal(false)}
-        />
-      )}
-
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={errorMessage}
-        />
-      )}
     </>
   );
 };

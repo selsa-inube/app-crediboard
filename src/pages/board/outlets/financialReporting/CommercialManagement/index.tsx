@@ -59,6 +59,11 @@ import { IProspectSummaryById } from "@services/creditRequest/query/ProspectByCo
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { useEnum } from "@hooks/useEnum";
 import { documentClientNumber } from "@utils/documentClientNumber";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { titlesModalEnum } from "../ToDo/config";
 import { errorMessagesEnum } from "../config";
@@ -121,10 +126,10 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     setSentData,
     setRequestValue,
     errorGetProspects,
-    setErrorModal,
-    setErrorMessage,
     fetchProspectData,
   } = props;
+
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const [showMenu, setShowMenu] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
@@ -207,18 +212,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
         );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setErrorMessage(description);
-        setErrorModal(true);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
@@ -274,18 +268,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
         setDisbursementData(organizedData);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setErrorMessage(description);
-        setErrorModal(true);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       } finally {
         if (prospectData !== undefined) {
           setLoading(false);
@@ -1037,8 +1020,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
                 creditRequestCode={creditRequestCode}
-                setErrorMessage={setErrorMessage}
-                setErrorModal={setErrorModal}
               />
             )}
             {infoModal && (

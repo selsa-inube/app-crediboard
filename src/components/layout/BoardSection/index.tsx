@@ -15,7 +15,6 @@ import {
 } from "@services/creditRequest/query/types";
 import { patchChangeTracesToReadById } from "@services/creditRequest/command/patchChangeTracesToReadById";
 import { AppContext } from "@context/AppContext";
-import { ErrorModal } from "@components/modals/ErrorModal";
 
 import { taskPrs } from "@services/enum/icorebanking-vi-crediboard/dmtareas/dmtareasprs";
 import { useEnum } from "@hooks/useEnum";
@@ -28,6 +27,11 @@ import {
 import { SectionBackground, SectionOrientation } from "./types";
 import { configOptionEnum, infoModalEnum } from "./config";
 import { getCanUnpin } from "@utils/configRules/permissions";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -75,18 +79,17 @@ function BoardSection(props: BoardSectionProps) {
   const disabledCollapse = sectionInformation.length === 0;
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
     useMediaQueries(["(max-width: 1024px)", "(max-width: 595px)"]);
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+
   const [collapse, setCollapse] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [currentOrientation, setCurrentOrientation] =
     useState<SectionOrientation>(orientation);
-  const [errorModal, setErrorModal] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const flagMessage = useRef(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const { lang } = useEnum();
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const businessManagerCode = eventData.businessManager.publicCode;
   const missionName = eventData.user.staff.missionName;
   const staffId = eventData.user.staff.staffId;
@@ -167,17 +170,7 @@ function BoardSection(props: BoardSectionProps) {
         eventData.user.identificationDocumentNumber || "",
       );
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     }
   };
 
@@ -342,15 +335,6 @@ function BoardSection(props: BoardSectionProps) {
           )}
         </Stack>
       )}
-      {errorModal && (
-        <ErrorModal
-          isMobile={isMobile}
-          message={messageError}
-          handleClose={() => {
-            setErrorModal(false);
-          }}
-        />
-      )}
 
       {isInfoModalOpen && (
         <BaseModal
@@ -367,15 +351,6 @@ function BoardSection(props: BoardSectionProps) {
             </Text>
           </Stack>
         </BaseModal>
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
       )}
     </StyledBoardSection>
   );

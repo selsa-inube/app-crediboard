@@ -11,7 +11,6 @@ import {
 
 import { incomeCardDataEnum } from "@components/cards/IncomeCard/config";
 import { CardGray } from "@components/cards/CardGray";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import {
   currencyFormat,
   parseCurrencyString,
@@ -22,6 +21,11 @@ import { dataReportEnum } from "@pages/prospect/components/TableObligationsFinan
 import { RestoreIncomeInformationByBorrowerId } from "@services/creditRequest/command/restoreIncome";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { IIncomeSources } from "../CreditProspect/types";
 import {
@@ -61,11 +65,9 @@ export function SourceIncome(props: ISourceIncomeProps) {
     borrowerOptions,
     setIsShowingEdit,
   } = props;
-
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const { eventData } = useContext(AppContext);
   const isMobile = useMediaQuery("(max-width:880px)");
   const { lang } = useEnum();
@@ -159,17 +161,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
         }
       }
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     } finally {
       setIsOpenModal(false);
     }
@@ -354,13 +346,6 @@ export function SourceIncome(props: ISourceIncomeProps) {
           onSubmit={() => {}}
           businessManagerCode={businessManagerCode}
           borrowerOptions={borrowerOptions}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => setShowErrorModal(false)}
-          isMobile={isMobile}
-          message={messageError}
         />
       )}
     </StyledContainer>

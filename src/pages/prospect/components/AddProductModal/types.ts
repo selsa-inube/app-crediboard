@@ -75,11 +75,9 @@ export interface IAddProductModalProps {
 export interface IAddProductModalUIProps {
   title: string;
   setCurrentStep: (step: number) => void;
-  showErrorModal: boolean;
   confirmButtonText: string;
   initialValues: Partial<IFormValues>;
   validationSchema: Yup.AnyObjectSchema;
-  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
   onConfirm: (values: IFormValues) => void;
   onCloseModal: () => void;
   iconBefore?: React.JSX.Element;
@@ -102,9 +100,6 @@ export interface IAddProductModalUIProps {
     lineOfCredit: string;
     moneyDestination: string;
   };
-  errorModal: boolean;
-  setErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
-  errorMessage: string;
   eventData: ICrediboardData;
   loading: boolean;
   isLoading: boolean;

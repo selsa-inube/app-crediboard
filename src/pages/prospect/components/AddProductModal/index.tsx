@@ -1,10 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import * as Yup from "yup";
 
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { getLinesOfCreditByMoneyDestination } from "@services/lineOfCredit/getLinesOfCreditByMoneyDestination";
 import { GetSearchAllPaymentChannels } from "@services/paymentChannels/searchAllPaymentChannelsByIdentificationNumber/SearchAllPaymentChannelsByIdentificationNumber";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
+
 import {
   extractBorrowerIncomeData,
   stepsAddProduct,
@@ -36,9 +42,7 @@ function AddProductModal(props: IAddProductModalProps) {
     isLoading,
     eventData,
   } = props;
-  const [errorModal, setErrorModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
   const [creditLineTerms, setCreditLineTerms] = useState<TCreditLineTerms>({});
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(
@@ -163,17 +167,7 @@ function AddProductModal(props: IAddProductModalProps) {
           },
         }));
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
         setLoading(false);
       }
     };
@@ -283,16 +277,11 @@ function AddProductModal(props: IAddProductModalProps) {
         lineOfCredit: formData.creditLine,
         moneyDestination: moneyDestination,
       }}
-      errorMessage={messageError}
-      setErrorModal={setErrorModal}
-      errorModal={errorModal}
       isLoading={isLoading}
       lang={lang}
       dataProspect={dataProspect}
       eventData={eventData}
       setCurrentStep={setCurrentStep}
-      showErrorModal={showErrorModal}
-      setShowErrorModal={setShowErrorModal}
     />
   );
 }

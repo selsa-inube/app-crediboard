@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { PiSealCheckBold } from "react-icons/pi";
 import { Stack, Text } from "@inubekit/inubekit";
 
@@ -10,7 +10,11 @@ import { getGuaranteesSummary } from "@services/creditRequest/query/guaranteesSu
 import { IGuaranteesSummary } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import {
   dataGuaranteesEnum,
@@ -35,11 +39,10 @@ export function Guarantees(props: GuaranteesProps) {
     isMobile,
   } = props;
   const { lang } = useEnum();
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const [guaranteesSummary, setGuaranteesSummary] =
     useState<IGuaranteesSummary | null>(null);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const fetchLaborStabilityByCustomerId = async () => {
     if (!creditRequestId) return;
 
@@ -52,17 +55,7 @@ export function Guarantees(props: GuaranteesProps) {
       );
       setGuaranteesSummary(data);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     }
   };
 
@@ -145,15 +138,6 @@ export function Guarantees(props: GuaranteesProps) {
               ).join(", ")}
             </Text>
           </Stack>
-          {showErrorModal && (
-            <ErrorModal
-              handleClose={() => {
-                setShowErrorModal(false);
-              }}
-              isMobile={isMobile}
-              message={messageError}
-            />
-          )}
         </Stack>
       )}
     </CardInfoContainer>

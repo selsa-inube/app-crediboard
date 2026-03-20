@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useContext } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Stack, Text, Textarea, Toggle } from "@inubekit/inubekit";
@@ -9,8 +9,12 @@ import { approveRequirementById } from "@services/requirementsPackages/approveRe
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { useEnum } from "@hooks/useEnum";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { ICrediboardData } from "@context/AppContext/types";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { IApprovalSystem } from "../types";
 import { approvalsConfigEnum, MinCharactersObservation } from "./config";
@@ -46,9 +50,7 @@ export function SystemValidationApprovalModal(
     eventData,
   } = props;
   const { lang: lang } = useEnum();
-
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const validationSchema = Yup.object({
     toggleChecked: Yup.boolean(),
@@ -107,17 +109,7 @@ export function SystemValidationApprovalModal(
           onCloseModal();
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     },
   });
@@ -189,15 +181,6 @@ export function SystemValidationApprovalModal(
               : "pending"
           }
         />
-        {showErrorModal && (
-          <ErrorModal
-            handleClose={() => {
-              setShowErrorModal(false);
-            }}
-            isMobile={isMobile}
-            message={messageError}
-          />
-        )}
       </Stack>
     </BaseModal>
   );

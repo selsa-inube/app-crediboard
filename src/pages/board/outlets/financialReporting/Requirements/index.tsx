@@ -1,6 +1,6 @@
-import { useState, isValidElement, useEffect } from "react";
+import { useState, isValidElement, useEffect, useContext } from "react";
 import { MdOutlineHowToReg, MdOutlineRemoveRedEye } from "react-icons/md";
-import { Stack, Icon, useFlag } from "@inubekit/inubekit";
+import { Stack, Icon } from "@inubekit/inubekit";
 
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { SystemValidationApprovalModal } from "@components/modals/RequirementsModals/SystemValidationApprovalModal";
@@ -26,14 +26,17 @@ import { ICrediboardData } from "@context/AppContext/types";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 import { getSearchAllRequirementsByBusinessUnit } from "@services/requirementsPackages/searchAllRequirementsByBusinessUnit";
 import { AddRequirementMock } from "@mocks/addRequirement";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import {
   infoItems,
   maperDataRequirements,
   maperEntries,
   getDataButton,
-  textFlagsRequirementsEnum,
   dataAddRequirementEnum,
   getActionsMobileIcon,
   questionToBeAskedInModalText,
@@ -77,12 +80,12 @@ export const Requirements = (props: IRequirementsProps) => {
     enums,
   } = props;
 
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const [showAprovalsModal, setShowAprovalsModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
   const [approvalSystemValues, setApprovalSystemValues] = useState<
     Record<
@@ -135,7 +138,6 @@ export const Requirements = (props: IRequirementsProps) => {
     IRequirementsByBusinessUnit[] | null
   >(null);
   const [sentData, setSentData] = useState<IPatchOfRequirements | null>(null);
-  const { addFlag } = useFlag();
   const [showAddSystemValidationModal, setShowAddSystemValidationModal] =
     useState(false);
   const [seenDocuments, setSeenDocuments] = useState<string[]>([]);
@@ -280,17 +282,7 @@ export const Requirements = (props: IRequirementsProps) => {
         );
         setDataRequirements(processedRequirements);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
@@ -307,17 +299,7 @@ export const Requirements = (props: IRequirementsProps) => {
         );
         setRequirement(data);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
@@ -418,21 +400,7 @@ export const Requirements = (props: IRequirementsProps) => {
         setSentData(creditRequests);
       })
       .catch((error) => {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-
-        addFlag({
-          title: textFlagsRequirementsEnum.titleError.i18n[lang],
-          description,
-          appearance: "danger",
-          duration: 5000,
-        });
+        manageShowError(error as IError, setMessageError, setShowModalError);
       })
       .finally(() => {
         if (closeAdd) closeAdd();
@@ -579,17 +547,7 @@ export const Requirements = (props: IRequirementsProps) => {
       );
       setDataRequirements(processedRequirements);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     }
   };
 
@@ -885,15 +843,6 @@ export const Requirements = (props: IRequirementsProps) => {
           rawRequirements={rawRequirements}
           setJustificationRequirement={setJustificationRequirement}
           justificationRequirement={justificationRequirement}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
         />
       )}
     </>

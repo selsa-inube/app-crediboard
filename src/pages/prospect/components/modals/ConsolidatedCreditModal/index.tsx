@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useContext } from "react";
 import {
   Text,
   Stack,
@@ -22,6 +22,11 @@ import { ICrediboardData } from "@context/AppContext/types";
 import { InvestmentCreditCard } from "@components/cards/InvestmentCreditCard";
 import { CardConsolidatedCredit } from "@components/cards/CardConsolidatedCredit";
 import { updateConsolidatedCredits } from "@services/creditRequest/updateConsolidatedCredits";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { ScrollableContainer } from "./styles";
 import { feedback, ModalConfig } from "./config";
@@ -64,6 +69,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
     handleInfo,
   } = props;
   const isMobile = useMediaQuery("(max-width:880px)");
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const [editOpen, setEditOpen] = useState(true);
   const [obligationPayment, setObligationPayment] = useState<IPayment[] | null>(
@@ -93,22 +99,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       );
       setObligationPayment(data ?? null);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-
-      addFlag({
-        title: feedback.fetchDataObligationPayment.title.i18n[lang],
-        description:
-          description ||
-          feedback.fetchDataObligationPayment.description.i18n[lang],
-        appearance: "danger",
-        duration: 5000,
-      });
+      manageShowError(error as IError, setMessageError, setShowModalError);
     }
   };
 
@@ -350,23 +341,8 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       });
       setLoading(false);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
+      manageShowError(error as IError, setMessageError, setShowModalError);
       setLoading(false);
-      addFlag({
-        title: feedback.handleSaveChanges.error.title.i18n[lang],
-        description:
-          description ||
-          feedback.handleSaveChanges.error.description.i18n[lang],
-        appearance: "danger",
-        duration: 5000,
-      });
     }
   };
 
