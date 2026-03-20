@@ -32,7 +32,6 @@ import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { IEntries } from "@components/data/TableBoard/types";
 import { getApprovalBoardRepresentablePersons } from "@services/creditRequest/query/approvalBoardRepresentablePersons";
 import { ErrorModal } from "@components/modals/ErrorModal";
-import { ThemeContext } from "@context/theme/themeContext";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -64,7 +63,6 @@ interface ToDoProps {
 function ToDo(props: ToDoProps) {
   const { icon, button, isMobile, id, setIdProspect, approvalsEntries } = props;
   const { lang, enums } = useEnum();
-  const theme = useContext(ThemeContext);
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [staff, setStaff] = useState<IStaff[]>([]);
@@ -588,7 +586,6 @@ function ToDo(props: ToDoProps) {
         isUserAuthorizedForApproval())
     );
   };
-  console.log(theme, "soy diferente");
   return (
     <>
       <Fieldset

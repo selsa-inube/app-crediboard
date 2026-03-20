@@ -1,10 +1,11 @@
 import { useState, useEffect, ReactNode } from "react";
 import { ThemeProvider } from "styled-components";
-
 import { inube } from "@inubekit/inubekit";
 
-import { ThemeContext, ThemeName } from "./themeContext";
 import { tokensWithReference } from "@tokens";
+
+import { ThemeContext, ThemeName } from "./themeContext";
+
 import { ITheme } from "./types";
 
 interface IThemeProviderWrapper {
