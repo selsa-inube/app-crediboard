@@ -27,9 +27,13 @@ import { optionFlagsEnum } from "@pages/board/outlets/financialReporting/config"
 import { useEnum } from "@hooks/useEnum";
 import { getMaximumNotificationDocumentSize } from "@services/lineOfCredit/getMaximumNotificationDocumentSize";
 import { DeleteModal } from "@components/modals/DeleteModal";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { IUploadedFileReturn } from "../RequirementsModals/DocumentValidationApprovalModal/config";
-import { ErrorModal } from "../ErrorModal";
 import { DocumentViewer } from "../DocumentViewer";
 import {
   StyledAttachContainer,
@@ -115,6 +119,7 @@ export const ListModal = (props: IListModalProps) => {
 
   const { addFlag } = useFlag();
   const { lang } = useEnum();
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
   const isMobile = useMediaQuery("(max-width: 700px)");
   const dragCounter = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -131,8 +136,6 @@ export const ListModal = (props: IListModalProps) => {
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [maxFileSize, setMaxFileSize] = useState<number>(2.5 * 1024 * 1024);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [elementToDelete, setElementToDelete] = useState<{
@@ -154,22 +157,17 @@ export const ListModal = (props: IListModalProps) => {
           );
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
     fetchMaxFileSize();
-  }, [businessUnitPublicCode, eventData.token]);
+  }, [
+    setMessageError,
+    setShowModalError,
+    businessUnitPublicCode,
+    eventData.token,
+  ]);
 
   interface IListdataProps {
     data: { id: string; name: string }[] | null | undefined;
@@ -263,10 +261,12 @@ export const ListModal = (props: IListModalProps) => {
     });
 
     if (hasError) {
-      setMessageError(
-        `${listModalDataEnum.exceedSize.i18n[lang]} ${maxFileSize / 1024 / 1024}MB`,
+      setShowModalError(true);
+      manageShowError(
+        `${listModalDataEnum.exceedSize.i18n[lang]} ${maxFileSize / 1024 / 1024}MB` as IError,
+        setMessageError,
+        setShowModalError,
       );
-      setShowErrorModal(true);
     }
 
     setUploadedFiles((prev: IDocumentUpload[]) => [
@@ -310,10 +310,11 @@ export const ListModal = (props: IListModalProps) => {
     });
 
     if (hasSizeError) {
-      setMessageError(
-        `${listModalDataEnum.exceedSize.i18n[lang]} ${maxFileSize / 1024 / 1024}MB`,
+      manageShowError(
+        `${listModalDataEnum.exceedSize.i18n[lang]} ${maxFileSize / 1024 / 1024}MB` as IError,
+        setMessageError,
+        setShowModalError,
       );
-      setShowErrorModal(true);
     }
 
     setUploadedFiles((prev: IDocumentUpload[]) => [
@@ -406,17 +407,7 @@ export const ListModal = (props: IListModalProps) => {
       setFileName(name);
       setOpen(true);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     }
   };
 
@@ -659,15 +650,6 @@ export const ListModal = (props: IListModalProps) => {
             }}
             TextDelete={listModalDataEnum.deleteConfirm.i18n[lang]}
             lang={lang}
-          />
-        )}
-        {showErrorModal && (
-          <ErrorModal
-            handleClose={() => {
-              setShowErrorModal(false);
-            }}
-            isMobile={isMobile}
-            message={messageError}
           />
         )}
       </StyledModal>

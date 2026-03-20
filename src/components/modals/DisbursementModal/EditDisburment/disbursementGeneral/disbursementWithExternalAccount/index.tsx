@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import {
   Stack,
@@ -24,10 +24,14 @@ import { IOptionsSelect } from "@components/modals/RequirementsModals/types";
 import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types";
 import { SearchAllBank } from "@services/bank/SearchAllBank";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import {
@@ -73,16 +77,12 @@ export function DisbursementWithExternalAccount(
     handleCheckboxChange,
     handleToggleChange,
     isInvalidAmount,
-    showErrorModal,
-    setShowErrorModal,
-    messageError,
-    setMessageError,
   } = useDisbursementForm(props);
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const [banks, setBanks] = useState<IOptionsSelect[]>([]);
   const [alreadyShowMessageErrorBank, setAlreadyShowMessageErrorBank] =
     useState(false);
-  const [modalError, setModalError] = useState(false);
 
   useEffect(() => {
     const fetchBanks = async () => {
@@ -95,17 +95,8 @@ export function DisbursementWithExternalAccount(
         }));
         setBanks(formattedBanks);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        setAlreadyShowMessageErrorBank(true);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
     fetchBanks();
@@ -316,25 +307,6 @@ export function DisbursementWithExternalAccount(
           fullwidth
         />
       </Stack>
-      {modalError && !alreadyShowMessageErrorBank && (
-        <ErrorModal
-          isMobile={isMobile}
-          message={disbursemenOptionAccountEnum.errorBanks.i18n[lang]}
-          handleClose={() => {
-            setAlreadyShowMessageErrorBank(true);
-            setModalError(false);
-          }}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
     </>
   );
 }

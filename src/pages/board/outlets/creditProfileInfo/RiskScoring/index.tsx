@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { MdQueryStats } from "react-icons/md";
 import { Stack, Text, SkeletonLine } from "@inubekit/inubekit";
 
@@ -8,10 +8,14 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { ICreditRiskScoreResponse } from "@services/creditProfiles/types";
 import { getCreditRiskScoreById } from "@services/creditProfiles/GetCreditRiskScoreById";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { dataRiskScoringEnum } from "./config";
 
@@ -32,11 +36,10 @@ export function RiskScoring(props: RiskScoringProps) {
     eventData,
   } = props;
   const { lang } = useEnum();
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const [data, setData] = useState<ICreditRiskScoreResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
 
   const getMainGap = () => {
     if (isMobile) {
@@ -67,17 +70,7 @@ export function RiskScoring(props: RiskScoringProps) {
       );
       setData(response);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     } finally {
       setLoading(false);
     }
@@ -97,17 +90,7 @@ export function RiskScoring(props: RiskScoringProps) {
         );
         setData(response);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       } finally {
         setLoading(false);
       }
@@ -115,6 +98,8 @@ export function RiskScoring(props: RiskScoringProps) {
 
     fetchData();
   }, [
+    setMessageError,
+    setShowModalError,
     lang,
     businessUnitPublicCode,
     requests.clientIdentificationNumber,
@@ -201,15 +186,6 @@ export function RiskScoring(props: RiskScoringProps) {
               ))}
             </Stack>
           </Stack>
-        )}
-        {showErrorModal && (
-          <ErrorModal
-            handleClose={() => {
-              setShowErrorModal(false);
-            }}
-            isMobile={isMobile}
-            message={messageError}
-          />
         )}
       </>
     </CardInfoContainer>

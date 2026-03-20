@@ -23,8 +23,12 @@ import {
   getActionsMobileIcon,
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
 import { AppContext } from "@context/AppContext";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { errorMessagesEnum } from "../config";
 import { dataInfoApprovalsEnum } from "./config";
@@ -41,16 +45,14 @@ interface IApprovalsProps {
 export const Approvals = (props: IApprovalsProps) => {
   const { isMobile, id, setApprovalsEntries, approvalsEntries } = props;
   const { lang, enums } = useEnum();
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const [errorModal, setErrorModal] = useState(false);
   const [selectedData, setSelectedData] = useState<IEntries | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { addFlag } = useFlag();
   const { businessUnitSigla, eventData } = useContext(AppContext);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -67,19 +69,11 @@ export const Approvals = (props: IApprovalsProps) => {
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     }
   }, [
+    setMessageError,
+    setShowModalError,
     businessUnitPublicCode,
     id,
     businessManagerCode,
@@ -140,17 +134,7 @@ export const Approvals = (props: IApprovalsProps) => {
         setApprovalsEntries(entries);
       }
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     } finally {
       setLoading(false);
     }
@@ -176,7 +160,7 @@ export const Approvals = (props: IApprovalsProps) => {
   };
 
   const handleErrorClickBound = (data: IEntries) => {
-    handleErrorClick(data, setSelectedData, setErrorModal, lang);
+    handleErrorClick(data, setSelectedData, setShowModalError, lang);
   };
 
   const desktopActionsConfig = !isMobile
@@ -219,17 +203,7 @@ export const Approvals = (props: IApprovalsProps) => {
       setShowNotificationModal(false);
     } catch (error) {
       setShowNotificationModal(false);
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     }
   };
 
@@ -285,26 +259,6 @@ export const Approvals = (props: IApprovalsProps) => {
         >
           <Text>{dataInfoApprovalsEnum.notifyModal.i18n[lang]}</Text>
         </BaseModal>
-      )}
-
-      {errorModal && (
-        <ErrorModal
-          isMobile={isMobile}
-          message={messageError}
-          handleClose={() => {
-            setErrorModal(false);
-          }}
-        />
-      )}
-
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
       )}
     </>
   );

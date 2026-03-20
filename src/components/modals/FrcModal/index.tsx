@@ -22,10 +22,14 @@ import { IMaximumCreditLimitAnalysis } from "@services/creditLimit/types";
 import { ScrollableContainer } from "@pages/prospect/components/AddProductModal/styles";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { frcConfigEnum } from "./FrcConfig";
 import { StyledExpanded } from "./styles";
-import { ErrorModal } from "../ErrorModal";
 
 export interface ScoreModalProps {
   handleClose: () => void;
@@ -51,15 +55,14 @@ export const ScoreModal = (props: ScoreModalProps) => {
     clientIdentificationNumber,
     loading,
   } = props;
-
+  const { setShowModalError, setMessageError, showModalError } =
+    useContext(SystemStateContext);
   const isMobile = useMediaQuery("(max-width: 700px)");
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [currentInfoType, setCurrentInfoType] =
     useState<InfoModalType>("intercept");
   const [isExpanded, setIsExpanded] = useState(false);
   const { eventData } = useContext(AppContext);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [
     dataMaximumCreditLimitReciprocity,
     setDataMaximumCreditLimitReciprocity,
@@ -88,22 +91,14 @@ export const ScoreModal = (props: ScoreModalProps) => {
           setDataMaximumCreditLimitReciprocity(data);
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
     fetchData();
   }, [
+    setMessageError,
+    setShowModalError,
     businessUnitPublicCode,
     businessManagerCode,
     clientIdentificationNumber,
@@ -139,7 +134,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
       variantNext="outlined"
       width={isMobile ? "290px" : "500px"}
     >
-      {showErrorModal ? (
+      {showModalError ? (
         <Stack
           direction="column"
           alignItems="center"
@@ -450,15 +445,6 @@ export const ScoreModal = (props: ScoreModalProps) => {
               >
                 <Text>{getInfoText(currentInfoType)}</Text>
               </BaseModal>
-            )}
-            {showErrorModal && (
-              <ErrorModal
-                handleClose={() => {
-                  setShowErrorModal(false);
-                }}
-                isMobile={isMobile}
-                message={messageError}
-              />
             )}
           </Stack>
         </ScrollableContainer>

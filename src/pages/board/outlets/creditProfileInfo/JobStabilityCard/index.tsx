@@ -1,5 +1,5 @@
 import { MdOutlineBusinessCenter } from "react-icons/md";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Stack, Text } from "@inubekit/inubekit";
 
 import { CardInfoContainer } from "@components/cards/CardInfoContainer";
@@ -12,7 +12,11 @@ import { ILaborStabilityByCustomerId } from "@services/creditRequest/query/getLa
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { jobStabilityConfigEnum } from "./config";
 
@@ -33,12 +37,11 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
     eventData,
   } = props;
   const { lang } = useEnum();
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const [laborStabilityByCustomerId, setLaborStabilityByCustomerId] = useState<
     ILaborStabilityByCustomerId[]
   >([]);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const fetchLaborStabilityByCustomerId = async () => {
     if (!requests.clientIdentificationNumber) return;
 
@@ -52,17 +55,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
       );
       setLaborStabilityByCustomerId(data);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      manageShowError(error as IError, setMessageError, setShowModalError);
     }
   };
 
@@ -165,15 +158,6 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
               </Text>
             </Stack>
           </Stack>
-          {showErrorModal && (
-            <ErrorModal
-              handleClose={() => {
-                setShowErrorModal(false);
-              }}
-              isMobile={isMobile}
-              message={messageError}
-            />
-          )}
         </Stack>
       )}
     </CardInfoContainer>

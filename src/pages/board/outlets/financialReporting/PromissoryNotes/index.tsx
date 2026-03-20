@@ -15,8 +15,13 @@ import { AppContext } from "@context/AppContext";
 import { useEnum } from "@hooks/useEnum";
 import { IPayrollDiscountAuthorization } from "@services/creditRequest/query/types";
 import { IPromissoryNotes } from "@services/creditRequest/query/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
+import { ICustomer } from "@services/costumer/types";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import {
   appearanceTag,
@@ -28,7 +33,6 @@ import {
   titlesFinancialReportingEnum,
 } from "./config";
 import { errorObserver, errorMessagesEnum } from "../config";
-import { ICustomer } from "@services/costumer/types";
 
 interface IPromissoryNotesProps {
   id: string;
@@ -42,6 +46,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   const { id, isMobile, publicCode } = props;
   const { addFlag } = useFlag();
   const { lang, enums } = useEnum();
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
 
   const [creditRequets, setCreditRequests] = useState<ICreditRequest | null>(
     null,
@@ -54,8 +59,6 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   const [showRetry, setShowRetry] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { businessUnitSigla, eventData } = useContext(AppContext);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -76,21 +79,13 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
         );
         setCreditRequests(data[0] as ICreditRequest);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
     if (id) fetchCreditRequest();
   }, [
+    setMessageError,
+    setShowModalError,
     businessUnitPublicCode,
     id,
     businessManagerCode,
@@ -223,17 +218,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
 
         setDocumentPreview(documentData);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
@@ -311,15 +296,6 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
                 });
                 setShowModal(false);
               }}
-            />
-          )}
-          {showErrorModal && (
-            <ErrorModal
-              handleClose={() => {
-                setShowErrorModal(false);
-              }}
-              isMobile={isMobile}
-              message={messageError}
             />
           )}
         </Stack>

@@ -31,7 +31,11 @@ import { BaseModal } from "@components/modals/baseModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { IEntries } from "@components/data/TableBoard/types";
 import { getApprovalBoardRepresentablePersons } from "@services/creditRequest/query/approvalBoardRepresentablePersons";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { SystemStateContext } from "@context/systemStateContext";
+import {
+  manageShowError,
+  IError,
+} from "@context/systemStateContextProvider/utils";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -63,11 +67,11 @@ interface ToDoProps {
 function ToDo(props: ToDoProps) {
   const { icon, button, isMobile, id, setIdProspect, approvalsEntries } = props;
   const { lang, enums } = useEnum();
+  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [staff, setStaff] = useState<IStaff[]>([]);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [taskDecisions, setTaskDecisions] = useState<ITaskDecisionOption[]>([]);
   const [selectedDecision, setSelectedDecision] =
     useState<ITaskDecisionOption | null>(null);
@@ -152,17 +156,7 @@ function ToDo(props: ToDoProps) {
             setSelectedRepresentative(persons[0]);
           }
         } catch (error) {
-          const err = error as {
-            message?: string;
-            status?: number;
-            data?: { description?: string; code?: string };
-          };
-          const code = err?.data?.code ? `[${err.data.code}] ` : "";
-          const description =
-            code + (err?.message || "") + (err?.data?.description || "");
-
-          setShowErrorModal(true);
-          setMessageError(description);
+          manageShowError(error as IError, setMessageError, setShowModalError);
           setHasRepresentablePersonsAccess(false);
           setRepresentablePersons([]);
         }
@@ -171,6 +165,8 @@ function ToDo(props: ToDoProps) {
 
     fetchRepresentable();
   }, [
+    setMessageError,
+    setShowModalError,
     requests?.stage,
     requests?.creditRequestId,
     businessUnitPublicCode,
@@ -193,17 +189,7 @@ function ToDo(props: ToDoProps) {
 
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
@@ -211,6 +197,8 @@ function ToDo(props: ToDoProps) {
       fetchCreditRequest();
     }
   }, [
+    setMessageError,
+    setShowModalError,
     businessUnitPublicCode,
     id,
     userAccount,
@@ -234,22 +222,14 @@ function ToDo(props: ToDoProps) {
         setTaskData(data);
         data.prospectId && setIdProspect(data.prospectId);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
     fetchToDoData();
   }, [
+    setMessageError,
+    setShowModalError,
     businessUnitPublicCode,
     requests?.creditRequestId,
     businessManagerCode,
@@ -281,22 +261,14 @@ function ToDo(props: ToDoProps) {
           : [];
         setTaskDecisions(formattedDecisions);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     };
 
     fetchDecisions();
   }, [
+    setMessageError,
+    setShowModalError,
     requests?.creditRequestId,
     taskData,
     businessUnitPublicCode,
@@ -345,17 +317,7 @@ function ToDo(props: ToDoProps) {
         );
         setTaskData(data);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        manageShowError(error as IError, setMessageError, setShowModalError);
       }
     }
   };
@@ -860,15 +822,6 @@ function ToDo(props: ToDoProps) {
             )}
           </Stack>
         </BaseModal>
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
       )}
     </>
   );
