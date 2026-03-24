@@ -203,6 +203,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
+        if (
+          eventData.user.identificationDocumentNumber === "" ||
+          eventData.user.identificationDocumentNumber === undefined
+        )
+          return;
         const data = await getCreditRequestByCode(
           businessUnitPublicCode,
           businessManagerCode,

@@ -466,6 +466,11 @@ export const FinancialReporting = () => {
 
     try {
       setGeneralLoading(true);
+      if (
+        eventData.user.identificationDocumentNumber === "" ||
+        eventData.user.identificationDocumentNumber === undefined
+      )
+        return;
       const result = await getCreditRequestByCode(
         businessUnitPublicCode,
         businessManagerCode,

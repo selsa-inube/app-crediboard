@@ -179,6 +179,11 @@ function ToDo(props: ToDoProps) {
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
+        if (
+          eventData.user.identificationDocumentNumber === "" ||
+          eventData.user.identificationDocumentNumber === undefined
+        )
+          return;
         const data = await getCreditRequestByCode(
           businessUnitPublicCode,
           businessManagerCode,

@@ -80,6 +80,11 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
 
   const fetchCreditRequest = useCallback(async () => {
     try {
+      if (
+        eventData.user.identificationDocumentNumber === "" ||
+        eventData.user.identificationDocumentNumber === undefined
+      )
+        return;
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
         businessManagerCode,

@@ -59,6 +59,11 @@ export const Postingvouchers = (props: IApprovalsProps) => {
 
   const fetchCreditRequest = useCallback(async () => {
     try {
+      if (
+        eventData.user.identificationDocumentNumber === "" ||
+        eventData.user.identificationDocumentNumber === undefined
+      )
+        return;
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
         businessManagerCode,
