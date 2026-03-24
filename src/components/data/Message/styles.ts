@@ -24,7 +24,7 @@ export const MessageContent = styled.div<MessageProps>`
   justify-content: ${({ type }) =>
     type === "system" ? "center" : "flex-start"};
   flex-direction: row;
-  font-family: Roboto;
+
   color: ${({ theme }) =>
     theme?.palette?.neutral?.N900 || inube.palette.neutral.N900};
   width: 260px;
@@ -97,7 +97,6 @@ export const IconWrapper = styled.div<MessageProps>`
 
 export const Timestamp = styled.div<MessageProps>`
   font-size: 10px;
-  font-family: Roboto;
   color: #000000;
   align-self: ${({ type }) =>
     ({

@@ -10,7 +10,7 @@ export const getSearchUseCaseForStaff = async (
   businessUnitCode: string,
   businessManagerCode: string,
   userAccount: string,
-  token: string
+  token: string,
 ): Promise<string[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -54,7 +54,7 @@ export const getSearchUseCaseForStaff = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta."
+          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta.",
         );
       }
     }
