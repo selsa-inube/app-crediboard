@@ -9,7 +9,7 @@ export const StyledContainer = styled.div`
   margin: -8px;
   padding: 0;
   max-width: 1440px;
-  width: 100%;
+  width: 1440px;
   align-items: center;
   height: 100vh;
   box-sizing: border-box;

@@ -73,7 +73,6 @@ export const StyledMainContent = styled.div`
 `;
 
 export const StyledDiv = styled.div`
-  font-family: "Roboto", sans-serif;
   font-size: 14px;
   line-height: 20px;
   color: #59667a;

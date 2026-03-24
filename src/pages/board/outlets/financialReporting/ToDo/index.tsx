@@ -459,7 +459,7 @@ function ToDo(props: ToDoProps) {
     );
 
     return matchedTask ? `${matchedTask.Value}` : taskData.taskToBeDone;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskData?.taskToBeDone]);
 
   const handleInfo = () => {
@@ -553,7 +553,6 @@ function ToDo(props: ToDoProps) {
         isUserAuthorizedForApproval())
     );
   };
-
   return (
     <>
       <Fieldset
