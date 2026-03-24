@@ -22,11 +22,7 @@ import { IMaximumCreditLimitAnalysis } from "@services/creditLimit/types";
 import { ScrollableContainer } from "@pages/prospect/components/AddProductModal/styles";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { frcConfigEnum } from "./FrcConfig";
 import { StyledExpanded } from "./styles";
@@ -55,14 +51,13 @@ export const ScoreModal = (props: ScoreModalProps) => {
     clientIdentificationNumber,
     loading,
   } = props;
-  const { setShowModalError, setMessageError, showModalError } =
-    useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
+  const { eventData, showErrorModal } = useContext(AppContext);
   const isMobile = useMediaQuery("(max-width: 700px)");
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [currentInfoType, setCurrentInfoType] =
     useState<InfoModalType>("intercept");
   const [isExpanded, setIsExpanded] = useState(false);
-  const { eventData } = useContext(AppContext);
   const [
     dataMaximumCreditLimitReciprocity,
     setDataMaximumCreditLimitReciprocity,
@@ -91,14 +86,13 @@ export const ScoreModal = (props: ScoreModalProps) => {
           setDataMaximumCreditLimitReciprocity(data);
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
     fetchData();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     businessUnitPublicCode,
     businessManagerCode,
     clientIdentificationNumber,
@@ -134,7 +128,7 @@ export const ScoreModal = (props: ScoreModalProps) => {
       variantNext="outlined"
       width={isMobile ? "290px" : "500px"}
     >
-      {showModalError ? (
+      {showErrorModal ? (
         <Stack
           direction="column"
           alignItems="center"

@@ -18,7 +18,6 @@ import { BoardRoutes } from "@routes/board";
 import { useIAuth } from "@inube/iauth-react";
 import { AuthProvider } from "@pages/AuthProvider";
 import { EnumProvider } from "@context/enumProvider";
-import { SystemStateProvider } from "@context/systemStateContextProvider";
 import { ThemeProviderWrapper } from "@context/theme";
 import { useFonts } from "@hooks/useFonts";
 import { tokensWithReference } from "@tokens";
@@ -93,14 +92,12 @@ function App() {
     <ThemeProviderWrapper>
       <AuthProvider>
         <AppContextProvider>
-          <SystemStateProvider>
-            <EnumProvider>
-              <FlagProvider>
-                <GlobalStyles />
-                <RouterProvider router={router} />
-              </FlagProvider>
-            </EnumProvider>
-          </SystemStateProvider>
+          <EnumProvider>
+            <FlagProvider>
+              <GlobalStyles />
+              <RouterProvider router={router} />
+            </FlagProvider>
+          </EnumProvider>
         </AppContextProvider>
       </AuthProvider>
     </ThemeProviderWrapper>

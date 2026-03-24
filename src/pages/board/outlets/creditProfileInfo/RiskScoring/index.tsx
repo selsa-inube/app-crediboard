@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { MdQueryStats } from "react-icons/md";
 import { Stack, Text, SkeletonLine } from "@inubekit/inubekit";
 
@@ -11,11 +11,7 @@ import { getCreditRiskScoreById } from "@services/creditProfiles/GetCreditRiskSc
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { dataRiskScoringEnum } from "./config";
 
@@ -36,7 +32,7 @@ export function RiskScoring(props: RiskScoringProps) {
     eventData,
   } = props;
   const { lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [data, setData] = useState<ICreditRiskScoreResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -70,7 +66,7 @@ export function RiskScoring(props: RiskScoringProps) {
       );
       setData(response);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setLoading(false);
     }
@@ -90,7 +86,7 @@ export function RiskScoring(props: RiskScoringProps) {
         );
         setData(response);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         setLoading(false);
       }
@@ -98,8 +94,7 @@ export function RiskScoring(props: RiskScoringProps) {
 
     fetchData();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     lang,
     businessUnitPublicCode,
     requests.clientIdentificationNumber,

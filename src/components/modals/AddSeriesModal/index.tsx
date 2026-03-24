@@ -30,11 +30,7 @@ import { calculateSeriesForExtraordinaryInstallment } from "@services/creditLimi
 import { ICalculatedSeries } from "@services/creditRequest/query/ProspectByCode/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/config";
 import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { dataAddSeriesModal, defaultFrequency } from "./config";
 import { saveExtraordinaryInstallment } from "../ExtraordinaryPaymentModal/utils";
@@ -105,7 +101,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     creditRequestCode,
   } = props;
   const { businessUnitSigla, eventData } = useContext(AppContext);
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const { user } = useIAuth();
 
   const isMobile = useMediaQuery("(max-width: 700px)");
@@ -233,7 +229,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             );
           }
         } catch (error) {
-          manageShowError(error as IError, setMessageError, setShowModalError);
+          showErrorModalHandler(error as IError);
           toggleAddSeriesModal();
         } finally {
           setIsLoading(false);
@@ -358,7 +354,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       handleClose();
     } catch (error) {
       setIsLoading(false);
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -504,7 +500,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
       handleClose();
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoading(false);
     }

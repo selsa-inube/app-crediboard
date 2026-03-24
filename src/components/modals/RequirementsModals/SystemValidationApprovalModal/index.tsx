@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Stack, Text, Textarea, Toggle } from "@inubekit/inubekit";
@@ -10,11 +10,7 @@ import { IPackagesOfRequirementsById } from "@services/requirementsPackages/type
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { IApprovalSystem } from "../types";
 import { approvalsConfigEnum, MinCharactersObservation } from "./config";
@@ -50,7 +46,7 @@ export function SystemValidationApprovalModal(
     eventData,
   } = props;
   const { lang: lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const validationSchema = Yup.object({
     toggleChecked: Yup.boolean(),
@@ -109,7 +105,7 @@ export function SystemValidationApprovalModal(
           onCloseModal();
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     },
   });

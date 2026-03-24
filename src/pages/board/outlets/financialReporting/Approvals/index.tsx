@@ -24,11 +24,7 @@ import {
 } from "@config/pages/board/outlet/financialReporting/configApprovals";
 import { AppContext } from "@context/AppContext";
 import { useEnum } from "@hooks/useEnum";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { errorMessagesEnum } from "../config";
 import { dataInfoApprovalsEnum } from "./config";
@@ -45,14 +41,15 @@ interface IApprovalsProps {
 export const Approvals = (props: IApprovalsProps) => {
   const { isMobile, id, setApprovalsEntries, approvalsEntries } = props;
   const { lang, enums } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [selectedData, setSelectedData] = useState<IEntries | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { addFlag } = useFlag();
-  const { businessUnitSigla, eventData } = useContext(AppContext);
+  const { businessUnitSigla, eventData, setShowErrorModal } =
+    useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -74,11 +71,10 @@ export const Approvals = (props: IApprovalsProps) => {
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     businessUnitPublicCode,
     id,
     businessManagerCode,
@@ -139,7 +135,7 @@ export const Approvals = (props: IApprovalsProps) => {
         setApprovalsEntries(entries);
       }
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setLoading(false);
     }
@@ -165,7 +161,7 @@ export const Approvals = (props: IApprovalsProps) => {
   };
 
   const handleErrorClickBound = (data: IEntries) => {
-    handleErrorClick(data, setSelectedData, setShowModalError, lang);
+    handleErrorClick(data, setSelectedData, setShowErrorModal, lang);
   };
 
   const desktopActionsConfig = !isMobile
@@ -208,7 +204,7 @@ export const Approvals = (props: IApprovalsProps) => {
       setShowNotificationModal(false);
     } catch (error) {
       setShowNotificationModal(false);
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

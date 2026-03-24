@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { currencyFormat } from "@utils/formatData/currency";
@@ -15,11 +15,7 @@ import {
 import { ICrediboardData } from "@context/AppContext/types";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { useEnum } from "@hooks/useEnum";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { headers, ROWS_PER_PAGE } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
@@ -64,7 +60,7 @@ export const TableFinancialObligations = (
     eventData,
   } = props;
   const { lang, enums } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [dataProspect, setDataProspect] = useState<IProspect[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -270,13 +266,12 @@ export const TableFinancialObligations = (
       }
     } catch (error) {
       setIsProcessingObligation(false);
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsProcessingObligation(false);
     }
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     newObligation,
     isProcessingObligation,
     addFinancialObligation,
@@ -493,12 +488,11 @@ export const TableFinancialObligations = (
 
         setIsModalOpenEdit(false);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     },
     [
-      setMessageError,
-      setShowModalError,
+      showErrorModalHandler,
       editFinancialObligation,
       businessUnitPublicCode,
       businessManagerCode,

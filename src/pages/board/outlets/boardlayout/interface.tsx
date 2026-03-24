@@ -34,11 +34,7 @@ import {
   ICreditRequest,
   ICreditRequestPinned,
 } from "@services/creditRequest/query/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   StyledInputsContainer,
@@ -129,7 +125,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
     redirectToSimulation,
   } = props;
 
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const { lang } = useEnum();
 
   const [hasBeenFocused, setHasBeenFocused] = useState(false);
@@ -281,7 +277,7 @@ function BoardLayoutUI(props: BoardLayoutProps) {
         );
         if (result) setTotalsData(normalizedTotalData(result));
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 

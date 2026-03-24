@@ -1,15 +1,11 @@
-import { useEffect, useMemo, useState, useContext } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as Yup from "yup";
 
 import { useMediaQuery } from "@inubekit/inubekit";
 
 import { getLinesOfCreditByMoneyDestination } from "@services/lineOfCredit/getLinesOfCreditByMoneyDestination";
 import { GetSearchAllPaymentChannels } from "@services/paymentChannels/searchAllPaymentChannelsByIdentificationNumber/SearchAllPaymentChannelsByIdentificationNumber";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   extractBorrowerIncomeData,
@@ -42,7 +38,7 @@ function AddProductModal(props: IAddProductModalProps) {
     isLoading,
     eventData,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [creditLineTerms, setCreditLineTerms] = useState<TCreditLineTerms>({});
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(
@@ -167,7 +163,7 @@ function AddProductModal(props: IAddProductModalProps) {
           },
         }));
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
         setLoading(false);
       }
     };

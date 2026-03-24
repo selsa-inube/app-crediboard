@@ -31,11 +31,7 @@ import { BaseModal } from "@components/modals/baseModal";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { IEntries } from "@components/data/TableBoard/types";
 import { getApprovalBoardRepresentablePersons } from "@services/creditRequest/query/approvalBoardRepresentablePersons";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { StaffModal } from "./StaffModal";
 import {
@@ -67,7 +63,7 @@ interface ToDoProps {
 function ToDo(props: ToDoProps) {
   const { icon, button, isMobile, id, setIdProspect, approvalsEntries } = props;
   const { lang, enums } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const [showStaffModal, setShowStaffModal] = useState(false);
@@ -156,7 +152,7 @@ function ToDo(props: ToDoProps) {
             setSelectedRepresentative(persons[0]);
           }
         } catch (error) {
-          manageShowError(error as IError, setMessageError, setShowModalError);
+          showErrorModalHandler(error as IError);
           setHasRepresentablePersonsAccess(false);
           setRepresentablePersons([]);
         }
@@ -165,8 +161,7 @@ function ToDo(props: ToDoProps) {
 
     fetchRepresentable();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     requests?.stage,
     requests?.creditRequestId,
     businessUnitPublicCode,
@@ -194,7 +189,7 @@ function ToDo(props: ToDoProps) {
 
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
@@ -202,8 +197,7 @@ function ToDo(props: ToDoProps) {
       fetchCreditRequest();
     }
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     businessUnitPublicCode,
     id,
     userAccount,
@@ -227,14 +221,13 @@ function ToDo(props: ToDoProps) {
         setTaskData(data);
         data.prospectId && setIdProspect(data.prospectId);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
     fetchToDoData();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     businessUnitPublicCode,
     requests?.creditRequestId,
     businessManagerCode,
@@ -266,14 +259,13 @@ function ToDo(props: ToDoProps) {
           : [];
         setTaskDecisions(formattedDecisions);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
     fetchDecisions();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     requests?.creditRequestId,
     taskData,
     businessUnitPublicCode,
@@ -322,7 +314,7 @@ function ToDo(props: ToDoProps) {
         );
         setTaskData(data);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     }
   };

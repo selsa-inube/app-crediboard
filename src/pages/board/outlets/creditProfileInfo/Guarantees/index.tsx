@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { PiSealCheckBold } from "react-icons/pi";
 import { Stack, Text } from "@inubekit/inubekit";
 
@@ -10,11 +10,7 @@ import { getGuaranteesSummary } from "@services/creditRequest/query/guaranteesSu
 import { IGuaranteesSummary } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   dataGuaranteesEnum,
@@ -39,7 +35,7 @@ export function Guarantees(props: GuaranteesProps) {
     isMobile,
   } = props;
   const { lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [guaranteesSummary, setGuaranteesSummary] =
     useState<IGuaranteesSummary | null>(null);
@@ -55,7 +51,7 @@ export function Guarantees(props: GuaranteesProps) {
       );
       setGuaranteesSummary(data);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

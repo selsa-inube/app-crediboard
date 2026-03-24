@@ -20,11 +20,7 @@ import { IMaximumCreditLimitByLineOfCredit } from "@services/creditLimit/types";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { AppContext } from "@context/AppContext";
 import { EnumType } from "@hooks/useEnum";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { creditLimitTexts, renderSkeletons } from "./creditLimitConfig";
 import { StyledList } from "./styles";
@@ -64,9 +60,8 @@ export const CreditLimit = (props: ICreditLimitProps) => {
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
-  const { eventData } = useContext(AppContext);
-  const { setShowModalError, setMessageError, showModalError } =
-    useContext(SystemStateContext);
+  const { eventData, showErrorModal } = useContext(AppContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [internalLoading, setInternalLoading] = useState(true);
   const [dataMaximumCreditLimit, setDataMaximumCreditLimit] = useState<
@@ -92,7 +87,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
           setDataMaximumCreditLimit(data);
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         setInternalLoading(false);
       }
@@ -157,7 +152,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
       <Stack margin="10px 0 20px 0">
         <Divider />
       </Stack>
-      {showModalError ? (
+      {showErrorModal ? (
         <Stack direction="column" alignItems="center">
           <Icon icon={<MdErrorOutline />} size="32px" appearance="danger" />
           <Text size="large" weight="bold" appearance="danger">

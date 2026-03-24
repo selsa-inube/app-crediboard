@@ -14,11 +14,7 @@ import { getPropertyValue } from "@utils/mappingData/mappings";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { Mortgage } from "./Mortgage";
 import { Pledge } from "./Pledge";
@@ -45,7 +41,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
     requestId,
   } = props;
 
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [currentTab, setCurrentTab] = useState(dataTabsEnum.borrower.id);
   const [dataProperty, setDataProperty] = useState<IGuarantees[]>();
@@ -70,7 +66,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -85,7 +81,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoadingMortgage(false);
     }
@@ -102,7 +98,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoadingPledge(false);
     }

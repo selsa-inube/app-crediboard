@@ -21,11 +21,7 @@ import { dataReportEnum } from "@pages/prospect/components/TableObligationsFinan
 import { RestoreIncomeInformationByBorrowerId } from "@services/creditRequest/command/restoreIncome";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { IIncomeSources } from "../CreditProspect/types";
 import {
@@ -65,7 +61,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
     borrowerOptions,
     setIsShowingEdit,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const { eventData } = useContext(AppContext);
@@ -161,7 +157,7 @@ export function SourceIncome(props: ISourceIncomeProps) {
         }
       }
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsOpenModal(false);
     }

@@ -29,11 +29,7 @@ import { CreditLineGeneralTerms } from "@services/lineOfCredit/types";
 import { EnumType } from "@hooks/useEnum";
 import { IBusinessUnitRuleResponse } from "@services/creditRequest/query/ProspectByCode/types";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -88,7 +84,7 @@ function EditProductModal(props: EditProductModalProps) {
   } = props;
 
   const { eventData } = useContext(AppContext);
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [showIncrementField, setShowIncrementField] = useState<boolean>(false);
   const [incrementType, setIncrementType] = useState<
     "value" | "percentage" | null
@@ -149,7 +145,7 @@ function EditProductModal(props: EditProductModalProps) {
           setAllowedRateCodes(codes);
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         setIsLoadingRateTypes(false);
       }
@@ -394,7 +390,7 @@ function EditProductModal(props: EditProductModalProps) {
 
       onConfirm(submitValues);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       formikHelpers.setSubmitting(false);
     }

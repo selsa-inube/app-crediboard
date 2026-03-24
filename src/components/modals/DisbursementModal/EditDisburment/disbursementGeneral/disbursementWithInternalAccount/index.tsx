@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import {
   Stack,
@@ -29,11 +29,7 @@ import {
 import { CardGray } from "@components/cards/CardGray";
 import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import {
@@ -86,7 +82,7 @@ export function DisbursementWithInternalAccount(
     handleToggleChange,
     isInvalidAmount,
   } = useDisbursementForm({ ...props, skipValidation: true });
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
   const [accountOptions, setAccountOptions] = useState<
@@ -180,7 +176,7 @@ export function DisbursementWithInternalAccount(
         });
         setAccountOptions(Array.from(uniqueMap.values()));
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
         setAccountOptions([]);
       } finally {
         setIsLoadingAccounts(false);

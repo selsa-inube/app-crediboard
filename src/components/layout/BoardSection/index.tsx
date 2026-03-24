@@ -27,11 +27,7 @@ import {
 import { SectionBackground, SectionOrientation } from "./types";
 import { configOptionEnum, infoModalEnum } from "./config";
 import { getCanUnpin } from "@utils/configRules/permissions";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 interface BoardSectionProps {
   sectionTitle: string;
@@ -79,7 +75,7 @@ function BoardSection(props: BoardSectionProps) {
   const disabledCollapse = sectionInformation.length === 0;
   const { "(max-width: 1024px)": isTablet, "(max-width: 595px)": isMobile } =
     useMediaQueries(["(max-width: 1024px)", "(max-width: 595px)"]);
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [collapse, setCollapse] = useState(false);
   const [currentOrientation, setCurrentOrientation] =
@@ -170,7 +166,7 @@ function BoardSection(props: BoardSectionProps) {
         eventData.user.identificationDocumentNumber || "",
       );
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

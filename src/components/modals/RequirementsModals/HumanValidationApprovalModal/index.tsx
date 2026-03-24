@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -11,11 +11,7 @@ import { approveRequirementById } from "@services/requirementsPackages/approveRe
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { IApprovalHuman } from "../types";
 import { approvalsConfigEnum, optionsAnswerEnum } from "./config";
@@ -49,7 +45,7 @@ export function HumanValidationApprovalModal(
     eventData,
   } = props;
   const { lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const optionsAnswer = useMemo(
     () =>
@@ -129,7 +125,7 @@ export function HumanValidationApprovalModal(
           onCloseModal();
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     },
   });

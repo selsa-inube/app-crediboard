@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useState,
-  useMemo,
-  useRef,
-  useCallback,
-  useContext,
-} from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useFormik } from "formik";
 import { MdOutlineFileUpload } from "react-icons/md";
 import * as Yup from "yup";
@@ -32,11 +25,7 @@ import { approveRequirementById } from "@services/requirementsPackages/approveRe
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { IUploadedFileReturn } from "./config";
 import { DocumentItem, IApprovalDocumentaries } from "../types";
@@ -87,7 +76,7 @@ export function DocumentValidationApprovalModal(
     onCloseModal,
   } = props;
   const { lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -147,7 +136,7 @@ export function DocumentValidationApprovalModal(
       setDocuments(response);
       return response;
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
       return [];
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -234,7 +223,7 @@ export function DocumentValidationApprovalModal(
           onCloseModal();
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         setIsLoading(false);
       }
@@ -265,7 +254,7 @@ export function DocumentValidationApprovalModal(
         );
         setDocuments(response);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         setIsLoading(false);
       }
@@ -309,7 +298,7 @@ export function DocumentValidationApprovalModal(
       setOpen(true);
       setSeenDocuments((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

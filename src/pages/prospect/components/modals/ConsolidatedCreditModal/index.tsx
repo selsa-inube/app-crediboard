@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useContext } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Text,
   Stack,
@@ -22,11 +22,7 @@ import { ICrediboardData } from "@context/AppContext/types";
 import { InvestmentCreditCard } from "@components/cards/InvestmentCreditCard";
 import { CardConsolidatedCredit } from "@components/cards/CardConsolidatedCredit";
 import { updateConsolidatedCredits } from "@services/creditRequest/updateConsolidatedCredits";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { ScrollableContainer } from "./styles";
 import { feedback, ModalConfig } from "./config";
@@ -69,7 +65,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
     handleInfo,
   } = props;
   const isMobile = useMediaQuery("(max-width:880px)");
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [editOpen, setEditOpen] = useState(true);
   const [obligationPayment, setObligationPayment] = useState<IPayment[] | null>(
@@ -99,7 +95,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       );
       setObligationPayment(data ?? null);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -341,7 +337,7 @@ export function ConsolidatedCredits(props: ConsolidatedCreditsProps) {
       });
       setLoading(false);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
       setLoading(false);
     }
   };

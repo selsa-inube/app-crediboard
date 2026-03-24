@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 
 import { currencyFormat } from "@utils/formatData/currency";
 import {
@@ -8,11 +8,7 @@ import {
 } from "@services/creditLimit/types";
 import { getBorrowerPaymentCapacityById } from "@services/creditLimit/getBorrowePaymentCapacity";
 import { getPropertyValue } from "@utils/mappingData/mappings";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { TermSelectionUI } from "./interface";
 import {
@@ -40,7 +36,7 @@ export function TermSelection(props: ITermSelection) {
 
   const [paymentCapacityData, setPaymentCapacityData] =
     useState<IPaymentCapacityResponse | null>(null);
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   useEffect(() => {
     if (!quotaCapEnabled && !maximumTermEnabled) {
@@ -282,7 +278,7 @@ export function TermSelection(props: ITermSelection) {
         );
         setPaymentCapacityData(paymentCapacity ?? null);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 

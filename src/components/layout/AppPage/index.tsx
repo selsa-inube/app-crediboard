@@ -24,11 +24,7 @@ import { getUnreadNoveltiesByUser } from "@services/creditRequest/query/getUnrea
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { LoadingAppUI } from "@pages/login/outlets/LoadingApp/interface";
 import { useEnum } from "@hooks/useEnum";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 import { ErrorModal } from "@components/modals/ErrorModal";
 
 import {
@@ -60,10 +56,15 @@ const renderLogo = (imgUrl: string, onTheFooter: boolean = false) => {
 };
 
 function AppPage() {
-  const { eventData, businessUnitsToTheStaff, setBusinessUnitSigla } =
-    useContext(AppContext);
-  const { setShowModalError, setMessageError, messageError, showModalError } =
-    useContext(SystemStateContext);
+  const {
+    eventData,
+    businessUnitsToTheStaff,
+    setBusinessUnitSigla,
+    showErrorModal,
+    messageError,
+    setShowErrorModal,
+  } = useContext(AppContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [collapse, setCollapse] = useState(false);
@@ -184,7 +185,7 @@ function AppPage() {
         );
         setNoveltiesData(data);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         setIsLoadingBusinessUnit(false);
       }
@@ -192,8 +193,7 @@ function AppPage() {
 
     fetchNoveltiesData();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     eventData.user.identificationDocumentNumber,
     businessUnitPublicCode,
     businessManagerCode,
@@ -348,10 +348,10 @@ function AppPage() {
           </StyledFooter>
         </StyledContainer>
       </Grid>
-      {showModalError && (
+      {showErrorModal && (
         <ErrorModal
           handleClose={() => {
-            setShowModalError(false);
+            setShowErrorModal(false);
           }}
           isMobile={isMobile}
           message={messageError}

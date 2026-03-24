@@ -17,11 +17,7 @@ import { IPayrollDiscountAuthorization } from "@services/creditRequest/query/typ
 import { IPromissoryNotes } from "@services/creditRequest/query/types";
 import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 import { ICustomer } from "@services/costumer/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   appearanceTag,
@@ -46,7 +42,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
   const { id, isMobile, publicCode } = props;
   const { addFlag } = useFlag();
   const { lang, enums } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [creditRequets, setCreditRequests] = useState<ICreditRequest | null>(
     null,
@@ -84,13 +80,12 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
         );
         setCreditRequests(data[0] as ICreditRequest);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
     if (id) fetchCreditRequest();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     businessUnitPublicCode,
     id,
     businessManagerCode,
@@ -223,7 +218,7 @@ export const PromissoryNotes = (props: IPromissoryNotesProps) => {
 
         setDocumentPreview(documentData);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 

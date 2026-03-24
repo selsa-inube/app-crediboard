@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import {
   Stack,
@@ -27,11 +27,7 @@ import { ICustomerData } from "@pages/prospect/components/AddProductModal/types"
 import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { GeneralInformationForm } from "../../GeneralInformationForm";
 import {
@@ -78,7 +74,7 @@ export function DisbursementWithExternalAccount(
     handleToggleChange,
     isInvalidAmount,
   } = useDisbursementForm(props);
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [banks, setBanks] = useState<IOptionsSelect[]>([]);
   const [alreadyShowMessageErrorBank, setAlreadyShowMessageErrorBank] =
@@ -96,7 +92,7 @@ export function DisbursementWithExternalAccount(
         setBanks(formattedBanks);
       } catch (error) {
         setAlreadyShowMessageErrorBank(true);
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
     fetchBanks();

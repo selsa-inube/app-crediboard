@@ -1,4 +1,4 @@
-import { useState, isValidElement, useEffect, useContext } from "react";
+import { useState, isValidElement, useEffect } from "react";
 import { MdOutlineHowToReg, MdOutlineRemoveRedEye } from "react-icons/md";
 import { Stack, Icon } from "@inubekit/inubekit";
 
@@ -26,11 +26,7 @@ import { ICrediboardData } from "@context/AppContext/types";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 import { getSearchAllRequirementsByBusinessUnit } from "@services/requirementsPackages/searchAllRequirementsByBusinessUnit";
 import { AddRequirementMock } from "@mocks/addRequirement";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   infoItems,
@@ -80,7 +76,7 @@ export const Requirements = (props: IRequirementsProps) => {
     enums,
   } = props;
 
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [showSeeDetailsModal, setShowSeeDetailsModal] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
@@ -282,7 +278,7 @@ export const Requirements = (props: IRequirementsProps) => {
         );
         setDataRequirements(processedRequirements);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
@@ -299,7 +295,7 @@ export const Requirements = (props: IRequirementsProps) => {
         );
         setRequirement(data);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
@@ -400,7 +396,7 @@ export const Requirements = (props: IRequirementsProps) => {
         setSentData(creditRequests);
       })
       .catch((error) => {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       })
       .finally(() => {
         if (closeAdd) closeAdd();
@@ -547,7 +543,7 @@ export const Requirements = (props: IRequirementsProps) => {
       );
       setDataRequirements(processedRequirements);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

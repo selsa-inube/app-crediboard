@@ -4,11 +4,7 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { IBusinessUnitRules } from "@services/businessUnitRules/types";
 import { AppContext } from "@context/AppContext";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { AmountCaptureUI } from "./interface";
 import {
@@ -31,7 +27,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
 
   const { eventData } = useContext(AppContext);
   const { enums } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [loanAmountError, setLoanAmountError] = useState<string>("");
   const [displayValue, setDisplayValue] = useState<string>("");
   const isMobile: boolean = useMediaQuery("(max-width: 555px)");
@@ -88,7 +84,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
         setLoanAmountError(amountCaptureTexts.errors.validationFailed);
       }
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

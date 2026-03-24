@@ -18,11 +18,7 @@ import { IToDo } from "@services/creditRequest/query/types";
 import { ICommercialManagerAndAnalyst } from "@services/staff/types";
 import { ICreditRequests } from "@services/creditRequest/command/types";
 import { useEnum } from "@hooks/useEnum";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { changeUsersByCreditRequest } from "./utils";
 import { txtFlagsEnum, staffModalTextsEnum } from "../config";
@@ -61,7 +57,7 @@ export function StaffModal(props: StaffModalProps) {
     buttonText,
     handleRetry,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [analystList, setAnalystList] = useState<
     ICommercialManagerAndAnalyst[]
   >([]);
@@ -260,7 +256,7 @@ export function StaffModal(props: StaffModalProps) {
       });
       traceObserver.notify({});
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       if (onCloseModal) onCloseModal();
       handleToggleModal();

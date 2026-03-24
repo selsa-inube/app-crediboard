@@ -6,11 +6,7 @@ import { ICustomerData } from "@pages/prospect/components/AddProductModal/types"
 import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 import { AppContext } from "@context/AppContext";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 interface IUseDisbursementFormProps {
   formik: FormikValues;
@@ -41,12 +37,11 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
     onFormValid,
     skipValidation = false,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
-
+  const { showErrorModalHandler } = useErrorHandler();
+  const { eventData, setShowErrorModal } = useContext(AppContext);
   const [isAutoCompleted, setIsAutoCompleted] = useState(false);
   const [currentIdentification, setCurrentIdentification] =
     useState(identificationNumber);
-  const { eventData } = useContext(AppContext);
   useEffect(() => {
     if (!skipValidation) {
       onFormValid(formik.isValid);
@@ -286,7 +281,7 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
           setCurrentIdentification(identificationNumber);
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
         setIsAutoCompleted(false);
       }
     };
@@ -312,6 +307,6 @@ export const useDisbursementForm = (props: IUseDisbursementFormProps) => {
     handleCheckboxChange,
     handleToggleChange,
     isInvalidAmount,
-    setMessageError,
+    setShowErrorModal,
   };
 };

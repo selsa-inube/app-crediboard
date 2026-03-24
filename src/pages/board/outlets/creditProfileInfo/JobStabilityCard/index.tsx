@@ -1,5 +1,5 @@
 import { MdOutlineBusinessCenter } from "react-icons/md";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { Stack, Text } from "@inubekit/inubekit";
 
 import { CardInfoContainer } from "@components/cards/CardInfoContainer";
@@ -12,11 +12,7 @@ import { ILaborStabilityByCustomerId } from "@services/creditRequest/query/getLa
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { jobStabilityConfigEnum } from "./config";
 
@@ -37,7 +33,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
     eventData,
   } = props;
   const { lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [laborStabilityByCustomerId, setLaborStabilityByCustomerId] = useState<
     ILaborStabilityByCustomerId[]
@@ -55,7 +51,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
       );
       setLaborStabilityByCustomerId(data);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

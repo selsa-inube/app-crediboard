@@ -1,13 +1,9 @@
-import { useState, useCallback, useContext } from "react";
+import { useState, useCallback } from "react";
 import { useFlag } from "@inubekit/inubekit";
 
 import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { updateProspect } from "@services/prospect/updateProspect";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { ScoreModalProspectUI } from "./interface";
 import { IScore } from "./types";
@@ -37,7 +33,7 @@ export const ScoreModalProspect = (props: IScoreModalProspectProps) => {
     prospectData,
     onProspectRefreshData,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const { addFlag } = useFlag();
 
   const [newFirstScore, setNewFirstScore] = useState<IScore | null>(null);
@@ -159,7 +155,7 @@ export const ScoreModalProspect = (props: IScoreModalProspectProps) => {
         duration: 5000,
       });
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoadingSubmit(false);
     }

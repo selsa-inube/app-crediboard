@@ -16,11 +16,7 @@ import { useEnum } from "@hooks/useEnum";
 import { SectionOrientation } from "@components/layout/BoardSection/types";
 import { getStaffPortalsByBusinessManager } from "@services/staff/SearchAllStaffPortalsByBusinessManager";
 import { environment } from "@config/environment";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { dataInformationModalEnum, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
@@ -43,7 +39,7 @@ export interface IFilterFormValues {
 
 function BoardLayout() {
   const { lang, enums } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const selectCheckOptions = selectCheckOptionsEnum.map((option) => ({
     id: option.id,
     label: option.i18n[lang],
@@ -178,7 +174,7 @@ function BoardLayout() {
         setErrorLoadingPins(true);
       }
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
       setHasServerError(true);
     }
   };
@@ -196,7 +192,7 @@ function BoardLayout() {
         setPositionsAuthorized(response.positionsAuthorized);
       }
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
 
       setPositionsAuthorized([]);
     }
@@ -434,7 +430,7 @@ function BoardLayout() {
         return;
       }
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

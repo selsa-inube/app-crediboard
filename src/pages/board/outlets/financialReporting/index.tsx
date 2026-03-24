@@ -50,11 +50,7 @@ import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectB
 import { DecisionModalRedirect } from "@components/modals/DecisionModalRedirect";
 import { removeDocument } from "@services/creditRequest/delete/removeDocument";
 import { DeleteModal } from "@components/modals/DeleteModal";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -98,7 +94,7 @@ const removeErrorByIdServices = (
 };
 
 export const FinancialReporting = () => {
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [data, setData] = useState({} as ICreditRequest);
   const [showAttachments, setShowAttachments] = useState(false);
   const [attachDocuments, setAttachDocuments] = useState(false);
@@ -217,7 +213,7 @@ export const FinancialReporting = () => {
       setDocument(documentsUser);
       setAttachDocuments(true);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
       setShowNoDocumentsModal(true);
     } finally {
       setIsLoadingDocuments(false);
@@ -249,7 +245,7 @@ export const FinancialReporting = () => {
       );
       setDataProspect(Array.isArray(result) ? result[0] : result);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
       setErrorGetProspects(true);
     } finally {
       setGeneralLoading(false);
@@ -450,7 +446,7 @@ export const FinancialReporting = () => {
         setErrorsService(mappedErrors);
       }
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -581,7 +577,7 @@ export const FinancialReporting = () => {
         return updated;
       });
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoading(false);
     }

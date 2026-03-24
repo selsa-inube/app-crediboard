@@ -59,11 +59,7 @@ import { IProspectSummaryById } from "@services/creditRequest/query/ProspectByCo
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { useEnum } from "@hooks/useEnum";
 import { documentClientNumber } from "@utils/documentClientNumber";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { titlesModalEnum } from "../ToDo/config";
 import { errorMessagesEnum } from "../config";
@@ -129,7 +125,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     fetchProspectData,
   } = props;
 
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [showMenu, setShowMenu] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
@@ -217,7 +213,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
         );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
@@ -273,7 +269,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
         setDisbursementData(organizedData);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         if (prospectData !== undefined) {
           setLoading(false);

@@ -34,11 +34,7 @@ import { getSearchProspectSummaryById } from "@services/creditRequest/query/Pros
 import { getAllDeductibleExpensesById } from "@services/creditRequest/query/deductibleExpenses";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   paymentCycleMap,
@@ -98,7 +94,7 @@ export const CardCommercialManagement = (
     setGeneralLoading,
     generalLoading,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const { businessUnitSigla, eventData } = useContext(AppContext);
 
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
@@ -171,7 +167,7 @@ export const CardCommercialManagement = (
       try {
         fetchProspectData && (await fetchProspectData());
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
         setGeneralLoading(false);
       }
 
@@ -180,11 +176,7 @@ export const CardCommercialManagement = (
       setShowMessageSuccessModal(true);
     } catch (error) {
       setShowDeleteModal(false);
-      manageShowError(
-        tittleOptions.errorDelete as IError,
-        setMessageError,
-        setShowModalError,
-      );
+      showErrorModalHandler(error as IError);
     }
   };
   const handleConfirm = async (values: FormikValues) => {
@@ -270,7 +262,7 @@ export const CardCommercialManagement = (
       setIsProcessingServices(false);
     } catch (error) {
       setIsProcessingServices(false);
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -296,7 +288,7 @@ export const CardCommercialManagement = (
         }
       } catch (error) {
         setGeneralLoading(false);
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
     if (prospectData) {
@@ -319,7 +311,7 @@ export const CardCommercialManagement = (
         );
         setDeductibleExpenses(data);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         setGeneralLoading(false);
       }

@@ -9,11 +9,7 @@ import { useEnum } from "@hooks/useEnum";
 import { getClientPortfolioObligationsById } from "@services/creditRequest/updateModeOfDisbursement";
 import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 import { AppContext } from "@context/AppContext";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { disbursemenTabsEnum } from "./disbursementGeneral/config";
 import { DisbursementGeneral } from "./disbursementGeneral";
@@ -61,7 +57,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     prospectSummaryData,
     creditRequestCode,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [modesOfDisbursement, setModesOfDisbursement] = useState<string[]>([]);
   const [initialValues, setInitialValues] = useState<IDisbursementGeneral>(
@@ -157,7 +153,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
           setModesOfDisbursement([]);
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
 
         setModesOfDisbursement([]);
       } finally {
@@ -385,7 +381,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
         }
       });
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

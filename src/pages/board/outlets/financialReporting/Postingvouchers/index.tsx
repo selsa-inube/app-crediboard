@@ -12,11 +12,7 @@ import { UnfoundData } from "@components/layout/UnfoundData";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
 import { useEnum } from "@hooks/useEnum";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   actionsPostingvouchers,
@@ -35,7 +31,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   const { id, isMobile } = props;
   const { lang } = useEnum();
   const { user } = useIAuth();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [error, setError] = useState(false);
   const [positionsAccountingVouchers, setPositionsAccountingVouchers] =
@@ -73,11 +69,10 @@ export const Postingvouchers = (props: IApprovalsProps) => {
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     businessUnitPublicCode,
     id,
     businessManagerCode,
@@ -102,7 +97,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         );
         setPositionsAccountingVouchers(vouchers);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       } finally {
         setLoading(false);
       }
@@ -110,8 +105,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
 
     fetchAccountingVouchers();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     user,
     requests,
     businessUnitPublicCode,

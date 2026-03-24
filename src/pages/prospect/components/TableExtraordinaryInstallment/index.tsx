@@ -13,11 +13,7 @@ import {
   IExtraordinaryCycle,
 } from "@services/creditLimit/types";
 import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { removeExtraordinaryInstallment } from "../../../board/outlets/financialReporting/CommercialManagement/utils";
 import {
@@ -99,7 +95,7 @@ export const TableExtraordinaryInstallment = (
     handleDelete,
     creditRequestCode,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const { eventData } = useContext(AppContext);
   const headers = headersTableExtraordinaryInstallment;
   const isMobile = useMediaQuery("(max-width:880px)");
@@ -197,7 +193,7 @@ export const TableExtraordinaryInstallment = (
           setPaymentCycles(allCycles);
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
@@ -205,8 +201,7 @@ export const TableExtraordinaryInstallment = (
       fetchPaymentCycles();
     }
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     businessUnitPublicCode,
     prospectData,
     service,
@@ -324,7 +319,7 @@ export const TableExtraordinaryInstallment = (
         handleClose?.();
       } catch (error: unknown) {
         setIsLoadingDelete(false);
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     }
   };

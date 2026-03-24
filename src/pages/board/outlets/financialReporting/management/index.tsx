@@ -22,11 +22,7 @@ import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
 import { useEnum } from "@hooks/useEnum";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { SkeletonContainer, SkeletonLine, StyledChatContent } from "./styles";
 import {
@@ -46,7 +42,7 @@ interface IManagementProps {
 
 export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   const { lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [creditRequest, setCreditRequest] = useState<ICreditRequest | null>(
     null,
@@ -94,7 +90,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       );
       setCreditRequest(data[0] as ICreditRequest);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -125,7 +121,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       );
       setTraces(Array.isArray(data) ? data.flat() : []);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setLoading(false);
     }
@@ -187,7 +183,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         }
       });
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

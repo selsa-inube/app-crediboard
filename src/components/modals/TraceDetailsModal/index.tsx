@@ -7,11 +7,7 @@ import { Fieldset } from "@components/data/Fieldset";
 import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { DocumentViewer } from "../DocumentViewer";
 import { dataTraceEnum } from "./config";
@@ -37,7 +33,7 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
     user,
   } = props;
   const { lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const { eventData } = useContext(AppContext);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -57,7 +53,7 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
       setFileName(name);
       setOpen(true);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

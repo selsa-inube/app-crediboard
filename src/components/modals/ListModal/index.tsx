@@ -27,11 +27,7 @@ import { optionFlagsEnum } from "@pages/board/outlets/financialReporting/config"
 import { useEnum } from "@hooks/useEnum";
 import { getMaximumNotificationDocumentSize } from "@services/lineOfCredit/getMaximumNotificationDocumentSize";
 import { DeleteModal } from "@components/modals/DeleteModal";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { IUploadedFileReturn } from "../RequirementsModals/DocumentValidationApprovalModal/config";
 import { DocumentViewer } from "../DocumentViewer";
@@ -119,7 +115,7 @@ export const ListModal = (props: IListModalProps) => {
 
   const { addFlag } = useFlag();
   const { lang } = useEnum();
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const isMobile = useMediaQuery("(max-width: 700px)");
   const dragCounter = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -157,17 +153,12 @@ export const ListModal = (props: IListModalProps) => {
           );
         }
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
       }
     };
 
     fetchMaxFileSize();
-  }, [
-    setMessageError,
-    setShowModalError,
-    businessUnitPublicCode,
-    eventData.token,
-  ]);
+  }, [businessUnitPublicCode, eventData.token, showErrorModalHandler]);
 
   interface IListdataProps {
     data: { id: string; name: string }[] | null | undefined;
@@ -261,11 +252,8 @@ export const ListModal = (props: IListModalProps) => {
     });
 
     if (hasError) {
-      setShowModalError(true);
-      manageShowError(
+      showErrorModalHandler(
         `${listModalDataEnum.exceedSize.i18n[lang]} ${maxFileSize / 1024 / 1024}MB` as IError,
-        setMessageError,
-        setShowModalError,
       );
     }
 
@@ -310,10 +298,8 @@ export const ListModal = (props: IListModalProps) => {
     });
 
     if (hasSizeError) {
-      manageShowError(
+      showErrorModalHandler(
         `${listModalDataEnum.exceedSize.i18n[lang]} ${maxFileSize / 1024 / 1024}MB` as IError,
-        setMessageError,
-        setShowModalError,
       );
     }
 
@@ -407,7 +393,7 @@ export const ListModal = (props: IListModalProps) => {
       setFileName(name);
       setOpen(true);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 

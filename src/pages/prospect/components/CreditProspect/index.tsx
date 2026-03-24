@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useContext } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   MdOutlineAdd,
   MdOutlineInfo,
@@ -51,11 +51,7 @@ import { documentClientNumber } from "@utils/documentClientNumber";
 import { addCreditProduct } from "@services/creditRequest/addCreditProduct";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { IAllEnumsResponse } from "@services/enumerators/types";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { AddProductModal } from "../AddProductModal";
 import { configModal, dataCreditProspectEnum } from "./config";
@@ -146,7 +142,7 @@ export function CreditProspect(props: ICreditProspectProps) {
     showAddProduct = true,
     customerData,
   } = props;
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [showShareModal, setShowShareModal] = useState(false);
   const [prospectSummaryData, setProspectSummaryData] =
     useState<IProspectSummaryById>({} as IProspectSummaryById);
@@ -230,7 +226,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         );
       }
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setGeneralLoading(false);
     }
@@ -290,7 +286,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         duration: 5000,
       });
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setGeneralLoading(false);
     }
@@ -338,7 +334,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       handleCloseModal();
       setShowMessageSuccessModal(true);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     } finally {
       setGeneralLoading(false);
     }

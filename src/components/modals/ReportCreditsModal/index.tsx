@@ -27,11 +27,7 @@ import { CardGray } from "@components/cards/CardGray";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
-import { SystemStateContext } from "@context/systemStateContext";
-import {
-  manageShowError,
-  IError,
-} from "@context/systemStateContextProvider/utils";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { FinancialObligationModal } from "../financialObligationModal";
 import {
@@ -81,7 +77,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     availableEditCreditRequest,
   } = props;
 
-  const { setShowModalError, setMessageError } = useContext(SystemStateContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [loading, setLoading] = useState(true);
   const { eventData } = useContext(AppContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -130,15 +126,14 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
         setLoading(false);
       } catch (error) {
-        manageShowError(error as IError, setMessageError, setShowModalError);
+        showErrorModalHandler(error as IError);
         setLoading(false);
       }
     };
 
     loadCompleteData();
   }, [
-    setMessageError,
-    setShowModalError,
+    showErrorModalHandler,
     businessUnitPublicCode,
     businessManagerCode,
     creditRequestCode,
@@ -283,7 +278,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
       setLocalProspectData([refreshedData]);
     } catch (error) {
-      manageShowError(error as IError, setMessageError, setShowModalError);
+      showErrorModalHandler(error as IError);
     }
   };
 
