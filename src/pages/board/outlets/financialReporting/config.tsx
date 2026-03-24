@@ -571,6 +571,12 @@ export const financialReportingLabelsEnum = {
   },
 };
 
-export const ClientAdvisoryCode = "ASESORAMIENTO_CLIENTE";
+export const enumClientAdvisoryCode = {
+  code: "ASESORAMIENTO_CLIENTE",
+  name: "DmEstPrs",
+};
 
-export const AccountManagerCode = "AccountManager";
+export const enumAccountManagerCode = {
+  code: "AccountManager",
+  name: "Role",
+};

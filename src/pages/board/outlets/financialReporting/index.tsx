@@ -49,6 +49,7 @@ import { IEntries } from "@components/data/TableBoard/types";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { DecisionModalRedirect } from "@components/modals/DecisionModalRedirect";
+import { filterEnums } from "@context/enumContext/utils";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -59,8 +60,8 @@ import {
   labelsAndValuesShareEnum,
   errorMessagesEnum,
   financialReportingLabelsEnum,
-  ClientAdvisoryCode,
-  AccountManagerCode,
+  enumClientAdvisoryCode,
+  enumAccountManagerCode,
 } from "./config";
 import {
   StyledMarginPrint,
@@ -428,12 +429,16 @@ export const FinancialReporting = () => {
     const assignAccountManagerIfNeeded = async () => {
       if (!data?.creditRequestId || !businessUnitPublicCode) return;
 
-      const enumClientAdvisory = enums?.DmEstPrs?.find(
-        (enumItem) => enumItem.code === ClientAdvisoryCode,
+      const enumClientAdvisory = filterEnums(
+        enums as IAllEnumsResponse,
+        enumClientAdvisoryCode.code,
+        enumClientAdvisoryCode.name,
       );
 
-      const enumAccountManager = enums?.Role?.find(
-        (enumItem) => enumItem.code === AccountManagerCode,
+      const enumAccountManager = filterEnums(
+        enums as IAllEnumsResponse,
+        enumAccountManagerCode.code,
+        enumAccountManagerCode.name,
       );
 
       if (!enumClientAdvisory || !enumAccountManager) return;
