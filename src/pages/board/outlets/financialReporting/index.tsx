@@ -34,6 +34,7 @@ import {
   textFlagsRejectEnum,
   textFlagsUsersEnum,
 } from "@config/pages/staffModal/addFlag";
+import { getToDoByCreditRequestId } from "@services/creditRequest/query/getToDoByCreditRequestId";
 
 import {
   IProspect,
@@ -60,6 +61,8 @@ import {
   labelsAndValuesShareEnum,
   errorMessagesEnum,
   financialReportingLabelsEnum,
+  ClientAdvisoryCode,
+  AccountManagerCode,
 } from "./config";
 import {
   StyledMarginPrint,
@@ -425,23 +428,67 @@ export const FinancialReporting = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!data?.creditRequestId || !businessUnitPublicCode || !user?.id)
-        return;
+    const assignAccountManagerIfNeeded = async () => {
+      if (!data?.creditRequestId || !businessUnitPublicCode) return;
+
+      const enumClientAdvisory = enums?.DmEstPrs?.find(
+        (enumItem) => enumItem.code === ClientAdvisoryCode,
+      );
+
+      const enumAccountManager = enums?.Role?.find(
+        (enumItem) => enumItem.code === AccountManagerCode,
+      );
+
+      if (!enumClientAdvisory || !enumAccountManager) return;
+
+      const isCustomerAdviceStage =
+        data.creditRequestStateAbbreviatedName === enumClientAdvisory.code;
+
+      const hasRequiredRole = eventData?.enumRole?.some(
+        (role) => role.code === enumAccountManager.code,
+      );
+
       try {
-        await patchAssignAccountManager(
-          data?.creditRequestId ?? "",
+        const todoData = await getToDoByCreditRequestId(
           businessUnitPublicCode,
           businessManagerCode,
-          eventData.user.identificationDocumentNumber || "",
+          data.creditRequestId,
           eventData.token || "",
         );
+
+        const hasAccountManager = todoData?.usersByCreditRequestResponse?.some(
+          (user) => user.role === enumAccountManager.code,
+        );
+
+        if (isCustomerAdviceStage && !hasAccountManager && hasRequiredRole) {
+          await patchAssignAccountManager(
+            data.creditRequestId,
+            businessUnitPublicCode,
+            businessManagerCode,
+            eventData.user.identificationDocumentNumber || "",
+            eventData.token || "",
+          );
+
+          setUpdateManagement((prev) => prev + 1);
+        }
+      } catch (error) {
+        const err = error as {
+          message?: string;
+          status: number;
+          data?: { description?: string; code?: string };
+        };
+        const code = err?.data?.code ? `[${err.data.code}] ` : "";
+        const description =
+          code + err?.message + (err?.data?.description || "");
+
+        setShowErrorModal(true);
+        setMessageError(description);
       } finally {
         handleToggleModal();
       }
     };
 
-    fetchData();
+    assignAccountManagerIfNeeded();
     //eslint-disable-next-line
   }, [data?.creditRequestId, businessUnitPublicCode, user?.id]);
 

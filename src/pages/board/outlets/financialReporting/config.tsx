@@ -586,3 +586,7 @@ export const financialReportingLabelsEnum = {
     },
   },
 };
+
+export const ClientAdvisoryCode = "ASESORAMIENTO_CLIENTE";
+
+export const AccountManagerCode = "AccountManager";
