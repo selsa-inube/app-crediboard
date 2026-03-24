@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useCallback } from "react";
 
 import { AppContext } from "@context/AppContext";
 
@@ -14,20 +14,23 @@ export interface IError {
 export const useErrorHandler = () => {
   const { setShowErrorModal, setMessageError } = useContext(AppContext);
 
-  const showErrorModalHandler = (error: IError) => {
-    const err = error as {
-      message?: string;
-      status?: number;
-      data?: { description?: string; code?: string };
-    };
+  const showErrorModalHandler = useCallback(
+    (error: IError) => {
+      const err = error as {
+        message?: string;
+        status?: number;
+        data?: { description?: string; code?: string };
+      };
 
-    const code = err?.data?.code ? `[${err.data.code}]` : "";
-    const description =
-      code + (err?.message || "") + (err?.data?.description || "");
+      const code = err?.data?.code ? `[${err.data.code}]` : "";
+      const description =
+        code + (err?.message || "") + (err?.data?.description || "");
 
-    setMessageError(description);
-    setShowErrorModal(true);
-  };
+      setMessageError(description);
+      setShowErrorModal(true);
+    },
+    [setMessageError, setShowErrorModal],
+  );
 
   return { showErrorModalHandler };
 };
