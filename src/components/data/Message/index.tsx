@@ -1,3 +1,5 @@
+import { Stack } from "@inubekit/inubekit";
+
 import { formatPrimaryDate } from "@utils/formatData/date";
 
 import {
@@ -6,7 +8,7 @@ import {
   Timestamp,
   IconWrapper,
 } from "./styles";
-import { Stack } from "@inubekit/inubekit";
+
 export interface MessageProps {
   type: "sent" | "received" | "system";
   timestamp: number | string;
@@ -34,17 +36,19 @@ export const Message: React.FC<MessageProps> = ({
             {icon}
           </IconWrapper>
         )}
-        <Stack
-          width="250px"
-          justifyContent={type === "system" ? "center" : "flex-start"}
-        >
-          {message}
+        <Stack width="100%">
+          <Stack
+            width="250px"
+            justifyContent={type === "system" ? "center" : "flex-start"}
+          >
+            {message}
+          </Stack>
+          {type !== "sent" && (
+            <IconWrapper type={type} onClick={onIconClick} role="button">
+              {icon}
+            </IconWrapper>
+          )}
         </Stack>
-        {type !== "sent" && (
-          <IconWrapper type={type} onClick={onIconClick} role="button">
-            {icon}
-          </IconWrapper>
-        )}
       </MessageContent>
       <Timestamp type={type}>{formatDate(timestamp)}</Timestamp>
     </MessageWrapper>

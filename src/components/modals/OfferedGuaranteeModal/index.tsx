@@ -7,7 +7,7 @@ import { CardBorrower } from "@components/cards/CardBorrower";
 import { Fieldset } from "@components/data/Fieldset";
 import { getGuaranteesById } from "@services/creditRequest/query/guarantees";
 import { IGuarantees } from "@services/creditRequest/query/types";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { getTotalFinancialObligations } from "@utils/formatData/currency";
 import { currencyFormat } from "@utils/formatData/currency";
 import { getPropertyValue } from "@utils/mappingData/mappings";

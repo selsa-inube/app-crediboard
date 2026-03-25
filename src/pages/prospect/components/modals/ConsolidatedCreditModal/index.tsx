@@ -12,16 +12,16 @@ import {
 
 import { currencyFormat } from "@utils/formatData/currency";
 import { BaseModal } from "@components/modals/baseModal";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { getCreditPayments } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment";
 import { IPayment } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
 import { paymentOptionValues } from "@services/portfolioObligation/SearchAllPortfolioObligationPayment/types";
-import { IConsolidatedCredit } from "@services/prospect/types";
+import { IConsolidatedCredit } from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
 import { InvestmentCreditCard } from "@components/cards/InvestmentCreditCard";
 import { CardConsolidatedCredit } from "@components/cards/CardConsolidatedCredit";
-import { updateConsolidatedCredits } from "@services/prospect/updateConsolidatedCredits";
+import { updateConsolidatedCredits } from "@services/creditRequest/updateConsolidatedCredits";
 
 import { ScrollableContainer } from "./styles";
 import { feedback, ModalConfig } from "./config";

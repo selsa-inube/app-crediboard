@@ -25,7 +25,7 @@ import { IDisbursementGeneral } from "@components/modals/DisbursementModal/types
 import { SearchAllBank } from "@services/bank/SearchAllBank";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
 

@@ -18,7 +18,7 @@ import {
   handleChangeWithCurrency,
   validateCurrencyField,
 } from "@utils/formatData/currency";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 import { ErrorModal } from "@components/modals/ErrorModal";
 

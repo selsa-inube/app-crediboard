@@ -4,7 +4,7 @@ import { Button, Icon, IOption, Select, Stack, Text } from "@inubekit/inubekit";
 
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
-import { IProspect } from "@services/prospect/types";
+import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { IncomeBorrower } from "@pages/prospect/components/modals/DebtorDetailsModal/incomeDebtor";
 import { CardGray } from "@components/cards/CardGray";

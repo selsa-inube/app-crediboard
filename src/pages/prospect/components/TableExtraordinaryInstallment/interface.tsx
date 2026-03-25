@@ -11,7 +11,7 @@ import {
   Tr,
 } from "@inubekit/inubekit";
 
-import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { BaseModal } from "@components/modals/baseModal";
@@ -21,7 +21,7 @@ import { formatPrimaryDate } from "@utils/formatData/date";
 import {
   IExtraordinaryInstallments,
   IProspect,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 
 import { TableExtraordinaryInstallmentProps } from ".";

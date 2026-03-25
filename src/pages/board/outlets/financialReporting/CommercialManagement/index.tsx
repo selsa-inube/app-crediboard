@@ -36,7 +36,10 @@ import { DisbursementFlowManager } from "@components/modals/DisbursementModal/Ed
 import { Fieldset } from "@components/data/Fieldset";
 import { formatPrimaryDate } from "@utils/formatData/date";
 import { currencyFormat } from "@utils/formatData/currency";
-import { IProspect, ICreditProduct } from "@services/prospect/types";
+import {
+  IProspect,
+  ICreditProduct,
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { getCreditRequestByCode } from "@services/creditRequest/query/getCreditRequestByCode";
 import { getModeOfDisbursement } from "@services/creditRequest/query/getModeOfDisbursement";
 import { CreditProspect } from "@pages/prospect/components/CreditProspect";
@@ -45,14 +48,14 @@ import { dataTabsDisbursement } from "@components/modals/DisbursementModal/types
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { BaseModal } from "@components/modals/baseModal";
 import userNotFound from "@assets/images/ItemNotFound.png";
-import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 import { ReportCreditsModal } from "@components/modals/ReportCreditsModal";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { CreditLimitModal } from "@pages/prospect/components/modals/CreditLimitModal";
 import { IncomeModal } from "@pages/prospect/components/modals/IncomeModal";
 import { IncomeBorrowersModal } from "@components/modals/incomeBorrowersModal";
 import { getPropertyValue } from "@utils/mappingData/mappings";
-import { IProspectSummaryById } from "@services/prospect/types";
+import { IProspectSummaryById } from "@services/creditRequest/query/ProspectByCode/types";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { useEnum } from "@hooks/useEnum";
 import { documentClientNumber } from "@utils/documentClientNumber";
@@ -1000,6 +1003,9 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 lang={lang}
                 customerData={documentClientNumber(dataProspect[0])}
+                showAddButton={availableEditCreditRequest}
+                creditRequestCode={creditRequestCode}
+                availableEditCreditRequest={availableEditCreditRequest}
               />
             )}
             {openModal === "IncomeModalEdit" && (

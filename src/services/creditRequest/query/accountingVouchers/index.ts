@@ -11,7 +11,7 @@ export const getAccountingVouchers = async (
   businessUnitPublicCode: string,
   businessManagerCode: string,
   creditRequestId: string,
-  token: string
+  token: string,
 ): Promise<IAccountingVouchers[]> => {
   const maxRetries = maxRetriesServices;
   const fetchTimeout = fetchTimeoutServices;
@@ -33,7 +33,7 @@ export const getAccountingVouchers = async (
 
       const res = await fetch(
         `${environment.VITE_ICOREBANKING_VI_CREDIBOARD_QUERY_PROCESS_SERVICE}/credit-requests/obligations/${creditRequestId}`,
-        options
+        options,
       );
 
       clearTimeout(timeoutId);
@@ -60,7 +60,7 @@ export const getAccountingVouchers = async (
     } catch (error) {
       if (attempt === maxRetries) {
         throw new Error(
-          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta."
+          "Todos los intentos fallaron. No se pudieron obtener los procesos de consulta.",
         );
       }
     }

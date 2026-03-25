@@ -4,7 +4,7 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import {
   IExtraordinaryInstallments,
   IProspect,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { EnumType } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
 import { searchExtraInstallmentPaymentCyclesByCustomerCode } from "@services/creditLimit/extraInstallmentPaymentCyles/searchExtraInstallmentPaymentCyclesByCustomerCode";
@@ -12,9 +12,9 @@ import {
   IExtraordinaryAgreement,
   IExtraordinaryCycle,
 } from "@services/creditLimit/types";
-import { IExtraordinaryInstallmentsAddSeries } from "@services/prospect/types";
+import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 
-import { removeExtraordinaryInstallment } from "./utils";
+import { removeExtraordinaryInstallment } from "../../../board/outlets/financialReporting/CommercialManagement/utils";
 import {
   headersTableExtraordinaryInstallment,
   rowsVisbleMobile,
@@ -36,6 +36,7 @@ export interface TableExtraordinaryInstallmentProps {
   >;
   handleClose?: () => void;
   handleDelete?: (id: string) => void;
+  creditRequestCode?: string;
 }
 
 const usePagination = (data: TableExtraordinaryInstallmentProps[] = []) => {
@@ -91,6 +92,7 @@ export const TableExtraordinaryInstallment = (
     setSentData,
     handleClose,
     handleDelete,
+    creditRequestCode,
   } = props;
 
   const { eventData } = useContext(AppContext);
@@ -131,8 +133,7 @@ export const TableExtraordinaryInstallment = (
   const paginationProps = usePagination(extraordinaryInstallments);
 
   const itemIdentifiersForUpdate: IExtraordinaryInstallments = {
-    creditProductCode: (selectedDebtor?.creditProductCode as string) || "",
-    prospectId: prospectData?.prospectId || "",
+    creditRequestCode: creditRequestCode || "",
     extraordinaryInstallments: selectedDebtor?.id
       ? [
           {
@@ -211,11 +212,11 @@ export const TableExtraordinaryInstallment = (
       fetchPaymentCycles();
     }
   }, [
-    prospectData,
     businessUnitPublicCode,
-    eventData.token,
+    prospectData,
     service,
-    eventData.user.identificationDocumentNumber,
+    eventData.token,
+    eventData?.user.identificationDocumentNumber,
   ]);
 
   useEffect(() => {
@@ -314,7 +315,6 @@ export const TableExtraordinaryInstallment = (
     } else if (service) {
       try {
         setIsLoadingDelete(true);
-
         await removeExtraordinaryInstallment(
           businessUnitPublicCode ?? "",
           itemIdentifiersForUpdate,

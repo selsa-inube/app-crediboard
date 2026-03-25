@@ -550,6 +550,22 @@ export const financialReportingLabelsEnum = {
       description: "Title for the annulment modal",
       i18n: { en: "Annul", es: "Anular" },
     },
+    content: {
+      code: "DataReport_content",
+      description: "Confirmation text for deleting an obligation",
+      i18n: {
+        en: "Do you really want to reject this obligation?",
+        es: "¿Realmente desea Rechazar esta obligación?",
+      },
+    },
+    contentRequest: {
+      code: "FinancialReporting_cancel_content",
+      description: "Confirmation text for annulment",
+      i18n: {
+        en: "Do you really want to annul this request?",
+        es: "¿Realmente desea anular esta solicitud?",
+      },
+    },
     button: {
       code: "FinancialReporting_cancel_button",
       description: "Confirm button for annulment",

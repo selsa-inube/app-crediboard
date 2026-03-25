@@ -3,7 +3,7 @@ import {
   fetchTimeoutServices,
   maxRetriesServices,
 } from "@config/environment";
-import { IAllDeductibleExpensesById } from "../../../prospect/types";
+import { IAllDeductibleExpensesById } from "../ProspectByCode/types";
 
 const getAllDeductibleExpensesById = async (
   businessUnitPublicCode: string,

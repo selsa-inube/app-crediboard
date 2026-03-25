@@ -39,7 +39,7 @@ import { getToDoByCreditRequestId } from "@services/creditRequest/query/getToDoB
 import {
   IProspect,
   IExtraordinaryInstallmentsAddSeries,
-} from "@services/prospect/types";
+} from "@services/creditRequest/query/ProspectByCode/types";
 import { ErrorModal } from "@components/modals/ErrorModal";
 import { ShareModal } from "@components/modals/ShareModal";
 import { BaseModal } from "@components/modals/baseModal";
@@ -50,6 +50,8 @@ import { IAllEnumsResponse } from "@services/enumerators/types";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { DecisionModalRedirect } from "@components/modals/DecisionModalRedirect";
 import { filterEnums } from "@context/enumContext/utils";
+import { removeDocument } from "@services/creditRequest/delete/removeDocument";
+import { DeleteModal } from "@components/modals/DeleteModal";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -80,7 +82,6 @@ import { Postingvouchers } from "./Postingvouchers";
 import { IDocumentData, IErrorService, IErrorsUnread } from "./types";
 import { deleteCreditRequest } from "./utils";
 import { ComercialManagement } from "./CommercialManagement";
-import { removeDocument } from "@services/creditRequest/delete/removeDocument";
 
 interface IListdataProps {
   data: { id: string; name: string }[];
@@ -104,6 +105,8 @@ export const FinancialReporting = () => {
   const [sentData, setSentData] =
     useState<IExtraordinaryInstallmentsAddSeries | null>(null);
   const [requestValue, setRequestValue] = useState<IPaymentChannel[]>();
+  const [showConfirmRejectModal, setShowConfirmRejectModal] = useState(false);
+  const [showConfirmCancelModal, setShowConfirmCancelModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showGuarantee, setShowGuarantee] = useState(false);
@@ -884,11 +887,25 @@ export const FinancialReporting = () => {
               }
               onCloseModal={() => setShowRejectModal(false)}
               handleNext={() => {
-                handleSubmit();
                 setShowRejectModal(false);
-                navigation("/");
+                setShowConfirmRejectModal(true);
               }}
               onChange={(event) => setRemovalJustification(event.target.value)}
+            />
+          )}
+
+          {showConfirmRejectModal && (
+            <DeleteModal
+              handleClose={() => setShowConfirmRejectModal(false)}
+              handleDelete={() => {
+                handleSubmit();
+                setShowConfirmRejectModal(false);
+                navigation("/");
+              }}
+              TextDelete={
+                financialReportingLabelsEnum.cancelModal.content.i18n[lang]
+              }
+              lang={lang}
             />
           )}
           {showGuarantee && (
@@ -915,10 +932,26 @@ export const FinancialReporting = () => {
               }
               onCloseModal={() => setShowCancelModal(false)}
               handleNext={() => {
-                handleDeleteCreditRequest();
                 setShowCancelModal(false);
+                setShowConfirmCancelModal(true);
               }}
               onChange={(e) => setRemovalJustification(e.target.value)}
+            />
+          )}
+
+          {showConfirmCancelModal && (
+            <DeleteModal
+              handleClose={() => setShowConfirmCancelModal(false)}
+              handleDelete={() => {
+                handleDeleteCreditRequest();
+                setShowConfirmCancelModal(false);
+              }}
+              TextDelete={
+                financialReportingLabelsEnum.cancelModal.contentRequest.i18n[
+                  lang
+                ]
+              }
+              lang={lang}
             />
           )}
           {showMenu && isMobile && (
