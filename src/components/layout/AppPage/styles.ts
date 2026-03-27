@@ -17,7 +17,7 @@ export const StyledAppPage = styled.div`
   box-sizing: border-box;
   border-bottom: 1px solid
     ${({ theme }) =>
-      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
 `;
 
 export const StyledCardsContainer = styled.div`
@@ -30,7 +30,7 @@ export const StyledCardsContainer = styled.div`
   padding-bottom: 36px;
   border-bottom: 1px solid
     ${({ theme }) =>
-      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
@@ -72,7 +72,7 @@ export const StyledHeaderContainer = styled.div`
   > header {
     outline: 1px solid
       ${({ theme }) =>
-        theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+        theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
     background-color: ${({ theme }) =>
       theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
@@ -109,7 +109,7 @@ export const StyledMenuContainer = styled.div`
 
   hr {
     color: ${({ theme }) =>
-      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
   }
 `;
 

@@ -22,7 +22,7 @@ const StyledContainerFilters = styled.div<IStyledContainerFilters>`
   padding: 8px;
   border: 1px solid
     ${({ theme }) =>
-      theme?.palette?.neutral?.N200 ?? inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 ?? inube.palette.neutral.N100};
   position: relative;
   & > div > div > div > figure {
     cursor: pointer;

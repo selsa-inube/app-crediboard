@@ -15,11 +15,11 @@ export const StyledContainer = styled.div`
   box-sizing: border-box;
   border-bottom: 1px solid
     ${({ theme }) =>
-      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
   box-shadow:
     0px 1px 3px 1px
       ${({ theme }) =>
-        theme?.palette?.neutral?.N200 || inube.palette.neutral.N200},
+        theme?.palette?.neutral?.N100 || inube.palette.neutral.N100},
     0px 1px 2px 0px
       ${({ theme }) =>
         theme?.palette?.neutral?.N20 || inube.palette.neutral.N20};

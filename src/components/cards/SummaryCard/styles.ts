@@ -26,7 +26,7 @@ export const StyledSummaryCard = styled.div`
   border-radius: 8px;
   outline: 1px solid
     ${({ theme }) =>
-      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
@@ -38,7 +38,7 @@ export const StyledDivider = styled.hr`
   border: none;
   border-top: 2px solid;
   border-top-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+    theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
 `;
 
 export const StyledPinWrapper = styled.div<IStyledContainer>`

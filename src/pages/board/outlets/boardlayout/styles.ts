@@ -125,7 +125,7 @@ export const StyledRequestsContainer = styled.div<IStyledInputsContainer>`
       padding: 12px ;
       gap:  16px ;
       border-radius: 8px;
-      border: 1px solid ${theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      border: 1px solid ${theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
     `}
 `;
 
@@ -141,7 +141,7 @@ export const StyledRequestsContainerVoiceSearch = styled.div<IStyledInputsContai
       padding: 12px ;
       gap:  16px ;
       border-radius: 8px;
-      border: 1px solid ${theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      border: 1px solid ${theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
     `};
 `;
 

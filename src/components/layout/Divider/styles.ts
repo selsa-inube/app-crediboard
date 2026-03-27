@@ -12,5 +12,5 @@ export const StyledDivider = styled.hr<IStyledDivider>`
   border: none;
   border-top: 0.5px ${({ $dashed }) => ($dashed ? "dashed" : "solid")};
   border-top-color: ${({ theme }) =>
-    theme.palette?.neutral?.N200 || inube.palette.neutral.N200};
+    theme.palette?.neutral?.N100 || inube.palette.neutral.N100};
 `;
