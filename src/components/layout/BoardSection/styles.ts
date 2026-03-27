@@ -27,7 +27,7 @@ export const StyledBoardSection = styled.div<IStyledBoardSection>`
   border-bottom: ${({ $orientation }) =>
     $orientation !== "horizontal" ? "1px solid" : "none"};
   border-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
   background-color: ${({ theme, $sectionBackground }) =>
     $sectionBackground === "gray"
       ? theme?.palette?.neutral?.N30 || inube.palette.neutral.N30

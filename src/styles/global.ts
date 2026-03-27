@@ -12,6 +12,10 @@ const GlobalStyles = createGlobalStyle`
     max-width: 1440px;
     margin: 0 auto;
     width: 100%;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    border-color: ${({ theme }) =>
+      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
   }
   
   body {

@@ -35,7 +35,8 @@ export const StyledActions = styled.div`
   right: 20px;
   border-radius: 4px;
   box-shadow: 8px 2px 6px
-    ${({ theme }) => theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    ${({ theme }) =>
+      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
 `;
 
 export const StyledContainerClose = styled.div`

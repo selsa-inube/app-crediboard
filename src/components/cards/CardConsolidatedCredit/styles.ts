@@ -43,7 +43,8 @@ export const StyledCardContainer = styled.div`
   background: ${({ theme }) =>
     theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
   border: 1px solid
-    ${({ theme }) => theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    ${({ theme }) =>
+      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
 `;
 
 interface IStyledInputContainer {

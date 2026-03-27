@@ -5,7 +5,8 @@ export const StyledContainer = styled.div`
   background-color: ${({ theme }) =>
     theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
   box-shadow: 0px 2px 6px
-    ${({ theme }) => theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    ${({ theme }) =>
+      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
   border-radius: 8px;
   border: solid 1px
     ${({ theme }) => theme?.palette?.neutral?.N70 || inube.palette.neutral.N70};

@@ -90,7 +90,7 @@ export const StyledVerticalDivider = styled.hr`
   height: 28px;
   border: none;
   background-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
 `;
 
 export const StyledPrint = styled.div`
@@ -101,7 +101,7 @@ export const StyledPrint = styled.div`
 
 export const StylePrintCardSummary = styled.div`
   @media print {
-    zoom: .9;
+    zoom: 0.9;
   }
 
   page-break-inside: avoid;
@@ -114,11 +114,10 @@ export const StyledContainerDiverProspect = styled.div`
 export const StyledPrintCardProspect = styled.div`
   @media print {
     zoom: 1;
-    height: auto;       
-    max-height: none;   
-    overflow: visible;  
-    display: block; 
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    display: block;
     margin: 0px;
   }
-
-`
+`;

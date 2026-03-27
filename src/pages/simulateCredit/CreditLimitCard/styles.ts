@@ -9,10 +9,10 @@ export const StyledContainer = styled.div`
     theme?.palette?.neutral?.N10 || inube.palette.neutral.N10};
   box-shadow: 0px 1px 3px 1px
     ${({ theme }) =>
-      theme?.palette?.neutralAlpha?.N40A || inube.palette.neutralAlpha.N40A};
+      theme?.palette?.neutralAlpha?.N200A || inube.palette.neutralAlpha.N200A};
   box-shadow: 0px 1px 2px 0px
     ${({ theme }) =>
-      theme?.palette?.neutralAlpha?.N40A || inube.palette.neutralAlpha.N40A};
+      theme?.palette?.neutralAlpha?.N200A || inube.palette.neutralAlpha.N200A};
   ${({ theme }) => theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};
   border: 1px solid
     ${({ theme }) => theme?.palette?.neutral?.N30 || inube.palette.neutral.N30};

@@ -54,12 +54,12 @@ export const StyledInputContainer = styled.div<IStyledInputContainer>`
   border-style: solid;
 
   background-color: ${({ theme, $readonly }) =>
-    $readonly && (theme?.palette?.neutral?.N40 || inube.palette.neutral.N40)};
+    $readonly && (theme?.palette?.neutral?.N200 || inube.palette.neutral.N200)};
 
   border-color: ${({ theme, disabled, $readonly, $status, $focused }) => {
     if (disabled) {
       return (
-        (theme?.palette?.neutral?.N40 || inube.palette.neutral.N40) +
+        (theme?.palette?.neutral?.N200 || inube.palette.neutral.N200) +
         "; pointer-events: none; opacity: 0.5;"
       );
     }
@@ -69,7 +69,7 @@ export const StyledInputContainer = styled.div<IStyledInputContainer>`
     if ($status === "invalid" && !$readonly) {
       return theme?.palette?.red?.R400 || inube.palette.red.R400;
     }
-    return theme?.palette?.neutral?.N40 || inube.palette.neutral.N40;
+    return theme?.palette?.neutral?.N200 || inube.palette.neutral.N200;
   }};
 
   opacity: ${({ disabled }) => disabled && "0.75"};
@@ -99,7 +99,7 @@ export const StyledInput = styled.input<IStyledInput>`
     theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   ${({ $size }) => sizeOptions[$size!]};
-  
+
   ::placeholder {
     color: ${({ theme }) =>
       theme?.palette?.neutral?.N90 || inube.palette.neutral.N90};

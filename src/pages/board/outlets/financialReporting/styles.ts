@@ -11,7 +11,7 @@ export const StyledItem = styled.li`
   align-items: center;
   padding: 8px;
   border-bottom: 1px solid
-    ${({ theme }) => theme.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    ${({ theme }) => theme.palette?.neutral?.N200 || inube.palette.neutral.N200};
 `;
 export const StyledMessageContainer = styled.div`
   position: fixed;
@@ -92,7 +92,7 @@ export const StyledHorizontalDivider = styled.hr<IStyledHorizontalDivider>`
   width: 2px;
   border: none;
   background-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
   display: ${({ $isMobile }) => ($isMobile ? "none" : "block")};
 `;
 

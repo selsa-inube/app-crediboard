@@ -16,14 +16,8 @@ export const StyledAppPage = styled.div`
   overflow: hidden;
   box-sizing: border-box;
   border-bottom: 1px solid
-    ${({ theme }) => theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
-  box-shadow:
-    0px 1px 3px 1px
-      ${({ theme }) =>
-        theme?.palette?.neutral?.N40 || inube.palette.neutral.N40},
-    0px 1px 2px 0px
-      ${({ theme }) =>
-        theme?.palette?.neutral?.N20 || inube.palette.neutral.N20};
+    ${({ theme }) =>
+      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
 `;
 
 export const StyledCardsContainer = styled.div`
@@ -34,6 +28,12 @@ export const StyledCardsContainer = styled.div`
   overflow-y: auto;
   height: 518px;
   padding-bottom: 36px;
+  border-bottom: 1px solid
+    ${({ theme }) =>
+      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+  background-color: ${({ theme }) =>
+    theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
 `;
 
 export const StyledUserImage = styled.img`
@@ -69,6 +69,14 @@ export const StyledLogo = styled.img<IStyledLogo>`
 export const StyledHeaderContainer = styled.div`
   position: relative;
   z-index: 2;
+  > header {
+    outline: 1px solid
+      ${({ theme }) =>
+        theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+    background-color: ${({ theme }) =>
+      theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
+  }
 `;
 
 export const StyledContainerNav = styled.div`
@@ -101,7 +109,7 @@ export const StyledMenuContainer = styled.div`
 
   hr {
     color: ${({ theme }) =>
-      theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
   }
 `;
 

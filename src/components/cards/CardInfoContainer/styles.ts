@@ -12,14 +12,10 @@ export const StyledContainerCardInfo = styled.div<IStyledContainerCardInfo>`
   border-style: solid;
   height: ${({ $containerHeight }) => $containerHeight};
   border-color: ${({ theme }) =>
-    theme?.palette?.blue?.B400 ||
-    inube.palette.blue.B400};
+    theme?.palette?.blue?.B400 || inube.palette.blue.B400};
   box-shadow: 0px 2px 6px
-    ${({ theme }) =>
-      theme?.palette?.neutral?. N40 ||
-      inube.palette.neutral. N40};
-    padding: ${({ $isMobile }) =>
-    $isMobile ? "8px" : "16px"};
+    ${({ theme }) => theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+  padding: ${({ $isMobile }) => ($isMobile ? "8px" : "16px")};
 
   ${({ $isMobile, theme }) =>
     !$isMobile &&

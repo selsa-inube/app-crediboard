@@ -42,8 +42,9 @@ export const StyledContainerFieldset = styled.div<IStyledContainerFieldset>`
       case "normal":
         return theme?.palette?.neutral?.N300 || inube.palette.neutral.N300;
       case "gray":
+        return theme?.palette?.neutral?.N200 || inube.palette.neutral.N200;
       default:
-        return theme?.palette?.neutral?.N40 || inube.palette.neutral.N40;
+        return theme?.palette?.neutral?.N200 || inube.palette.neutral.N200;
     }
   }};
   box-shadow: ${({ theme, $isSelected }) =>
