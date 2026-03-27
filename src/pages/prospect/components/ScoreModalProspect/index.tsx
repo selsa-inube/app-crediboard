@@ -3,6 +3,7 @@ import { useFlag } from "@inubekit/inubekit";
 
 import { IProspect } from "@services/creditRequest/query/ProspectByCode/types";
 import { updateProspect } from "@services/prospect/updateProspect";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { ScoreModalProspectUI } from "./interface";
 import { IScore } from "./types";
@@ -17,9 +18,7 @@ interface IScoreModalProspectProps {
   businessManagerCode: string;
   handleClose: () => void;
   setShowMessageSuccessModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setMessageError: React.Dispatch<React.SetStateAction<string>>;
   eventData: ICrediboardData;
-  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
   prospectData: IProspect;
   onProspectRefreshData: (() => void) | undefined;
 }
@@ -30,13 +29,11 @@ export const ScoreModalProspect = (props: IScoreModalProspectProps) => {
     handleClose,
     businessUnitPublicCode,
     businessManagerCode,
-    setMessageError,
     eventData,
-    setShowErrorModal,
     prospectData,
     onProspectRefreshData,
   } = props;
-
+  const { showErrorModalHandler } = useErrorHandler();
   const { addFlag } = useFlag();
 
   const [newFirstScore, setNewFirstScore] = useState<IScore | null>(null);
@@ -158,15 +155,7 @@ export const ScoreModalProspect = (props: IScoreModalProspectProps) => {
         duration: 5000,
       });
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoadingSubmit(false);
     }

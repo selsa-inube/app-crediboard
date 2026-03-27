@@ -96,8 +96,12 @@ interface IAppContext {
   eventData: ICrediboardData;
   businessUnitSigla: string;
   businessUnitsToTheStaff: IBusinessUnitsPortalStaff[];
+  messageError: string;
+  showErrorModal: boolean;
   setEventData: React.Dispatch<React.SetStateAction<ICrediboardData>>;
   setBusinessUnitSigla: React.Dispatch<React.SetStateAction<string>>;
+  setMessageError: React.Dispatch<React.SetStateAction<string>>;
+  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
   setBusinessUnitsToTheStaff: React.Dispatch<
     React.SetStateAction<IBusinessUnitsPortalStaff[]>
   >;

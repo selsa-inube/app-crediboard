@@ -50,6 +50,8 @@ function useAppContext() {
     return savedBusinessUnits ? JSON.parse(savedBusinessUnits) : [];
   });
   const [optionStaffData, setOptionStaffData] = useState<IOptionStaff[]>([]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const portalId = localStorage.getItem("portalCode");
   let portalCode = "";
@@ -415,12 +417,18 @@ function useAppContext() {
       businessUnitsToTheStaff,
       optionStaffData,
       isIAuthLoading,
+      messageError,
+      showErrorModal,
       setEventData,
       setBusinessUnitSigla,
       setBusinessUnitsToTheStaff,
       setOptionStaffData,
+      setMessageError,
+      setShowErrorModal,
     }),
     [
+      messageError,
+      showErrorModal,
       eventData,
       businessUnitSigla,
       businessUnitsToTheStaff,

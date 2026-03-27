@@ -10,7 +10,7 @@ import { getGuaranteesSummary } from "@services/creditRequest/query/guaranteesSu
 import { IGuaranteesSummary } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   dataGuaranteesEnum,
@@ -35,11 +35,10 @@ export function Guarantees(props: GuaranteesProps) {
     isMobile,
   } = props;
   const { lang } = useEnum();
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [guaranteesSummary, setGuaranteesSummary] =
     useState<IGuaranteesSummary | null>(null);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const fetchLaborStabilityByCustomerId = async () => {
     if (!creditRequestId) return;
 
@@ -52,17 +51,7 @@ export function Guarantees(props: GuaranteesProps) {
       );
       setGuaranteesSummary(data);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -145,15 +134,6 @@ export function Guarantees(props: GuaranteesProps) {
               ).join(", ")}
             </Text>
           </Stack>
-          {showErrorModal && (
-            <ErrorModal
-              handleClose={() => {
-                setShowErrorModal(false);
-              }}
-              isMobile={isMobile}
-              message={messageError}
-            />
-          )}
         </Stack>
       )}
     </CardInfoContainer>

@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Divider, Stack, Text, useFlag } from "@inubekit/inubekit";
+import { Divider, Stack, Text } from "@inubekit/inubekit";
 
 import { CardGray } from "@components/cards/CardGray";
 import { BaseModal } from "@components/modals/baseModal";
@@ -7,6 +7,7 @@ import { Fieldset } from "@components/data/Fieldset";
 import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocumentById";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { DocumentViewer } from "../DocumentViewer";
 import { dataTraceEnum } from "./config";
@@ -32,12 +33,11 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
     user,
   } = props;
   const { lang } = useEnum();
+  const { showErrorModalHandler } = useErrorHandler();
   const { eventData } = useContext(AppContext);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-
-  const { addFlag } = useFlag();
 
   const handlePreview = async (id: string, name: string) => {
     try {
@@ -53,19 +53,7 @@ export function TraceDetailsModal(props: ITraceDetailsModalProps) {
       setFileName(name);
       setOpen(true);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-      addFlag({
-        title: dataTraceEnum.titleError.i18n[lang],
-        description,
-        appearance: "danger",
-        duration: 5000,
-      });
+      showErrorModalHandler(error as IError);
     }
   };
 

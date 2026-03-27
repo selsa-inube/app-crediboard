@@ -20,11 +20,11 @@ import { IMaximumCreditLimitByLineOfCredit } from "@services/creditLimit/types";
 import { IIncomeSources } from "@pages/prospect/components/CreditProspect/types";
 import { AppContext } from "@context/AppContext";
 import { EnumType } from "@hooks/useEnum";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { creditLimitTexts, renderSkeletons } from "./creditLimitConfig";
 import { StyledList } from "./styles";
 import { analysisLabel } from "../payCapacityModal/config";
-import { ErrorModal } from "../ErrorModal";
 
 export interface ICreditLimitProps {
   title: string;
@@ -60,10 +60,9 @@ export const CreditLimit = (props: ICreditLimitProps) => {
   } = props;
 
   const isMobile = useMediaQuery("(max-width: 700px)");
-  const { eventData } = useContext(AppContext);
+  const { eventData, showErrorModal } = useContext(AppContext);
+  const { showErrorModalHandler } = useErrorHandler();
 
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [internalLoading, setInternalLoading] = useState(true);
   const [dataMaximumCreditLimit, setDataMaximumCreditLimit] = useState<
     IMaximumCreditLimitByLineOfCredit[]
@@ -88,17 +87,7 @@ export const CreditLimit = (props: ICreditLimitProps) => {
           setDataMaximumCreditLimit(data);
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       } finally {
         setInternalLoading(false);
       }
@@ -377,15 +366,6 @@ export const CreditLimit = (props: ICreditLimitProps) => {
                 </Text>
               </Stack>
             </>
-          )}
-          {showErrorModal && (
-            <ErrorModal
-              handleClose={() => {
-                setShowErrorModal(false);
-              }}
-              isMobile={isMobile}
-              message={messageError}
-            />
           )}
         </Stack>
       )}

@@ -21,8 +21,8 @@ import { ListModal } from "@components/modals/ListModal";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard } from "@config/privilege";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { SkeletonContainer, SkeletonLine, StyledChatContent } from "./styles";
 import {
@@ -42,6 +42,7 @@ interface IManagementProps {
 
 export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
   const { lang } = useEnum();
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [creditRequest, setCreditRequest] = useState<ICreditRequest | null>(
     null,
@@ -58,8 +59,6 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
     { id: string; name: string; file: File }[]
   >([]);
   const [showAttachments, setShowAttachments] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
@@ -77,6 +76,11 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
 
   const fetchCreditRequest = useCallback(async () => {
     try {
+      if (
+        eventData.user.identificationDocumentNumber === "" ||
+        eventData.user.identificationDocumentNumber === undefined
+      )
+        return;
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
         businessManagerCode,
@@ -86,17 +90,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       );
       setCreditRequest(data[0] as ICreditRequest);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -127,17 +121,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
       );
       setTraces(Array.isArray(data) ? data.flat() : []);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setLoading(false);
     }
@@ -199,17 +183,7 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
         }
       });
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -410,16 +384,6 @@ export const Management = ({ id, isMobile, updateData }: IManagementProps) => {
           </>
         )}
       </Fieldset>
-
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
     </>
   );
 };

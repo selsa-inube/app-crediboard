@@ -17,8 +17,8 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IToDo } from "@services/creditRequest/query/types";
 import { ICommercialManagerAndAnalyst } from "@services/staff/types";
 import { ICreditRequests } from "@services/creditRequest/command/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { changeUsersByCreditRequest } from "./utils";
 import { txtFlagsEnum, staffModalTextsEnum } from "../config";
@@ -57,6 +57,7 @@ export function StaffModal(props: StaffModalProps) {
     buttonText,
     handleRetry,
   } = props;
+  const { showErrorModalHandler } = useErrorHandler();
   const [analystList, setAnalystList] = useState<
     ICommercialManagerAndAnalyst[]
   >([]);
@@ -75,8 +76,6 @@ export function StaffModal(props: StaffModalProps) {
   const { lang, enums } = useEnum();
 
   const [showModal, setShowModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
 
   const validationSchema = Yup.object().shape({
     commercialManager: Yup.string(),
@@ -257,17 +256,7 @@ export function StaffModal(props: StaffModalProps) {
       });
       traceObserver.notify({});
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       if (onCloseModal) onCloseModal();
       handleToggleModal();
@@ -404,15 +393,6 @@ export function StaffModal(props: StaffModalProps) {
           );
         }}
       </Formik>
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
     </>
   );
 }

@@ -59,6 +59,7 @@ import { IProspectSummaryById } from "@services/creditRequest/query/ProspectByCo
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
 import { useEnum } from "@hooks/useEnum";
 import { documentClientNumber } from "@utils/documentClientNumber";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { titlesModalEnum } from "../ToDo/config";
 import { errorMessagesEnum } from "../config";
@@ -121,10 +122,10 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
     setSentData,
     setRequestValue,
     errorGetProspects,
-    setErrorModal,
-    setErrorMessage,
     fetchProspectData,
   } = props;
+
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [showMenu, setShowMenu] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
@@ -198,6 +199,11 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
   useEffect(() => {
     const fetchCreditRequest = async () => {
       try {
+        if (
+          eventData.user.identificationDocumentNumber === "" ||
+          eventData.user.identificationDocumentNumber === undefined
+        )
+          return;
         const data = await getCreditRequestByCode(
           businessUnitPublicCode,
           businessManagerCode,
@@ -207,18 +213,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
         );
         setRequests(data[0] as ICreditRequest);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setErrorMessage(description);
-        setErrorModal(true);
+        showErrorModalHandler(error as IError);
       }
     };
 
@@ -274,18 +269,7 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
 
         setDisbursementData(organizedData);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setErrorMessage(description);
-        setErrorModal(true);
+        showErrorModalHandler(error as IError);
       } finally {
         if (prospectData !== undefined) {
           setLoading(false);
@@ -1037,8 +1021,6 @@ export const ComercialManagement = (props: ComercialManagementProps) => {
                 businessUnitPublicCode={businessUnitPublicCode}
                 businessManagerCode={businessManagerCode}
                 creditRequestCode={creditRequestCode}
-                setErrorMessage={setErrorMessage}
-                setErrorModal={setErrorModal}
               />
             )}
             {infoModal && (

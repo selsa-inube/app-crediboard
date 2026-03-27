@@ -52,6 +52,7 @@ import { DecisionModalRedirect } from "@components/modals/DecisionModalRedirect"
 import { filterEnums } from "@context/enumContext/utils";
 import { removeDocument } from "@services/creditRequest/delete/removeDocument";
 import { DeleteModal } from "@components/modals/DeleteModal";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { StyledPrint } from "./CommercialManagement/styles";
 import { infoIcon } from "./ToDo/config";
@@ -97,6 +98,7 @@ const removeErrorByIdServices = (
 };
 
 export const FinancialReporting = () => {
+  const { showErrorModalHandler } = useErrorHandler();
   const [data, setData] = useState({} as ICreditRequest);
   const [showAttachments, setShowAttachments] = useState(false);
   const [attachDocuments, setAttachDocuments] = useState(false);
@@ -115,8 +117,6 @@ export const FinancialReporting = () => {
   const [showModalDecision, setShowModalDecision] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [dataProspect, setDataProspect] = useState<IProspect>();
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
@@ -217,17 +217,7 @@ export const FinancialReporting = () => {
       setDocument(documentsUser);
       setAttachDocuments(true);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
       setShowNoDocumentsModal(true);
     } finally {
       setIsLoadingDocuments(false);
@@ -259,18 +249,7 @@ export const FinancialReporting = () => {
       );
       setDataProspect(Array.isArray(result) ? result[0] : result);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
-      setErrorModal(true);
+      showErrorModalHandler(error as IError);
       setErrorGetProspects(true);
     } finally {
       setGeneralLoading(false);
@@ -519,17 +498,7 @@ export const FinancialReporting = () => {
         setErrorsService(mappedErrors);
       }
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -545,6 +514,11 @@ export const FinancialReporting = () => {
 
     try {
       setGeneralLoading(true);
+      if (
+        eventData.user.identificationDocumentNumber === "" ||
+        eventData.user.identificationDocumentNumber === undefined
+      )
+        return;
       const result = await getCreditRequestByCode(
         businessUnitPublicCode,
         businessManagerCode,
@@ -655,16 +629,7 @@ export const FinancialReporting = () => {
         return updated;
       });
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-
-      setMessageError(description);
-      setShowErrorModal(true);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoading(false);
     }
@@ -1016,15 +981,6 @@ export const FinancialReporting = () => {
           handleClose={handleSharePdfModal}
           handleNext={handleSharePdf}
           lang={lang}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
         />
       )}
     </div>

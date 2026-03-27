@@ -11,12 +11,12 @@ import { patchChangeAnchorToCreditRequest } from "@services/creditRequest/comman
 import { getPositionsAuthorizedToRemoveAnchorsPlacedByOther } from "@services/creditRequest/query/positionsAuthorizedToRemoveAnchorsPlacedByOther";
 import { AppContext } from "@context/AppContext";
 import { Filter } from "@components/cards/SelectedFilters/interface";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { ErrorPage } from "@components/layout/ErrorPage";
 import { useEnum } from "@hooks/useEnum";
 import { SectionOrientation } from "@components/layout/BoardSection/types";
 import { getStaffPortalsByBusinessManager } from "@services/staff/SearchAllStaffPortalsByBusinessManager";
 import { environment } from "@config/environment";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { dataInformationModalEnum, getBoardColumns } from "./config/board";
 import { BoardLayoutUI } from "./interface";
@@ -39,6 +39,7 @@ export interface IFilterFormValues {
 
 function BoardLayout() {
   const { lang, enums } = useEnum();
+  const { showErrorModalHandler } = useErrorHandler();
   const selectCheckOptions = selectCheckOptionsEnum.map((option) => ({
     id: option.id,
     label: option.i18n[lang],
@@ -66,8 +67,6 @@ function BoardLayout() {
 
   const [errorLoadingPins, setErrorLoadingPins] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [errorModal, setErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [hasServerError, setHasServerError] = useState(false);
   const [showRedirectModal, setShowRedirectModal] = useState(false);
   const useDebounceSearch = Boolean(
@@ -104,8 +103,6 @@ function BoardLayout() {
     assignment: "",
     status: "",
   });
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const boardColumns = getBoardColumns(activeOptions, filters.boardOrientation);
 
   const fetchBoardData = async (
@@ -177,17 +174,7 @@ function BoardLayout() {
         setErrorLoadingPins(true);
       }
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
       setHasServerError(true);
     }
   };
@@ -205,18 +192,7 @@ function BoardLayout() {
         setPositionsAuthorized(response.positionsAuthorized);
       }
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setErrorMessage(description);
-      setErrorModal(true);
+      showErrorModalHandler(error as IError);
 
       setPositionsAuthorized([]);
     }
@@ -454,17 +430,7 @@ function BoardLayout() {
         return;
       }
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -886,24 +852,6 @@ function BoardLayout() {
             </Text>
           </Stack>
         </BaseModal>
-      )}
-      {errorModal && (
-        <ErrorModal
-          isMobile={isMobile}
-          message={errorMessage}
-          handleClose={() => {
-            setErrorModal(false);
-          }}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
       )}
     </>
   );

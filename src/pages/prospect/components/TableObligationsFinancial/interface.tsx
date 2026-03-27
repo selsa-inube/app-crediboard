@@ -24,7 +24,6 @@ import { currencyFormat } from "@utils/formatData/currency";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import { privilegeCrediboard } from "@config/privilege";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { EnumType } from "@hooks/useEnum";
 import { IAllEnumsResponse } from "@services/enumerators/types";
 
@@ -67,12 +66,6 @@ interface UIProps {
   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
   lang: EnumType;
   enums: IAllEnumsResponse | null;
-  showErrorModal: boolean;
-  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
-  messageError: string;
-  setErrorModal?: React.Dispatch<React.SetStateAction<boolean>>;
-  errorMessage?: string;
-  errorModal?: boolean;
 }
 
 export const TableFinancialObligationsUI = ({
@@ -93,14 +86,8 @@ export const TableFinancialObligationsUI = ({
   gotEndPage,
   showDeleteModal,
   setShowDeleteModal,
-  setErrorModal,
-  errorModal,
-  errorMessage,
   lang,
   enums,
-  showErrorModal,
-  setShowErrorModal,
-  messageError,
 }: UIProps) => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [dataToDelete, setDataToDelete] = useState<IDataInformationItem | null>(
@@ -441,24 +428,6 @@ export const TableFinancialObligationsUI = ({
           description={privilegeCrediboard.description}
           nextButtonText={privilegeCrediboard.nextButtonText}
           isMobile={isMobile}
-        />
-      )}
-      {errorModal && setErrorModal && (
-        <ErrorModal
-          isMobile={isMobile}
-          message={errorMessage}
-          handleClose={() => {
-            setErrorModal(false);
-          }}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
         />
       )}
     </>

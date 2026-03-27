@@ -44,7 +44,6 @@ import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
 import { updateProspect } from "@services/prospect/updateProspect";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
 import { getLinesOfCreditByMoneyDestination } from "@services/lineOfCredit/getLinesOfCreditByMoneyDestination";
@@ -52,6 +51,7 @@ import { documentClientNumber } from "@utils/documentClientNumber";
 import { addCreditProduct } from "@services/creditRequest/addCreditProduct";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { IAllEnumsResponse } from "@services/enumerators/types";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { AddProductModal } from "../AddProductModal";
 import { configModal, dataCreditProspectEnum } from "./config";
@@ -142,14 +142,13 @@ export function CreditProspect(props: ICreditProspectProps) {
     showAddProduct = true,
     customerData,
   } = props;
+  const { showErrorModalHandler } = useErrorHandler();
   const [showShareModal, setShowShareModal] = useState(false);
   const [prospectSummaryData, setProspectSummaryData] =
     useState<IProspectSummaryById>({} as IProspectSummaryById);
   const [showEditApprovalModal, setShowEditApprovalModal] = useState(false);
   const [editedApprovalObservations, setEditedApprovalObservations] =
     useState("");
-  const [messageError, setMessageError] = useState("");
-  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const [isAddProductDisabled, setIsAddProductDisabled] = useState(true);
   const { addFlag } = useFlag();
@@ -227,15 +226,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         );
       }
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setGeneralLoading(false);
     }
@@ -295,17 +286,7 @@ export function CreditProspect(props: ICreditProspectProps) {
         duration: 5000,
       });
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setGeneralLoading(false);
     }
@@ -353,17 +334,7 @@ export function CreditProspect(props: ICreditProspectProps) {
       handleCloseModal();
       setShowMessageSuccessModal(true);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setGeneralLoading(false);
     }
@@ -690,9 +661,7 @@ export function CreditProspect(props: ICreditProspectProps) {
           businessUnitPublicCode={businessUnitPublicCode}
           businessManagerCode={businessManagerCode}
           setShowMessageSuccessModal={setShowMessageSuccessModal}
-          setMessageError={setMessageError}
           eventData={eventData}
-          setShowErrorModal={setShowErrorModal}
           prospectData={prospectData as IProspect}
           onProspectRefreshData={onProspectRefreshData}
         />
@@ -722,15 +691,6 @@ export function CreditProspect(props: ICreditProspectProps) {
             />
           </Stack>
         </BaseModal>
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
       )}
     </Stack>
   );

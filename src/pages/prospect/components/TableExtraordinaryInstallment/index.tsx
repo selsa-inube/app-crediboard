@@ -13,6 +13,7 @@ import {
   IExtraordinaryCycle,
 } from "@services/creditLimit/types";
 import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { removeExtraordinaryInstallment } from "../../../board/outlets/financialReporting/CommercialManagement/utils";
 import {
@@ -94,7 +95,7 @@ export const TableExtraordinaryInstallment = (
     handleDelete,
     creditRequestCode,
   } = props;
-
+  const { showErrorModalHandler } = useErrorHandler();
   const { eventData } = useContext(AppContext);
   const headers = headersTableExtraordinaryInstallment;
   const isMobile = useMediaQuery("(max-width:880px)");
@@ -104,8 +105,6 @@ export const TableExtraordinaryInstallment = (
   const [loading, setLoading] = useState(true);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const [isOpenModalView, setIsOpenModalView] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 
   const visbleHeaders = isMobile
@@ -194,17 +193,7 @@ export const TableExtraordinaryInstallment = (
           setPaymentCycles(allCycles);
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       }
     };
 
@@ -212,6 +201,7 @@ export const TableExtraordinaryInstallment = (
       fetchPaymentCycles();
     }
   }, [
+    showErrorModalHandler,
     businessUnitPublicCode,
     prospectData,
     service,
@@ -329,16 +319,7 @@ export const TableExtraordinaryInstallment = (
         handleClose?.();
       } catch (error: unknown) {
         setIsLoadingDelete(false);
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       }
     }
   };
@@ -354,9 +335,6 @@ export const TableExtraordinaryInstallment = (
         isOpenModalDelete={isOpenModalDelete}
         businessUnitPublicCode={businessUnitPublicCode ?? ""}
         prospectData={prospectData}
-        showErrorModal={showErrorModal}
-        messageError={messageError}
-        setShowErrorModal={setShowErrorModal}
         setIsOpenModalDelete={setIsOpenModalDelete}
         usePagination={paginationProps}
         setSentData={setSentData ?? (() => {})}

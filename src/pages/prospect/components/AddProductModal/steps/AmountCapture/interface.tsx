@@ -2,7 +2,6 @@ import { Stack, Textfield, Icon } from "@inubekit/inubekit";
 import { MdAttachMoney } from "react-icons/md";
 
 import { IAmountCaptureUI } from "../config";
-import { ErrorModal } from "@components/modals/ErrorModal";
 
 export function AmountCaptureUI(props: IAmountCaptureUI) {
   const {
@@ -10,10 +9,6 @@ export function AmountCaptureUI(props: IAmountCaptureUI) {
     loanAmountError,
     amountCaptureTexts,
     handleCurrencyChange,
-    showErrorModal,
-    setShowErrorModal,
-    messageError,
-    isMobile,
   } = props;
 
   return (
@@ -45,15 +40,6 @@ export function AmountCaptureUI(props: IAmountCaptureUI) {
         fullwidth
         required
       />
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
     </Stack>
   );
 }

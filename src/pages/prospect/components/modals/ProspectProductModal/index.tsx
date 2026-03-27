@@ -29,6 +29,7 @@ import { CreditLineGeneralTerms } from "@services/lineOfCredit/types";
 import { EnumType } from "@hooks/useEnum";
 import { IBusinessUnitRuleResponse } from "@services/creditRequest/query/ProspectByCode/types";
 import { TruncatedText } from "@components/modals/TruncatedTextModal";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { ScrollableContainer } from "./styles";
 import {
@@ -61,8 +62,6 @@ interface EditProductModalProps {
 
   iconBefore?: React.JSX.Element;
   iconAfter?: React.JSX.Element;
-  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setMessageError: React.Dispatch<React.SetStateAction<string>>;
   custumerData: ICustomerData;
   creditRequestCode: string | undefined;
 }
@@ -80,13 +79,12 @@ function EditProductModal(props: EditProductModalProps) {
     prospectData,
     enums,
     lang,
-    setShowErrorModal,
-    setMessageError,
     isProcessingServices,
     custumerData,
   } = props;
 
   const { eventData } = useContext(AppContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const [showIncrementField, setShowIncrementField] = useState<boolean>(false);
   const [incrementType, setIncrementType] = useState<
     "value" | "percentage" | null
@@ -147,17 +145,7 @@ function EditProductModal(props: EditProductModalProps) {
           setAllowedRateCodes(codes);
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       } finally {
         setIsLoadingRateTypes(false);
       }
@@ -402,18 +390,7 @@ function EditProductModal(props: EditProductModalProps) {
 
       onConfirm(submitValues);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       formikHelpers.setSubmitting(false);
     }

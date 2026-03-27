@@ -8,10 +8,10 @@ import { ItemNotFound } from "@components/layout/ItemNotFound";
 import userNotFound from "@assets/images/ItemNotFound.png";
 import { ICreditRiskScoreResponse } from "@services/creditProfiles/types";
 import { getCreditRiskScoreById } from "@services/creditProfiles/GetCreditRiskScoreById";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { dataRiskScoringEnum } from "./config";
 
@@ -32,11 +32,10 @@ export function RiskScoring(props: RiskScoringProps) {
     eventData,
   } = props;
   const { lang } = useEnum();
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [data, setData] = useState<ICreditRiskScoreResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
 
   const getMainGap = () => {
     if (isMobile) {
@@ -67,17 +66,7 @@ export function RiskScoring(props: RiskScoringProps) {
       );
       setData(response);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setLoading(false);
     }
@@ -97,17 +86,7 @@ export function RiskScoring(props: RiskScoringProps) {
         );
         setData(response);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       } finally {
         setLoading(false);
       }
@@ -115,6 +94,7 @@ export function RiskScoring(props: RiskScoringProps) {
 
     fetchData();
   }, [
+    showErrorModalHandler,
     lang,
     businessUnitPublicCode,
     requests.clientIdentificationNumber,
@@ -201,15 +181,6 @@ export function RiskScoring(props: RiskScoringProps) {
               ))}
             </Stack>
           </Stack>
-        )}
-        {showErrorModal && (
-          <ErrorModal
-            handleClose={() => {
-              setShowErrorModal(false);
-            }}
-            isMobile={isMobile}
-            message={messageError}
-          />
         )}
       </>
     </CardInfoContainer>

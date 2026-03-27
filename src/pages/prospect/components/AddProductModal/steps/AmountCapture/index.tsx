@@ -4,6 +4,7 @@ import { useMediaQuery } from "@inubekit/inubekit";
 import { postBusinessUnitRules } from "@services/businessUnitRules/EvaluteRuleByBusinessUnit";
 import { IBusinessUnitRules } from "@services/businessUnitRules/types";
 import { AppContext } from "@context/AppContext";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { AmountCaptureUI } from "./interface";
 import {
@@ -26,8 +27,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
 
   const { eventData } = useContext(AppContext);
   const { enums } = useEnum();
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
+  const { showErrorModalHandler } = useErrorHandler();
   const [loanAmountError, setLoanAmountError] = useState<string>("");
   const [displayValue, setDisplayValue] = useState<string>("");
   const isMobile: boolean = useMediaQuery("(max-width: 555px)");
@@ -84,17 +84,7 @@ export function AmountCapture(props: IAmountCaptureProps) {
         setLoanAmountError(amountCaptureTexts.errors.validationFailed);
       }
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -147,9 +137,6 @@ export function AmountCapture(props: IAmountCaptureProps) {
       loanAmountError={loanAmountError}
       amountCaptureTexts={amountCaptureTexts}
       handleCurrencyChange={handleCurrencyChange}
-      showErrorModal={showErrorModal}
-      setShowErrorModal={setShowErrorModal}
-      messageError={messageError}
       isMobile={isMobile}
     />
   );

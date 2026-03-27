@@ -12,7 +12,7 @@ import { UnfoundData } from "@components/layout/UnfoundData";
 import { Fieldset } from "@components/data/Fieldset";
 import { TableBoard } from "@components/data/TableBoard";
 import { useEnum } from "@hooks/useEnum";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   actionsPostingvouchers,
@@ -31,6 +31,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   const { id, isMobile } = props;
   const { lang } = useEnum();
   const { user } = useIAuth();
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [error, setError] = useState(false);
   const [positionsAccountingVouchers, setPositionsAccountingVouchers] =
@@ -38,8 +39,6 @@ export const Postingvouchers = (props: IApprovalsProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [requests, setRequests] = useState<ICreditRequest | null>(null);
   const { businessUnitSigla, eventData } = useContext(AppContext);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
 
   const titles = useMemo(() => {
     return Object.values(titlesPostingvouchersEnum).map((title) => ({
@@ -56,6 +55,11 @@ export const Postingvouchers = (props: IApprovalsProps) => {
 
   const fetchCreditRequest = useCallback(async () => {
     try {
+      if (
+        eventData.user.identificationDocumentNumber === "" ||
+        eventData.user.identificationDocumentNumber === undefined
+      )
+        return;
       const data = await getCreditRequestByCode(
         businessUnitPublicCode,
         businessManagerCode,
@@ -65,19 +69,10 @@ export const Postingvouchers = (props: IApprovalsProps) => {
       );
       setRequests(data[0] as ICreditRequest);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   }, [
+    showErrorModalHandler,
     businessUnitPublicCode,
     id,
     businessManagerCode,
@@ -102,17 +97,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
         );
         setPositionsAccountingVouchers(vouchers);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       } finally {
         setLoading(false);
       }
@@ -120,6 +105,7 @@ export const Postingvouchers = (props: IApprovalsProps) => {
 
     fetchAccountingVouchers();
   }, [
+    showErrorModalHandler,
     user,
     requests,
     businessUnitPublicCode,
@@ -178,15 +164,6 @@ export const Postingvouchers = (props: IApprovalsProps) => {
           />
         )}
       </Fieldset>
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
     </Stack>
   );
 };

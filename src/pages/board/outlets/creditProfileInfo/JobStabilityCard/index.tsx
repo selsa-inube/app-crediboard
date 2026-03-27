@@ -12,7 +12,7 @@ import { ILaborStabilityByCustomerId } from "@services/creditRequest/query/getLa
 import { ICreditRequest } from "@services/creditRequest/query/types";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
-import { ErrorModal } from "@components/modals/ErrorModal";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { jobStabilityConfigEnum } from "./config";
 
@@ -33,12 +33,11 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
     eventData,
   } = props;
   const { lang } = useEnum();
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [laborStabilityByCustomerId, setLaborStabilityByCustomerId] = useState<
     ILaborStabilityByCustomerId[]
   >([]);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const fetchLaborStabilityByCustomerId = async () => {
     if (!requests.clientIdentificationNumber) return;
 
@@ -52,17 +51,7 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
       );
       setLaborStabilityByCustomerId(data);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -165,15 +154,6 @@ export function JobStabilityCard(props: JobStabilityCardProps) {
               </Text>
             </Stack>
           </Stack>
-          {showErrorModal && (
-            <ErrorModal
-              handleClose={() => {
-                setShowErrorModal(false);
-              }}
-              isMobile={isMobile}
-              message={messageError}
-            />
-          )}
         </Stack>
       )}
     </CardInfoContainer>

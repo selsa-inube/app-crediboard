@@ -30,14 +30,13 @@ import { calculateSeriesForExtraordinaryInstallment } from "@services/creditLimi
 import { ICalculatedSeries } from "@services/creditRequest/query/ProspectByCode/types";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/config";
 import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { dataAddSeriesModal, defaultFrequency } from "./config";
 import { saveExtraordinaryInstallment } from "../ExtraordinaryPaymentModal/utils";
 import { ICycleOption } from "./types";
 
 export interface AddSeriesModalProps {
-  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setMessageError: React.Dispatch<React.SetStateAction<string>>;
   toggleAddSeriesModal: () => void;
   handleClose: () => void;
   onSubmit: (values: {
@@ -95,8 +94,6 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     setSentData,
     lineOfCreditAbbreviatedName,
     moneyDestinationAbbreviatedName,
-    setMessageError,
-    setShowErrorModal,
     toggleAddSeriesModal,
     isSimulateCredit = false,
     maxLoanTerm,
@@ -104,6 +101,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
     creditRequestCode,
   } = props;
   const { businessUnitSigla, eventData } = useContext(AppContext);
+  const { showErrorModalHandler } = useErrorHandler();
   const { user } = useIAuth();
 
   const isMobile = useMediaQuery("(max-width: 700px)");
@@ -231,17 +229,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
             );
           }
         } catch (error) {
-          const err = error as {
-            message?: string;
-            status: number;
-            data?: { description?: string; code?: string };
-          };
-          const code = err?.data?.code ? `[${err.data.code}] ` : "";
-          const description =
-            code + err?.message + (err?.data?.description || "");
-
-          setShowErrorModal(true);
-          setMessageError(description);
+          showErrorModalHandler(error as IError);
           toggleAddSeriesModal();
         } finally {
           setIsLoading(false);
@@ -366,17 +354,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
       handleClose();
     } catch (error) {
       setIsLoading(false);
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -522,16 +500,7 @@ export function AddSeriesModal(props: AddSeriesModalProps) {
 
       handleClose();
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-
-      setMessageError(description);
-      setShowErrorModal(true);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoading(false);
     }

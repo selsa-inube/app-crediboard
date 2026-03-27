@@ -14,13 +14,13 @@ import { getPropertyValue } from "@utils/mappingData/mappings";
 import { ItemNotFound } from "@components/layout/ItemNotFound";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { Mortgage } from "./Mortgage";
 import { Pledge } from "./Pledge";
 import { Bond } from "./bail";
 import { dataTabsEnum, dataGuaranteeEnum } from "./config";
 import { ScrollableContainer } from "./styles";
-import { ErrorModal } from "../ErrorModal";
 
 export interface IOfferedGuaranteeModalProps {
   handleClose: () => void;
@@ -41,6 +41,8 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
     requestId,
   } = props;
 
+  const { showErrorModalHandler } = useErrorHandler();
+
   const [currentTab, setCurrentTab] = useState(dataTabsEnum.borrower.id);
   const [dataProperty, setDataProperty] = useState<IGuarantees[]>();
   const [isLoadingMortgage, setIsLoadingMortgage] = useState(false);
@@ -54,9 +56,6 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
 
   const dataResponse = prospectData;
 
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
-
   const fetchGuarantees = async () => {
     try {
       const result = await getGuaranteesById(
@@ -67,17 +66,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -92,17 +81,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoadingMortgage(false);
     }
@@ -119,17 +98,7 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
       );
       setDataProperty(result);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsLoadingPledge(false);
     }
@@ -261,16 +230,6 @@ export function OfferedGuaranteeModal(props: IOfferedGuaranteeModalProps) {
         )}
         {currentTab === "bond" && (
           <Bond lang={lang} data={dataResponse?.bondValue ?? 0} />
-        )}
-
-        {showErrorModal && (
-          <ErrorModal
-            handleClose={() => {
-              setShowErrorModal(false);
-            }}
-            isMobile={isMobile}
-            message={messageError}
-          />
         )}
       </Stack>
     </BaseModal>

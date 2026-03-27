@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -9,9 +9,9 @@ import { BaseModal } from "@components/modals/baseModal";
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { IApprovalHuman } from "../types";
 import { approvalsConfigEnum, optionsAnswerEnum } from "./config";
@@ -45,9 +45,7 @@ export function HumanValidationApprovalModal(
     eventData,
   } = props;
   const { lang } = useEnum();
-
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
+  const { showErrorModalHandler } = useErrorHandler();
 
   const optionsAnswer = useMemo(
     () =>
@@ -127,17 +125,7 @@ export function HumanValidationApprovalModal(
           onCloseModal();
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       }
     },
   });
@@ -197,15 +185,6 @@ export function HumanValidationApprovalModal(
           onBlur={formik.handleBlur}
           fullwidth
         />
-        {showErrorModal && (
-          <ErrorModal
-            handleClose={() => {
-              setShowErrorModal(false);
-            }}
-            isMobile={isMobile}
-            message={messageError}
-          />
-        )}
       </Stack>
     </BaseModal>
   );

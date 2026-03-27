@@ -22,12 +22,12 @@ import { getUseCaseValue, useValidateUseCase } from "@hooks/useValidateUseCase";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { privilegeCrediboard, optionsDisableStage } from "@config/privilege";
 
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { restoreFinancialObligationsByBorrowerId } from "@services/creditRequest/restoreFinancialObligationsByBorrowerId";
 import { CardGray } from "@components/cards/CardGray";
 import { useEnum } from "@hooks/useEnum";
 import { AppContext } from "@context/AppContext";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { FinancialObligationModal } from "../financialObligationModal";
 import {
@@ -76,6 +76,8 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     creditRequestCode,
     availableEditCreditRequest,
   } = props;
+
+  const { showErrorModalHandler } = useErrorHandler();
   const [loading, setLoading] = useState(true);
   const { eventData } = useContext(AppContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -87,8 +89,6 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
     prospectData || [],
   );
   const [tableRefreshKey, setTableRefreshKey] = useState(0);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
 
   const initialProspectSnapshot = useRef<IProspect[] | null>(null);
 
@@ -126,23 +126,14 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
         setLoading(false);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
         setLoading(false);
       }
     };
 
     loadCompleteData();
   }, [
+    showErrorModalHandler,
     businessUnitPublicCode,
     businessManagerCode,
     creditRequestCode,
@@ -287,17 +278,7 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
 
       setLocalProspectData([refreshedData]);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -454,15 +435,6 @@ export function ReportCreditsModal(props: ReportCreditsModalProps) {
           <></>
         )}
       </BaseModal>
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => {
-            setShowErrorModal(false);
-          }}
-          isMobile={isMobile}
-          message={messageError}
-        />
-      )}
     </>
   );
 }

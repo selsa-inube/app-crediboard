@@ -15,7 +15,6 @@ import { EnumType } from "@hooks/useEnum";
 import { ICustomerData } from "@pages/prospect/components/AddProductModal/config";
 import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 
-import { ErrorModal } from "../ErrorModal";
 import { TextLabels } from "./config";
 
 export interface ExtraordinaryPaymentModalProps {
@@ -55,8 +54,6 @@ export const ExtraordinaryPaymentModal = (
     paymentChannelAbbreviatedName: "",
   });
   const [isAddSeriesModalOpen, setAddSeriesModalOpen] = useState(false);
-  const [messageError, setMessageError] = useState("");
-  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const isMobile = useMediaQuery("(max-width:880px)");
 
@@ -167,8 +164,6 @@ export const ExtraordinaryPaymentModal = (
               prospectData?.moneyDestinationAbbreviatedName || ""
             }
             service={true}
-            setShowErrorModal={setShowErrorModal}
-            setMessageError={setMessageError}
             toggleAddSeriesModal={() => {
               closeAddSeriesModal();
             }}
@@ -188,13 +183,6 @@ export const ExtraordinaryPaymentModal = (
           />
         ) : (
           <></>
-        )}
-        {showErrorModal && (
-          <ErrorModal
-            isMobile={isMobile}
-            message={messageError}
-            handleClose={() => setShowErrorModal(false)}
-          />
         )}
       </Stack>
     </BaseModal>

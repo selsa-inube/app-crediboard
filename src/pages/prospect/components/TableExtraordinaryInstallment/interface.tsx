@@ -13,7 +13,6 @@ import {
 
 import { IExtraordinaryInstallmentsAddSeries } from "@services/creditRequest/query/ProspectByCode/types";
 import { DeleteModal } from "@components/modals/DeleteModal";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { BaseModal } from "@components/modals/baseModal";
 import { CardGray } from "@components/cards/CardGray";
 import { dataAddSeriesModal } from "@components/modals/AddSeriesModal/config";
@@ -44,8 +43,6 @@ interface ITableExtraordinaryInstallmentProps {
   prospectData: IProspect | undefined;
   businessUnitPublicCode: string;
   service: boolean;
-  showErrorModal: boolean;
-  messageError: string;
   isLoadingDelete: boolean;
   installmentState: {
     installmentAmount: number;
@@ -55,7 +52,6 @@ interface ITableExtraordinaryInstallmentProps {
   };
   isOpenModalView: boolean;
   setIsOpenModalView: (value: boolean) => void;
-  setShowErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
   setIsOpenModalDelete: (value: boolean) => void;
   setInstallmentState: React.Dispatch<
     React.SetStateAction<{
@@ -98,15 +94,11 @@ export function TableExtraordinaryInstallmentUI(
     visbleActions,
     lang,
     extraordinaryInstallments,
-    isMobile,
     isOpenModalDelete,
     usePagination,
-    showErrorModal,
-    messageError,
     isOpenModalView,
     installmentState,
     setIsOpenModalView,
-    setShowErrorModal,
     setIsOpenModalDelete,
     setSelectedDebtor,
     handleDeleteAction,
@@ -285,13 +277,6 @@ export function TableExtraordinaryInstallmentUI(
           TextDelete={dataTableExtraordinaryInstallment.content.i18n[lang]}
           isLoading={isLoadingDelete}
           lang={lang}
-        />
-      )}
-      {showErrorModal && (
-        <ErrorModal
-          handleClose={() => setShowErrorModal(false)}
-          isMobile={isMobile}
-          message={messageError}
         />
       )}
       {isOpenModalView && (

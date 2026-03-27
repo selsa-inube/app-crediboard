@@ -10,7 +10,6 @@ import { MdOutlineRemoveRedEye } from "react-icons/md";
 
 import { CreditProductCard } from "@components/cards/CreditProductCard";
 import { NewCreditProductCard } from "@components/cards/CreditProductCard/newCard";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { CardValues } from "@components/cards/cardValues";
 import { DeleteModal } from "@components/modals/DeleteModal";
 import { ConsolidatedCredits } from "@pages/prospect/components/modals/ConsolidatedCreditModal";
@@ -35,6 +34,7 @@ import { getSearchProspectSummaryById } from "@services/creditRequest/query/Pros
 import { getAllDeductibleExpensesById } from "@services/creditRequest/query/deductibleExpenses";
 import InfoModal from "@pages/prospect/components/modals/InfoModal";
 import { EditProductModal } from "@pages/prospect/components/modals/ProspectProductModal";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import {
   paymentCycleMap,
@@ -94,12 +94,13 @@ export const CardCommercialManagement = (
     setGeneralLoading,
     generalLoading,
   } = props;
+  const { showErrorModalHandler } = useErrorHandler();
+  const { businessUnitSigla, eventData } = useContext(AppContext);
 
   const [prospectProducts, setProspectProducts] = useState<ICreditProduct[]>(
     [],
   );
 
-  const { businessUnitSigla, eventData } = useContext(AppContext);
   const businessUnitPublicCode: string =
     JSON.parse(businessUnitSigla).businessUnitPublicCode;
 
@@ -113,8 +114,6 @@ export const CardCommercialManagement = (
   const [selectedProduct, setSelectedProduct] = useState<ICreditProduct | null>(
     null,
   );
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [selectedProductId, setSelectedProductId] = useState("");
 
   const [showConsolidatedModal, setShowConsolidatedModal] = useState(false);
@@ -168,18 +167,8 @@ export const CardCommercialManagement = (
       try {
         fetchProspectData && (await fetchProspectData());
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + err?.message + (err?.data?.description || "");
-
-        setShowErrorModal(true);
+        showErrorModalHandler(error as IError);
         setGeneralLoading(false);
-        setMessageError(description);
       }
 
       setGeneralLoading(false);
@@ -187,16 +176,7 @@ export const CardCommercialManagement = (
       setShowMessageSuccessModal(true);
     } catch (error) {
       setShowDeleteModal(false);
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
-      setShowErrorModal(true);
-      setGeneralLoading(false);
-      setMessageError(tittleOptions.errorDelete || description);
+      showErrorModalHandler(error as IError);
     }
   };
   const handleConfirm = async (values: FormikValues) => {
@@ -281,16 +261,8 @@ export const CardCommercialManagement = (
       setShowMessageSuccessModal(true);
       setIsProcessingServices(false);
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description = code + err?.message + (err?.data?.description || "");
       setIsProcessingServices(false);
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -316,17 +288,7 @@ export const CardCommercialManagement = (
         }
       } catch (error) {
         setGeneralLoading(false);
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       }
     };
     if (prospectData) {
@@ -349,17 +311,7 @@ export const CardCommercialManagement = (
         );
         setDeductibleExpenses(data);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       } finally {
         setGeneralLoading(false);
       }
@@ -593,8 +545,6 @@ export const CardCommercialManagement = (
               paymentChannelType:
                 prospectData!.preferredPaymentChannelAbbreviatedName,
             }}
-            setShowErrorModal={setShowErrorModal}
-            setMessageError={setMessageError}
             isProcessingServices={isProcessingServices}
             lang={lang}
             enums={enums}
@@ -643,15 +593,6 @@ export const CardCommercialManagement = (
             }
             nextButtonText={privilegeCrediboard.nextButtonText}
             isMobile={isMobile}
-          />
-        )}
-        {showErrorModal && (
-          <ErrorModal
-            handleClose={() => {
-              setShowErrorModal(false);
-            }}
-            isMobile={isMobile}
-            message={messageError}
           />
         )}
       </div>

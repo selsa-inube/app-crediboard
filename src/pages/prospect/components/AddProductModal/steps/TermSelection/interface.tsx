@@ -5,7 +5,6 @@ import { Fieldset } from "@components/data/Fieldset";
 
 import { ITermSelectionUI } from "../config";
 import { loanData } from "./config/config";
-import { ErrorModal } from "@components/modals/ErrorModal";
 
 export function TermSelectionUI(props: ITermSelectionUI) {
   const {
@@ -18,9 +17,6 @@ export function TermSelectionUI(props: ITermSelectionUI) {
     handleQuotaCapValueChange,
     handleMaximumTermToggleChange,
     handleMaximumTermValueChange,
-    showErrorModal,
-    messageError,
-    setShowErrorModal,
   } = props;
 
   return (
@@ -189,16 +185,6 @@ export function TermSelectionUI(props: ITermSelectionUI) {
                       </Stack>
                     </Stack>
                   </Stack>
-                )}
-
-                {showErrorModal && (
-                  <ErrorModal
-                    handleClose={() => {
-                      setShowErrorModal(false);
-                    }}
-                    isMobile={isMobile}
-                    message={messageError}
-                  />
                 )}
               </Stack>
             </Fieldset>

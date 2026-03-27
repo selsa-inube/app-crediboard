@@ -23,9 +23,9 @@ import { getSearchDocumentById } from "@services/creditRequest/query/SearchDocum
 import { IPackagesOfRequirementsById } from "@services/requirementsPackages/types";
 import { approveRequirementById } from "@services/requirementsPackages/approveRequirementById";
 import { requirementStatus } from "@services/enum/irequirements/requirementstatus/requirementstatus";
-import { ErrorModal } from "@components/modals/ErrorModal";
 import { useEnum } from "@hooks/useEnum";
 import { ICrediboardData } from "@context/AppContext/types";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { IUploadedFileReturn } from "./config";
 import { DocumentItem, IApprovalDocumentaries } from "../types";
@@ -76,6 +76,7 @@ export function DocumentValidationApprovalModal(
     onCloseModal,
   } = props;
   const { lang } = useEnum();
+  const { showErrorModalHandler } = useErrorHandler();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -85,8 +86,6 @@ export function DocumentValidationApprovalModal(
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; file: File }[]
   >([]);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -137,17 +136,7 @@ export function DocumentValidationApprovalModal(
       setDocuments(response);
       return response;
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
       return [];
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -234,17 +223,7 @@ export function DocumentValidationApprovalModal(
           onCloseModal();
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       } finally {
         setIsLoading(false);
       }
@@ -275,17 +254,7 @@ export function DocumentValidationApprovalModal(
         );
         setDocuments(response);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       } finally {
         setIsLoading(false);
       }
@@ -329,17 +298,7 @@ export function DocumentValidationApprovalModal(
       setOpen(true);
       setSeenDocuments((prev) => (prev.includes(id) ? prev : [...prev, id]));
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     }
   };
 
@@ -514,16 +473,6 @@ export function DocumentValidationApprovalModal(
             selectedFile={selectedFile}
             handleClose={() => setOpen(false)}
             title={fileName || ""}
-          />
-        )}
-
-        {showErrorModal && (
-          <ErrorModal
-            handleClose={() => {
-              setShowErrorModal(false);
-            }}
-            isMobile={isMobile}
-            message={messageError}
           />
         )}
       </Stack>

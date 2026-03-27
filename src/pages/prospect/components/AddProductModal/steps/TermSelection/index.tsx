@@ -8,6 +8,7 @@ import {
 } from "@services/creditLimit/types";
 import { getBorrowerPaymentCapacityById } from "@services/creditLimit/getBorrowePaymentCapacity";
 import { getPropertyValue } from "@utils/mappingData/mappings";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { TermSelectionUI } from "./interface";
 import {
@@ -16,7 +17,6 @@ import {
   VALIDATED_NUMBER_REGEX,
 } from "../config";
 import { borrowerProperties, termSelectionTexts } from "./config/config";
-
 
 export function TermSelection(props: ITermSelection) {
   const {
@@ -36,8 +36,7 @@ export function TermSelection(props: ITermSelection) {
 
   const [paymentCapacityData, setPaymentCapacityData] =
     useState<IPaymentCapacityResponse | null>(null);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
+  const { showErrorModalHandler } = useErrorHandler();
 
   useEffect(() => {
     if (!quotaCapEnabled && !maximumTermEnabled) {
@@ -79,15 +78,21 @@ export function TermSelection(props: ITermSelection) {
         quotaCapToggle
           ? schema
               .required(termSelectionTexts.required.i18n[lang])
-              .test("is-number", termSelectionTexts.invalidNumber.i18n[lang], (value) => {
-                const numericValue = Number(
-                  String(value).replace(VALIDATED_NUMBER_REGEX, ""),
-                );
-                return !isNaN(numericValue);
-              })
+              .test(
+                "is-number",
+                termSelectionTexts.invalidNumber.i18n[lang],
+                (value) => {
+                  const numericValue = Number(
+                    String(value).replace(VALIDATED_NUMBER_REGEX, ""),
+                  );
+                  return !isNaN(numericValue);
+                },
+              )
               .test(
                 "max-limit",
-                termSelectionTexts.maxLimit.i18n(currencyFormat(paymentCapacity))[lang],
+                termSelectionTexts.maxLimit.i18n(
+                  currencyFormat(paymentCapacity),
+                )[lang],
                 (value) => {
                   const numericValue = Number(
                     String(value).replace(VALIDATED_NUMBER_REGEX, ""),
@@ -214,28 +219,52 @@ export function TermSelection(props: ITermSelection) {
       const data: IPaymentCapacity = {
         clientIdentificationNumber: borrower.borrowerIdentificationNumber,
         dividends: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, borrowerProperties.dividends) || "0",
+          getPropertyValue(
+            borrower.borrowerProperties,
+            borrowerProperties.dividends,
+          ) || "0",
         ),
         financialIncome: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, borrowerProperties.financialIncome) || "0",
+          getPropertyValue(
+            borrower.borrowerProperties,
+            borrowerProperties.financialIncome,
+          ) || "0",
         ),
         leases: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, borrowerProperties.leases) || "0",
+          getPropertyValue(
+            borrower.borrowerProperties,
+            borrowerProperties.leases,
+          ) || "0",
         ),
         otherNonSalaryEmoluments: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, borrowerProperties.otherNonSalaryEmoluments) || "0",
+          getPropertyValue(
+            borrower.borrowerProperties,
+            borrowerProperties.otherNonSalaryEmoluments,
+          ) || "0",
         ),
         pensionAllowances: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, borrowerProperties.pensionAllowances) || "0",
+          getPropertyValue(
+            borrower.borrowerProperties,
+            borrowerProperties.pensionAllowances,
+          ) || "0",
         ),
         periodicSalary: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, borrowerProperties.periodicSalary) || "0",
+          getPropertyValue(
+            borrower.borrowerProperties,
+            borrowerProperties.periodicSalary,
+          ) || "0",
         ),
         personalBusinessUtilities: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, borrowerProperties.personalBusinessUtilities) || "0",
+          getPropertyValue(
+            borrower.borrowerProperties,
+            borrowerProperties.personalBusinessUtilities,
+          ) || "0",
         ),
         professionalFees: parseFloat(
-          getPropertyValue(borrower.borrowerProperties, borrowerProperties.professionalFees) || "0",
+          getPropertyValue(
+            borrower.borrowerProperties,
+            borrowerProperties.professionalFees,
+          ) || "0",
         ),
         livingExpenseToIncomeRatio: 0,
       };
@@ -249,17 +278,7 @@ export function TermSelection(props: ITermSelection) {
         );
         setPaymentCapacityData(paymentCapacity ?? null);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       }
     };
 
@@ -278,9 +297,6 @@ export function TermSelection(props: ITermSelection) {
       handleMaximumTermToggleChange={handleMaximumTermToggleChange}
       handleMaximumTermValueChange={handleMaximumTermValueChange}
       lang={lang}
-      showErrorModal={showErrorModal}
-      setShowErrorModal={setShowErrorModal}
-      messageError={messageError}
     />
   );
 }

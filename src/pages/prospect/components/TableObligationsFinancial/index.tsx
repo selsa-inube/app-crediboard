@@ -15,6 +15,7 @@ import {
 import { ICrediboardData } from "@context/AppContext/types";
 import { getSearchProspectByCode } from "@services/creditRequest/query/ProspectByCode";
 import { useEnum } from "@hooks/useEnum";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { headers, ROWS_PER_PAGE } from "./config";
 import { TableFinancialObligationsUI } from "./interface";
@@ -59,6 +60,7 @@ export const TableFinancialObligations = (
     eventData,
   } = props;
   const { lang, enums } = useEnum();
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [dataProspect, setDataProspect] = useState<IProspect[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,8 +70,6 @@ export const TableFinancialObligations = (
   const [extraDebtors, setExtraDebtors] = useState<
     ITableFinancialObligationsProps[]
   >([]);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [messageError, setMessageError] = useState("");
   const [
     borrowersListFinancialObligation,
     setBorrowersListFinancialObligation,
@@ -78,7 +78,6 @@ export const TableFinancialObligations = (
   const [gotEndPage, setGotEndPage] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isProcessingObligation, setIsProcessingObligation] = useState(false);
-  const [errorModal, setErrorModal] = useState(false);
 
   const handleEdit = useCallback(
     (debtor: ITableFinancialObligationsProps, index: number) => {
@@ -267,21 +266,12 @@ export const TableFinancialObligations = (
       }
     } catch (error) {
       setIsProcessingObligation(false);
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setShowErrorModal(true);
-      setMessageError(description);
+      showErrorModalHandler(error as IError);
     } finally {
       setIsProcessingObligation(false);
     }
   }, [
+    showErrorModalHandler,
     newObligation,
     isProcessingObligation,
     addFinancialObligation,
@@ -498,20 +488,11 @@ export const TableFinancialObligations = (
 
         setIsModalOpenEdit(false);
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setShowErrorModal(true);
-        setMessageError(description);
+        showErrorModalHandler(error as IError);
       }
     },
     [
+      showErrorModalHandler,
       editFinancialObligation,
       businessUnitPublicCode,
       businessManagerCode,
@@ -539,14 +520,8 @@ export const TableFinancialObligations = (
       setGotEndPage={setGotEndPage}
       showDeleteModal={showDeleteModal}
       setShowDeleteModal={setShowDeleteModal}
-      setErrorModal={setErrorModal}
-      errorMessage={messageError}
-      errorModal={errorModal}
       lang={lang}
       enums={enums}
-      showErrorModal={showErrorModal}
-      setShowErrorModal={setShowErrorModal}
-      messageError={messageError}
     />
   );
 };

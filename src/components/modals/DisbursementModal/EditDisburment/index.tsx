@@ -9,6 +9,7 @@ import { useEnum } from "@hooks/useEnum";
 import { getClientPortfolioObligationsById } from "@services/creditRequest/updateModeOfDisbursement";
 import { searchAllCustomerCatalog } from "@services/costumer/SearchCustomerCatalogByCode";
 import { AppContext } from "@context/AppContext";
+import { useErrorHandler, IError } from "@hooks/useErrorHandler";
 
 import { disbursemenTabsEnum } from "./disbursementGeneral/config";
 import { DisbursementGeneral } from "./disbursementGeneral";
@@ -40,8 +41,6 @@ export interface IDisbursementFlowManagerProps {
   businessManagerCode: string;
   prospectSummaryData: IProspectSummaryById | undefined;
   creditRequestCode: string;
-  setErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
@@ -57,9 +56,8 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
     businessManagerCode,
     prospectSummaryData,
     creditRequestCode,
-    setErrorModal,
-    setErrorMessage,
   } = props;
+  const { showErrorModalHandler } = useErrorHandler();
 
   const [modesOfDisbursement, setModesOfDisbursement] = useState<string[]>([]);
   const [initialValues, setInitialValues] = useState<IDisbursementGeneral>(
@@ -155,18 +153,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
           setModesOfDisbursement([]);
         }
       } catch (error) {
-        const err = error as {
-          message?: string;
-          status?: number;
-          data?: { description?: string; code?: string };
-        };
-
-        const code = err?.data?.code ? `[${err.data.code}] ` : "";
-        const description =
-          code + (err?.message || "") + (err?.data?.description || "");
-
-        setErrorMessage(description);
-        setErrorModal(true);
+        showErrorModalHandler(error as IError);
 
         setModesOfDisbursement([]);
       } finally {
@@ -394,18 +381,7 @@ export function DisbursementFlowManager(props: IDisbursementFlowManagerProps) {
         }
       });
     } catch (error) {
-      const err = error as {
-        message?: string;
-        status?: number;
-        data?: { description?: string; code?: string };
-      };
-
-      const code = err?.data?.code ? `[${err.data.code}] ` : "";
-      const description =
-        code + (err?.message || "") + (err?.data?.description || "");
-
-      setErrorMessage(description);
-      setErrorModal(true);
+      showErrorModalHandler(error as IError);
     }
   };
 
