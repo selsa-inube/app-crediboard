@@ -22,7 +22,7 @@ export const StyledCreditProductCard = styled.div<IStyledProduct>`
   page-break-inside: avoid;
   border: 1px solid
     ${({ theme }) =>
-      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
   @media print {
     height: 335px;
   }
@@ -33,7 +33,7 @@ export const StyledDivider = styled.hr`
   border: none;
   border-top: 2px solid;
   border-top-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+    theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
 `;
 export const StyledPrint = styled.div`
   @media print {

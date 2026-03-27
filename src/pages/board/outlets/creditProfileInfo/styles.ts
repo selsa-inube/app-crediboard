@@ -15,7 +15,7 @@ export const StyledDivider = styled.hr<IStyledDivider>`
   border: none;
   border-top: 2px solid;
   border-top-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+    theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
 `;
 
 export const StyledContainerToCenter = styled.div`

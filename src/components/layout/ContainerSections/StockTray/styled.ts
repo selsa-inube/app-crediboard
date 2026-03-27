@@ -6,7 +6,7 @@ export const StyledHorizontalDivider = styled.hr`
   width: 2px;
   border: none;
   background-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+    theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
 `;
 
 export const StyledPrint = styled.div`

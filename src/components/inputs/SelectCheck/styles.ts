@@ -54,12 +54,12 @@ export const StyledInputContainer = styled.div<IStyledInputContainer>`
   border-style: solid;
 
   background-color: ${({ theme, $readonly }) =>
-    $readonly && (theme?.palette?.neutral?.N200 || inube.palette.neutral.N200)};
+    $readonly && (theme?.palette?.neutral?.N100 || inube.palette.neutral.N100)};
 
   border-color: ${({ theme, disabled, $readonly, $status, $focused }) => {
     if (disabled) {
       return (
-        (theme?.palette?.neutral?.N200 || inube.palette.neutral.N200) +
+        (theme?.palette?.neutral?.N100 || inube.palette.neutral.N100) +
         "; pointer-events: none; opacity: 0.5;"
       );
     }
@@ -69,7 +69,7 @@ export const StyledInputContainer = styled.div<IStyledInputContainer>`
     if ($status === "invalid" && !$readonly) {
       return theme?.palette?.red?.R400 || inube.palette.red.R400;
     }
-    return theme?.palette?.neutral?.N200 || inube.palette.neutral.N200;
+    return theme?.palette?.neutral?.N100 || inube.palette.neutral.N100;
   }};
 
   opacity: ${({ disabled }) => disabled && "0.75"};

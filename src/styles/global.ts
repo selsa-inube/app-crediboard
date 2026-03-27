@@ -15,7 +15,7 @@ const GlobalStyles = createGlobalStyle`
     border-left: 1px solid;
     border-right: 1px solid;
     border-color: ${({ theme }) =>
-      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
   }
   
   body {

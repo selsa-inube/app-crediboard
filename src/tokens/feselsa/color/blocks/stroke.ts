@@ -33,7 +33,7 @@ const stroke = {
     disabled: inube.palette.neutral.N70,
   },
   divider: {
-    regular: inube.palette.neutral.N200,
+    regular: inube.palette.neutral.N100,
   },
   spinner: {
     regular: inube.palette.neutral.N30,
@@ -45,7 +45,7 @@ const stroke = {
     disabled: inube.palette.neutral.N70,
   },
   gray: {
-    regular: inube.palette.neutral.N200,
+    regular: inube.palette.neutral.N100,
     hover: inube.palette.neutral.N90,
     disabled: inube.palette.neutral.N70,
   },

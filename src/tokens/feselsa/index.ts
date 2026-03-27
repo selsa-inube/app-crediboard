@@ -161,7 +161,7 @@ const feselsa = {
       },
       border: {
         color: {
-          regular: feselsaPalette.neutral.n200,
+          regular: feselsaPalette.neutral.n100,
           disabled: feselsaPalette.neutral.n70,
           hover: feselsaPalette.neutral.n90,
         },
@@ -196,7 +196,7 @@ const feselsa = {
         color: feselsaPalette.blue.b400,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -207,7 +207,7 @@ const feselsa = {
         color: feselsaPalette.green.g400,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -218,7 +218,7 @@ const feselsa = {
         color: feselsaPalette.yellow.y400,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -229,7 +229,7 @@ const feselsa = {
         color: feselsaPalette.red.r400,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -240,7 +240,7 @@ const feselsa = {
         color: feselsaPalette.purple.p400,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -251,7 +251,7 @@ const feselsa = {
         color: feselsaPalette.neutral.n900,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -259,10 +259,10 @@ const feselsa = {
     },
     gray: {
       background: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -273,7 +273,7 @@ const feselsa = {
         color: feselsaPalette.neutral.n10,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n50,
@@ -282,15 +282,15 @@ const feselsa = {
   },
   divider: {
     stroke: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
   },
   fieldset: {
     legend: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
     border: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
   },
   fullscreenNav: {
@@ -298,7 +298,7 @@ const feselsa = {
       color: feselsaPalette.neutral.n10,
     },
     divider: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
     title: {
       appearance: "gray",
@@ -526,8 +526,8 @@ const feselsa = {
   input: {
     border: {
       color: {
-        regular: feselsaPalette.neutral.n200,
-        disabled: feselsaPalette.neutral.n200,
+        regular: feselsaPalette.neutral.n100,
+        disabled: feselsaPalette.neutral.n100,
         focus: feselsaPalette.blue.b300,
         invalid: feselsaPalette.red.r400,
       },
@@ -541,7 +541,7 @@ const feselsa = {
     content: {
       color: {
         regular: feselsaPalette.neutral.n900,
-        disabled: feselsaPalette.neutral.n200,
+        disabled: feselsaPalette.neutral.n100,
       },
     },
     placeholder: {
@@ -603,7 +603,7 @@ const feselsa = {
       color: feselsaPalette.neutral.n0,
     },
     divider: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
   },
   nav: {
@@ -611,7 +611,7 @@ const feselsa = {
       color: feselsaPalette.neutral.n10,
     },
     divider: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
     title: {
       appearance: "gray",
@@ -986,7 +986,7 @@ const feselsa = {
         color: feselsaPalette.neutral.n10,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       content: {
         appearance: "gray",
@@ -1006,7 +1006,7 @@ const feselsa = {
   },
   table: {
     border: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
     heading: {
       background: {
@@ -1068,7 +1068,7 @@ const feselsa = {
       content: {
         color: {
           regular: feselsaPalette.blue.b400,
-          disabled: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n100,
           hover: feselsaPalette.blue.b300,
         },
       },
@@ -1077,7 +1077,7 @@ const feselsa = {
       content: {
         color: {
           regular: feselsaPalette.green.g400,
-          disabled: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n100,
           hover: feselsaPalette.green.g300,
         },
       },
@@ -1086,7 +1086,7 @@ const feselsa = {
       content: {
         color: {
           regular: feselsaPalette.yellow.y400,
-          disabled: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n100,
           hover: feselsaPalette.yellow.y300,
         },
       },
@@ -1095,7 +1095,7 @@ const feselsa = {
       content: {
         color: {
           regular: feselsaPalette.red.r400,
-          disabled: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n100,
           hover: feselsaPalette.red.r300,
         },
       },
@@ -1104,7 +1104,7 @@ const feselsa = {
       content: {
         color: {
           regular: feselsaPalette.purple.p400,
-          disabled: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n100,
           hover: feselsaPalette.purple.p300,
         },
       },
@@ -1113,7 +1113,7 @@ const feselsa = {
       content: {
         color: {
           regular: feselsaPalette.neutral.n900,
-          disabled: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n100,
           hover: feselsaPalette.neutral.n500,
         },
       },
@@ -1122,7 +1122,7 @@ const feselsa = {
       content: {
         color: {
           regular: feselsaPalette.neutral.n300,
-          disabled: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n100,
           hover: feselsaPalette.neutral.n100,
         },
       },
@@ -1131,7 +1131,7 @@ const feselsa = {
       content: {
         color: {
           regular: feselsaPalette.neutral.n10,
-          disabled: feselsaPalette.neutral.n200,
+          disabled: feselsaPalette.neutral.n100,
           hover: feselsaPalette.neutral.n0,
         },
       },
@@ -1193,7 +1193,7 @@ const feselsa = {
   },
   box: {
     border: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
   },
   progressBar: {
@@ -1205,7 +1205,7 @@ const feselsa = {
         color: feselsaPalette.blue.b200,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -1219,7 +1219,7 @@ const feselsa = {
         color: feselsaPalette.green.g200,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -1233,7 +1233,7 @@ const feselsa = {
         color: feselsaPalette.yellow.y200,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -1247,7 +1247,7 @@ const feselsa = {
         color: feselsaPalette.red.r200,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -1261,7 +1261,7 @@ const feselsa = {
         color: feselsaPalette.purple.p200,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -1275,7 +1275,7 @@ const feselsa = {
         color: feselsaPalette.neutral.n500,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -1283,13 +1283,13 @@ const feselsa = {
     },
     gray: {
       background: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       animation: {
         color: feselsaPalette.neutral.n80,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n10,
@@ -1303,7 +1303,7 @@ const feselsa = {
         color: feselsaPalette.neutral.n0,
       },
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       track: {
         color: feselsaPalette.neutral.n50,
@@ -1315,7 +1315,7 @@ const feselsa = {
       color: feselsaPalette.green.g400,
     },
     border: {
-      color: feselsaPalette.neutral.n200,
+      color: feselsaPalette.neutral.n100,
     },
     title: {
       appearance: "dark",
@@ -1462,7 +1462,7 @@ const feselsa = {
     },
     border: {
       color: {
-        active: feselsaPalette.neutral.n200,
+        active: feselsaPalette.neutral.n100,
         hover: feselsaPalette.blue.b400,
       },
     },
@@ -1480,7 +1480,7 @@ const feselsa = {
         indeterminate: feselsaPalette.neutralAlpha.n0a,
         checked: feselsaPalette.neutralAlpha.n0a,
         invalid: feselsaPalette.red.r400,
-        disabled: feselsaPalette.neutral.n200,
+        disabled: feselsaPalette.neutral.n100,
       },
     },
     background: {
@@ -1512,7 +1512,7 @@ const feselsa = {
         active: feselsaPalette.neutral.n80,
         checked: feselsaPalette.neutralAlpha.n0a,
         invalid: feselsaPalette.red.r400,
-        disabled: feselsaPalette.neutral.n200,
+        disabled: feselsaPalette.neutral.n100,
       },
     },
     background: {
@@ -1734,13 +1734,13 @@ const feselsa = {
     },
     dark: {
       border: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       background: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
       boxShadow: {
-        color: feselsaPalette.neutral.n200,
+        color: feselsaPalette.neutral.n100,
       },
     },
     primary: {
@@ -1769,7 +1769,7 @@ const feselsa = {
   appCard: {
     boxShadow: {
       color: {
-        regular: feselsaPalette.neutral.n200,
+        regular: feselsaPalette.neutral.n100,
       },
     },
     background: {

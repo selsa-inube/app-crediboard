@@ -44,7 +44,7 @@ export const StyledCardContainer = styled.div`
     theme?.palette?.neutral?.N0 || inube.palette.neutral.N0};
   border: 1px solid
     ${({ theme }) =>
-      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
+      theme?.palette?.neutral?.N100 || inube.palette.neutral.N100};
 `;
 
 interface IStyledInputContainer {
