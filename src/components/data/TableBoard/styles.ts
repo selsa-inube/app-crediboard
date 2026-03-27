@@ -20,7 +20,7 @@ export const StyledContainer = styled.div<IStyledContainer>`
   padding-right: ${({ $isTablet }) => ($isTablet ? "0px" : "6px")};
   border: ${({ theme, $borderTable }) =>
     $borderTable &&
-    `2px solid ${theme?.palette?.neutral?.N40 || inube.palette.neutral.N40}`};
+    `2px solid ${theme?.palette?.neutral?.N200 || inube.palette.neutral.N200}`};
   overflow: visible;
 `;
 
@@ -126,7 +126,7 @@ export const StyledTr = styled.tr<IStyledTdbodyContainer>`
   box-sizing: border-box;
   border-bottom: ${({ theme, $borderTable }) =>
     $borderTable &&
-    `1px solid ${theme?.palette?.neutral?.N40 || inube.palette.neutral.N40}`};
+    `1px solid ${theme?.palette?.neutral?.N200 || inube.palette.neutral.N200}`};
 `;
 
 interface IStyledTd {

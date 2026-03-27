@@ -216,8 +216,8 @@ const sistemasenlinea = {
   input: {
     border: {
       color: {
-        regular: inube.palette.neutral.N40,
-        disabled: inube.palette.neutral.N40,
+        regular: inube.palette.neutral.N200,
+        disabled: inube.palette.neutral.N200,
         focus: inube.palette.blue.B300,
         invalid: inube.palette.red.R400,
       },
@@ -298,13 +298,13 @@ const sistemasenlinea = {
     },
     dark: {
       border: {
-        color: inube.palette.neutral.N40,
+        color: inube.palette.neutral.N200,
       },
       background: {
-        color: inube.palette.neutral.N40,
+        color: inube.palette.neutral.N200,
       },
       boxShadow: {
-        color: inube.palette.neutral.N40,
+        color: inube.palette.neutral.N200,
       },
     },
     primary: {
@@ -333,7 +333,7 @@ const sistemasenlinea = {
   appCard: {
     boxShadow: {
       color: {
-        regular: inube.palette.neutral.N40,
+        regular: inube.palette.neutral.N200,
       },
     },
     background: {

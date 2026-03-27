@@ -49,9 +49,9 @@ export const StyledCertificationsContainer = styled.div<StyledCertificationsCont
   border-radius: 8px;
   border: 1px solid
     ${({ theme }) =>
-      theme && theme.palette?.neutral?.N40
-        ? theme.palette.neutral.N40
-        : inube.palette.neutral.N40};
+      theme && theme.palette?.neutral?.N200
+        ? theme.palette.neutral.N200
+        : inube.palette.neutral.N200};
   padding: ${({ $isMobile }) => ($isMobile ? "24px 12px" : "24px")};
 `;
 
@@ -60,7 +60,7 @@ export const VerticalDivider = styled.div<VerticalDividerProps>`
   height: ${({ height }) => height ?? "100%"};
   border-left: 1px dashed
     ${({ color, theme }) =>
-      color ?? theme?.palette?.neutral?.N40 ?? inube.palette.neutral.N40};
+      color ?? theme?.palette?.neutral?.N200 ?? inube.palette.neutral.N200};
   margin: 0 auto;
 `;
 

@@ -10,7 +10,7 @@ export const StyledMenu = styled.div`
   top: 56px;
   right: 0;
   padding: "16px";
-  border: 1px solid ${inube.palette.neutral.N40};
+  border: 1px solid ${inube.palette.neutral.N200};
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 180px;

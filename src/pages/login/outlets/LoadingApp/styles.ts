@@ -14,11 +14,12 @@ export const StyledContainer = styled.div`
   height: 100vh;
   box-sizing: border-box;
   border-bottom: 1px solid
-    ${({ theme }) => theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    ${({ theme }) =>
+      theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
   box-shadow:
     0px 1px 3px 1px
       ${({ theme }) =>
-        theme?.palette?.neutral?.N40 || inube.palette.neutral.N40},
+        theme?.palette?.neutral?.N200 || inube.palette.neutral.N200},
     0px 1px 2px 0px
       ${({ theme }) =>
         theme?.palette?.neutral?.N20 || inube.palette.neutral.N20};

@@ -38,7 +38,7 @@ export const StyledDivider = styled.hr`
   border: none;
   border-top: 2px solid;
   border-top-color: ${({ theme }) =>
-    theme?.palette?.neutral?.N40 || inube.palette.neutral.N40};
+    theme?.palette?.neutral?.N200 || inube.palette.neutral.N200};
 `;
 
 export const StyledPinWrapper = styled.div<IStyledContainer>`
